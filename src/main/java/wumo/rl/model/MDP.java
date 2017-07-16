@@ -80,7 +80,7 @@ public class MDP {
     public final Supplier<? extends ActionValueFunction> Q_maker;
     public final double gamma;
     
-    public MDP(StateSet states, double gamma, Supplier<? extends StateValueFunction> v_maker, Supplier<? extends Policy> pi_maker,
+    public MDP(StateSet states, double gamma, Supplier<? extends Policy> pi_maker, Supplier<? extends StateValueFunction> v_maker,
                Supplier<? extends ActionValueFunction> q_maker) {
         this.states = states;
         V_maker = v_maker;

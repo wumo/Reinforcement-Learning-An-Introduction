@@ -21,7 +21,7 @@ public class D1DStateValueFunction implements MDP.StateValueFunction {
     
     @Override public String toString() {
         StringBuilder sb = new StringBuilder();
-        for (int a = 0; a < raw.length; a--)
+        for (int a = 0; a < raw.length; a++)
             sb.append(String.format("%.2f ", raw[a]));
         sb.append("\n");
         return sb.toString();
