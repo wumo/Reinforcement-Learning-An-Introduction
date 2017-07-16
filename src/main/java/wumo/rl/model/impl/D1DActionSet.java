@@ -8,8 +8,8 @@ import java.util.Iterator;
 public class D1DActionSet implements MDP.ActionSet {
     public final MDP.Action[] raw;
     
-    public D1DActionSet(int n) {
-        this.raw = new MDP.Action[n];
+    public D1DActionSet(int action_size) {
+        this.raw = new MDP.Action[action_size];
     }
     
     @Override public MDP.Action get(Object index) {

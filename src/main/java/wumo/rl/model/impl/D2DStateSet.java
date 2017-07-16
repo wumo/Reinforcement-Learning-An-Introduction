@@ -9,8 +9,8 @@ import java.util.Iterator;
 public class D2DStateSet implements MDP.StateSet {
     public final MDP.State[][] raw;
     
-    public D2DStateSet(int m, int n) {
-        raw = new MDP.State[m][n];
+    public D2DStateSet(int d2dstate_first_dim, int d2dstate_second_dim) {
+        raw = new MDP.State[d2dstate_first_dim][d2dstate_second_dim];
     }
     
     @Override public MDP.State get(Object index) {

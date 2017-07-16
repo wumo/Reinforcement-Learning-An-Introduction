@@ -13,13 +13,13 @@ public class D3DPossibleSet implements MDP.PossibleSet {
     public final MDP.Possible[][][] raw;
     
     /**
-     * @param m
+     * @param d2dstate_first_dim
      *         D2DState's first index
-     * @param n
+     * @param d2dstate_second_dim
      *         D2DState's second index
      */
-    public D3DPossibleSet(int m, int n) {
-        this.raw = new MDP.Possible[m][n][];
+    public D3DPossibleSet(int d2dstate_first_dim, int d2dstate_second_dim) {
+        this.raw = new MDP.Possible[d2dstate_first_dim][d2dstate_second_dim][];
     }
     
     @Override public MDP.Possible get(Object index) {

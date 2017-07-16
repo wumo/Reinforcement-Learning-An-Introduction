@@ -12,11 +12,11 @@ public class D1DPossibleSet implements MDP.PossibleSet {
     public final MDP.Possible[] raw;
     
     /**
-     * @param n
+     * @param reward_size
      *         reward size
      */
-    public D1DPossibleSet(int n) {
-        this.raw = new MDP.Possible[n];
+    public D1DPossibleSet(int reward_size) {
+        this.raw = new MDP.Possible[reward_size];
     }
     
     @Override public MDP.Possible get(Object index) {

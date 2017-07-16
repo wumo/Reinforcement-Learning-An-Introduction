@@ -5,8 +5,8 @@ import wumo.rl.model.MDP;
 public class D2DStateValueFunction implements MDP.StateValueFunction {
     public final double[][] raw;
     
-    public D2DStateValueFunction(int m, int n) {
-        raw = new double[m][n];
+    public D2DStateValueFunction(int d2dstate_first_dim, int d2dstate_second_dim) {
+        raw = new double[d2dstate_first_dim][d2dstate_second_dim];
     }
     
     @Override public Double get(MDP.State index) {

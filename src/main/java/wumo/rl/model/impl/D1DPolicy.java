@@ -5,8 +5,8 @@ import wumo.rl.model.MDP;
 public class D1DPolicy implements MDP.Policy {
     public final MDP.Action[] raw;
     
-    public D1DPolicy(int n) {
-        raw = new MDP.Action[n];
+    public D1DPolicy(int d1dstate_dim) {
+        raw = new MDP.Action[d1dstate_dim];
     }
     
     @Override public MDP.Action get(MDP.State index) {

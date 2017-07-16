@@ -12,8 +12,8 @@ import wumo.rl.model.MDP;
 public class D2D1DActionValueFunction implements MDP.ActionValueFunction {
     public final double[][][] raw;
     
-    public D2D1DActionValueFunction(int m, int n) {
-        raw = new double[m][n][];
+    public D2D1DActionValueFunction(int d2dstate_first_dim, int d2dstate_second_dim) {
+        raw = new double[d2dstate_first_dim][d2dstate_second_dim][];
     }
     
     @Override public double get(MDP.State s, MDP.Action a) {

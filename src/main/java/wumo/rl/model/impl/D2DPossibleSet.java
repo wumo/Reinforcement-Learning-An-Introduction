@@ -13,10 +13,10 @@ public class D2DPossibleSet implements MDP.PossibleSet {
     public final MDP.Possible[][] raw;
     
     /**
-     * @param n D1DState index
+     * @param d1dstate_dim D1DState index
      */
-    public D2DPossibleSet(int n) {
-        this.raw = new MDP.Possible[n][];
+    public D2DPossibleSet(int d1dstate_dim) {
+        this.raw = new MDP.Possible[d1dstate_dim][];
     }
     
     @Override public MDP.Possible get(Object index) {

@@ -7,8 +7,8 @@ import java.util.Iterator;
 public class D1DStateSet implements MDP.StateSet {
     public final MDP.State[] raw;
     
-    public D1DStateSet(int n) {
-        raw = new MDP.State[n];
+    public D1DStateSet(int d1dstate_dim) {
+        raw = new MDP.State[d1dstate_dim];
     }
     
     @Override public MDP.State get(Object index) {
