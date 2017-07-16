@@ -1,5 +1,6 @@
 package wumo.rl.model.impl;
 
+import org.jetbrains.annotations.NotNull;
 import wumo.rl.model.MDP;
 
 import java.util.Iterator;
@@ -18,7 +19,7 @@ public class SinglePossibleSet implements MDP.PossibleSet {
         this.raw = raw;
     }
     
-    @Override public Iterator<MDP.Possible> iterator() {
+    @NotNull @Override public Iterator<MDP.Possible> iterator() {
         return new Iterator<MDP.Possible>() {
             boolean visited = false;
             

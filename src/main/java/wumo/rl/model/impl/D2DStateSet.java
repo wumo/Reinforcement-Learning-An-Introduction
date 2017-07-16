@@ -1,5 +1,6 @@
 package wumo.rl.model.impl;
 
+import org.jetbrains.annotations.NotNull;
 import wumo.rl.model.MDP;
 import wumo.rl.util.tuple2;
 
@@ -22,7 +23,7 @@ public class D2DStateSet implements MDP.StateSet {
         raw[idx._1][idx._2] = s;
     }
     
-    @Override public Iterator<MDP.State> iterator() {
+    @NotNull @Override public Iterator<MDP.State> iterator() {
         return new Iterator<MDP.State>() {
             int a = 0, b = 0;
             

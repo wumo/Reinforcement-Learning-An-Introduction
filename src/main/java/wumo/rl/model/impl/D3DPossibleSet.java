@@ -1,5 +1,6 @@
 package wumo.rl.model.impl;
 
+import org.jetbrains.annotations.NotNull;
 import wumo.rl.model.MDP;
 import wumo.rl.util.tuple3;
 
@@ -18,7 +19,7 @@ public class D3DPossibleSet implements MDP.PossibleSet {
         raw[idx._1][idx._2][idx._3] = s;
     }
     
-    @Override public Iterator<MDP.Possible> iterator() {
+    @NotNull @Override public Iterator<MDP.Possible> iterator() {
         return new Iterator<MDP.Possible>() {
             int a = 0, b = 0, c = 0;
             

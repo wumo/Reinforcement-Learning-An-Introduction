@@ -1,5 +1,6 @@
 package wumo.rl.model.impl;
 
+import org.jetbrains.annotations.NotNull;
 import wumo.rl.model.MDP;
 
 import java.util.Iterator;
@@ -19,7 +20,7 @@ public class D1DActionSet implements MDP.ActionSet {
         raw[(int) index] = s;
     }
     
-    @Override public Iterator<MDP.Action> iterator() {
+    @NotNull @Override public Iterator<MDP.Action> iterator() {
         return new Iterator<MDP.Action>() {
             int a = 0;
             
