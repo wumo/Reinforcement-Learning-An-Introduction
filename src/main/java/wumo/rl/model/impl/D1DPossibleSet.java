@@ -2,20 +2,17 @@ package wumo.rl.model.impl;
 
 import org.jetbrains.annotations.NotNull;
 import wumo.rl.model.MDP;
-import wumo.rl.util.*;
+import wumo.rl.util.tuple2;
 
 import java.util.Iterator;
 
 /**
- * D1DState + D1D reward
+ * single state + D1D reward
  */
-public class D2DPossibleSet implements MDP.PossibleSet {
+public class D1DPossibleSet implements MDP.PossibleSet {
     public final MDP.Possible[][] raw;
     
-    /**
-     * @param n D1DState index
-     */
-    public D2DPossibleSet(int n) {
+    public D1DPossibleSet(int n) {
         this.raw = new MDP.Possible[n][];
     }
     

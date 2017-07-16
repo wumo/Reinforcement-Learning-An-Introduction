@@ -9,6 +9,7 @@ import java.util.Iterator;
  * <p>
  * Created on 2017-07-13.
  * </p>
+ * single state + single reward
  *
  * @author wumo
  */

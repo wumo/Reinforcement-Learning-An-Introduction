@@ -6,9 +6,18 @@ import wumo.rl.util.tuple3;
 
 import java.util.Iterator;
 
+/**
+ * D2DState + D1D reward
+ */
 public class D3DPossibleSet implements MDP.PossibleSet {
     public final MDP.Possible[][][] raw;
     
+    /**
+     * @param m
+     *         D2DState's first index
+     * @param n
+     *         D2DState's second index
+     */
     public D3DPossibleSet(int m, int n) {
         this.raw = new MDP.Possible[m][n][];
     }
