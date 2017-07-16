@@ -13,6 +13,7 @@ import java.util.Iterator;
  * @author wumo
  */
 public class EmptyActionSet implements MDP.ActionSet {
+    public static final EmptyActionSet instance=new EmptyActionSet();
     private static final Iterator<MDP.Action> iter = new Iterator<MDP.Action>() {
         @Override public boolean hasNext() {
             return false;
