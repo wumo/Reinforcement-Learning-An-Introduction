@@ -7,7 +7,11 @@ import wumo.rl.util.tuple3;
 import java.util.Iterator;
 
 public class D3DPossibleSet implements MDP.PossibleSet {
-    public MDP.Possible[][][] raw;
+    public final MDP.Possible[][][] raw;
+    
+    public D3DPossibleSet(int m, int n) {
+        this.raw = new MDP.Possible[m][n][];
+    }
     
     @Override public MDP.Possible get(Object index) {
         tuple3 idx = (tuple3) index;

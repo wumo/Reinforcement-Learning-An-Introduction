@@ -7,7 +7,11 @@ import wumo.rl.util.*;
 import java.util.Iterator;
 
 public class D2DPossibleSet implements MDP.PossibleSet {
-    public MDP.Possible[][] raw;
+    public final MDP.Possible[][] raw;
+    
+    public D2DPossibleSet(int n) {
+        this.raw = new MDP.Possible[n][];
+    }
     
     @Override public MDP.Possible get(Object index) {
         tuple2 idx = (tuple2) index;
