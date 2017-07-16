@@ -20,12 +20,12 @@ public class D2DPossibleSet implements MDP.PossibleSet {
     }
     
     @Override public MDP.Possible get(Object index) {
-        tuple2 idx = (tuple2) index;
+        index2 idx = (index2) index;
         return raw[idx._1][idx._2];
     }
     
     @Override public void set(Object index, MDP.Possible s) {
-        tuple2 idx = (tuple2) index;
+        index2 idx = (index2) index;
         raw[idx._1][idx._2] = s;
     }
     

@@ -2,7 +2,7 @@ package wumo.rl.model.impl;
 
 import org.jetbrains.annotations.NotNull;
 import wumo.rl.model.MDP;
-import wumo.rl.util.tuple3;
+import wumo.rl.util.index3;
 
 import java.util.Iterator;
 
@@ -23,12 +23,12 @@ public class D3DPossibleSet implements MDP.PossibleSet {
     }
     
     @Override public MDP.Possible get(Object index) {
-        tuple3 idx = (tuple3) index;
+        index3 idx = (index3) index;
         return raw[idx._1][idx._2][idx._3];
     }
     
     @Override public void set(Object index, MDP.Possible s) {
-        tuple3 idx = (tuple3) index;
+        index3 idx = (index3) index;
         raw[idx._1][idx._2][idx._3] = s;
     }
     

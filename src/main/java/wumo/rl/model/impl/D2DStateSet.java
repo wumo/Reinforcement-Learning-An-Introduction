@@ -2,7 +2,7 @@ package wumo.rl.model.impl;
 
 import org.jetbrains.annotations.NotNull;
 import wumo.rl.model.MDP;
-import wumo.rl.util.tuple2;
+import wumo.rl.util.index2;
 
 import java.util.Iterator;
 
@@ -14,12 +14,12 @@ public class D2DStateSet implements MDP.StateSet {
     }
     
     @Override public MDP.State get(Object index) {
-        tuple2 idx = (tuple2) index;
+        index2 idx = (index2) index;
         return raw[idx._1][idx._2];
     }
     
     @Override public void set(Object index, MDP.State s) {
-        tuple2 idx = (tuple2) index;
+        index2 idx = (index2) index;
         raw[idx._1][idx._2] = s;
     }
     
