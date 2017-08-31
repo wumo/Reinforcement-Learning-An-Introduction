@@ -1,5 +1,8 @@
 package wumo.rl.model;
 
+import javafx.util.Pair;
+import wumo.rl.model.impl.DnDSet;
+
 import java.util.Iterator;
 import java.util.function.Supplier;
 
@@ -78,11 +81,7 @@ public class MDP {
 
     public interface StateValueFunction extends GetterSetter<State, Double> {}
 
-    public interface ActionValueFunction {
-        double get(State s, Action a);
-
-        void set(State s, Action a, double value);
-    }
+    public interface ActionValueFunction extends GetterSetter<Pair<State, Action>, Double> {}
 
     public interface Policy extends GetterSetter<State, Action> {}
 
