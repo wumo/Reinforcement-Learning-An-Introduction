@@ -7,57 +7,59 @@ package lab.mars.rl
  *
  * @author wumo
  */
-typealias StateSet<StateIdx> = IndexedCollection<StateIdx, State<StateIdx>>
-typealias StateValueFunction<StateIdx> = IndexedCollection<StateIdx, Double>
-typealias ActionValueFunction<StateIdx, ActionIdx> = IndexedCollection<Pair<State<StateIdx>, Action<ActionIdx>>, Double>
-typealias DeterminedPolicy<StateIdx, ActionIdx> = IndexedCollection<StateIdx, Action<ActionIdx>>
+typealias StateSet = IndexedCollection<State?>
+typealias StateValueFunction = IndexedCollection<Double>
+typealias ActionValueFunction = IndexedCollection<Double>
+typealias DeterminedPolicy = IndexedCollection<Action?>
 
-class MDP<StateIdx, ActionIdx>(
-        val states: StateSet<StateIdx>,
+class MDP(
+        val states: StateSet,
         val gamma: Double,
-        val v_maker: () -> StateValueFunction<StateIdx>,
-        val q_maker: () -> ActionValueFunction<StateIdx, ActionIdx>,
-        val pi_maker: () -> DeterminedPolicy<StateIdx, ActionIdx>)
+        val v_maker: () -> StateValueFunction,
+        val q_maker: () -> ActionValueFunction,
+        val pi_maker: () -> DeterminedPolicy)
 
-interface IndexedCollection<Idx, E> : Iterable<E> {
-    fun get(index: Idx): E
-    fun set(index: Idx, s: E)
-    fun firstOrNull(): E? {
-        val iter = this.iterator()
-        return if (iter.hasNext()) iter.next() else null
-    }
+interface Indexable {
+    val idx: IntArray
 }
 
-class State<StateIdx> {
-    var idx: StateIdx? = null
-    var actions: IndexedCollection<Any, Action<Any>>? = null
+interface IndexedCollection<E> : Iterable<E> {
+    operator fun get(vararg index: Int): E
+    operator fun get(indexable: Indexable): E
+    operator fun get(vararg indexable: Indexable): E
+    operator fun set(vararg index: Int, s: E)
+    operator fun set(indexable: Indexable, s: E)
+    operator fun set(vararg indexable: Indexable, s: E)
 }
 
-class Action<ActionIdx>(val idx: ActionIdx, val desc: String) {
+class State(vararg index: Int) : Indexable {
+    override val idx = index
 
-    var possibles: IndexedCollection<Any, Possible>? = null
+    var actions: IndexedCollection<Action>? = null
 
-    fun sample(): Possible? {
-        return null
-    }
+    override fun toString() = idx.asList().toString()
+}
 
-    override fun toString(): String {
-        return desc
-    }
+class Action(vararg index: Int) : Indexable {
+    override val idx = index
+
+    var possibles: IndexedCollection<Possible>? = null
+
+    fun sample(): Possible? = null
+
+    override fun toString() = idx.asList().toString()
 }
 
 class Possible {
-    var state: State<Any> = empty_state
+    var state: State? = null
     var reward: Double = 0.0
     var probability: Double = 0.0
 
     constructor()
 
-    constructor(state: State<Any>, reward: Double, probability: Double) {
+    constructor(state: State, reward: Double, probability: Double) {
         this.state = state
         this.reward = reward
         this.probability = probability
     }
 }
-
-val empty_state = State<Any>()
