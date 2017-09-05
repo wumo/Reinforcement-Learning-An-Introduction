@@ -1,4 +1,4 @@
-package lab.mars.rl
+package lab.mars.rl.model
 
 /**
  * <p>
@@ -30,6 +30,14 @@ interface IndexedCollection<E> : Iterable<E> {
     operator fun set(vararg index: Int, s: E)
     operator fun set(indexable: Indexable, s: E)
     operator fun set(vararg indexable: Indexable, s: E)
+
+    fun init(maker: (IntArray) -> E)
+}
+
+class A {
+    operator fun get(vararg index: Int): Int {
+        return 0
+    }
 }
 
 class State(vararg index: Int) : Indexable {

@@ -1,9 +1,9 @@
-package lab.mars.rl.impl
+package lab.mars.rl.model.impl
 
 import io.kotlintest.specs.StringSpec
-import lab.mars.rl.Action
-import lab.mars.rl.MDP
-import lab.mars.rl.State
+import lab.mars.rl.model.Action
+import lab.mars.rl.model.MDP
+import lab.mars.rl.model.State
 
 /**
  * <p>
@@ -32,16 +32,17 @@ class TestDimNSet : StringSpec() {
             val V = mdp.v_maker()
             val PI = mdp.pi_maker()
             val Q = mdp.q_maker()
-            for (a in 0 until 3)
-                for (b in 0 until 4)
-                    for (c in 0 until 5) {
-                        println("$a,$b,$c")
-                        val s = State(a, b, c)
-                        s.actions = DimNSet(4) { idx -> Action(*idx) }
-                        S[a, b, c] = s
-                    }
+            S.init { idx ->
+                println(">>${idx[0]},${idx[1]},${idx[2]}")
+                val s = State(*idx)
+                s.actions = DimNSet(4) { Action(*it) }
+                s
+            }
+            val index = intArrayOf(2, 3, 4)
+            S.set(*index, s = null)
             S.forEach { s ->
                 if (s == null) return@forEach
+                println(s)
                 V[s] = 1.0
                 val a = s.actions?.firstOrNull()
                 PI[s] = s.actions?.first()
@@ -56,6 +57,6 @@ val dim = intArrayOf(2, 3, 4)
 val mdp = MDP(
         states = DimNSet(*dim),
         gamma = 0.9,
-        v_maker = { DimNSet(*dim) { idx -> 0.0 } },
-        q_maker = { DimNSet(*dim, 4) { idx -> 0.0 } },
+        v_maker = { DimNSet(*dim) { 0.0 } },
+        q_maker = { DimNSet(*dim, 4) { 0.0 } },
         pi_maker = { DimNSet(*dim, 4) })

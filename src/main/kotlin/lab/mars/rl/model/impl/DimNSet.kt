@@ -1,8 +1,8 @@
-package lab.mars.rl.impl
+package lab.mars.rl.model.impl
 
-import lab.mars.rl.Indexable
-import lab.mars.rl.IndexedCollection
-import lab.mars.rl.MDP
+import lab.mars.rl.model.Indexable
+import lab.mars.rl.model.IndexedCollection
+import lab.mars.rl.model.MDP
 
 /**
  * <p>
@@ -13,9 +13,25 @@ import lab.mars.rl.MDP
  */
 class DimNSet<E>(private val dim: IntArray, private val stride: IntArray, val raw: Array<E>) :
         IndexedCollection<E> {
+    override fun init(maker: (IntArray) -> E) {
+        val index = IntArray(dim.size)
+        this[2, 1, 3] = null as E
+        this.set(*intArrayOf(2, 1, 3), s = null as E)
+        for (i in 0 until raw.size) {
+            raw[i] = maker(index).apply {
+                for (idx in index.size - 1 downTo 0) {
+                    index[idx]++
+                    if (index[idx] < dim[idx])
+                        break
+                    index[idx] = 0
+                }
+            }
+        }
+    }
+
     companion object {
         operator inline fun <reified T> invoke(vararg dim: Int): DimNSet<T>
-                = invoke(*dim) { idx -> null as T }
+                = invoke(*dim) { null as T }
 
         operator inline fun <reified T> invoke(vararg dim: Int, element_maker: (IntArray) -> T): DimNSet<T> {
             val stride = IntArray(dim.size)
@@ -42,10 +58,10 @@ class DimNSet<E>(private val dim: IntArray, private val stride: IntArray, val ra
         var offset = 0
         if (idx.size != dim.size)
             throw RuntimeException("index.length=${idx.size}  > dim.length=${dim.size}")
-        for ((a, _idx) in idx.withIndex()) {
-            if (_idx!! < 0 || _idx!! > dim[a])
-                throw ArrayIndexOutOfBoundsException("index[$a]= $_idx while dim[$a]=${dim[a]}")
-            offset += idx[a]!! * stride[a]
+        for (a in 0 until idx.size) {
+            if (idx[a] < 0 || idx[a] > dim[a])
+                throw ArrayIndexOutOfBoundsException("index[$a]= ${idx[a]} while dim[$a]=${dim[a]}")
+            offset += idx[a] * stride[a]
         }
         return offset
     }
@@ -93,7 +109,7 @@ class DimNSet<E>(private val dim: IntArray, private val stride: IntArray, val ra
 fun DimNSetMDP(state_dim: IntArray, action_dim: IntArray) = MDP(
         states = DimNSet(*state_dim),
         gamma = 0.9,
-        v_maker = { DimNSet(*state_dim) { idx -> 0.0 } },
-        q_maker = { DimNSet(*state_dim, *action_dim) { idx -> 0.0 } },
+        v_maker = { DimNSet(*state_dim) { 0.0 } },
+        q_maker = { DimNSet(*state_dim, *action_dim) { 0.0 } },
         pi_maker = { DimNSet(*state_dim) })
 
