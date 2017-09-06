@@ -15,8 +15,6 @@ class DimNSet<E>(private val dim: IntArray, private val stride: IntArray, val ra
         IndexedCollection<E> {
     override fun init(maker: (IntArray) -> E) {
         val index = IntArray(dim.size)
-        this[2, 1, 3] = null as E
-        this.set(*intArrayOf(2, 1, 3), s = null as E)
         for (i in 0 until raw.size) {
             raw[i] = maker(index).apply {
                 for (idx in index.size - 1 downTo 0) {
@@ -106,9 +104,9 @@ class DimNSet<E>(private val dim: IntArray, private val stride: IntArray, val ra
     }
 }
 
-fun DimNSetMDP(state_dim: IntArray, action_dim: IntArray) = MDP(
+fun DimNSetMDP(state_dim: IntArray, action_dim: IntArray, gamma: Double) = MDP(
         states = DimNSet(*state_dim),
-        gamma = 0.9,
+        gamma = gamma,
         v_maker = { DimNSet(*state_dim) { 0.0 } },
         q_maker = { DimNSet(*state_dim, *action_dim) { 0.0 } },
         pi_maker = { DimNSet(*state_dim) })

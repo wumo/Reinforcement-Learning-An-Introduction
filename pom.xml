@@ -33,9 +33,15 @@
         <maven.compiler.plugin.version>3.6.1</maven.compiler.plugin.version>
         <maven.source.plugin.version>3.0.1</maven.source.plugin.version>
         <kotlin.version>1.1.4-3</kotlin.version>
+        <!--<nd4j.version>0.9.1</nd4j.version>-->
     </properties>
 
     <dependencies>
+        <!--<dependency>-->
+            <!--<groupId>org.nd4j</groupId>-->
+            <!--<artifactId>nd4j-native-platform</artifactId>-->
+            <!--<version>${nd4j.version}</version>-->
+        <!--</dependency>-->
         <dependency>
             <groupId>org.apache.commons</groupId>
             <artifactId>commons-math3</artifactId>

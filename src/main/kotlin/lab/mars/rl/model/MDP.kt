@@ -43,7 +43,7 @@ class A {
 class State(vararg index: Int) : Indexable {
     override val idx = index
 
-    var actions: IndexedCollection<Action>? = null
+    var actions: IndexedCollection<Action> = emptyActions
 
     override fun toString() = idx.asList().toString()
 }
@@ -51,23 +51,92 @@ class State(vararg index: Int) : Indexable {
 class Action(vararg index: Int) : Indexable {
     override val idx = index
 
-    var possibles: IndexedCollection<Possible>? = null
+    var possibles: IndexedCollection<Possible> = emptyPossibles
 
     fun sample(): Possible? = null
 
     override fun toString() = idx.asList().toString()
 }
 
-class Possible {
-    var state: State? = null
-    var reward: Double = 0.0
-    var probability: Double = 0.0
+class Possible(var next: State, var reward: Double, var probability: Double)
 
-    constructor()
-
-    constructor(state: State, reward: Double, probability: Double) {
-        this.state = state
-        this.reward = reward
-        this.probability = probability
+val emptyActions = object : IndexedCollection<Action> {
+    override fun get(vararg index: Int): Action {
+        TODO("not implemented")
     }
+
+    override fun get(indexable: Indexable): Action {
+        TODO("not implemented")
+    }
+
+    override fun get(vararg indexable: Indexable): Action {
+        TODO("not implemented")
+    }
+
+    override fun set(vararg index: Int, s: Action) {
+        TODO("not implemented")
+    }
+
+    override fun set(indexable: Indexable, s: Action) {
+        TODO("not implemented")
+    }
+
+    override fun set(vararg indexable: Indexable, s: Action) {
+        TODO("not implemented")
+    }
+
+    override fun iterator(): Iterator<Action> {
+        return emptyActionIterator
+    }
+
+    override fun init(maker: (IntArray) -> Action) {
+        TODO("not implemented")
+    }
+}
+
+val emptyActionIterator = object : Iterator<Action> {
+    override fun hasNext() = false
+
+    override fun next() = null as Action
+}
+
+val emptyPossibles = object : IndexedCollection<Possible> {
+    override fun get(vararg index: Int): Possible {
+        TODO("not implemented")
+    }
+
+    override fun get(indexable: Indexable): Possible {
+        TODO("not implemented")
+    }
+
+    override fun get(vararg indexable: Indexable): Possible {
+        TODO("not implemented")
+    }
+
+    override fun set(vararg index: Int, s: Possible) {
+        TODO("not implemented")
+    }
+
+    override fun set(indexable: Indexable, s: Possible) {
+        TODO("not implemented")
+    }
+
+    override fun set(vararg indexable: Indexable, s: Possible) {
+        TODO("not implemented")
+    }
+
+    override fun init(maker: (IntArray) -> Possible) {
+        TODO("not implemented")
+    }
+
+    override fun iterator(): Iterator<Possible> {
+        return emptyPossibleIterator
+    }
+
+}
+
+val emptyPossibleIterator = object : Iterator<Possible> {
+    override fun hasNext() = false
+
+    override fun next() = null as Possible
 }

@@ -27,7 +27,7 @@ class TestDimNSet : StringSpec() {
         }
 
         "DimNSetMDP" {
-            val mdp = DimNSetMDP(state_dim = intArrayOf(3, 4, 5), action_dim = intArrayOf(4))
+            val mdp = DimNSetMDP(state_dim = intArrayOf(3, 4, 5), action_dim = intArrayOf(4), gamma = 1.0)
             val S = mdp.states
             val V = mdp.v_maker()
             val PI = mdp.pi_maker()
@@ -44,8 +44,8 @@ class TestDimNSet : StringSpec() {
                 if (s == null) return@forEach
                 println(s)
                 V[s] = 1.0
-                val a = s.actions?.firstOrNull()
-                PI[s] = s.actions?.first()
+                val a = s.actions.firstOrNull()
+                PI[s] = s.actions.first()
                 if (a == null) return@forEach
                 Q[s, a] = 1.0
             }

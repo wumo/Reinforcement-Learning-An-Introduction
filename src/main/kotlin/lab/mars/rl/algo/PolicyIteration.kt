@@ -10,8 +10,6 @@ import org.apache.commons.math3.util.FastMath.*
  *
  * @author wumo
  */
-const val theta = 1e-6
-
 class PolicyIteration(mdp: MDP) {
     val states = mdp.states
     val gamma = mdp.gamma
@@ -19,62 +17,63 @@ class PolicyIteration(mdp: MDP) {
     val PI = mdp.pi_maker()
     val Q = mdp.q_maker()
 
-    fun v_iteration() {
-        `Initialization`()
-        do {
-            `Policy Evaluation`()
-            val stable = `Policy Improvement`()
-        } while (!stable)
-    }
-
-    private fun `Initialization`() {
+    fun v_iteration(): StateValueFunction {
+        //Initialization
         for (s in states) {
-            if (s == null) break
-            PI[s] = s.actions?.first()
+            PI[s!!] = s.actions.firstOrNull()
         }
-    }
-
-    private fun `Policy Evaluation`() {
         do {
-            var delta = 0.0
+            //Policy Evaluation
+            do {
+                var delta = 0.0
+                for (s in states) {
+                    val v = V[s!!]
+                    PI[s]?.possibles?.apply {
+                        V[s] = sigma(this!!) { probability * (reward + gamma * V[next]) }
+                        delta = max(delta, abs(v - V[s]))
+                    }
+                }
+                println(delta)
+            } while (delta >= theta)
+
+            //Policy Improvement
+            var policy_stable = true
             for (s in states) {
-                if (s == null) break
-                val v = V[s]
-                V[s] = sigma(PI[s]?.possibles!!) { probability * (reward + gamma * V[state!!]) }
-                delta = max(delta, abs(v - V[s]))
+                val old_action = PI[s!!]
+                PI[s] = argmax(s.actions) { sigma(possibles) { probability * (reward + gamma * V[next]) } }
+                if (old_action !== PI[s]) policy_stable = false
             }
-        } while (delta >= theta)
+        } while (!policy_stable)
+        return V
     }
 
-    private fun `Policy Improvement`(): Boolean {
-        var policy_stable = true
+    fun q_iteration(): ActionValueFunction {
+        //Initialization
         for (s in states) {
-            if (s == null) break
-            val old_action = PI[s]
-            PI[s] = argmax(s.actions!!) { sigma(possibles!!) { probability + (reward + gamma * V[state!!]) } }
-            if (old_action !== PI[s]) policy_stable = false
+            PI[s!!] = s.actions.firstOrNull()
         }
-        return policy_stable
-    }
+        do {
+            //Policy Evaluation
+            do {
+                var delta = 0.0
+                for (s in states) {
+                    for (a in s?.actions!!) {
+                        val q = Q[s, a]
+                        Q[s, a] = sigma(a.possibles) { probability * (reward + gamma * Q[next, PI[next]!!]) }
+                        delta = max(delta, abs(q - Q[s, a]))
+                    }
+                }
+            } while (delta >= theta)
 
-    private inline fun <T> sigma(set: Iterable<T>, calc: T.() -> Double): Double {
-        var sum = 0.0
-        set.forEach {
-            sum += it.calc()
-        }
-        return sum
-    }
-
-    private inline fun <T> argmax(set: Iterable<T>, evaluate: T.() -> Double): T {
-        var max = Double.NEGATIVE_INFINITY
-        var max_a: T? = null
-        set.forEach {
-            val p = evaluate(it)
-            if (p > max) {
-                max = p
-                max_a = it
+            //Policy Improvement
+            var policy_stable = true
+            for (s in states) {
+                val old_action = PI[s!!]
+                PI[s] = argmax(s.actions) { Q[s, this] }
+                if (old_action !== PI[s]) policy_stable = false
             }
-        }
-        return max_a!!
+        } while (!policy_stable)
+        return Q
     }
+
 }
