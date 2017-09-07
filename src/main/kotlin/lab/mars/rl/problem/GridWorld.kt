@@ -1,8 +1,8 @@
 package lab.mars.rl.problem
 
 import lab.mars.rl.model.*
-import lab.mars.rl.model.impl.DimNSet
-import lab.mars.rl.model.impl.DimNSetMDP
+import lab.mars.rl.model.impl.NSet
+import lab.mars.rl.model.impl.NSetMDP
 
 /**
  * <p>
@@ -22,14 +22,11 @@ object GridWorld {
     )
     val desc_move = arrayOf(" ↑", " ↓", "→", "←")
     fun make(): MDP {
-        val mdp = DimNSetMDP(state_dim = intArrayOf(n, n),
+        val mdp = NSetMDP(state_dim = intArrayOf(n, n),
                 action_dim = intArrayOf(action_num), gamma = 0.9)// 因为我们使用的是确定策略，但是GridWorld问题中存在确定策略的无限循环，此时便不是episode mdp，gamma必须小于1
         mdp.apply {
-            states.init {
-                State(*it)
-            }
             for (s in states) {
-                s!!.actions = DimNSet(action_num) {
+                s!!.actions = NSet(action_num) {
                     val action_idx = it[0]
                     val action = Action(action_idx)
                     var x = s.idx[0] + move[action_idx][0]
@@ -38,7 +35,7 @@ object GridWorld {
                         x = s.idx[0]
                         y = s.idx[1]
                     }
-                    action.possibles = DimNSet(1) { Possible(states[x, y]!!, -1.0, 1.0) }
+                    action.possibles = NSet(1) { Possible(states[x, y]!!, -1.0, 1.0) }
                     action
                 }
             }

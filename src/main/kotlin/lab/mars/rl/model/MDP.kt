@@ -31,7 +31,7 @@ interface IndexedCollection<E> : Iterable<E> {
     operator fun set(indexable: Indexable, s: E)
     operator fun set(vararg indexable: Indexable, s: E)
 
-    fun init(maker: (IntArray) -> E)
+    fun init(maker: (IntArray) -> Any?)
 }
 
 class A {
@@ -73,6 +73,12 @@ val emptyActions = object : IndexedCollection<Action> {
         TODO("not implemented")
     }
 
+    override fun init(maker: (IntArray) -> Any?) {
+        TODO("not implemented")
+    }
+
+    override fun iterator(): Iterator<Action> = emptyActionIterator
+
     override fun set(vararg index: Int, s: Action) {
         TODO("not implemented")
     }
@@ -82,14 +88,6 @@ val emptyActions = object : IndexedCollection<Action> {
     }
 
     override fun set(vararg indexable: Indexable, s: Action) {
-        TODO("not implemented")
-    }
-
-    override fun iterator(): Iterator<Action> {
-        return emptyActionIterator
-    }
-
-    override fun init(maker: (IntArray) -> Action) {
         TODO("not implemented")
     }
 }
@@ -113,6 +111,8 @@ val emptyPossibles = object : IndexedCollection<Possible> {
         TODO("not implemented")
     }
 
+    override fun iterator(): Iterator<Possible> = emptyPossibleIterator
+
     override fun set(vararg index: Int, s: Possible) {
         TODO("not implemented")
     }
@@ -125,12 +125,8 @@ val emptyPossibles = object : IndexedCollection<Possible> {
         TODO("not implemented")
     }
 
-    override fun init(maker: (IntArray) -> Possible) {
+    override fun init(maker: (IntArray) -> Any?) {
         TODO("not implemented")
-    }
-
-    override fun iterator(): Iterator<Possible> {
-        return emptyPossibleIterator
     }
 
 }
