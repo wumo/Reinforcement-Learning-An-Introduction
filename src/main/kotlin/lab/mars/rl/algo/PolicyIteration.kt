@@ -33,7 +33,7 @@ class PolicyIteration(mdp: MDP) {
                         delta = max(delta, abs(v - V[s]))
                     }
                 }
-                println(delta)
+                println("delta=$delta")
             } while (delta >= theta)
 
             //Policy Improvement
@@ -63,6 +63,7 @@ class PolicyIteration(mdp: MDP) {
                         delta = max(delta, abs(q - Q[s, a]))
                     }
                 }
+                println("delta=$delta")
             } while (delta >= theta)
 
             //Policy Improvement

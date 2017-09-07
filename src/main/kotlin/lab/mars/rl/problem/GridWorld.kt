@@ -22,8 +22,8 @@ object GridWorld {
     )
     val desc_move = arrayOf(" ↑", " ↓", "→", "←")
     fun make(): MDP {
-        val mdp = NSetMDP(state_dim = intArrayOf(n, n),
-                action_dim = intArrayOf(action_num), gamma = 0.9)// 因为我们使用的是确定策略，但是GridWorld问题中存在确定策略的无限循环，此时便不是episode mdp，gamma必须小于1
+        val mdp = NSetMDP(gamma = 0.9,
+                state_dim = intArrayOf(n, n), action_dim = intArrayOf(action_num))// 因为我们使用的是确定策略，但是GridWorld问题中存在确定策略的无限循环，此时便不是episode mdp，gamma必须小于1
         mdp.apply {
             for (s in states) {
                 s!!.actions = NSet(action_num) {

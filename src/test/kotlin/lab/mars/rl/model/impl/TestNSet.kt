@@ -14,6 +14,12 @@ import org.junit.Test
  */
 class TestNSet {
     @Test
+    fun `test null`() {
+        val set = NSet<Int>(2, 2)
+        val result:Int? = set[0, 0]
+    }
+
+    @Test
     fun `inti raw with correct index and 0`() {
         var i = 0
         var set = NSet<Int?>(3, 4, 5) { idx -> println(idx.toList()); i++ }
@@ -41,12 +47,14 @@ class TestNSet {
                     println(set[a, b, c])
                 }
         set[2, 3, 4] = 100
+        set[0, 0] = NSet(2) { 1 }
+        println(set[0, 0, 1])
         println(set[2, 3, 4])
     }
 
     @Test
     fun `NSetMDP`() {
-        val mdp = NSetMDP(state_dim = intArrayOf(3, 4, 5), action_dim = intArrayOf(4), gamma = 1.0)
+        val mdp = NSetMDP(gamma = 1.0, state_dim = intArrayOf(3, 4, 5), action_dim = intArrayOf(4))
         val S = mdp.states
         val V = mdp.v_maker()
         val PI = mdp.pi_maker()
