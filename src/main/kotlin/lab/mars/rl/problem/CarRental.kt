@@ -5,7 +5,6 @@ import lab.mars.rl.model.impl.NSet
 import lab.mars.rl.model.impl.NSetMDP
 import org.apache.commons.math3.special.Gamma
 import org.apache.commons.math3.util.FastMath
-import org.apache.commons.math3.util.FastMath.*
 import org.apache.commons.math3.util.MathUtils
 
 /**
@@ -51,9 +50,9 @@ object CarRental {
     }
 
     private fun max_move(num_L1: Int, num_L2: Int): Int {
-        val max_L1_to_L2 = num_L1 - max(0, num_L1 - max_move)//L1最多能移动的数量
-        val accept_L1_to_L2 = min(max_car, num_L2 + max_move) - num_L2//L2最多能接受的数量，超过20无增益。
-        return min(max_L1_to_L2, accept_L1_to_L2)
+        val max_L1_to_L2 = num_L1 - FastMath.max(0, num_L1 - max_move)//L1最多能移动的数量
+        val accept_L1_to_L2 = FastMath.min(max_car, num_L2 + max_move) - num_L2//L2最多能接受的数量，超过20无增益。
+        return FastMath.min(max_L1_to_L2, accept_L1_to_L2)
     }
 
     fun make(exercise4_4_version: Boolean): MDP {
@@ -74,18 +73,18 @@ object CarRental {
                 val L1_to_L2 = max_L1_to_L2 - idx
                 val nL1 = s_1 - L1_to_L2
                 val nL2 = s_2 + L1_to_L2
-                val action = Action(idx)
+                val action = Action(it)
                 val possibles = NSet<Possible>(max_car + 1, max_car + 1)
                 for (_L1 in 0..max_car)
                     for (_L2 in 0..max_car)
-                        possibles[_L1, _L2] = NSet(min(_L1, nL1) + min(_L2, nL2) + 1)
+                        possibles[_L1, _L2] = NSet(FastMath.min(_L1, nL1) + FastMath.min(_L2, nL2) + 1)
                 val cost = if (exercise4_4_version) {
-                    val move_cost = (if (L1_to_L2 >= 1) L1_to_L2 - 1 else abs(L1_to_L2)) * cost_per_car_moved
-                    val parking_cost = (ceil(nL1.toDouble() / max_car_per_parking_lot) - 1 + ceil(nL2.toDouble() / max_car_per_parking_lot) - 1) * cost_per_parking_lot
+                    val move_cost = (if (L1_to_L2 >= 1) L1_to_L2 - 1 else FastMath.abs(L1_to_L2)) * cost_per_car_moved
+                    val parking_cost = (FastMath.ceil(nL1.toDouble() / max_car_per_parking_lot) - 1 + FastMath.ceil(nL2.toDouble() / max_car_per_parking_lot) - 1) * cost_per_parking_lot
                     //                        double parking_cost=0;
                     move_cost + parking_cost
                 } else
-                    abs(L1_to_L2) * cost_per_car_moved
+                    FastMath.abs(L1_to_L2) * cost_per_car_moved
                 for (rent_L1 in 0..nL1)
                     for (rent_L2 in 0..nL2) {
                         val _prob = prob[idx_prob_rent_L1][rent_L1][if (rent_L1 < nL1) idx_normal else idx_cumulative] * prob[idx_prob_rent_L2][rent_L2][if (rent_L2 < nL2) idx_normal else idx_cumulative]
@@ -99,7 +98,7 @@ object CarRental {
                                 _prob2 *= prob[idx_prob_return_L1][return_L1][if (return_L1 < max_return_L1) idx_normal else idx_cumulative] * prob[idx_prob_return_L2][return_L2][if (return_L2 < max_return_L2) idx_normal else idx_cumulative]
                                 val new_L1 = nL1 - rent_L1 + return_L1
                                 val new_L2 = nL2 - rent_L2 + return_L2
-                                val min_rent = max(0, nL1 - new_L1) + max(0, nL2 - new_L2)
+                                val min_rent = FastMath.max(0, nL1 - new_L1) + FastMath.max(0, nL2 - new_L2)
                                 var possible: Possible? = possibles[new_L1, new_L2, total_rent - min_rent]
                                 if (possible === null) {
                                     possible = Possible(mdp.states[new_L1, new_L2]!!, reward, _prob2)
@@ -128,7 +127,7 @@ private fun poisson(mean: Double, n: Int): Double {
     else if (n == 0)
         ret = -mean
     else
-        ret = -getStirlingError(n.toDouble()) - getDeviancePart(n.toDouble(), mean) - 0.5 * log(MathUtils.TWO_PI) - 0.5 * log(n.toDouble())
+        ret = -getStirlingError(n.toDouble()) - getDeviancePart(n.toDouble(), mean) - 0.5 * FastMath.log(MathUtils.TWO_PI) - 0.5 * FastMath.log(n.toDouble())
     return if (ret == java.lang.Double.NEGATIVE_INFINITY) 0.0 else FastMath.exp(ret)
 }
 
@@ -170,15 +169,11 @@ private val EXACT_STIRLING_ERRORS = doubleArrayOf(0.0, /* 0.0 */
 
 /**
  * Compute the error of Stirling's series at the given value.
- *
- *
  * References:
  *
  *  1. Eric W. Weisstein. "Stirling's Series." From MathWorld--A Wolfram Web
  * Resource. [
  * http://mathworld.wolfram.com/StirlingsSeries.html](http://mathworld.wolfram.com/StirlingsSeries.html)
- *
- *
  *
  * @param z
  * the value.
@@ -203,14 +198,11 @@ fun getStirlingError(z: Double): Double {
 /**
  * A part of the deviance portion of the saddle point approximation.
  *
- *
  * References:
  *
  *  1. Catherine Loader (2000). "Fast and Accurate Computation of Binomial
  * Probabilities.". [
  * http://www.herine.net/stat/papers/dbinom.pdf](http://www.herine.net/stat/papers/dbinom.pdf)
- *
- *
  *
  * @param x
  * the x value.

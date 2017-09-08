@@ -40,7 +40,7 @@ class A {
     }
 }
 
-class State(vararg index: Int) : Indexable {
+class State(index: IntArray) : Indexable {
     override val idx = index
 
     var actions: IndexedCollection<Action> = emptyActions
@@ -48,12 +48,12 @@ class State(vararg index: Int) : Indexable {
     override fun toString() = idx.asList().toString()
 }
 
-class Action(vararg index: Int) : Indexable {
+class Action(index: IntArray) : Indexable {
     override val idx = index
 
     var possibles: IndexedCollection<Possible> = emptyPossibles
 
-    fun sample(): Possible? = null
+    var sample: (() -> Possible)? = null
 
     override fun toString() = idx.asList().toString()
 }

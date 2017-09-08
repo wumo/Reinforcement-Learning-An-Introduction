@@ -26,11 +26,10 @@ object GridWorld {
                 state_dim = intArrayOf(n, n), action_dim = intArrayOf(action_num))// 因为我们使用的是确定策略，但是GridWorld问题中存在确定策略的无限循环，此时便不是episode mdp，gamma必须小于1
         mdp.apply {
             for (s in states) {
-                s!!.actions = NSet(action_num) {
-                    val action_idx = it[0]
+                s!!.actions = NSet(action_num) { action_idx ->
                     val action = Action(action_idx)
-                    var x = s.idx[0] + move[action_idx][0]
-                    var y = s.idx[1] + move[action_idx][1]
+                    var x = s.idx[0] + move[action_idx[0]][0]
+                    var y = s.idx[1] + move[action_idx[0]][1]
                     if (x < 0 || x >= n || y < 0 || y >= n) {
                         x = s.idx[0]
                         y = s.idx[1]

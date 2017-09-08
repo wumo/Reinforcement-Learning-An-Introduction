@@ -3,7 +3,6 @@ package lab.mars.rl.model.impl
 import lab.mars.rl.algo.PolicyIteration
 import lab.mars.rl.algo.ValueIteration
 import lab.mars.rl.problem.CarRental
-import lab.mars.rl.problem.CarRental.max_car
 import lab.mars.rl.problem.GridWorld
 import org.junit.Test
 
@@ -31,8 +30,8 @@ class TestProblems {
         val prob = CarRental.make(false)
         val algo = PolicyIteration(prob)
         val V = algo.v_iteration()
-        for (a in max_car downTo 0) {
-            for (b in 0..max_car)
+        for (a in CarRental.max_car downTo 0) {
+            for (b in 0..CarRental.max_car)
                 print("" + V[prob.states[a, b]!!].format(2) + " ")
             println()
         }
@@ -43,8 +42,8 @@ class TestProblems {
         val prob = CarRental.make(false)
         val algo = ValueIteration(prob)
         val V = algo.iteration()
-        for (a in max_car downTo 0) {
-            for (b in 0..max_car)
+        for (a in CarRental.max_car downTo 0) {
+            for (b in 0..CarRental.max_car)
                 print("" + V[prob.states[a, b]!!].format(2) + " ")
             println()
         }

@@ -3,6 +3,7 @@ package lab.mars.rl.model.impl
 import lab.mars.rl.model.Action
 import lab.mars.rl.model.MDP
 import lab.mars.rl.model.State
+import org.junit.Assert
 import org.junit.Test
 
 /**
@@ -14,9 +15,28 @@ import org.junit.Test
  */
 class TestNSet {
     @Test
+    fun `test general shape`() {
+        var i = 0
+        val tmp = NSet<Int>(2) { i++ }
+        val set = NSet<Int>(2) { NSet<Int>(3, 4) { i++ } }
+        set[1] = tmp
+        Assert.assertEquals(0, set[1, 0])
+        Assert.assertEquals(1, set[1, 1])
+        Assert.assertEquals(2, set[0, 0, 0])
+    }
+
+    @Test
+    fun `test copycat`() {
+        var i = 0
+        val set = NSet<Int>(3, 3) { NSet<Int>(it[0] + 1) { i++ } }
+
+        val set2 = NSet<String, Int>(set) { it.asList().toString().apply { println(this) } }
+    }
+
+    @Test
     fun `test null`() {
         val set = NSet<Int>(2, 2)
-        val result:Int? = set[0, 0]
+        val result: Int? = set[0, 0]
     }
 
     @Test
@@ -61,8 +81,8 @@ class TestNSet {
         val Q = mdp.q_maker()
         S.init { idx ->
             println(">>${idx[0]},${idx[1]},${idx[2]}")
-            val s = State(*idx)
-            s.actions = NSet(4) { Action(*it) }
+            val s = State(idx)
+            s.actions = NSet(4) { Action(it) }
             s
         }
         val index = intArrayOf(2, 3, 4)
