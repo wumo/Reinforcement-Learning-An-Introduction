@@ -3,6 +3,7 @@
 package lab.mars.rl.model.impl
 
 import lab.mars.rl.model.*
+import lab.mars.rl.util.IntSlice
 import java.util.NoSuchElementException
 
 /**
@@ -12,11 +13,16 @@ import java.util.NoSuchElementException
  *
  * @author wumo
  */
-inline fun MutableList<Int>.addAll(num: Int, s: Int) = apply { repeat(num) { add(s) } }
 
-inline fun mutableListOf(num: Int, s: Int) = mutableListOf<Int>().addAll(num, s)
-
-fun MutableList<Int>.increment(dim: IntArray) {
+/**
+ * 将数组链表的最后dim.size个元素构成的数字依据dim进行进位加1
+ *
+ * 如数组链表为：0000123，`dim=[3,3,4]`，则进位加1仅影响最后`dim.size=3`个元素`123`，
+ * `123++`的结果为`200`
+ *
+ * @receiver 表示index的数组链表
+ */
+fun IntSlice.increment(dim: IntArray) {
     val offset = lastIndex - dim.size + 1
     for (idx in dim.lastIndex downTo 0) {
         val this_idx = offset + idx
@@ -27,53 +33,70 @@ fun MutableList<Int>.increment(dim: IntArray) {
     }
 }
 
-class NSet<E> private constructor(private val dim: IntArray, private val stride: IntArray, private val raw: Array<Any?>) :
+/**
+ * 1. 可以定义任意维的多维数组，并使用`[]`进行取值赋值
+ *如: `val a=Nset(2,3)`定义了一个2x3的矩阵，可以使用`a[0,0]=0`这样的用法
+ *
+ * 2. 可以嵌套使用[NSet]，定义不规则形状的树形结构
+ * 如: `val a=Nset(2), a[0]=Nset(1), a[1]=Nset(2)`定义了一个不规则的结构，
+ * 第一个元素长度为1第二个元素长度为2；同样可以通过`[]`来进行取值赋值，
+ * 如`a[0,0]=0, a[1, 1]`，但`a[0,1]`和`a[1,2]`就会导致[ArrayIndexOutOfBoundsException]
+ *
+ */
+class NSet<E> private constructor(private val dim: IntArray, private val stride: IntArray, private val root: Array<Any?>) :
         IndexedCollection<E> {
+    /**
+     * 使用构造lambda [maker]来为数组的每个元素初始化
+     * @param maker 提供了每个元素的index
+     */
     override fun init(maker: (IntArray) -> Any?) {
-        val index = mutableListOf(dim.size, 0)
-        for (i in 0 until raw.size)
-            raw[i] = maker(index.toIntArray()).apply {
+        val index = IntSlice(dim.size)
+        for (i in 0 until root.size)
+            root[i] = maker(index.toIntArray()).apply {
                 index.increment(dim)
             }
     }
 
     companion object {
-        operator fun <T, S> invoke(shape: NSet<S>, element_maker: (IntArray) -> Any? = { null }): NSet<T> {
-            val index = mutableListOf(shape.dim.size, 0)
-            val raw = Array(shape.raw.size) {
-                copycat<T, S>(shape.raw[it], index, element_maker)
-                        .apply { index.increment(shape.dim) }
-            }
-            return NSet(shape.dim, shape.stride, raw)
-        }
-
-        private fun <T, S> copycat(target: Any?, index: MutableList<Int>, element_maker: (IntArray) -> Any?): Any? {
-            val sub = target as? NSet<S>
-            return if (sub == null) {
-                element_maker(index.toIntArray())
-            } else {
-                val start = index.size
-                index.addAll(sub.dim.size, 0)
-                val sub_raw = Array(sub.raw.size) {
-                    copycat<T, S>(sub.raw[it], index, element_maker)
-                            .apply { index.increment(sub.dim) }
-                }
-                index.subList(start, index.size).clear()
-                NSet<T>(sub.dim, sub.stride, sub_raw)
-            }
-        }
-
         operator fun <T> invoke(vararg dim: Int, element_maker: (IntArray) -> Any? = { null }): NSet<T> {
             val stride = IntArray(dim.size)
             stride[stride.lastIndex] = 1
             for (a in stride.lastIndex - 1 downTo 0)
                 stride[a] = dim[a + 1] * stride[a + 1]
             val total = dim[0] * stride[0]
-            val index = mutableListOf(dim.size, 0)
+            val index = IntSlice(dim.size)
             val raw = Array(total) {
                 element_maker(index.toIntArray()).apply { index.increment(dim) }
             }
             return NSet(dim, stride, raw)
+        }
+
+        /**
+         * 构造一个与[shape]相同形状的[NSet]（维度、树深度都相同）
+         */
+        operator fun <T> invoke(shape: NSet<*>, element_maker: (IntArray) -> Any? = { null }): NSet<T> {
+            val index = IntSlice(shape.dim.size)
+            val root = Array(shape.root.size) {
+                copycat<T>(shape.root[it], index, element_maker)
+                        .apply { index.increment(shape.dim) }
+            }
+            return NSet(shape.dim, shape.stride, root)
+        }
+
+        private fun <T> copycat(prototype: Any?, index: IntSlice, element_maker: (IntArray) -> Any?): Any? {
+            return when (prototype) {
+                is NSet<*> -> {
+                    val start = index.size
+                    index.append(prototype.dim.size, 0)
+                    val sub_raw = Array(prototype.root.size) {
+                        copycat<T>(prototype.root[it], index, element_maker)
+                                .apply { index.increment(prototype.dim) }
+                    }
+                    index.remove(start, index.size)
+                    NSet<T>(prototype.dim, prototype.stride, sub_raw)
+                }
+                else -> element_maker(index.toIntArray())
+            }
         }
     }
 
@@ -99,10 +122,10 @@ class NSet<E> private constructor(private val dim: IntArray, private val stride:
             offset += idx[start + a] * stride[a]
         }
         return if (idx_size == dim.size) {
-            if (set) raw[offset] = s
-            raw[offset] as T
+            if (set) root[offset] = s
+            root[offset] as T
         } else {
-            val sub = raw[offset] as? NSet<T> ?: throw RuntimeException("index dimension is larger than this set's element's dimension")
+            val sub = root[offset] as? NSet<T> ?: throw RuntimeException("index dimension is larger than this set's element's dimension")
             sub.process(idx, start + dim.size, set, s)
         }
     }
@@ -134,64 +157,67 @@ class NSet<E> private constructor(private val dim: IntArray, private val stride:
         process(index, 0, true, s)
     }
 
-    override fun iterator(): Iterator<E> {
-        return object : Iterator<E> {
-            var a = 0
-            var inspect = false
-            var sub: NSet<E>? = null
-            var iter: Iterator<E>? = null
+    override fun iterator() = ElementIterator()
 
-            override fun hasNext(): Boolean {
-                while (a < raw.size) {
-                    inspect_a()
-                    if (sub == null || iter!!.hasNext()) return true
-                    increment()
-                }
-                return false
+    fun indices(): Iterator<IntArray> = indiceIterator(IntSlice())
+    private fun indiceIterator(index: IntSlice) = IndexIterator(index)
+
+    inner class ElementIterator : Iterator<E> {
+        private var a = 0
+        private var inspect = false
+        private var sub: NSet<E>? = null
+        private var iter: Iterator<E>? = null
+
+        override fun hasNext(): Boolean {
+            while (a < root.size) {
+                inspect_a()
+                if (sub == null || iter!!.hasNext()) return true
+                increment()
             }
+            return false
+        }
 
-            override fun next(): E {
-                while (a < raw.size) {
-                    inspect_a()
-                    if (sub != null) {
-                        if (iter!!.hasNext())
-                            return iter!!.next()
-                        else
-                            increment()
-                    } else
-                        raw[increment()] as E
-                }
-                throw NoSuchElementException()
+        override fun next(): E {
+            while (a < root.size) {
+                inspect_a()
+                if (sub != null) {
+                    if (iter!!.hasNext())
+                        return iter!!.next()
+                    else
+                        increment()
+                } else
+                    root[increment()] as E
             }
+            throw NoSuchElementException()
+        }
 
-            fun increment(): Int {
-                inspect = false
-                return a++
-            }
+        private inline fun increment(): Int {
+            inspect = false
+            return a++
+        }
 
-            private inline fun inspect_a() {
-                if (!inspect) {
-                    sub = raw[a] as? NSet<E>
-                    iter = sub?.iterator()
-                    inspect = true
-                }
+        private inline fun inspect_a() {
+            if (!inspect) {
+                sub = root[a] as? NSet<E>
+                iter = sub?.iterator()
+                inspect = true
             }
         }
     }
 
-    private inner class SubIterator(val index: MutableList<Int>) : Iterator<IntArray> {
+    private inner class IndexIterator(val index: IntSlice) : Iterator<IntArray> {
         var a = 0
         var inspect = false
         var nset: NSet<E>? = null
-        var iter: SubIterator? = null
+        var iter: IndexIterator? = null
         var clean: Boolean = false
 
         init {
-            index.addAll(dim.size, 0)
+            index.append(dim.size, 0)
         }
 
         override fun hasNext(): Boolean {
-            while (a < raw.size) {
+            while (a < root.size) {
                 inspect_a()
                 if (nset == null || iter!!.hasNext()) return true
                 increment()
@@ -199,13 +225,13 @@ class NSet<E> private constructor(private val dim: IntArray, private val stride:
             if (!clean) {
                 clean = true
                 val start = index.size - dim.size
-                index.subList(start, start + dim.size).clear()
+                index.remove(start, start + dim.size)
             }
             return false
         }
 
         fun _next(): Boolean {
-            while (a < raw.size) {
+            while (a < root.size) {
                 inspect_a()
                 when {
                     nset == null -> {
@@ -232,7 +258,7 @@ class NSet<E> private constructor(private val dim: IntArray, private val stride:
 
         inline fun inspect_a() {
             if (!inspect) {
-                nset = raw[a] as? NSet<E>
+                nset = root[a] as? NSet<E>
                 iter = nset?.indiceIterator(index)
                 inspect = true
             }
@@ -249,9 +275,6 @@ class NSet<E> private constructor(private val dim: IntArray, private val stride:
         }
     }
 
-    private fun indiceIterator(index: MutableList<Int>) = SubIterator(index)
-
-    fun indices(): Iterator<IntArray> = indiceIterator(mutableListOf())
 }
 
 fun NSetMDP(gamma: Double, states: NSet<State?>, action_dim: (IntArray) -> IntArray) = MDP(

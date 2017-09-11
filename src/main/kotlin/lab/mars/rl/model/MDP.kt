@@ -12,6 +12,14 @@ typealias StateValueFunction = IndexedCollection<Double>
 typealias ActionValueFunction = IndexedCollection<Double>
 typealias DeterminedPolicy = IndexedCollection<Action?>
 
+/**
+ *
+ * @property states 状态集
+ * @property gamma 衰减因子
+ * @property v_maker 状态V函数的构造器（不同的[states]实现对应着不同的[v_maker]）
+ * @property q_maker 状态动作Q函数的构造器（不同的[states]和[Action]实现实现对应着不同的[q_maker]）
+ * @property pi_maker 策略构造器（不同的[states]实现对应着不同的[pi_maker]
+ */
 class MDP(
         val states: StateSet,
         val gamma: Double,
