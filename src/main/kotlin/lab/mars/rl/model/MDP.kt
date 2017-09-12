@@ -1,5 +1,7 @@
 package lab.mars.rl.model
 
+import lab.mars.rl.util.ReadOnlyIntSlice
+
 /**
  * <p>
  * Created on 2017-08-31.
@@ -39,13 +41,7 @@ interface IndexedCollection<E> : Iterable<E> {
     operator fun set(indexable: Indexable, s: E)
     operator fun set(vararg indexable: Indexable, s: E)
 
-    fun init(maker: (IntArray) -> Any?)
-}
-
-class A {
-    operator fun get(vararg index: Int): Int {
-        return 0
-    }
+    fun init(element_maker: (ReadOnlyIntSlice) -> Any?)
 }
 
 class State(index: IntArray) : Indexable {
@@ -81,7 +77,7 @@ val emptyActions = object : IndexedCollection<Action> {
         TODO("not implemented")
     }
 
-    override fun init(maker: (IntArray) -> Any?) {
+    override fun init(element_maker: (ReadOnlyIntSlice) -> Any?) {
         TODO("not implemented")
     }
 
@@ -133,7 +129,7 @@ val emptyPossibles = object : IndexedCollection<Possible> {
         TODO("not implemented")
     }
 
-    override fun init(maker: (IntArray) -> Any?) {
+    override fun init(element_maker: (ReadOnlyIntSlice) -> Any?) {
         TODO("not implemented")
     }
 

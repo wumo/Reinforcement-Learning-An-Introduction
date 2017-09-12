@@ -26,11 +26,34 @@ class TestNSet {
     }
 
     @Test
+    fun `one level iterate`() {
+        var i = 0
+        val set = NSet<Int>(5) { i++ }
+        i = 0
+        for (a in set) {
+            println(a)
+            Assert.assertEquals(i++, a)
+        }
+    }
+
+
+    @Test
+    fun `two level iterate`() {
+        var i = 0
+        val set = NSet<Int>(5) { NSet<Int>(3) { i++ } }
+        i = 0
+        for (a in set) {
+            println(a)
+            Assert.assertEquals(i++, a)
+        }
+    }
+
+    @Test
     fun `test copycat`() {
         var i = 0
         val set = NSet<Int>(3, 3) { NSet<Int>(it[0] + 1) { i++ } }
 
-        val set2 = NSet<String, Int>(set) { it.asList().toString().apply { println(this) } }
+        val set2 = NSet<String>(set) { println(it); it.toString() }
     }
 
     @Test
@@ -42,7 +65,7 @@ class TestNSet {
     @Test
     fun `inti raw with correct index and 0`() {
         var i = 0
-        var set = NSet<Int?>(3, 4, 5) { idx -> println(idx.toList()); i++ }
+        var set = NSet<Int?>(3, 4, 5) { idx -> println(idx); i++ }
 //            set.forEach { println(it) }
 //            println(set[2, 3, 4])
         set[2, 3, 4] = 100
@@ -81,8 +104,8 @@ class TestNSet {
         val Q = mdp.q_maker()
         S.init { idx ->
             println(">>${idx[0]},${idx[1]},${idx[2]}")
-            val s = State(idx)
-            s.actions = NSet(4) { Action(it) }
+            val s = State(idx.toIntArray())
+            s.actions = NSet(4) { Action(it.toIntArray()) }
             s
         }
         val index = intArrayOf(2, 3, 4)

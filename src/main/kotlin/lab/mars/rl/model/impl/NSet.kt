@@ -3,6 +3,7 @@
 package lab.mars.rl.model.impl
 
 import lab.mars.rl.model.*
+import lab.mars.rl.util.ReadOnlyIntSlice
 import lab.mars.rl.util.IntSlice
 import java.util.NoSuchElementException
 
@@ -42,60 +43,74 @@ fun IntSlice.increment(dim: IntArray) {
  * 第一个元素长度为1第二个元素长度为2；同样可以通过`[]`来进行取值赋值，
  * 如`a[0,0]=0, a[1, 1]`，但`a[0,1]`和`a[1,2]`就会导致[ArrayIndexOutOfBoundsException]
  *
+ * @param dim 根节点的维度定义
+ * @param stride 各维度在一维数组上的跨度
+ * @param root 根节点一维数组
  */
 class NSet<E> private constructor(private val dim: IntArray, private val stride: IntArray, private val root: Array<Any?>) :
         IndexedCollection<E> {
+    private var parent: NSet<E>? = null
+    private fun refParent(s: Any?): Any? {
+        val sub = s as? NSet<E>
+        if (sub != null) sub.parent = this
+        return s
+    }
+
+    private fun unrefParent(s: Any?): Any? {
+        val sub = s as? NSet<E>
+        if (sub != null) sub.parent = null
+        return s
+    }
+
     /**
-     * 使用构造lambda [maker]来为数组的每个元素初始化
-     * @param maker 提供了每个元素的index
+     * 使用构造lambda [element_maker]来为数组的每个元素初始化
+     * @param element_maker 提供了每个元素的index
      */
-    override fun init(maker: (IntArray) -> Any?) {
+    override fun init(element_maker: (ReadOnlyIntSlice) -> Any?) {
         val index = IntSlice(dim.size)
-        for (i in 0 until root.size)
-            root[i] = maker(index.toIntArray()).apply {
+        for (i in 0 until root.size) {
+            val tmp = element_maker(index)
+            root[i] = refParent(tmp).apply {
                 index.increment(dim)
             }
+        }
     }
 
     companion object {
-        operator fun <T> invoke(vararg dim: Int, element_maker: (IntArray) -> Any? = { null }): NSet<T> {
+        val not_inspected = NSet<Any?>(0)
+        operator fun <T> invoke(vararg dim: Int, element_maker: (ReadOnlyIntSlice) -> Any? = { null }): NSet<T> {
             val stride = IntArray(dim.size)
             stride[stride.lastIndex] = 1
             for (a in stride.lastIndex - 1 downTo 0)
                 stride[a] = dim[a + 1] * stride[a + 1]
             val total = dim[0] * stride[0]
-            val index = IntSlice(dim.size)
-            val raw = Array(total) {
-                element_maker(index.toIntArray()).apply { index.increment(dim) }
-            }
-            return NSet(dim, stride, raw)
+            val raw = Array<Any?>(total) { null }
+            return NSet<T>(dim, stride, raw).apply { init(element_maker) }
         }
 
         /**
          * 构造一个与[shape]相同形状的[NSet]（维度、树深度都相同）
          */
-        operator fun <T> invoke(shape: NSet<*>, element_maker: (IntArray) -> Any? = { null }): NSet<T> {
-            val index = IntSlice(shape.dim.size)
-            val root = Array(shape.root.size) {
-                copycat<T>(shape.root[it], index, element_maker)
-                        .apply { index.increment(shape.dim) }
+        operator fun <T> invoke(shape: NSet<*>, element_maker: (ReadOnlyIntSlice) -> Any? = { null }): NSet<T> {
+            return NSet<T>(shape.dim, shape.stride, Array(shape.root.size) { null }).apply {
+                val index = IntSlice(shape.dim.size)
+                for (idx in 0 until this.root.size)
+                    copycat(this, shape.root[idx], index, element_maker)
+                            .apply { index.increment(shape.dim) }
             }
-            return NSet(shape.dim, shape.stride, root)
         }
 
-        private fun <T> copycat(prototype: Any?, index: IntSlice, element_maker: (IntArray) -> Any?): Any? {
+        private fun <T> copycat(origin: NSet<T>, prototype: Any?, index: IntSlice, element_maker: (ReadOnlyIntSlice) -> Any?): Any? {
             return when (prototype) {
-                is NSet<*> -> {
-                    val start = index.size
+                is NSet<*> -> NSet<T>(prototype.dim, prototype.stride, Array(prototype.root.size) { null }).apply {
+                    parent = origin
                     index.append(prototype.dim.size, 0)
-                    val sub_raw = Array(prototype.root.size) {
-                        copycat<T>(prototype.root[it], index, element_maker)
+                    for (idx in 0 until root.size)
+                        copycat(this, prototype.root[idx], index, element_maker)
                                 .apply { index.increment(prototype.dim) }
-                    }
-                    index.remove(start, index.size)
-                    NSet<T>(prototype.dim, prototype.stride, sub_raw)
+                    index.removeLast(prototype.dim.size)
                 }
-                else -> element_maker(index.toIntArray())
+                else -> origin.refParent(element_maker(index))
             }
         }
     }
@@ -112,7 +127,7 @@ class NSet<E> private constructor(private val dim: IntArray, private val stride:
         return idx
     }
 
-    private fun <T> process(idx: IntArray, start: Int, set: Boolean, s: T?): T {
+    private fun <T> get_or_set(idx: IntArray, start: Int, set: Boolean, s: T?): T {
         var offset = 0
         val idx_size = idx.size - start
         if (idx_size < dim.size) throw RuntimeException("index.length=${idx.size - start}  < dim.length=${dim.size}")
@@ -122,17 +137,21 @@ class NSet<E> private constructor(private val dim: IntArray, private val stride:
             offset += idx[start + a] * stride[a]
         }
         return if (idx_size == dim.size) {
-            if (set) root[offset] = s
-            root[offset] as T
+            val tmp = root[offset]
+            if (set) {
+                if (tmp != null) unrefParent(tmp)
+                root[offset] = refParent(s)
+            }
+            tmp as T
         } else {
             val sub = root[offset] as? NSet<T> ?: throw RuntimeException("index dimension is larger than this set's element's dimension")
-            sub.process(idx, start + dim.size, set, s)
+            sub.get_or_set(idx, start + dim.size, set, s)
         }
     }
 
-    private inline fun _get(idx: IntArray): E = process<E>(idx, 0, false, null)
+    private inline fun _get(idx: IntArray): E = get_or_set<E>(idx, 0, false, null)
 
-    private inline fun _set(idx: IntArray, s: E) = process(idx, 0, true, s)
+    private inline fun _set(idx: IntArray, s: E) = get_or_set(idx, 0, true, s)
 
     override operator fun get(vararg index: Int) = _get(index)
 
@@ -154,53 +173,59 @@ class NSet<E> private constructor(private val dim: IntArray, private val stride:
 
     operator fun set(vararg index: Int, s: NSet<E>) {
         require(index.size == dim.size) { "setting subset requires index.size == dim.size" }
-        process(index, 0, true, s)
+        get_or_set(index, 0, true, s)
     }
 
-    override fun iterator() = ElementIterator()
+    override fun iterator() = ElementIterator().apply { stack = Stack(this) }
 
     fun indices(): Iterator<IntArray> = indiceIterator(IntSlice())
+
     private fun indiceIterator(index: IntSlice) = IndexIterator(index)
 
     inner class ElementIterator : Iterator<E> {
+        inner class Stack(var head: ElementIterator)
+
+        internal lateinit var stack: Stack
         private var a = 0
-        private var inspect = false
-        private var sub: NSet<E>? = null
-        private var iter: Iterator<E>? = null
+        private val set = this@NSet
+        private var inspect: NSet<E>? = not_inspected as NSet<E>
+        private var previous: ElementIterator = this
+
+        private fun <T> traverse(element: () -> T, nomore: () -> T): T {
+            while (true) {
+                while (stack.head.a < stack.head.set.root.size) {
+                    val tmp = stack.head
+                    tmp.inspect_a()
+                    if (stack.head === tmp) return element()
+                }
+                if (stack.head === this) return nomore()
+                stack.head = stack.head.previous
+                stack.head.increment()
+            }
+        }
 
         override fun hasNext(): Boolean {
-            while (a < root.size) {
-                inspect_a()
-                if (sub == null || iter!!.hasNext()) return true
-                increment()
-            }
-            return false
+            return traverse({ true }, { false })
         }
 
         override fun next(): E {
-            while (a < root.size) {
-                inspect_a()
-                if (sub != null) {
-                    if (iter!!.hasNext())
-                        return iter!!.next()
-                    else
-                        increment()
-                } else
-                    root[increment()] as E
-            }
-            throw NoSuchElementException()
+            return traverse({ stack.head.set.root[stack.head.increment()] as E }, { throw NoSuchElementException() })
         }
 
         private inline fun increment(): Int {
-            inspect = false
+            inspect = not_inspected as NSet<E>
             return a++
         }
 
         private inline fun inspect_a() {
-            if (!inspect) {
-                sub = root[a] as? NSet<E>
-                iter = sub?.iterator()
-                inspect = true
+            if (inspect === not_inspected) {
+                inspect = root[a] as? NSet<E>
+                inspect?.apply {
+                    val new = this.ElementIterator()
+                    new.stack = stack
+                    new.previous = stack.head
+                    stack.head = new
+                }
             }
         }
     }
@@ -281,19 +306,19 @@ fun NSetMDP(gamma: Double, states: NSet<State?>, action_dim: (IntArray) -> IntAr
         states = states,
         gamma = gamma,
         v_maker = { NSet(states) { 0.0 } },
-        q_maker = { NSet(states) { NSet<Double>(*action_dim(it)) { 0.0 } } },
+        q_maker = { NSet(states) { NSet<Double>(*action_dim(it.toIntArray())) { 0.0 } } },
         pi_maker = { NSet(states) })
 
 fun NSetMDP(gamma: Double, state_dim: IntArray, action_dim: IntArray) = MDP(
-        states = NSet(*state_dim) { State(it) },
+        states = NSet(*state_dim) { State(it.toIntArray()) },
         gamma = gamma,
         v_maker = { NSet(*state_dim) { 0.0 } },
         q_maker = { NSet(*state_dim, *action_dim) { 0.0 } },
         pi_maker = { NSet(*state_dim) })
 
 fun NSetMDP(gamma: Double, state_dim: IntArray, action_dim: (IntArray) -> IntArray) = MDP(
-        states = NSet(*state_dim) { State(it) },
+        states = NSet(*state_dim) { State(it.toIntArray()) },
         gamma = gamma,
         v_maker = { NSet(*state_dim) { 0.0 } },
-        q_maker = { NSet(*state_dim) { NSet<Double>(*action_dim(it)) { 0.0 } } },
+        q_maker = { NSet(*state_dim) { NSet<Double>(*action_dim(it.toIntArray())) { 0.0 } } },
         pi_maker = { NSet(*state_dim) })

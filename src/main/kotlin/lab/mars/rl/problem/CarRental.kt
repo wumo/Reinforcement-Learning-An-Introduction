@@ -73,7 +73,7 @@ object CarRental {
                 val L1_to_L2 = max_L1_to_L2 - idx
                 val nL1 = s_1 - L1_to_L2
                 val nL2 = s_2 + L1_to_L2
-                val action = Action(it)
+                val action = Action(it.toIntArray())
                 val possibles = NSet<Possible>(max_car + 1, max_car + 1)
                 for (_L1 in 0..max_car)
                     for (_L2 in 0..max_car)

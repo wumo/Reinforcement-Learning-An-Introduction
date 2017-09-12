@@ -27,7 +27,7 @@ object Blackjack {
         mdp.apply {
             for (s in states) {
                 s!!.actions = NSet(2) { action_idx ->
-                    val action = Action(action_idx)
+                    val action = Action(action_idx.toIntArray())
                     when (action_idx[0]) {
                         0 -> {//sticks
 //                            action.sample = {

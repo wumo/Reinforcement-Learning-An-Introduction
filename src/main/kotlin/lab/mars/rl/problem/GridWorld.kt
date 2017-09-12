@@ -27,7 +27,7 @@ object GridWorld {
         mdp.apply {
             for (s in states) {
                 s!!.actions = NSet(action_num) { action_idx ->
-                    val action = Action(action_idx)
+                    val action = Action(action_idx.toIntArray())
                     var x = s.idx[0] + move[action_idx[0]][0]
                     var y = s.idx[1] + move[action_idx[0]][1]
                     if (x < 0 || x >= n || y < 0 || y >= n) {
