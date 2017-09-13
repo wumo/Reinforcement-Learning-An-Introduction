@@ -29,7 +29,7 @@ class PolicyIteration(mdp: MDP) {
                 for (s in states) {
                     val v = V[s!!]
                     PI[s]?.possibles?.apply {
-                        V[s] = sigma(this!!) { probability * (reward + gamma * V[next]) }
+                        V[s] = sigma(this) { probability * (reward + gamma * V[next]) }
                         delta = max(delta, abs(v - V[s]))
                     }
                 }

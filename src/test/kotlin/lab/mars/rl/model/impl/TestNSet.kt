@@ -46,6 +46,9 @@ class TestNSet {
             println(a)
             Assert.assertEquals(i++, a)
         }
+        for (index in set.indices()) {
+            println(index)
+        }
     }
 
     @Test

@@ -122,7 +122,7 @@ open class IntSlice(private var array: IntArray, private var offset: Int, size: 
     }
 
     override fun add(num: Int, s: Int) {
-        require(_size + num < _cap)
+        require(_size + num <= _cap)
         for (i in 0 until num)
             array[offset + _size + i] = s
         _size += num

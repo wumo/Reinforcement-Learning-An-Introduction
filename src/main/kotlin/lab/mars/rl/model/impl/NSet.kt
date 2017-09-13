@@ -177,30 +177,25 @@ class NSet<E> private constructor(private val dim: IntArray, private val stride:
     }
 
     override fun iterator() = ElementIterator().apply { stack = Stack(this) }
-
-    fun indices(): Iterator<IntArray> = indiceIterator(IntSlice())
-
-    private fun indiceIterator(index: IntSlice) = IndexIterator(index)
+    fun indices(): Iterator<ReadOnlyIntSlice> = IndexIterator().apply { stack = Stack(this) }
 
     inner class ElementIterator : Iterator<E> {
         inner class Stack(var head: ElementIterator)
 
         internal lateinit var stack: Stack
-        private var a = 0
+        private var visited = -1
         private val set = this@NSet
-        private var inspect: NSet<E>? = not_inspected as NSet<E>
         private var previous: ElementIterator = this
 
-        private fun <T> traverse(element: () -> T, nomore: () -> T): T {
+        private inline fun <T> traverse(element: (E) -> T, nomore: () -> T): T {
             while (true) {
-                while (stack.head.a < stack.head.set.root.size) {
+                while (stack.head.visited + 1 < stack.head.set.root.size) {
                     val tmp = stack.head
-                    tmp.inspect_a()
-                    if (stack.head === tmp) return element()
+                    val next = tmp.set.root[tmp.visited + 1]
+                    tmp.inspect_next_type(next) ?: return element(next as E)
                 }
                 if (stack.head === this) return nomore()
                 stack.head = stack.head.previous
-                stack.head.increment()
             }
         }
 
@@ -209,97 +204,77 @@ class NSet<E> private constructor(private val dim: IntArray, private val stride:
         }
 
         override fun next(): E {
-            return traverse({ stack.head.set.root[stack.head.increment()] as E }, { throw NoSuchElementException() })
+            return traverse({ stack.head.increment();it }, { throw NoSuchElementException() })
         }
 
         private inline fun increment(): Int {
-            inspect = not_inspected as NSet<E>
-            return a++
+            return visited++
         }
 
-        private inline fun inspect_a() {
-            if (inspect === not_inspected) {
-                inspect = root[a] as? NSet<E>
-                inspect?.apply {
-                    val new = this.ElementIterator()
-                    new.stack = stack
-                    new.previous = stack.head
-                    stack.head = new
-                }
+        private inline fun inspect_next_type(next: Any?): NSet<E>? {
+            val next_type = next as? NSet<E>
+            next_type?.apply {
+                val new = this.ElementIterator()
+                new.stack = stack
+                new.previous = stack.head
+                stack.head = new
+                new.previous.increment()
             }
+            return next_type
         }
     }
 
-    private inner class IndexIterator(val index: IntSlice) : Iterator<IntArray> {
-        var a = 0
-        var inspect = false
-        var nset: NSet<E>? = null
-        var iter: IndexIterator? = null
-        var clean: Boolean = false
+    inner class IndexIterator : Iterator<ReadOnlyIntSlice> {
+        inner class Stack(var head: IndexIterator,
+                          val index: IntSlice = IntSlice(head.set.dim.size).apply { this[lastIndex] = -1 })
 
-        init {
-            index.append(dim.size, 0)
+        internal lateinit var stack: Stack
+        private var visited = -1
+        private val set = this@NSet
+        private var previous: IndexIterator = this
+
+        private inline fun <T> traverse(element: () -> T, nomore: () -> T): T {
+            while (true) {
+                while (stack.head.visited + 1 < stack.head.set.root.size) {
+                    val tmp = stack.head
+                    val next = tmp.set.root[tmp.visited + 1]
+                    tmp.inspect_next_type(next) ?: return element()
+                }
+                if (stack.head === this) return nomore()
+                stack.index.removeLast(stack.head.set.dim.size)
+                stack.head = stack.head.previous
+            }
         }
 
         override fun hasNext(): Boolean {
-            while (a < root.size) {
-                inspect_a()
-                if (nset == null || iter!!.hasNext()) return true
-                increment()
-            }
-            if (!clean) {
-                clean = true
-                val start = index.size - dim.size
-                index.remove(start, start + dim.size)
-            }
-            return false
+            return traverse({ true }, { false })
         }
 
-        fun _next(): Boolean {
-            while (a < root.size) {
-                inspect_a()
-                when {
-                    nset == null -> {
-                        weak_increment()
-                        return true
-                    }
-                    iter!!.hasNext() -> return iter!!._next()
-                    else -> increment()
+        override fun next(): ReadOnlyIntSlice {
+            return traverse({ stack.head.increment();stack.index }, { throw NoSuchElementException() })
+        }
+
+        private inline fun increment(): Int {
+            stack.index.increment(dim)
+            return visited++
+        }
+
+        private inline fun inspect_next_type(next: Any?): NSet<E>? {
+            val next_type = next as? NSet<E>
+            next_type?.apply {
+                val new = this.IndexIterator()
+                new.stack = stack
+                new.previous = stack.head
+                stack.head = new
+                stack.index.apply {
+                    new.previous.increment()
+                    append(new.set.dim.size, 0)
+                    this[lastIndex] = -1
                 }
             }
-            return false
-        }
-
-        fun increment() {
-            inspect = false
-            index.increment(dim)
-            a++
-        }
-
-        fun weak_increment() {
-            inspect = false
-            a++
-        }
-
-        inline fun inspect_a() {
-            if (!inspect) {
-                nset = root[a] as? NSet<E>
-                iter = nset?.indiceIterator(index)
-                inspect = true
-            }
-        }
-
-        inline fun isSub() = nset != null
-
-        override fun next(): IntArray {
-            if (!_next()) throw NoSuchElementException()
-            val idx = index.toIntArray()
-            if (isSub())
-                index.increment(dim)
-            return idx
+            return next_type
         }
     }
-
 }
 
 fun NSetMDP(gamma: Double, states: NSet<State?>, action_dim: (IntArray) -> IntArray) = MDP(
