@@ -5,6 +5,7 @@ package lab.mars.rl.model.impl
 import lab.mars.rl.model.*
 import lab.mars.rl.util.ReadOnlyIntSlice
 import lab.mars.rl.util.IntSlice
+import java.awt.Dimension
 import java.util.NoSuchElementException
 
 /**
@@ -34,13 +35,66 @@ fun IntSlice.increment(dim: IntArray) {
     }
 }
 
-object Dim {
-    /**
-     * 定义维度
-     * @return 描述维度的[IntArray]
-     */
-    operator fun invoke(vararg d: Int) = d
+fun Dim(vararg dim: Int) = dim
+fun dim(block: IDim.() -> Unit) {
+
 }
+
+fun dim(vararg dim: Int): IDim = TerminalDim(dim)
+
+fun dim(vararg dim: IDim): IDim = ArrayDim(dim)
+
+infix fun Int.x(a: Int): IDim {
+    TODO()
+}
+
+infix fun Int.o(a: Int): IDim {
+    TODO()
+}
+
+infix fun Int.o(block: IDim.() -> Unit): IDim {
+    TODO()
+}
+
+interface IDim {
+    infix fun x(a: Int): IDim {
+        TODO()
+    }
+
+    infix fun o(a: Int): IDim {
+        TODO()
+    }
+
+    infix fun o(a: IDim): IDim {
+        TODO()
+    }
+
+    fun o(block: IDim.() -> Unit) {
+        TODO()
+    }
+
+    operator fun plus(a: IDim): IDim {
+        TODO()
+    }
+
+    operator fun plus(a: IDim.() -> Unit): IDim {
+        TODO()
+    }
+}
+
+class TerminalDim(val dim: IntArray) : IDim
+
+class ArrayDim(val dim: Array<out IDim>) : IDim {
+    companion object {
+        /**
+         * 定义维度
+         * @return 描述维度的[IntArray]
+         */
+        operator fun invoke(vararg d: Int) = d
+    }
+
+}
+
 
 /**
  * 1. 可以定义任意维的多维数组，并使用`[]`进行取值赋值
@@ -88,6 +142,10 @@ class NSet<E> private constructor(private val dim: IntArray, private val stride:
         inline fun <T> of(vararg elements: T): NSet<T> {
             var i = 0
             return invoke(elements.size) { elements[i++] }
+        }
+
+        operator fun <T> invoke(dim: IDim, element_maker: (ReadOnlyIntSlice) -> Any? = { null }): NSet<T> {
+            TODO()
         }
 
         operator fun <T> invoke(vararg dim: Int, element_maker: (ReadOnlyIntSlice) -> Any? = { null }): NSet<T> {

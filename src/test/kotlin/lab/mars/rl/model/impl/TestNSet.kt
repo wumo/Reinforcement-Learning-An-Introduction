@@ -15,6 +15,32 @@ import org.junit.Test
  */
 class TestNSet {
     @Test
+    fun `make nset using dim`() {
+        dim {
+            o(2)
+            o(2 x 3)
+            o {
+                o(2)
+                o(2 x 3)
+            }
+        }
+
+        val tmp =
+                dim(
+                        dim(3),
+                        dim(
+                                dim(2),
+                                dim(3, 4),
+                                dim(
+                                        dim(3, 4),
+                                        dim(4, 5)
+                                )
+                        ),
+                        dim(1, 3)
+                )
+    }
+
+    @Test
     fun `make nset`() {
         val set = NSet.of(1, 2, 3)
         for (i in set) {
