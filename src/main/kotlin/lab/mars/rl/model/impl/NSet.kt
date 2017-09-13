@@ -269,7 +269,9 @@ fun NSetMDP(gamma: Double, states: NSet<State>, action_dim: (ReadOnlyIntSlice) -
  * @return 所有状态维度相同和动作维度相同的MDP实例
  */
 fun NSetMDP(gamma: Double, state_dim: IntArray, action_dim: IntArray) = MDP(
-        states = NSet(*state_dim) { State(it.toIntArray()) },
+        states = NSet(*state_dim) {
+            State(it.toIntArray()).apply { actions = NSet(*action_dim) { Action(it.toIntArray()) } }
+        },
         gamma = gamma,
         v_maker = { NSet(*state_dim) { 0.0 } },
         q_maker = { NSet(*state_dim, *action_dim) { 0.0 } },
@@ -282,7 +284,9 @@ fun NSetMDP(gamma: Double, state_dim: IntArray, action_dim: IntArray) = MDP(
  * @return 统一状态维度而动作维度异构的MDP实例
  */
 fun NSetMDP(gamma: Double, state_dim: IntArray, action_dim: (ReadOnlyIntSlice) -> IntArray) = MDP(
-        states = NSet(*state_dim) { State(it.toIntArray()) },
+        states = NSet(*state_dim) {
+            State(it.toIntArray()).apply { actions = NSet(*action_dim(it)) { Action(it.toIntArray()) } }
+        },
         gamma = gamma,
         v_maker = { NSet(*state_dim) { 0.0 } },
         q_maker = { NSet(*state_dim) { NSet<Double>(*action_dim(it)) { 0.0 } } },

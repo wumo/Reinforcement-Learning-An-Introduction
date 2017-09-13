@@ -62,18 +62,14 @@ object CarRental {
             Dim(max_L1_to_L2 + max_L2_to_L1 + 1)
         }
         for (s in mdp.states) {
-            s!!
             val s_1 = s.idx[0]
             val s_2 = s.idx[1]
             val max_L1_to_L2 = max_move(s_1, s_2)
-            val max_L2_to_L1 = max_move(s_2, s_1)
-            val total_move_action = max_L1_to_L2 + max_L2_to_L1 + 1
-            s.actions = NSet(total_move_action) {
-                val idx = it[0]
+            for (action in s.actions) {
+                val idx = action.idx[0]
                 val L1_to_L2 = max_L1_to_L2 - idx
                 val nL1 = s_1 - L1_to_L2
                 val nL2 = s_2 + L1_to_L2
-                val action = Action(it.toIntArray())
                 val possibles = NSet<Possible>(max_car + 1, max_car + 1)
                 for (_L1 in 0..max_car)
                     for (_L2 in 0..max_car)
@@ -101,7 +97,7 @@ object CarRental {
                                 val min_rent = max(0, nL1 - new_L1) + max(0, nL2 - new_L2)
                                 var possible: Possible? = possibles[new_L1, new_L2, total_rent - min_rent]
                                 if (possible === null) {
-                                    possible = Possible(mdp.states[new_L1, new_L2]!!, reward, _prob2)
+                                    possible = Possible(mdp.states[new_L1, new_L2], reward, _prob2)
                                     possibles[new_L1, new_L2, total_rent - min_rent] = possible
                                 } else
                                     possible.probability += _prob2
@@ -109,7 +105,6 @@ object CarRental {
                     }
 
                 action.possibles = possibles
-                action
             }
         }
 

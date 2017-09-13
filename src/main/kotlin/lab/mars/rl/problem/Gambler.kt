@@ -2,6 +2,7 @@ package lab.mars.rl.problem
 
 import lab.mars.rl.model.MDP
 import lab.mars.rl.model.impl.Dim
+import lab.mars.rl.model.impl.NSet
 import lab.mars.rl.model.impl.NSetMDP
 import org.apache.commons.math3.util.FastMath
 import org.apache.commons.math3.util.FastMath.min
@@ -19,10 +20,12 @@ class Gambler {
     fun make(): MDP {
         val mdp = NSetMDP(gamma = 1.0,
                           state_dim = Dim(goal_coin + 1),
-                          action_dim = { Dim(min(it[0], goal_coin - it[0])) })
+                          action_dim = { Dim(min(it[0], goal_coin - it[0]) + 1) })
         mdp.apply {
             for (s in states) {
-
+                val capital = s.idx[0]
+                val max_stake = min(capital, goal_coin - capital)
+                s.actions = NSet(max_stake + 1)
             }
         }
         return mdp

@@ -26,19 +26,16 @@ object GridWorld {
                           state_dim = intArrayOf(n, n),
                           action_dim = intArrayOf(action_num))
         mdp.apply {
-            for (s in states) {
-                s.actions = NSet(action_num) { action_idx ->
-                    val action = Action(action_idx.toIntArray())
-                    var x = s.idx[0] + move[action_idx[0]][0]
-                    var y = s.idx[1] + move[action_idx[0]][1]
+            for (s in states)
+                for (action in s.actions) {
+                    var x = s.idx[0] + move[action.idx[0]][0]
+                    var y = s.idx[1] + move[action.idx[0]][1]
                     if (x < 0 || x >= n || y < 0 || y >= n) {
                         x = s.idx[0]
                         y = s.idx[1]
                     }
                     action.possibles = NSet(1) { Possible(states[x, y], -1.0, 1.0) }
-                    action
                 }
-            }
             states[0, 0].actions = emptyActions
             states[n - 1, n - 1].actions = emptyActions
         }
