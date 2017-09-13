@@ -83,7 +83,7 @@ class NSet<E> private constructor(private val dim: IntArray, private val stride:
     }
 
     companion object {
-        fun <T> of(vararg elements: T): NSet<T> {
+        inline fun <T> of(vararg elements: T): NSet<T> {
             var i = 0
             return invoke(elements.size) { elements[i++] }
         }
