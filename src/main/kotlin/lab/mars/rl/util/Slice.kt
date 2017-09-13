@@ -78,7 +78,7 @@ open class IntSlice(private var array: IntArray, private var offset: Int, size: 
 
     constructor(array: IntArray, offset: Int, size: Int) : this(array, offset, size, size)
 
-    constructor(cap: Int = 2) : this(IntArray(cap), 0, cap)
+    constructor(cap: Int = 2, size: Int = cap) : this(kotlin.IntArray(cap), 0, size, cap)
 
     override operator fun get(idx: Int): Int {
         require(idx in 0 until _size)

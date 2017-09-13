@@ -77,7 +77,6 @@ class NSet<E> private constructor(private val dim: IntArray, private val stride:
     }
 
     companion object {
-        val not_inspected = NSet<Any?>(0)
         operator fun <T> invoke(vararg dim: Int, element_maker: (ReadOnlyIntSlice) -> Any? = { null }): NSet<T> {
             val stride = IntArray(dim.size)
             stride[stride.lastIndex] = 1
@@ -176,101 +175,69 @@ class NSet<E> private constructor(private val dim: IntArray, private val stride:
         get_or_set(index, 0, true, s)
     }
 
-    override fun iterator() = ElementIterator().apply { stack = Stack(this) }
-    fun indices(): Iterator<ReadOnlyIntSlice> = IndexIterator().apply { stack = Stack(this) }
+    override fun iterator() = GeneralIterator<E>().apply { traverse = Traverse(this, {}, {}, {}, { it }) }
 
-    inner class ElementIterator : Iterator<E> {
-        inner class Stack(var head: ElementIterator)
+    fun indices() = GeneralIterator<ReadOnlyIntSlice>().apply {
+        val index = IntSlice(this.set.dim.size).apply { this[lastIndex] = -1 }
+        traverse = Traverse(this,
+                            forward = {
+                                index.apply {
+                                    append(current.set.dim.size, 0)
+                                    this[lastIndex] = -1
+                                }
+                            },
+                            backward = { index.removeLast(current.set.dim.size) },
+                            translate = { index.increment(current.set.dim) },
+                            visitor = { index })
+    }
 
-        internal lateinit var stack: Stack
+    inner class GeneralIterator<T> : Iterator<T> {
+        inner class Traverse(var current: GeneralIterator<T>,
+                             val forward: Traverse.() -> Unit,
+                             val backward: Traverse.() -> Unit,
+                             val translate: Traverse.() -> Unit,
+                             val visitor: Traverse.(E) -> T)
+
+        internal lateinit var traverse: Traverse
         private var visited = -1
-        private val set = this@NSet
-        private var previous: ElementIterator = this
+        internal val set = this@NSet
+        private var parent: GeneralIterator<T> = this
 
-        private inline fun <T> traverse(element: (E) -> T, nomore: () -> T): T {
+        override fun hasNext(): Boolean {
+            return dfs({ true }, { false })
+        }
+
+        override fun next(): T {
+            return dfs({ traverse.current.increment();traverse.visitor(traverse, it) }, { throw NoSuchElementException() })
+        }
+
+        private inline fun increment(): Int {
+            traverse.translate(traverse)
+            return visited++
+        }
+
+        private inline fun <T> dfs(element: (E) -> T, nomore: () -> T): T {
             while (true) {
-                while (stack.head.visited + 1 < stack.head.set.root.size) {
-                    val tmp = stack.head
+                while (traverse.current.visited + 1 < traverse.current.set.root.size) {
+                    val tmp = traverse.current
                     val next = tmp.set.root[tmp.visited + 1]
                     tmp.inspect_next_type(next) ?: return element(next as E)
                 }
-                if (stack.head === this) return nomore()
-                stack.head = stack.head.previous
+                if (traverse.current === this) return nomore()
+                traverse.backward(traverse)
+                traverse.current = traverse.current.parent
             }
-        }
-
-        override fun hasNext(): Boolean {
-            return traverse({ true }, { false })
-        }
-
-        override fun next(): E {
-            return traverse({ stack.head.increment();it }, { throw NoSuchElementException() })
-        }
-
-        private inline fun increment(): Int {
-            return visited++
         }
 
         private inline fun inspect_next_type(next: Any?): NSet<E>? {
             val next_type = next as? NSet<E>
             next_type?.apply {
-                val new = this.ElementIterator()
-                new.stack = stack
-                new.previous = stack.head
-                stack.head = new
-                new.previous.increment()
-            }
-            return next_type
-        }
-    }
-
-    inner class IndexIterator : Iterator<ReadOnlyIntSlice> {
-        inner class Stack(var head: IndexIterator,
-                          val index: IntSlice = IntSlice(head.set.dim.size).apply { this[lastIndex] = -1 })
-
-        internal lateinit var stack: Stack
-        private var visited = -1
-        private val set = this@NSet
-        private var previous: IndexIterator = this
-
-        private inline fun <T> traverse(element: () -> T, nomore: () -> T): T {
-            while (true) {
-                while (stack.head.visited + 1 < stack.head.set.root.size) {
-                    val tmp = stack.head
-                    val next = tmp.set.root[tmp.visited + 1]
-                    tmp.inspect_next_type(next) ?: return element()
-                }
-                if (stack.head === this) return nomore()
-                stack.index.removeLast(stack.head.set.dim.size)
-                stack.head = stack.head.previous
-            }
-        }
-
-        override fun hasNext(): Boolean {
-            return traverse({ true }, { false })
-        }
-
-        override fun next(): ReadOnlyIntSlice {
-            return traverse({ stack.head.increment();stack.index }, { throw NoSuchElementException() })
-        }
-
-        private inline fun increment(): Int {
-            stack.index.increment(dim)
-            return visited++
-        }
-
-        private inline fun inspect_next_type(next: Any?): NSet<E>? {
-            val next_type = next as? NSet<E>
-            next_type?.apply {
-                val new = this.IndexIterator()
-                new.stack = stack
-                new.previous = stack.head
-                stack.head = new
-                stack.index.apply {
-                    new.previous.increment()
-                    append(new.set.dim.size, 0)
-                    this[lastIndex] = -1
-                }
+                val new = this.GeneralIterator<T>()
+                new.traverse = traverse
+                new.parent = traverse.current
+                traverse.current = new
+                new.parent.increment()
+                traverse.forward(traverse)
             }
             return next_type
         }
