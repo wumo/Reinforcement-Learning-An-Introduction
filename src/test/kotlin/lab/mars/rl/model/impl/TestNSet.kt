@@ -27,6 +27,7 @@ class TestNSet {
         var i = 0
         val tmp = NSet<Int>(2) { i++ }
         val set = NSet<Int>(2) { NSet<Int>(3, 4) { i++ } }
+        println(set[0, 0, 0])
         set[1] = tmp
         Assert.assertEquals(0, set[1, 0])
         Assert.assertEquals(1, set[1, 1])

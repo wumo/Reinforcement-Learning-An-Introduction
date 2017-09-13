@@ -63,7 +63,7 @@ class Action(index: IntArray) : Indexable {
 
     var possibles: IndexedCollection<Possible> = emptyPossibles
 
-    var sample: (() -> Possible)? = null
+    lateinit var sample: () -> Possible
 
     override fun toString() = idx.asList().toString()
 }

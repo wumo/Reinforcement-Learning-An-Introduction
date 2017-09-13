@@ -15,7 +15,7 @@ import org.apache.commons.math3.util.FastMath.min
  *
  * @author wumo
  */
-class Gambler {
+object Gambler {
     val goal_coin = 100
 
     fun make(p_head: Double): MDP {

@@ -34,11 +34,13 @@ fun IntSlice.increment(dim: IntArray) {
     }
 }
 
-/**
- * 定义维度
- * @return 描述维度的[IntArray]
- */
-fun Dim(vararg d: Int) = d
+object Dim {
+    /**
+     * 定义维度
+     * @return 描述维度的[IntArray]
+     */
+    operator fun invoke(vararg d: Int) = d
+}
 
 /**
  * 1. 可以定义任意维的多维数组，并使用`[]`进行取值赋值
