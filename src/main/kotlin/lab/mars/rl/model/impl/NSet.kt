@@ -121,8 +121,7 @@ class NSet<E> private constructor(private val dim: IntArray, private val stride:
     }
 
     private fun concat(indexable: Array<out Indexable>): IntArray {
-        var total = 0
-        indexable.forEach { total += it.idx.size }
+        val total = indexable.sumBy { it.idx.size }
         val idx = IntArray(total)
         var offset = 0
         indexable.forEach {
@@ -256,11 +255,11 @@ class NSet<E> private constructor(private val dim: IntArray, private val stride:
  * @param action_dim 依据状态索引确定动作维度，Q函数与状态集和动作集一致
  * @return 使用指定状态集，动态动作维度的MDP实例
  */
-fun NSetMDP(gamma: Double, states: NSet<State?>, action_dim: (IntArray) -> IntArray) = MDP(
+fun NSetMDP(gamma: Double, states: NSet<State>, action_dim: (ReadOnlyIntSlice) -> IntArray) = MDP(
         states = states,
         gamma = gamma,
         v_maker = { NSet(states) { 0.0 } },
-        q_maker = { NSet(states) { NSet<Double>(*action_dim(it.toIntArray())) { 0.0 } } },
+        q_maker = { NSet(states) { NSet<Double>(*action_dim(it)) { 0.0 } } },
         pi_maker = { NSet(states) })
 
 /**
@@ -282,9 +281,9 @@ fun NSetMDP(gamma: Double, state_dim: IntArray, action_dim: IntArray) = MDP(
  * @param action_dim 依据状态索引确定动作维度，Q函数与状态集和动作集一致
  * @return 统一状态维度而动作维度异构的MDP实例
  */
-fun NSetMDP(gamma: Double, state_dim: IntArray, action_dim: (IntArray) -> IntArray) = MDP(
+fun NSetMDP(gamma: Double, state_dim: IntArray, action_dim: (ReadOnlyIntSlice) -> IntArray) = MDP(
         states = NSet(*state_dim) { State(it.toIntArray()) },
         gamma = gamma,
         v_maker = { NSet(*state_dim) { 0.0 } },
-        q_maker = { NSet(*state_dim) { NSet<Double>(*action_dim(it.toIntArray())) { 0.0 } } },
+        q_maker = { NSet(*state_dim) { NSet<Double>(*action_dim(it)) { 0.0 } } },
         pi_maker = { NSet(*state_dim) })

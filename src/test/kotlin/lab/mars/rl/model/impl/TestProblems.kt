@@ -21,7 +21,7 @@ class TestProblems {
         val algo = PolicyIteration(prob)
         val V = algo.v_iteration()
         for (s in prob.states) {
-            println(V[s!!])
+            println(V[s])
         }
     }
 
@@ -32,7 +32,7 @@ class TestProblems {
         val V = algo.v_iteration()
         for (a in CarRental.max_car downTo 0) {
             for (b in 0..CarRental.max_car)
-                print("" + V[prob.states[a, b]!!].format(2) + " ")
+                print("" + V[prob.states[a, b]].format(2) + " ")
             println()
         }
     }
@@ -44,7 +44,7 @@ class TestProblems {
         val V = algo.iteration()
         for (a in CarRental.max_car downTo 0) {
             for (b in 0..CarRental.max_car)
-                print("" + V[prob.states[a, b]!!].format(2) + " ")
+                print("" + V[prob.states[a, b]].format(2) + " ")
             println()
         }
     }

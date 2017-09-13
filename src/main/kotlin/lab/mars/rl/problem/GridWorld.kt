@@ -19,14 +19,15 @@ object GridWorld {
             intArrayOf(1, 0), //down
             intArrayOf(0, 1), //right
             intArrayOf(0, -1)//left
-    )
+                              )
     val desc_move = arrayOf(" ↑", " ↓", "→", "←")
     fun make(): MDP {
-        val mdp = NSetMDP(gamma = 0.9,
-                state_dim = intArrayOf(n, n), action_dim = intArrayOf(action_num))// 因为我们使用的是确定策略，但是GridWorld问题中存在确定策略的无限循环，此时便不是episode mdp，gamma必须小于1
+        val mdp = NSetMDP(gamma = 0.9, // 因为我们使用的是确定策略，但是GridWorld问题中存在确定策略的无限循环，此时便不是episode mdp，gamma必须小于1
+                          state_dim = intArrayOf(n, n),
+                          action_dim = intArrayOf(action_num))
         mdp.apply {
             for (s in states) {
-                s!!.actions = NSet(action_num) { action_idx ->
+                s.actions = NSet(action_num) { action_idx ->
                     val action = Action(action_idx.toIntArray())
                     var x = s.idx[0] + move[action_idx[0]][0]
                     var y = s.idx[1] + move[action_idx[0]][1]
@@ -34,12 +35,12 @@ object GridWorld {
                         x = s.idx[0]
                         y = s.idx[1]
                     }
-                    action.possibles = NSet(1) { Possible(states[x, y]!!, -1.0, 1.0) }
+                    action.possibles = NSet(1) { Possible(states[x, y], -1.0, 1.0) }
                     action
                 }
             }
-            states[0, 0]!!.actions = emptyActions
-            states[n - 1, n - 1]!!.actions = emptyActions
+            states[0, 0].actions = emptyActions
+            states[n - 1, n - 1].actions = emptyActions
         }
 
         return mdp

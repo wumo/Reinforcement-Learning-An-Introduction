@@ -9,7 +9,7 @@ import lab.mars.rl.util.ReadOnlyIntSlice
  *
  * @author wumo
  */
-typealias StateSet = IndexedCollection<State?>
+typealias StateSet = IndexedCollection<State>
 typealias StateValueFunction = IndexedCollection<Double>
 typealias ActionValueFunction = IndexedCollection<Double>
 typealias DeterminedPolicy = IndexedCollection<Action?>
@@ -40,8 +40,14 @@ interface IndexedCollection<E> : Iterable<E> {
     operator fun set(vararg index: Int, s: E)
     operator fun set(indexable: Indexable, s: E)
     operator fun set(vararg indexable: Indexable, s: E)
-
     fun init(element_maker: (ReadOnlyIntSlice) -> Any?)
+}
+
+/**
+ * 如果集合不为空，则执行[block]
+ */
+inline fun <E> IndexedCollection<E>.ifAny(block: IndexedCollection<E>.() -> Unit) {
+    for (element in this) return block()
 }
 
 class State(index: IntArray) : Indexable {

@@ -19,17 +19,17 @@ class PolicyIteration(mdp: MDP) {
 
     fun v_iteration(): StateValueFunction {
         //Initialization
-        for (s in states) {
-            PI[s!!] = s.actions.firstOrNull()
-        }
+        for (s in states)
+            PI[s] = s.actions.firstOrNull()
+
         do {
             //Policy Evaluation
             do {
                 var delta = 0.0
                 for (s in states) {
-                    val v = V[s!!]
-                    PI[s]?.possibles?.apply {
-                        V[s] = sigma(this) { probability * (reward + gamma * V[next]) }
+                    val v = V[s]
+                    PI[s]?.apply {
+                        V[s] = sigma(possibles) { probability * (reward + gamma * V[next]) }
                         delta = max(delta, abs(v - V[s]))
                     }
                 }
@@ -39,7 +39,7 @@ class PolicyIteration(mdp: MDP) {
             //Policy Improvement
             var policy_stable = true
             for (s in states) {
-                val old_action = PI[s!!]
+                val old_action = PI[s]
                 PI[s] = argmax(s.actions) { sigma(possibles) { probability * (reward + gamma * V[next]) } }
                 if (old_action !== PI[s]) policy_stable = false
             }
@@ -49,15 +49,15 @@ class PolicyIteration(mdp: MDP) {
 
     fun q_iteration(): ActionValueFunction {
         //Initialization
-        for (s in states) {
-            PI[s!!] = s.actions.firstOrNull()
-        }
+        for (s in states)
+            PI[s] = s.actions.firstOrNull()
+
         do {
             //Policy Evaluation
             do {
                 var delta = 0.0
                 for (s in states) {
-                    for (a in s?.actions!!) {
+                    for (a in s.actions) {
                         val q = Q[s, a]
                         Q[s, a] = sigma(a.possibles) { probability * (reward + gamma * Q[next, PI[next]!!]) }
                         delta = max(delta, abs(q - Q[s, a]))
@@ -69,7 +69,7 @@ class PolicyIteration(mdp: MDP) {
             //Policy Improvement
             var policy_stable = true
             for (s in states) {
-                val old_action = PI[s!!]
+                val old_action = PI[s]
                 PI[s] = argmax(s.actions) { Q[s, this] }
                 if (old_action !== PI[s]) policy_stable = false
             }

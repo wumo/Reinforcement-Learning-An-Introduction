@@ -112,9 +112,7 @@ class TestNSet {
             s
         }
         val index = intArrayOf(2, 3, 4)
-        S.set(*index, s = null)
         S.forEach { s ->
-            if (s == null) return@forEach
             println(s)
             V[s] = 1.0
             val a = s.actions.firstOrNull()

@@ -3,6 +3,7 @@ package lab.mars.rl.problem
 import lab.mars.rl.model.Action
 import lab.mars.rl.model.MDP
 import lab.mars.rl.model.Possible
+import lab.mars.rl.model.impl.Dim
 import lab.mars.rl.model.impl.NSet
 import lab.mars.rl.model.impl.NSetMDP
 import java.util.*
@@ -15,21 +16,21 @@ import java.util.*
  * @author wumo
  */
 object Blackjack {
-    val playingCard = intArrayOf(1/*A*/, 2, 3, 4, 5, 6, 7, 8, 9, 10, 10/*J*/, 10/*Q*/, 10/*K*/)
-    const val player_offset = 12
-    const val dealer_offset = 1
+    private val playingCard = intArrayOf(1/*A*/, 2, 3, 4, 5, 6, 7, 8, 9, 10, 10/*J*/, 10/*Q*/, 10/*K*/)
+    private const val player_offset = 12
+    private const val dealer_offset = 1
     const val usableAce_idx = 0
-    const val playerSum_idx = 1
-    const val dealShownCard_idx = 2
-    val rand = Random(System.nanoTime())
+    private const val playerSum_idx = 1
+    private const val dealShownCard_idx = 2
+    private val rand = Random(System.nanoTime())
     fun make(): MDP {
-        val mdp = NSetMDP(gamma = 1.0, state_dim = intArrayOf(2, 10, 10), action_dim = intArrayOf(2))
+        val mdp = NSetMDP(gamma = 1.0, state_dim = Dim(2, 10, 10), action_dim = Dim(2))
         mdp.apply {
-            for (s in states) {
-                s!!.actions = NSet(2) { action_idx ->
-                    val action = Action(action_idx.toIntArray())
-                    when (action_idx[0]) {
-                        0 -> {//sticks
+//            for (s in states) {
+//                s!!.actions = NSet(2) { action_idx ->
+//                    val action = Action(action_idx.toIntArray())
+//                    when (action_idx[0]) {
+//                        0 -> {//sticks
 //                            action.sample = {
 //                                var dealer = s.idx[dealShownCard_idx] + dealer_offset
 //                                var usableAceDealer = dealer == 1
@@ -43,31 +44,31 @@ object Blackjack {
 //                                        usableAceDealer = false
 //                                    }
 //                                }
-////                                if (dealer <= 21) {
-////                                    val player = s.idx[playerSum_idx] + player_offset
-////                                    Possible(player-dealer)
-////                                }
+//                                if (dealer <= 21) {
+//                                    val player = s.idx[playerSum_idx] + player_offset
+//                                    Possible(player-dealer)
+//                                }
 //                                Possible()
 //                            }
-                        }
-                        1 -> {//hits
+//                        }
+//                        1 -> {//hits
 //                            action.sample = {
 //                                var player = s.idx[playerSum_idx] + player_offset
 //                                val card = drawCard()
 //                                player += card
-////                                if (player <= 21) {
-////                                    val idx = s.idx.copyOf()
-////                                    idx[playerSum_idx] = player - player_offset
-////                                    Possible(states.get(*idx)!!, 0.0, 1.0)
-////                                } else if(){
-////
-////                                }
+//                                if (player <= 21) {
+//                                    val idx = s.idx.copyOf()
+//                                    idx[playerSum_idx] = player - player_offset
+//                                    Possible(states.get(*idx)!!, 0.0, 1.0)
+//                                } else if(){
+//
+//                                }
 //                            }
-                        }
-                    }
-                    action
-                }
-            }
+//                        }
+//                    }
+////                    action
+//                }
+//            }
         }
         return mdp
     }
