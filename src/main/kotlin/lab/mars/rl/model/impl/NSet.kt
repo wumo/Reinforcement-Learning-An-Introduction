@@ -83,6 +83,11 @@ class NSet<E> private constructor(private val dim: IntArray, private val stride:
     }
 
     companion object {
+        fun <T> of(vararg elements: T): NSet<T> {
+            var i = 0
+            return invoke(elements.size) { elements[i++] }
+        }
+
         operator fun <T> invoke(vararg dim: Int, element_maker: (ReadOnlyIntSlice) -> Any? = { null }): NSet<T> {
             val stride = IntArray(dim.size)
             stride[stride.lastIndex] = 1

@@ -15,6 +15,14 @@ import org.junit.Test
  */
 class TestNSet {
     @Test
+    fun `make nset`() {
+        val set = NSet.of(1, 2, 3)
+        for (i in set) {
+            println(i)
+        }
+    }
+
+    @Test
     fun `test general shape`() {
         var i = 0
         val tmp = NSet<Int>(2) { i++ }
