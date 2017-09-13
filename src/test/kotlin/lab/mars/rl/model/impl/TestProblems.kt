@@ -14,7 +14,7 @@ import org.junit.Test
  * @author wumo
  */
 class TestProblems {
-    fun Double.format(digits: Int) = java.lang.String.format("%.${digits}f", this)
+    private fun Double.format(digits: Int) = java.lang.String.format("%.${digits}f", this)
     @Test
     fun `GridWorld`() {
         val prob = GridWorld.make()

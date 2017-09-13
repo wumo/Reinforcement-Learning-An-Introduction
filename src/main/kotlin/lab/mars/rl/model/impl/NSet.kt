@@ -18,7 +18,7 @@ import java.util.NoSuchElementException
 /**
  * 将数组链表的最后dim.size个元素构成的数字依据dim进行进位加1
  *
- * 如数组链表为：0000123，`dim=[3,3,4]`，则进位加1仅影响最后`dim.size=3`个元素`123`，
+ * 如数组链表为：0000123，`Dim=[3,3,4]`，则进位加1仅影响最后`Dim.size=3`个元素`123`，
  * `123++`的结果为`200`
  *
  * @receiver 表示index的数组链表
@@ -33,6 +33,12 @@ fun IntSlice.increment(dim: IntArray) {
         this[this_idx] = 0
     }
 }
+
+/**
+ * 定义维度
+ * @return 描述维度的[IntArray]
+ */
+fun Dim(vararg d: Int) = d
 
 /**
  * 1. 可以定义任意维的多维数组，并使用`[]`进行取值赋值
@@ -129,10 +135,10 @@ class NSet<E> private constructor(private val dim: IntArray, private val stride:
     private fun <T> get_or_set(idx: IntArray, start: Int, set: Boolean, s: T?): T {
         var offset = 0
         val idx_size = idx.size - start
-        if (idx_size < dim.size) throw RuntimeException("index.length=${idx.size - start}  < dim.length=${dim.size}")
+        if (idx_size < dim.size) throw RuntimeException("index.length=${idx.size - start}  < Dim.length=${dim.size}")
         for (a in 0 until dim.size) {
             if (idx[start + a] < 0 || idx[start + a] > dim[a])
-                throw ArrayIndexOutOfBoundsException("index[$a]= ${idx[start + a]} while dim[$a]=${dim[a]}")
+                throw ArrayIndexOutOfBoundsException("index[$a]= ${idx[start + a]} while Dim[$a]=${dim[a]}")
             offset += idx[start + a] * stride[a]
         }
         return if (idx_size == dim.size) {
@@ -171,7 +177,7 @@ class NSet<E> private constructor(private val dim: IntArray, private val stride:
     }
 
     operator fun set(vararg index: Int, s: NSet<E>) {
-        require(index.size == dim.size) { "setting subset requires index.size == dim.size" }
+        require(index.size == dim.size) { "setting subset requires index.size == Dim.size" }
         get_or_set(index, 0, true, s)
     }
 
@@ -244,6 +250,12 @@ class NSet<E> private constructor(private val dim: IntArray, private val stride:
     }
 }
 
+/**
+ * @param gamma gamma 衰减因子
+ * @param states 指定状态集，V函数与状态集一致
+ * @param action_dim 依据状态索引确定动作维度，Q函数与状态集和动作集一致
+ * @return 使用指定状态集，动态动作维度的MDP实例
+ */
 fun NSetMDP(gamma: Double, states: NSet<State?>, action_dim: (IntArray) -> IntArray) = MDP(
         states = states,
         gamma = gamma,
@@ -251,6 +263,12 @@ fun NSetMDP(gamma: Double, states: NSet<State?>, action_dim: (IntArray) -> IntAr
         q_maker = { NSet(states) { NSet<Double>(*action_dim(it.toIntArray())) { 0.0 } } },
         pi_maker = { NSet(states) })
 
+/**
+ * @param gamma gamma 衰减因子
+ * @param state_dim 统一的状态维度，V函数与状态集一致
+ * @param action_dim 统一的动作维度，Q函数与状态集和动作集一致
+ * @return 所有状态维度相同和动作维度相同的MDP实例
+ */
 fun NSetMDP(gamma: Double, state_dim: IntArray, action_dim: IntArray) = MDP(
         states = NSet(*state_dim) { State(it.toIntArray()) },
         gamma = gamma,
@@ -258,6 +276,12 @@ fun NSetMDP(gamma: Double, state_dim: IntArray, action_dim: IntArray) = MDP(
         q_maker = { NSet(*state_dim, *action_dim) { 0.0 } },
         pi_maker = { NSet(*state_dim) })
 
+/**
+ * @param gamma  gamma 衰减因子
+ * @param state_dim 统一的状态维度，V函数与状态集一致
+ * @param action_dim 依据状态索引确定动作维度，Q函数与状态集和动作集一致
+ * @return 统一状态维度而动作维度异构的MDP实例
+ */
 fun NSetMDP(gamma: Double, state_dim: IntArray, action_dim: (IntArray) -> IntArray) = MDP(
         states = NSet(*state_dim) { State(it.toIntArray()) },
         gamma = gamma,
