@@ -4,6 +4,7 @@ import lab.mars.rl.model.*
 import lab.mars.rl.model.impl.NSet
 import lab.mars.rl.model.impl.NSetMDP
 import lab.mars.rl.model.impl.Dim
+import lab.mars.rl.model.impl.x
 import org.apache.commons.math3.special.Gamma
 import org.apache.commons.math3.util.FastMath.*
 import org.apache.commons.math3.util.MathUtils
@@ -56,7 +57,7 @@ object CarRental {
     }
 
     fun make(exercise4_4_version: Boolean): MDP {
-        val mdp = NSetMDP(gamma = 0.9, state_dim = Dim(max_car + 1, max_car + 1)) { idx ->
+        val mdp = NSetMDP(gamma = 0.9, state_dim = (max_car + 1) x (max_car + 1)) { idx ->
             val max_L1_to_L2 = max_move(idx[0], idx[1])
             val max_L2_to_L1 = max_move(idx[1], idx[0])
             Dim(max_L1_to_L2 + max_L2_to_L1 + 1)
@@ -70,7 +71,7 @@ object CarRental {
                 val L1_to_L2 = max_L1_to_L2 - idx
                 val nL1 = s_1 - L1_to_L2
                 val nL2 = s_2 + L1_to_L2
-                val possibles = NSet<Possible>(max_car + 1, max_car + 1)
+                val possibles = NSet<Possible>((max_car + 1) x (max_car + 1))
                 for (_L1 in 0..max_car)
                     for (_L2 in 0..max_car)
                         possibles[_L1, _L2] = NSet(min(_L1, nL1) + min(_L2, nL2) + 1)
@@ -200,7 +201,7 @@ fun getStirlingError(z: Double): Double {
  * http://www.herine.net/stat/papers/dbinom.pdf](http://www.herine.net/stat/papers/dbinom.pdf)
  *
  * @param x
- * the x value.
+ * the e value.
  * @param mu
  * the average.
  * @return a part of the deviance.

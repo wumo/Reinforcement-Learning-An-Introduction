@@ -7,6 +7,7 @@ import lab.mars.rl.model.State
 import lab.mars.rl.model.impl.Dim
 import lab.mars.rl.model.impl.NSet
 import lab.mars.rl.model.impl.NSetMDP
+import lab.mars.rl.model.impl.x
 import org.apache.commons.math3.util.FastMath
 import org.apache.commons.math3.util.FastMath.abs
 import java.util.*
@@ -35,7 +36,7 @@ object Blackjack {
     private const val dealShownCard_idx = 3
     private val rand = Random(System.nanoTime())
     fun make(): MDP {
-        val mdp = NSetMDP(gamma = 1.0, state_dim = Dim(2, 10, 10), action_dim = Dim(2))
+        val mdp = NSetMDP(gamma = 1.0, state_dim = 2 x 10 x 10, action_dim = 2)
         mdp.apply {
             for (s in states)
                 for (action in s.actions)

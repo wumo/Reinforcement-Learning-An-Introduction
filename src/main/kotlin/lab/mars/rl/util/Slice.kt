@@ -1,4 +1,4 @@
-@file:Suppress("NOTHING_TO_INLINE")
+@file:Suppress("NOTHING_TO_INLINE", "OVERRIDE_BY_INLINE")
 
 package lab.mars.rl.util
 
@@ -12,7 +12,7 @@ import java.util.*
  * @author wumo
  */
 fun IntArray.slice(start: Int, end: Int): IntSlice {
-    return IntSlice(this, start, end - start + 1)
+    return IntSlice.use(this, start, end)
 }
 
 interface ReadOnlyIntSlice {
@@ -53,10 +53,25 @@ interface RWAIntSlice : RWIntSlice {
     fun append(num: Int, s: Int)
 }
 
-open class IntSlice(private var array: IntArray, private var offset: Int, size: Int, cap: Int) :
+open class IntSlice private constructor(private var array: IntArray, private var offset: Int, size: Int, cap: Int = size) :
         RWAIntSlice {
     companion object {
         val MAX_ARRAY_SIZE = Integer.MAX_VALUE - 8
+        /**
+         * @param s 用枚举的参数构成初始的[IntSlice]
+         */
+        fun of(vararg s: Int) = IntSlice(s, 0, s.size)
+
+        /**
+         * @param num 初始化[num]长度、初值为0的[IntSlice]
+         */
+        inline fun zero(num: Int) = new(num, num)
+
+        fun use(array: IntArray, start: Int, end: Int) = IntSlice(array, start, end - start + 1)
+
+        inline fun use(array: IntArray) = use(array, 0, array.lastIndex)
+
+        fun new(cap: Int, size: Int = 0) = IntSlice(IntArray(cap), 0, size, cap)
     }
 
     init {
@@ -76,9 +91,6 @@ open class IntSlice(private var array: IntArray, private var offset: Int, size: 
     override val lastIndex: Int
         get() = _size - 1
 
-    constructor(array: IntArray, offset: Int, size: Int) : this(array, offset, size, size)
-
-    constructor(cap: Int = 2, size: Int = cap) : this(kotlin.IntArray(cap), 0, size, cap)
 
     override operator fun get(idx: Int): Int {
         require(idx in 0 until _size)
@@ -143,13 +155,13 @@ open class IntSlice(private var array: IntArray, private var offset: Int, size: 
         }
     }
 
-    override fun append(s: Int) {
-        ensure(_size + 1)
+    final inline override fun append(s: Int) {
+        ensure(size + 1)
         add(s)
     }
 
-    override fun append(num: Int, s: Int) {
-        ensure(_size + num)
+    final inline override fun append(num: Int, s: Int) {
+        ensure(size + num)
         add(num, s)
     }
 

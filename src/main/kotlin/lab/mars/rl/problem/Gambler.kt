@@ -20,7 +20,7 @@ object Gambler {
 
     fun make(p_head: Double): MDP {
         val mdp = NSetMDP(gamma = 1.0,
-                          state_dim = Dim(goal_coin + 1),
+                          state_dim = goal_coin + 1,
                           action_dim = { Dim(min(it[0], goal_coin - it[0]) + 1) })
         mdp.apply {
             for (s in states) {

@@ -5,7 +5,6 @@ package lab.mars.rl.model.impl
 import lab.mars.rl.model.*
 import lab.mars.rl.util.ReadOnlyIntSlice
 import lab.mars.rl.util.IntSlice
-import java.awt.Dimension
 import java.util.NoSuchElementException
 
 /**
@@ -15,7 +14,6 @@ import java.util.NoSuchElementException
  *
  * @author wumo
  */
-
 /**
  * 将数组链表的最后dim.size个元素构成的数字依据dim进行进位加1
  *
@@ -35,66 +33,13 @@ fun IntSlice.increment(dim: IntArray) {
     }
 }
 
-fun Dim(vararg dim: Int) = dim
-fun dim(block: IDim.() -> Unit) {
-
+fun strideOfDim(dim: IntArray): IntArray {
+    val stride = IntArray(dim.size)
+    stride[stride.lastIndex] = 1
+    for (a in stride.lastIndex - 1 downTo 0)
+        stride[a] = dim[a + 1] * stride[a + 1]
+    return stride
 }
-
-fun dim(vararg dim: Int): IDim = TerminalDim(dim)
-
-fun dim(vararg dim: IDim): IDim = ArrayDim(dim)
-
-infix fun Int.x(a: Int): IDim {
-    TODO()
-}
-
-infix fun Int.o(a: Int): IDim {
-    TODO()
-}
-
-infix fun Int.o(block: IDim.() -> Unit): IDim {
-    TODO()
-}
-
-interface IDim {
-    infix fun x(a: Int): IDim {
-        TODO()
-    }
-
-    infix fun o(a: Int): IDim {
-        TODO()
-    }
-
-    infix fun o(a: IDim): IDim {
-        TODO()
-    }
-
-    fun o(block: IDim.() -> Unit) {
-        TODO()
-    }
-
-    operator fun plus(a: IDim): IDim {
-        TODO()
-    }
-
-    operator fun plus(a: IDim.() -> Unit): IDim {
-        TODO()
-    }
-}
-
-class TerminalDim(val dim: IntArray) : IDim
-
-class ArrayDim(val dim: Array<out IDim>) : IDim {
-    companion object {
-        /**
-         * 定义维度
-         * @return 描述维度的[IntArray]
-         */
-        operator fun invoke(vararg d: Int) = d
-    }
-
-}
-
 
 /**
  * 1. 可以定义任意维的多维数组，并使用`[]`进行取值赋值
@@ -109,8 +54,10 @@ class ArrayDim(val dim: Array<out IDim>) : IDim {
  * @param stride 各维度在一维数组上的跨度
  * @param root 根节点一维数组
  */
-class NSet<E> private constructor(private val dim: IntArray, private val stride: IntArray, private val root: Array<Any?>) :
+class NSet<E>(private val dim: IntArray, private val stride: IntArray, private val root: Array<Any?>) :
         IndexedCollection<E> {
+    constructor(dim: IntArray, root: Array<Any?>) : this(dim, strideOfDim(dim), root)
+
     private var parent: NSet<E>? = null
     private fun refParent(s: Any?): Any? {
         val sub = s as? NSet<E>
@@ -129,7 +76,7 @@ class NSet<E> private constructor(private val dim: IntArray, private val stride:
      * @param element_maker 提供了每个元素的index
      */
     override fun init(element_maker: (ReadOnlyIntSlice) -> Any?) {
-        val index = IntSlice(dim.size)
+        val index = IntSlice.zero(dim.size)
         for (i in 0 until root.size) {
             val tmp = element_maker(index)
             root[i] = refParent(tmp).apply {
@@ -144,26 +91,27 @@ class NSet<E> private constructor(private val dim: IntArray, private val stride:
             return invoke(elements.size) { elements[i++] }
         }
 
-        operator fun <T> invoke(dim: IDim, element_maker: (ReadOnlyIntSlice) -> Any? = { null }): NSet<T> {
-            TODO()
+        fun <T> use(dim: IntArray, element_maker: (ReadOnlyIntSlice) -> Any? = { null }): NSet<T> {
+            val stride = strideOfDim(dim)
+            val total = dim[0] * stride[0]
+            return NSet<T>(dim, stride, Array(total) { null }).apply { init(element_maker) }
         }
 
-        operator fun <T> invoke(vararg dim: Int, element_maker: (ReadOnlyIntSlice) -> Any? = { null }): NSet<T> {
-            val stride = IntArray(dim.size)
-            stride[stride.lastIndex] = 1
-            for (a in stride.lastIndex - 1 downTo 0)
-                stride[a] = dim[a + 1] * stride[a + 1]
-            val total = dim[0] * stride[0]
-            val raw = Array<Any?>(total) { null }
-            return NSet<T>(dim, stride, raw).apply { init(element_maker) }
-        }
+        operator fun <T> invoke(dim: Int, element_maker: (ReadOnlyIntSlice) -> Any? = { null })
+                = use<T>(intArrayOf(dim), element_maker)
+
+        operator fun <T> invoke(dim: IntSlice, element_maker: (ReadOnlyIntSlice) -> Any? = { null })
+                = use<T>(dim.toIntArray(), element_maker)
+
+        operator fun <T> invoke(vararg dim: Int, element_maker: (ReadOnlyIntSlice) -> Any? = { null })
+                = use<T>(dim, element_maker)
 
         /**
          * 构造一个与[shape]相同形状的[NSet]（维度、树深度都相同）
          */
         operator fun <T> invoke(shape: NSet<*>, element_maker: (ReadOnlyIntSlice) -> Any? = { null }): NSet<T> {
             return NSet<T>(shape.dim, shape.stride, Array(shape.root.size) { null }).apply {
-                val index = IntSlice(shape.dim.size)
+                val index = IntSlice.zero(shape.dim.size)
                 for (idx in 0 until this.root.size)
                     copycat(this, shape.root[idx], index, element_maker)
                             .apply { index.increment(shape.dim) }
@@ -248,7 +196,7 @@ class NSet<E> private constructor(private val dim: IntArray, private val stride:
     override fun iterator() = GeneralIterator<E>().apply { traverse = Traverse(this, {}, {}, {}, { it }) }
 
     fun indices() = GeneralIterator<ReadOnlyIntSlice>().apply {
-        val index = IntSlice(this.set.dim.size).apply { this[lastIndex] = -1 }
+        val index = IntSlice.zero(this.set.dim.size).apply { this[lastIndex] = -1 }
         traverse = Traverse(this,
                             forward = {
                                 index.apply {
@@ -313,46 +261,3 @@ class NSet<E> private constructor(private val dim: IntArray, private val stride:
         }
     }
 }
-
-/**
- * @param gamma gamma 衰减因子
- * @param states 指定状态集，V函数与状态集一致
- * @param action_dim 依据状态索引确定动作维度，Q函数与状态集和动作集一致
- * @return 使用指定状态集，动态动作维度的MDP实例
- */
-fun NSetMDP(gamma: Double, states: NSet<State>, action_dim: (ReadOnlyIntSlice) -> IntArray) = MDP(
-        states = states,
-        gamma = gamma,
-        v_maker = { NSet(states) { 0.0 } },
-        q_maker = { NSet(states) { NSet<Double>(*action_dim(it)) { 0.0 } } },
-        pi_maker = { NSet(states) })
-
-/**
- * @param gamma gamma 衰减因子
- * @param state_dim 统一的状态维度，V函数与状态集一致
- * @param action_dim 统一的动作维度，Q函数与状态集和动作集一致
- * @return 所有状态维度相同和动作维度相同的MDP实例
- */
-fun NSetMDP(gamma: Double, state_dim: IntArray, action_dim: IntArray) = MDP(
-        states = NSet(*state_dim) {
-            State(it.toIntArray()).apply { actions = NSet(*action_dim) { Action(it.toIntArray()) } }
-        },
-        gamma = gamma,
-        v_maker = { NSet(*state_dim) { 0.0 } },
-        q_maker = { NSet(*state_dim, *action_dim) { 0.0 } },
-        pi_maker = { NSet(*state_dim) })
-
-/**
- * @param gamma  gamma 衰减因子
- * @param state_dim 统一的状态维度，V函数与状态集一致
- * @param action_dim 依据状态索引确定动作维度，Q函数与状态集和动作集一致
- * @return 统一状态维度而动作维度异构的MDP实例
- */
-fun NSetMDP(gamma: Double, state_dim: IntArray, action_dim: (ReadOnlyIntSlice) -> IntArray) = MDP(
-        states = NSet(*state_dim) {
-            State(it.toIntArray()).apply { actions = NSet(*action_dim(it)) { Action(it.toIntArray()) } }
-        },
-        gamma = gamma,
-        v_maker = { NSet(*state_dim) { 0.0 } },
-        q_maker = { NSet(*state_dim) { NSet<Double>(*action_dim(it)) { 0.0 } } },
-        pi_maker = { NSet(*state_dim) })

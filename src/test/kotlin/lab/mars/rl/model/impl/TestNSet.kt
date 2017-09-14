@@ -15,29 +15,77 @@ import org.junit.Test
  */
 class TestNSet {
     @Test
+    fun `make nset using dim2`() {
+        val set = NSet<Int>(0(3, 2 x 10 x 10))
+        for (index in set.indices()) {
+            println(index)
+        }
+    }
+
+    @Test
     fun `make nset using dim`() {
-        dim {
-            o(2)
+        0(
+                2,
+                2 x 3 x 10,
+                2,
+                0(
+                        2,
+                        2 x 3 x 4,
+                        (2 x 3)(
+                                2,
+                                3 x 4
+                        )
+                )
+        )
+
+        o(2)
+        o(2 x 3)
+        o {
+            o {
+                o {
+
+                }
+            }
+        }
+        o(2 x 3) {
             o(2 x 3)
+            o(1 x 2 x 3) {
+                o(2 x 3)
+            }
             o {
                 o(2)
                 o(2 x 3)
             }
-        }
 
-        val tmp =
-                dim(
-                        dim(3),
-                        dim(
-                                dim(2),
-                                dim(3, 4),
-                                dim(
-                                        dim(3, 4),
-                                        dim(4, 5)
-                                )
-                        ),
-                        dim(1, 3)
-                )
+            o[1, 2] = 1
+            o[0, 0] = {
+                o(2)
+                o(2 x 3)
+                o {
+                    o(2)
+                    o(2 x 3)
+                }
+            }
+            o[1, 0] = x
+            o[0, 1] = x
+
+            except {
+                o[1, 2] = 1
+                o[0, 1] = (2 x 3) {
+
+                }
+                o[0, 0] = {
+                    o(2)
+                    o(2 x 3)
+                    o {
+                        o(2)
+                        o(2 x 3)
+                    }
+                }
+                o[1, 0] = x
+                o[0, 1] = x
+            }
+        }
     }
 
     @Test
@@ -135,7 +183,7 @@ class TestNSet {
 
     @Test
     fun `NSetMDP`() {
-        val mdp = NSetMDP(gamma = 1.0, state_dim = intArrayOf(3, 4, 5), action_dim = intArrayOf(4))
+        val mdp = NSetMDP(gamma = 1.0, state_dim = 3 x 4 x 5, action_dim = 4)
         val S = mdp.states
         val V = mdp.v_maker()
         val PI = mdp.pi_maker()
