@@ -91,20 +91,20 @@ class NSet<E>(private val dim: IntArray, private val stride: IntArray, private v
             return invoke(elements.size) { elements[i++] }
         }
 
-        fun <T> use(dim: IntArray, element_maker: (ReadOnlyIntSlice) -> Any? = { null }): NSet<T> {
+        fun <T> reuse(dim: IntArray, element_maker: (ReadOnlyIntSlice) -> Any? = { null }): NSet<T> {
             val stride = strideOfDim(dim)
             val total = dim[0] * stride[0]
             return NSet<T>(dim, stride, Array(total) { null }).apply { init(element_maker) }
         }
 
         operator fun <T> invoke(dim: Int, element_maker: (ReadOnlyIntSlice) -> Any? = { null })
-                = use<T>(intArrayOf(dim), element_maker)
+                = reuse<T>(intArrayOf(dim), element_maker)
 
         operator fun <T> invoke(dim: IntSlice, element_maker: (ReadOnlyIntSlice) -> Any? = { null })
-                = use<T>(dim.toIntArray(), element_maker)
+                = reuse<T>(dim.toIntArray(), element_maker)
 
         operator fun <T> invoke(vararg dim: Int, element_maker: (ReadOnlyIntSlice) -> Any? = { null })
-                = use<T>(dim, element_maker)
+                = reuse<T>(dim, element_maker)
 
         /**
          * 构造一个与[shape]相同形状的[NSet]（维度、树深度都相同）

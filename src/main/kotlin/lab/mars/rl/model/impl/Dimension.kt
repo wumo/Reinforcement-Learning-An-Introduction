@@ -19,6 +19,13 @@ inline operator fun Int.invoke(vararg s: Any) = make(IntSlice.of(this), s)
 
 inline operator fun IntSlice.invoke(vararg s: Any) = make(this, s)
 
+fun Any.toDim() = when (this) {
+    is Int -> Dimension(IntSlice.of(this), empty)
+    is IntSlice -> Dimension(this, empty)
+    is Dimension -> this
+    else -> throw IllegalArgumentException(this.toString())
+}
+
 fun make(dim: IntSlice, s: Array<out Any>): Dimension {
     val array = Array(s.size) {
         val tmp = s[it]

@@ -60,7 +60,7 @@ object CarRental {
         val mdp = NSetMDP(gamma = 0.9, state_dim = (max_car + 1) x (max_car + 1)) { idx ->
             val max_L1_to_L2 = max_move(idx[0], idx[1])
             val max_L2_to_L1 = max_move(idx[1], idx[0])
-            Dim(max_L1_to_L2 + max_L2_to_L1 + 1)
+            max_L1_to_L2 + max_L2_to_L1 + 1
         }
         for (s in mdp.states) {
             val s_1 = s.idx[0]
