@@ -1,6 +1,7 @@
 package lab.mars.rl.model.impl
 
 import lab.mars.rl.util.IntSlice
+import lab.mars.rl.util.ReadOnlyIntSlice
 
 /**
  * <p>
@@ -9,19 +10,29 @@ import lab.mars.rl.util.IntSlice
  *
  * @author wumo
  */
-operator fun <T> NSet.Companion.invoke(dimension: Dimension): NSet<T> {
+operator fun <T> NSet.Companion.invoke(dimension: Dimension, element_maker: (ReadOnlyIntSlice) -> Any? = { null }): NSet<T> {
+    return make(dimension, IntSlice.new(), element_maker)
+}
+
+val zeroDim = IntSlice.of(0)
+private fun <T> make(dimension: Dimension, index: IntSlice,
+                     element_maker: (ReadOnlyIntSlice) -> Any? = { null }): NSet<T> {
+    val rootDim = dimension.rootDim
     val sub = dimension.sub
-    val dim = dimension.rootDim.toIntArray()
+    val dim = rootDim.toIntArray()
     val isZero = dim.size == 1 && dim[0] == 0
-    if (isZero) dim[0] = dimension.sub.size
+    if (isZero) {
+        dim[0] = dimension.sub.size
+        index.append(0)
+    } else
+        index.append(rootDim.size, 0)
     val stride = strideOfDim(dim)
     val total = dim[0] * stride[0]
-    return NSet<T>(dim, stride, Array(total) {
+    return NSet(dim, stride, Array(total) {
         when {
-            sub.isEmpty() -> null
-            isZero -> NSet<T>(sub[it])
-            else ->
-                NSet<T>(Dimension(IntSlice.of(sub.size), sub))
-        }
-    })
+            sub.isEmpty() -> element_maker(index)
+            isZero -> make<T>(sub[it], index, element_maker)
+            else -> make<T>(Dimension(zeroDim, sub), index, element_maker)
+        }.apply { index.increment(dim) }
+    }.apply { index.removeLast(dim.size) })
 }

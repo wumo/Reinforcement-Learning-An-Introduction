@@ -16,10 +16,44 @@ import org.junit.Test
 class TestNSet {
     @Test
     fun `make nset using dim2`() {
-        val set = NSet<Int>(0(3, 2 x 10 x 10))
+        val r1 = mutableListOf<IntArray>()
+        val r2 = mutableListOf<IntArray>()
+        val set = NSet<Int>(1(3, 2 x 10 x 10)) { r1.add(it.toIntArray());null }
         for (index in set.indices()) {
-            println(index)
+            r2.add(index.toIntArray())
         }
+        r1.forEach { println(it.asList()) }
+        Assert.assertArrayEquals(r1.toTypedArray(), r2.toTypedArray())
+    }
+
+    @Test
+    fun `make nset using dim 3`() {
+        val r1 = mutableListOf<IntArray>()
+        val r2 = mutableListOf<IntArray>()
+        val dim =
+                0(
+                        2,
+                        2 ,
+                        2,
+                        0(
+                                2,
+                                2 x 3 x 4,
+                                (2 x 3)(
+                                        2,
+                                        3 x 4
+                                       )
+                         )
+                 )
+        val set = NSet<Int>(dim) { r1.add(it.toIntArray());null }
+        for (index in set.indices()) {
+            r2.add(index.toIntArray())
+        }
+        var i = 0
+        val size=r1.size
+        for (i in 0 until  size) {
+           println("${i}\t ${r1[i].asList()} vs.${r2[i].asList()}");
+        }
+        Assert.assertArrayEquals(r1.toTypedArray(), r2.toTypedArray())
     }
 
     @Test
@@ -34,9 +68,9 @@ class TestNSet {
                         (2 x 3)(
                                 2,
                                 3 x 4
-                        )
-                )
-        )
+                               )
+                 )
+         )
 
         o(2)
         o(2 x 3)

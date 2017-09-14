@@ -25,6 +25,7 @@ interface ReadOnlyIntSlice {
     operator fun get(start: Int, end: Int): ReadOnlyIntSlice
 
     fun toIntArray(): IntArray
+    fun copyOf(): IntSlice
 }
 
 interface RWIntSlice : ReadOnlyIntSlice {
@@ -53,7 +54,7 @@ interface RWAIntSlice : RWIntSlice {
     fun append(num: Int, s: Int)
 }
 
-open class IntSlice private constructor(private var array: IntArray, private var offset: Int, size: Int, cap: Int = size) :
+open class IntSlice constructor(private var array: IntArray, private var offset: Int, size: Int, cap: Int = size) :
         RWAIntSlice {
     companion object {
         val MAX_ARRAY_SIZE = Integer.MAX_VALUE - 8
@@ -67,11 +68,11 @@ open class IntSlice private constructor(private var array: IntArray, private var
          */
         inline fun zero(num: Int) = new(num, num)
 
-        fun use(array: IntArray, start: Int, end: Int) = IntSlice(array, start, end - start + 1)
+        inline fun use(array: IntArray, start: Int, end: Int) = IntSlice(array, start, end - start + 1)
 
         inline fun use(array: IntArray) = use(array, 0, array.lastIndex)
 
-        fun new(cap: Int, size: Int = 0) = IntSlice(IntArray(cap), 0, size, cap)
+        fun new(cap: Int = 2, size: Int = 0) = IntSlice(IntArray(cap), 0, size, cap)
     }
 
     init {
@@ -126,6 +127,8 @@ open class IntSlice private constructor(private var array: IntArray, private var
     }
 
     override fun toIntArray(): IntArray = Arrays.copyOfRange(array, offset, offset + _size)
+
+    override fun copyOf() = IntSlice.use(toIntArray())
 
     override fun add(s: Int) {
         require(_size < _cap)
