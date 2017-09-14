@@ -46,6 +46,7 @@ class TestNSet {
                  )
         val set = NSet<Int>(dim) { r1.add(it.toIntArray());null }
         for (index in set.indices()) {
+            println(index)
             r2.add(index.toIntArray())
         }
         var i = 0

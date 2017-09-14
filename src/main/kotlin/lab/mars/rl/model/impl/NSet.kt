@@ -210,6 +210,13 @@ class NSet<E>(private val dim: IntArray, private val stride: IntArray, private v
     }
 
     inner class GeneralIterator<T> : Iterator<T> {
+        /**
+         * @param current 当前正待着的节点
+         * @param forward 移到了未探索过的更深的节点
+         * @param backward 正要从当前节点退回去到[parent]
+         * @param translate 当前节点进行宽度范围内的下一个搜索
+         * @param visitor 获取当前非子树元素的值
+         */
         inner class Traverse(var current: GeneralIterator<T>,
                              val forward: Traverse.() -> Unit,
                              val backward: Traverse.() -> Unit,
@@ -253,8 +260,8 @@ class NSet<E>(private val dim: IntArray, private val stride: IntArray, private v
                 val new = this.GeneralIterator<T>()
                 new.traverse = traverse
                 new.parent = traverse.current
-                traverse.current = new
                 new.parent.increment()
+                traverse.current = new
                 traverse.forward(traverse)
             }
             return next_type
