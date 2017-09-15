@@ -19,7 +19,7 @@ class TestProblems {
     fun `GridWorld`() {
         val prob = GridWorld.make()
         val algo = PolicyIteration(prob)
-        val V = algo.v_iteration()
+        val (PI,V,Q) = algo.v_iteration()
         for (s in prob.states) {
             println(V[s])
         }
@@ -29,13 +29,26 @@ class TestProblems {
     fun `Car Rental Policy Iteration Value`() {
         val prob = CarRental.make(false)
         val algo = PolicyIteration(prob)
-        val V = algo.v_iteration()
+        val (PI,V,Q) = algo.q_iteration()
         for (a in CarRental.max_car downTo 0) {
             for (b in 0..CarRental.max_car)
                 print("" + V[prob.states[a, b]].format(2) + " ")
             println()
         }
     }
+
+    @Test
+    fun `Car Rental Policy Iteration Policy`() {
+        val prob = CarRental.make(false)
+        val algo = PolicyIteration(prob)
+        val (PI,V,Q)  = algo.q_iteration()
+        for (a in CarRental.max_car downTo 0) {
+            for (b in 0..CarRental.max_car)
+                print("" + V[prob.states[a, b]].format(2) + " ")
+            println()
+        }
+    }
+
 
     @Test
     fun `Car Rental  Value Iteration`() {

@@ -22,8 +22,8 @@ import lab.mars.rl.util.ReadOnlyIntSlice
  * @return 使用指定状态集，动态动作维度的MDP实例
  */
 fun NSetMDP(gamma: Double, states: NSet<State>, action_dim: (ReadOnlyIntSlice) -> IntArray) = MDP(
-        states = states,
         gamma = gamma,
+        states = states,
         v_maker = { NSet(states) { 0.0 } },
         q_maker = { NSet(states) { NSet.reuse<Double>(action_dim(it)) { 0.0 } } },
         pi_maker = { NSet(states) })
@@ -48,10 +48,10 @@ inline fun NSetMDP(gamma: Double, state_dim: Any, action_dim: Any): MDP {
 inline fun NSetMDP(gamma: Double, state_dim: Any, crossinline action_dim: (ReadOnlyIntSlice) -> Any): MDP {
     val s_dim = state_dim.toDim()
     return MDP(
+            gamma = gamma,
             states = NSet(s_dim) {
                 State(it.copy()).apply { actions = NSet(action_dim(it).toDim()) { Action(it.copy()) } }
             },
-            gamma = gamma,
             v_maker = { NSet(s_dim) { 0.0 } },
             q_maker = { NSet(s_dim) { NSet<Double>(action_dim(it).toDim()) { 0.0 } } },
             pi_maker = { NSet(s_dim) })

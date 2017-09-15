@@ -1,8 +1,6 @@
 package lab.mars.rl.model.impl
 
-import lab.mars.rl.model.Action
 import lab.mars.rl.model.MDP
-import lab.mars.rl.model.State
 import org.junit.Assert
 import org.junit.Test
 
@@ -240,8 +238,8 @@ class TestNSet {
 
 val dim = intArrayOf(2, 3, 4)
 val mdp = MDP(
-        states = NSet(*dim),
         gamma = 0.9,
+        states = NSet(*dim),
         v_maker = { NSet(*dim) { 0.0 } },
         q_maker = { NSet(*dim, 4) { 0.0 } },
         pi_maker = { NSet(*dim, 4) })

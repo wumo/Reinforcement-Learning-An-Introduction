@@ -25,8 +25,8 @@ typealias DeterminedPolicy = IndexedCollection<Action?>
  * @property pi_maker 策略构造器（不同的[states]实现对应着不同的[pi_maker]
  */
 class MDP(
-        val states: StateSet,
         val gamma: Double,
+        val states: StateSet,
         val v_maker: () -> StateValueFunction,
         val q_maker: () -> ActionValueFunction,
         val pi_maker: () -> DeterminedPolicy)
