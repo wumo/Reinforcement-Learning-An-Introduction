@@ -102,13 +102,13 @@
                         <goals>
                             <goal>compile</goal>
                         </goals>
-                        <configuration>
-                            <sourceDirs>
-                                <!--<source>src/main/java</source>-->
-                                <source>src/main/kotlin</source>
-                                <source>src/test/kotlin</source>
-                            </sourceDirs>
-                        </configuration>
+                        <!--<configuration>-->
+                            <!--<sourceDirs>-->
+                                <!--&lt;!&ndash;<source>src/main/java</source>&ndash;&gt;-->
+                                <!--<source>src/main/kotlin</source>-->
+                                <!--<source>src/test/kotlin</source>-->
+                            <!--</sourceDirs>-->
+                        <!--</configuration>-->
                     </execution>
                     <execution>
                         <id>test-compile</id>
