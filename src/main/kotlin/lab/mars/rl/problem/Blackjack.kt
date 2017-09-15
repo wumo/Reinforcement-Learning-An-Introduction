@@ -5,8 +5,6 @@ import lab.mars.rl.model.MDP
 import lab.mars.rl.model.Possible
 import lab.mars.rl.model.State
 import lab.mars.rl.model.impl.*
-import org.apache.commons.math3.util.FastMath
-import org.apache.commons.math3.util.FastMath.abs
 import java.util.*
 
 /**
@@ -75,17 +73,17 @@ object Blackjack {
             player += card
             when {
                 player <= 21 -> {
-                    val idx = s.idx.copyOf()
+                    val idx = s.idx.copy()
                     idx[playerSum_idx] = player - player_offset
-                    Possible(states.get(*idx), 0.0, 1.0)
+                    Possible(states[idx], 0.0, 1.0)
                 }
                 s.idx[usableAce_idx] == 0 -> Possible(states[0, lose], lose.toDouble(), 1.0)
                 else -> {
                     player -= 10
-                    val idx = s.idx.copyOf()
+                    val idx = s.idx.copy()
                     idx[usableAce_idx] = 0
                     idx[playerSum_idx] = player - player_offset
-                    Possible(states.get(*idx), 0.0, 1.0)
+                    Possible(states[idx], 0.0, 1.0)
                 }
             }
         }

@@ -49,7 +49,7 @@ inline fun NSetMDP(gamma: Double, state_dim: Any, crossinline action_dim: (ReadO
     val s_dim = state_dim.toDim()
     return MDP(
             states = NSet(s_dim) {
-                State(it.toIntArray()).apply { actions = NSet(action_dim(it).toDim()) { Action(it.toIntArray()) } }
+                State(it.copy()).apply { actions = NSet(action_dim(it).toDim()) { Action(it.copy()) } }
             },
             gamma = gamma,
             v_maker = { NSet(s_dim) { 0.0 } },

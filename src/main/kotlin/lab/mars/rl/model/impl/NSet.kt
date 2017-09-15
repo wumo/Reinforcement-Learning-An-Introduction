@@ -55,7 +55,7 @@ fun strideOfDim(dim: IntArray): IntArray {
  * @param root 根节点一维数组
  */
 class NSet<E>(private val dim: IntArray, private val stride: IntArray, private val root: Array<Any?>) :
-        IndexedCollection<E> {
+        IndexedCollection<E>() {
     constructor(dim: IntArray, root: Array<Any?>) : this(dim, strideOfDim(dim), root)
 
     private var parent: NSet<E>? = null
@@ -75,7 +75,7 @@ class NSet<E>(private val dim: IntArray, private val stride: IntArray, private v
      * 使用构造lambda [element_maker]来为数组的每个元素初始化
      * @param element_maker 提供了每个元素的index
      */
-    override fun init(element_maker: (ReadOnlyIntSlice) -> Any?) {
+    fun init(element_maker: (ReadOnlyIntSlice) -> Any?) {
         val index = IntSlice.zero(dim.size)
         for (i in 0 until root.size) {
             val tmp = element_maker(index)
@@ -133,18 +133,7 @@ class NSet<E>(private val dim: IntArray, private val stride: IntArray, private v
         }
     }
 
-    private fun concat(indexable: Array<out Indexable>): IntArray {
-        val total = indexable.sumBy { it.idx.size }
-        val idx = IntArray(total)
-        var offset = 0
-        indexable.forEach {
-            System.arraycopy(it.idx, 0, idx, offset, it.idx.size)
-            offset += it.idx.size
-        }
-        return idx
-    }
-
-    private fun <T> get_or_set(idx: IntArray, start: Int, set: Boolean, s: T?): T {
+    private fun <T> get_or_set(idx: IntSlice, start: Int, set: Boolean, s: T?): T {
         var offset = 0
         val idx_size = idx.size - start
         if (idx_size < dim.size) throw RuntimeException("index.length=${idx.size - start}  < Dim.length=${dim.size}")
@@ -166,31 +155,15 @@ class NSet<E>(private val dim: IntArray, private val stride: IntArray, private v
         }
     }
 
-    private inline fun _get(idx: IntArray): E = get_or_set<E>(idx, 0, false, null)
+    override fun get(idx: IntSlice): E = get_or_set<E>(idx, 0, false, null)
 
-    private inline fun _set(idx: IntArray, s: E) = get_or_set(idx, 0, true, s)
-
-    override operator fun get(vararg index: Int) = _get(index)
-
-    override operator fun get(indexable: Indexable) = _get(indexable.idx)
-
-    override operator fun get(vararg indexable: Indexable) = _get(concat(indexable))
-
-    override operator fun set(vararg index: Int, s: E) {
-        _set(index, s)
-    }
-
-    override operator fun set(indexable: Indexable, s: E) {
-        _set(indexable.idx, s)
-    }
-
-    override operator fun set(vararg indexable: Indexable, s: E) {
-        _set(concat(indexable), s)
+    override fun set(idx: IntSlice, s: E) {
+        get_or_set(idx, 0, true, s)
     }
 
     operator fun set(vararg index: Int, s: NSet<E>) {
         require(index.size == dim.size) { "setting subset requires index.size == Dim.size" }
-        get_or_set(index, 0, true, s)
+        get_or_set(IntSlice.reuse(index), 0, true, s)
     }
 
     override fun iterator() = GeneralIterator<E>().apply { traverse = Traverse(this, {}, {}, {}, { it }) }
@@ -209,7 +182,7 @@ class NSet<E>(private val dim: IntArray, private val stride: IntArray, private v
                             visitor = { index })
     }
 
-    inner class GeneralIterator<T> : Iterator<T> {
+    inner class GeneralIterator<out T> : Iterator<T> {
         /**
          * @param current 当前正待着的节点
          * @param forward 移到了未探索过的更深的节点

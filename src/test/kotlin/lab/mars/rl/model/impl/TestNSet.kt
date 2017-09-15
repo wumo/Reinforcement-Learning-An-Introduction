@@ -223,12 +223,6 @@ class TestNSet {
         val V = mdp.v_maker()
         val PI = mdp.pi_maker()
         val Q = mdp.q_maker()
-        S.init { idx ->
-            println(">>${idx[0]},${idx[1]},${idx[2]}")
-            val s = State(idx.toIntArray())
-            s.actions = NSet(4) { Action(it.toIntArray()) }
-            s
-        }
         val index = intArrayOf(2, 3, 4)
         S.forEach { s ->
             println(s)

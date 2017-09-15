@@ -1,6 +1,8 @@
+@file:Suppress("NOTHING_TO_INLINE")
+
 package lab.mars.rl.model
 
-import lab.mars.rl.util.ReadOnlyIntSlice
+import lab.mars.rl.util.IntSlice
 
 /**
  * <p>
@@ -30,17 +32,41 @@ class MDP(
         val pi_maker: () -> DeterminedPolicy)
 
 interface Indexable {
-    val idx: IntArray
+    val idx: IntSlice
 }
 
-interface IndexedCollection<E> : Iterable<E> {
-    operator fun get(vararg index: Int): E
-    operator fun get(indexable: Indexable): E
-    operator fun get(vararg indexable: Indexable): E
-    operator fun set(vararg index: Int, s: E)
-    operator fun set(indexable: Indexable, s: E)
-    operator fun set(vararg indexable: Indexable, s: E)
-    fun init(element_maker: (ReadOnlyIntSlice) -> Any?)
+fun concat(indexable: Array<out Indexable>): IntSlice {
+    val total = indexable.sumBy { it.idx.size }
+    val idx = IntArray(total)
+    var _offset = 0
+    indexable.forEach {
+        it.idx.apply {
+            System.arraycopy(backed, offset, idx, _offset, size)
+            _offset += size
+        }
+    }
+    return IntSlice.reuse(idx)
+}
+
+abstract class IndexedCollection<E> : Iterable<E> {
+    abstract operator fun get(idx: IntSlice): E
+    inline operator fun get(vararg idx: Int): E = get(IntSlice.reuse(idx))
+    inline operator fun get(indexable: Indexable): E = get(indexable.idx)
+    inline operator fun get(vararg indexable: Indexable): E = get(concat(indexable))
+
+    abstract operator fun set(idx: IntSlice, s: E)
+
+    inline operator fun set(vararg idx: Int, s: E) {
+        set(IntSlice.reuse(idx), s)
+    }
+
+    inline operator fun set(indexable: Indexable, s: E) {
+        set(indexable.idx, s)
+    }
+
+    inline operator fun set(vararg indexable: Indexable, s: E) {
+        set(concat(indexable), s)
+    }
 }
 
 /**
@@ -50,99 +76,54 @@ inline fun <E> IndexedCollection<E>.ifAny(block: IndexedCollection<E>.() -> Unit
     for (element in this) return block()
 }
 
-class State(index: IntArray) : Indexable {
+class State(index: IntSlice) : Indexable {
     override val idx = index
 
     var actions: IndexedCollection<Action> = emptyActions
 
-    override fun toString() = idx.asList().toString()
+    override fun toString() = idx.toString()
 }
 
-class Action(index: IntArray) : Indexable {
+class Action(index: IntSlice) : Indexable {
     override val idx = index
 
     var possibles: IndexedCollection<Possible> = emptyPossibles
 
     lateinit var sample: () -> Possible
 
-    override fun toString() = idx.asList().toString()
+    override fun toString() = idx.toString()
 }
 
 class Possible(var next: State, var reward: Double, var probability: Double)
 
-val emptyActions = object : IndexedCollection<Action> {
-    override fun get(vararg index: Int): Action {
-        TODO("not implemented")
+val emptyActions = object : IndexedCollection<Action>() {
+    override fun get(index: IntSlice): Action {
+        throw  Exception()
     }
 
-    override fun get(indexable: Indexable): Action {
-        TODO("not implemented")
+    override fun set(index: IntSlice, s: Action) {
+        throw  Exception()
     }
 
-    override fun get(vararg indexable: Indexable): Action {
-        TODO("not implemented")
-    }
+    override fun iterator(): Iterator<Action> = object : Iterator<Action> {
+        override fun hasNext() = false
 
-    override fun init(element_maker: (ReadOnlyIntSlice) -> Any?) {
-        TODO("not implemented")
-    }
-
-    override fun iterator(): Iterator<Action> = emptyActionIterator
-
-    override fun set(vararg index: Int, s: Action) {
-        TODO("not implemented")
-    }
-
-    override fun set(indexable: Indexable, s: Action) {
-        TODO("not implemented")
-    }
-
-    override fun set(vararg indexable: Indexable, s: Action) {
-        TODO("not implemented")
+        override fun next() = throw Exception()
     }
 }
 
-val emptyActionIterator = object : Iterator<Action> {
-    override fun hasNext() = false
-
-    override fun next() = null as Action
-}
-
-val emptyPossibles = object : IndexedCollection<Possible> {
-    override fun get(vararg index: Int): Possible {
-        TODO("not implemented")
+val emptyPossibles = object : IndexedCollection<Possible>() {
+    override fun get(index: IntSlice): Possible {
+        throw  Exception()
     }
 
-    override fun get(indexable: Indexable): Possible {
-        TODO("not implemented")
+    override fun set(index: IntSlice, s: Possible) {
+        throw  Exception()
     }
 
-    override fun get(vararg indexable: Indexable): Possible {
-        TODO("not implemented")
+    override fun iterator(): Iterator<Possible> = object : Iterator<Possible> {
+        override fun hasNext() = false
+
+        override fun next() = throw Exception()
     }
-
-    override fun iterator(): Iterator<Possible> = emptyPossibleIterator
-
-    override fun set(vararg index: Int, s: Possible) {
-        TODO("not implemented")
-    }
-
-    override fun set(indexable: Indexable, s: Possible) {
-        TODO("not implemented")
-    }
-
-    override fun set(vararg indexable: Indexable, s: Possible) {
-        TODO("not implemented")
-    }
-
-    override fun init(element_maker: (ReadOnlyIntSlice) -> Any?) {
-        TODO("not implemented")
-    }
-
-}
-
-val emptyPossibleIterator = object : Iterator<Possible> {
-    override fun hasNext() = false
-
-    override fun next() = null as Possible
 }

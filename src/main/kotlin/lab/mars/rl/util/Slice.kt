@@ -12,7 +12,7 @@ import java.util.*
  * @author wumo
  */
 fun IntArray.slice(start: Int, end: Int): IntSlice {
-    return IntSlice.use(this, start, end)
+    return IntSlice.reuse(this, start, end)
 }
 
 interface ReadOnlyIntSlice {
@@ -25,7 +25,8 @@ interface ReadOnlyIntSlice {
     operator fun get(start: Int, end: Int): ReadOnlyIntSlice
 
     fun toIntArray(): IntArray
-    fun copyOf(): IntSlice
+    fun copy(): IntSlice
+    fun reuseBacked(): IntSlice
 }
 
 interface RWIntSlice : ReadOnlyIntSlice {
@@ -54,7 +55,7 @@ interface RWAIntSlice : RWIntSlice {
     fun append(num: Int, s: Int)
 }
 
-open class IntSlice constructor(private var array: IntArray, private var offset: Int, size: Int, cap: Int = size) :
+open class IntSlice constructor(internal var backed: IntArray, internal var offset: Int, size: Int, cap: Int = size) :
         RWAIntSlice {
     companion object {
         val MAX_ARRAY_SIZE = Integer.MAX_VALUE - 8
@@ -68,18 +69,18 @@ open class IntSlice constructor(private var array: IntArray, private var offset:
          */
         inline fun zero(num: Int) = new(num, num)
 
-        inline fun use(array: IntArray, start: Int, end: Int) = IntSlice(array, start, end - start + 1)
+        inline fun reuse(array: IntArray, start: Int, end: Int) = IntSlice(array, start, end - start + 1)
 
-        inline fun use(array: IntArray) = use(array, 0, array.lastIndex)
+        inline fun reuse(array: IntArray) = reuse(array, 0, array.lastIndex)
 
         fun new(cap: Int = 2, size: Int = 0) = IntSlice(IntArray(cap), 0, size, cap)
     }
 
     init {
         require(
-                offset in 0..array.lastIndex &&
-                size in 0..array.size - offset &&
-                cap in size..array.size - offset)
+                offset in 0..backed.lastIndex &&
+                size in 0..backed.size - offset &&
+                cap in size..backed.size - offset)
     }
 
     private var _size = size
@@ -95,25 +96,25 @@ open class IntSlice constructor(private var array: IntArray, private var offset:
 
     override operator fun get(idx: Int): Int {
         require(idx in 0 until _size)
-        return array[idx + offset]
+        return backed[idx + offset]
     }
 
     override operator fun get(start: Int, end: Int): IntSlice {
         require(start in 0..end)
         require(end < _size)
-        return IntSlice(array, offset + start, _size - (end - start))
+        return IntSlice(backed, offset + start, _size - (end - start))
     }
 
     override operator fun set(idx: Int, s: Int) {
         require(idx in 0 until _size)
-        array[idx + offset] = s
+        backed[idx + offset] = s
     }
 
     override operator fun set(start: Int, end: Int, s: Int) {
         require(start in 0..end)
         require(end < _size)
         for (idx in start..end)
-            array[offset + idx] = s
+            backed[offset + idx] = s
     }
 
     override fun remove(start: Int, end: Int) {
@@ -121,25 +122,27 @@ open class IntSlice constructor(private var array: IntArray, private var offset:
         require(end < _size)
         if (end < _size - 1) {
             val moved = _size - 1 - end
-            System.arraycopy(array, offset + end + 1, array, offset + start, moved)
+            System.arraycopy(backed, offset + end + 1, backed, offset + start, moved)
         }
         _size -= (end - start + 1)
     }
 
-    override fun toIntArray(): IntArray = Arrays.copyOfRange(array, offset, offset + _size)
+    override fun toIntArray(): IntArray = Arrays.copyOfRange(backed, offset, offset + _size)
 
-    override fun copyOf() = IntSlice.use(toIntArray())
+    override fun copy() = reuse(toIntArray())
+
+    override fun reuseBacked() = IntSlice(backed, offset, size, cap)
 
     override fun add(s: Int) {
         require(_size < _cap)
-        array[offset + _size] = s
+        backed[offset + _size] = s
         _size++
     }
 
     override fun add(num: Int, s: Int) {
         require(_size + num <= _cap)
         for (i in 0 until num)
-            array[offset + _size + i] = s
+            backed[offset + _size + i] = s
         _size += num
     }
 
@@ -150,10 +153,10 @@ open class IntSlice constructor(private var array: IntArray, private var offset:
             _cap = minCap
         if (_cap > MAX_ARRAY_SIZE)
             _cap = Int.MAX_VALUE
-        if (offset + _cap > array.size) {
+        if (offset + _cap > backed.size) {
             val tmp = IntArray(_cap)
-            System.arraycopy(array, offset, tmp, 0, _size)
-            array = tmp
+            System.arraycopy(backed, offset, tmp, 0, _size)
+            backed = tmp
             offset = 0
         }
     }
@@ -172,8 +175,8 @@ open class IntSlice constructor(private var array: IntArray, private var offset:
         val sb = StringBuilder()
         sb.append("[")
         for (idx in offset until lastIndex)
-            sb.append(array[idx]).append(", ")
-        sb.append(array[lastIndex])
+            sb.append(backed[idx]).append(", ")
+        sb.append(backed[lastIndex])
         sb.append("]")
         return sb.toString()
     }
