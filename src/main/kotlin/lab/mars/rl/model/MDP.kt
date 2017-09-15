@@ -97,11 +97,11 @@ class Action(index: IntSlice) : Indexable {
 class Possible(var next: State, var reward: Double, var probability: Double)
 
 val emptyActions = object : IndexedCollection<Action>() {
-    override fun get(index: IntSlice): Action {
+    override fun get(idx: IntSlice): Action {
         throw  Exception()
     }
 
-    override fun set(index: IntSlice, s: Action) {
+    override fun set(idx: IntSlice, s: Action) {
         throw  Exception()
     }
 
@@ -113,11 +113,11 @@ val emptyActions = object : IndexedCollection<Action>() {
 }
 
 val emptyPossibles = object : IndexedCollection<Possible>() {
-    override fun get(index: IntSlice): Possible {
+    override fun get(idx: IntSlice): Possible {
         throw  Exception()
     }
 
-    override fun set(index: IntSlice, s: Possible) {
+    override fun set(idx: IntSlice, s: Possible) {
         throw  Exception()
     }
 
