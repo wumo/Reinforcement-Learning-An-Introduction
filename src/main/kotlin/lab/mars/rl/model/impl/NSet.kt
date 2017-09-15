@@ -182,6 +182,32 @@ class NSet<E>(private val dim: IntArray, private val stride: IntArray, private v
                             visitor = { index })
     }
 
+    data class Pair<A, B>(var first: A, var second: B) {
+        override fun toString(): String {
+            return "($first, $second)"
+        }
+    }
+
+    fun withIndices() = GeneralIterator<Pair<out ReadOnlyIntSlice, E>>().apply {
+        val index = IntSlice.zero(this.set.dim.size).apply { this[lastIndex] = -1 }
+        var pair: Pair<out ReadOnlyIntSlice, E>? = null
+        traverse = Traverse(this,
+                            forward = {
+                                index.apply {
+                                    append(current.set.dim.size, 0)
+                                    this[lastIndex] = -1
+                                }
+                            },
+                            backward = { index.removeLast(current.set.dim.size) },
+                            translate = { index.increment(current.set.dim) },
+                            visitor = {
+                                val tmp = pair ?: Pair(index, it)
+                                pair = tmp
+                                tmp.second = it
+                                tmp
+                            })
+    }
+
     inner class GeneralIterator<out T> : Iterator<T> {
         /**
          * @param current 当前正待着的节点

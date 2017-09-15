@@ -33,7 +33,7 @@ class TestNSet {
         val dim =
                 0(
                         2,
-                        2 ,
+                        2,
                         2,
                         0(
                                 2,
@@ -41,18 +41,18 @@ class TestNSet {
                                 (2 x 3)(
                                         2,
                                         3 x 4
-                                       )
-                         )
-                 )
+                                )
+                        )
+                )
         val set = NSet<Int>(dim) { r1.add(it.toIntArray());null }
         for (index in set.indices()) {
             println(index)
             r2.add(index.toIntArray())
         }
         var i = 0
-        val size=r1.size
-        for (i in 0 until  size) {
-           println("${i}\t ${r1[i].asList()} vs.${r2[i].asList()}");
+        val size = r1.size
+        for (i in 0 until size) {
+            println("${i}\t ${r1[i].asList()} vs.${r2[i].asList()}");
         }
         Assert.assertArrayEquals(r1.toTypedArray(), r2.toTypedArray())
     }
@@ -69,9 +69,9 @@ class TestNSet {
                         (2 x 3)(
                                 2,
                                 3 x 4
-                               )
-                 )
-         )
+                        )
+                )
+        )
 
         o(2)
         o(2 x 3)
@@ -166,6 +166,9 @@ class TestNSet {
         }
         for (index in set.indices()) {
             println(index)
+        }
+        for ((idx, s) in set.withIndices()) {
+            println("$idx=$s")
         }
     }
 
