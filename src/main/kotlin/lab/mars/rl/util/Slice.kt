@@ -11,25 +11,21 @@ import java.util.*
  *
  * @author wumo
  */
-fun IntArray.slice(start: Int, end: Int): IntSlice {
-    return IntSlice.reuse(this, start, end)
+fun IntArray.slice(start: Int, end: Int): DefaultIntSlice {
+    return DefaultIntSlice.reuse(this, start, end)
 }
 
-interface ReadOnlyIntSlice {
-    val size: Int
-    val cap: Int
-    val lastIndex: Int
-
-    operator fun get(idx: Int): Int
-
-    operator fun get(start: Int, end: Int): ReadOnlyIntSlice
+interface IntSlice : Index {
+    operator fun get(start: Int, end: Int): IntSlice
 
     fun toIntArray(): IntArray
     fun copy(): IntSlice
     fun reuseBacked(): IntSlice
 }
 
-interface RWIntSlice : ReadOnlyIntSlice {
+interface MutableIntSlice : IntSlice {
+    val cap: Int
+
     operator fun set(idx: Int, s: Int)
 
     operator fun set(start: Int, end: Int, s: Int)
@@ -47,7 +43,7 @@ interface RWIntSlice : ReadOnlyIntSlice {
     fun add(num: Int, s: Int)
 }
 
-interface RWAIntSlice : RWIntSlice {
+interface AppendableIntSlice : MutableIntSlice {
     fun ensure(minCap: Int)
 
     fun append(s: Int)
@@ -55,25 +51,27 @@ interface RWAIntSlice : RWIntSlice {
     fun append(num: Int, s: Int)
 }
 
-open class IntSlice constructor(internal var backed: IntArray, internal var offset: Int, size: Int, cap: Int = size) :
-        RWAIntSlice {
+open class DefaultIntSlice constructor(internal var backed: IntArray, internal var offset: Int, size: Int, cap: Int = size) :
+        AppendableIntSlice {
+
     companion object {
         val MAX_ARRAY_SIZE = Integer.MAX_VALUE - 8
         /**
-         * @param s 用枚举的参数构成初始的[IntSlice]
+         * @param s 用枚举的参数构成初始的[DefaultIntSlice]
          */
-        fun of(vararg s: Int) = IntSlice(s, 0, s.size)
+        fun of(vararg s: Int) = DefaultIntSlice(s, 0, s.size)
 
         /**
-         * @param num 初始化[num]长度、初值为0的[IntSlice]
+         * @param num 初始化[num]长度、初值为0的[DefaultIntSlice]
          */
         inline fun zero(num: Int) = new(num, num)
 
-        inline fun reuse(array: IntArray, start: Int, end: Int) = IntSlice(array, start, end - start + 1)
+        inline fun reuse(array: IntArray, start: Int, end: Int) = DefaultIntSlice(array, start, end - start + 1)
 
         inline fun reuse(array: IntArray) = reuse(array, 0, array.lastIndex)
 
-        fun new(cap: Int = 2, size: Int = 0) = IntSlice(IntArray(cap), 0, size, cap)
+        fun new(cap: Int = 2, size: Int = 0) = DefaultIntSlice(IntArray(cap), 0, size, cap)
+        fun from(s: Index) = reuse(IntArray(s.size) { s[it] })
     }
 
     init {
@@ -90,19 +88,16 @@ open class IntSlice constructor(internal var backed: IntArray, internal var offs
         get() = _size
     override val cap: Int
         get() = _cap
-    override val lastIndex: Int
-        get() = _size - 1
 
-
-    override operator fun get(idx: Int): Int {
-        require(idx in 0 until _size)
-        return backed[idx + offset]
+    override operator fun get(dim: Int): Int {
+        require(dim in 0 until _size)
+        return backed[dim + offset]
     }
 
-    override operator fun get(start: Int, end: Int): IntSlice {
+    override operator fun get(start: Int, end: Int): DefaultIntSlice {
         require(start in 0..end)
         require(end < _size)
-        return IntSlice(backed, offset + start, _size - (end - start))
+        return DefaultIntSlice(backed, offset + start, _size - (end - start))
     }
 
     override operator fun set(idx: Int, s: Int) {
@@ -131,7 +126,7 @@ open class IntSlice constructor(internal var backed: IntArray, internal var offs
 
     override fun copy() = reuse(toIntArray())
 
-    override fun reuseBacked() = IntSlice(backed, offset, size, cap)
+    override fun reuseBacked() = DefaultIntSlice(backed, offset, size, cap)
 
     override fun add(s: Int) {
         require(_size < _cap)

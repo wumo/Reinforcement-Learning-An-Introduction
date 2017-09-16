@@ -1,8 +1,8 @@
-@file:Suppress("NOTHING_TO_INLINE")
+@file:Suppress("NOTHING_TO_INLINE", "OVERRIDE_BY_INLINE")
 
 package lab.mars.rl.model
 
-import lab.mars.rl.util.IntSlice
+import lab.mars.rl.util.*
 
 /**
  * <p>
@@ -11,10 +11,10 @@ import lab.mars.rl.util.IntSlice
  *
  * @author wumo
  */
-typealias StateSet = IndexedCollection<State>
-typealias StateValueFunction = IndexedCollection<Double>
-typealias ActionValueFunction = IndexedCollection<Double>
-typealias DeterminedPolicy = IndexedCollection<Action?>
+typealias StateSet = RandomAccessCollection<State>
+typealias StateValueFunction = RandomAccessCollection<Double>
+typealias ActionValueFunction = RandomAccessCollection<Double>
+typealias DeterminedPolicy = RandomAccessCollection<Action?>
 
 /**
  *
@@ -31,78 +31,39 @@ class MDP(
         val q_maker: () -> ActionValueFunction,
         val pi_maker: () -> DeterminedPolicy)
 
-interface Indexable {
-    val idx: IntSlice
+class State(val index: IntSlice) : Index {
+    inline override val size: Int
+        get() = index.size
+
+    inline override operator fun get(dim: Int) = index[dim]
+
+    var actions: RandomAccessCollection<Action> = emptyActions
+
+    override fun toString() = index.toString()
 }
 
-fun concat(indexable: Array<out Indexable>): IntSlice {
-    val total = indexable.sumBy { it.idx.size }
-    val idx = IntArray(total)
-    var _offset = 0
-    indexable.forEach {
-        it.idx.apply {
-            System.arraycopy(backed, offset, idx, _offset, size)
-            _offset += size
-        }
-    }
-    return IntSlice.reuse(idx)
-}
+class Action(val index: IntSlice) : Index {
+    inline override val size: Int
+        get() = index.size
 
-abstract class IndexedCollection<E> : Iterable<E> {
-    abstract operator fun get(idx: IntSlice): E
-    inline operator fun get(vararg idx: Int): E = get(IntSlice.reuse(idx))
-    inline operator fun get(indexable: Indexable): E = get(indexable.idx)
-    inline operator fun get(vararg indexable: Indexable): E = get(concat(indexable))
+    inline override operator fun get(dim: Int) = index[dim]
 
-    abstract operator fun set(idx: IntSlice, s: E)
-
-    inline operator fun set(vararg idx: Int, s: E) {
-        set(IntSlice.reuse(idx), s)
-    }
-
-    inline operator fun set(indexable: Indexable, s: E) {
-        set(indexable.idx, s)
-    }
-
-    inline operator fun set(vararg indexable: Indexable, s: E) {
-        set(concat(indexable), s)
-    }
-}
-
-/**
- * 如果集合不为空，则执行[block]
- */
-inline fun <E> IndexedCollection<E>.ifAny(block: IndexedCollection<E>.() -> Unit) {
-    for (element in this) return block()
-}
-
-class State(index: IntSlice) : Indexable {
-    override val idx = index
-
-    var actions: IndexedCollection<Action> = emptyActions
-
-    override fun toString() = idx.toString()
-}
-
-class Action(index: IntSlice) : Indexable {
-    override val idx = index
-
-    var possibles: IndexedCollection<Possible> = emptyPossibles
+    var possibles: RandomAccessCollection<Possible> = emptyPossibles
 
     lateinit var sample: () -> Possible
 
-    override fun toString() = idx.toString()
+    override fun toString() = index.toString()
 }
 
 class Possible(var next: State, var reward: Double, var probability: Double)
 
-val emptyActions = object : IndexedCollection<Action>() {
-    override fun get(idx: IntSlice): Action {
-        throw  Exception()
+val emptyActions = object : RandomAccessCollection<Action>() {
+    override fun get(idx: Index): Action {
+        throw Exception()
     }
 
-    override fun set(idx: IntSlice, s: Action) {
-        throw  Exception()
+    override fun set(idx: Index, s: Action) {
+        throw Exception()
     }
 
     override fun iterator(): Iterator<Action> = object : Iterator<Action> {
@@ -112,13 +73,13 @@ val emptyActions = object : IndexedCollection<Action>() {
     }
 }
 
-val emptyPossibles = object : IndexedCollection<Possible>() {
-    override fun get(idx: IntSlice): Possible {
-        throw  Exception()
+val emptyPossibles = object : RandomAccessCollection<Possible>() {
+    override fun get(idx: Index): Possible {
+        throw Exception()
     }
 
-    override fun set(idx: IntSlice, s: Possible) {
-        throw  Exception()
+    override fun set(idx: Index, s: Possible) {
+        throw Exception()
     }
 
     override fun iterator(): Iterator<Possible> = object : Iterator<Possible> {

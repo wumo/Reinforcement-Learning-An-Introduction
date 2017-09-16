@@ -1,7 +1,7 @@
 package lab.mars.rl.model.impl
 
+import lab.mars.rl.util.DefaultIntSlice
 import lab.mars.rl.util.IntSlice
-import lab.mars.rl.util.ReadOnlyIntSlice
 
 /**
  * <p>
@@ -10,13 +10,13 @@ import lab.mars.rl.util.ReadOnlyIntSlice
  *
  * @author wumo
  */
-operator fun <T> NSet.Companion.invoke(dimension: Dimension, element_maker: (ReadOnlyIntSlice) -> Any? = { null }): NSet<T> {
-    return make(dimension, IntSlice.new(), element_maker)
+operator fun <T> NSet.Companion.invoke(dimension: Dimension, element_maker: (IntSlice) -> Any? = { null }): NSet<T> {
+    return make(dimension, DefaultIntSlice.new(), element_maker)
 }
 
-val zeroDim = IntSlice.of(0)
-private fun <T> make(dimension: Dimension, index: IntSlice,
-                     element_maker: (ReadOnlyIntSlice) -> Any? = { null }): NSet<T> {
+val zeroDim = DefaultIntSlice.of(0)
+private fun <T> make(dimension: Dimension, index: DefaultIntSlice,
+                     element_maker: (IntSlice) -> Any? = { null }): NSet<T> {
     val rootDim = dimension.rootDim
     val sub = dimension.sub
     val dim = rootDim.toIntArray()

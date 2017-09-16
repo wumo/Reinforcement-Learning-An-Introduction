@@ -5,6 +5,7 @@ import lab.mars.rl.model.MDP
 import lab.mars.rl.model.Possible
 import lab.mars.rl.model.State
 import lab.mars.rl.model.impl.*
+import lab.mars.rl.util.DefaultIntSlice
 import java.util.*
 
 /**
@@ -35,7 +36,7 @@ object Blackjack {
         mdp.apply {
             for (s in states)
                 for (action in s.actions)
-                    when (action.idx[0]) {
+                    when (action[0]) {
                         0 -> sticks(action, s)
                         1 -> hits(action, s)
                     }
@@ -45,7 +46,7 @@ object Blackjack {
 
     private fun MDP.sticks(action: Action, s: State) {
         action.sample = {
-            var dealer = s.idx[dealShownCard_idx] + dealer_offset
+            var dealer = s[dealShownCard_idx] + dealer_offset
             var usableAceDealer = dealer == 1
             if (usableAceDealer)
                 dealer += 10
@@ -58,7 +59,7 @@ object Blackjack {
                 }
             }
             if (dealer <= 21) {
-                val player = s.idx[playerSum_idx] + player_offset
+                val player = s[playerSum_idx] + player_offset
                 val sign = (player - dealer).sign()
                 Possible(states[0, sign], sign.toDouble(), 1.0)
             } else//deal goes bust
@@ -68,19 +69,19 @@ object Blackjack {
 
     private fun MDP.hits(action: Action, s: State) {
         action.sample = {
-            var player = s.idx[playerSum_idx] + player_offset
+            var player = s[playerSum_idx] + player_offset
             val card = drawCard()
             player += card
             when {
                 player <= 21 -> {
-                    val idx = s.idx.copy()
+                    val idx = DefaultIntSlice.from(s)
                     idx[playerSum_idx] = player - player_offset
                     Possible(states[idx], 0.0, 1.0)
                 }
-                s.idx[usableAce_idx] == 0 -> Possible(states[0, lose], lose.toDouble(), 1.0)
+                s[usableAce_idx] == 0 -> Possible(states[0, lose], lose.toDouble(), 1.0)
                 else -> {
                     player -= 10
-                    val idx = s.idx.copy()
+                    val idx = DefaultIntSlice.from(s)
                     idx[usableAce_idx] = 0
                     idx[playerSum_idx] = player - player_offset
                     Possible(states[idx], 0.0, 1.0)

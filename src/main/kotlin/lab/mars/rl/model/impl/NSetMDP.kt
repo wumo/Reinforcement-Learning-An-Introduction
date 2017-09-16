@@ -5,7 +5,7 @@ package lab.mars.rl.model.impl
 import lab.mars.rl.model.Action
 import lab.mars.rl.model.MDP
 import lab.mars.rl.model.State
-import lab.mars.rl.util.ReadOnlyIntSlice
+import lab.mars.rl.util.IntSlice
 
 /**
  * <p>
@@ -21,7 +21,7 @@ import lab.mars.rl.util.ReadOnlyIntSlice
  * @param action_dim 依据状态索引确定动作维度，Q函数与状态集和动作集一致
  * @return 使用指定状态集，动态动作维度的MDP实例
  */
-fun NSetMDP(gamma: Double, states: NSet<State>, action_dim: (ReadOnlyIntSlice) -> IntArray) = MDP(
+fun NSetMDP(gamma: Double, states: NSet<State>, action_dim: (IntSlice) -> IntArray) = MDP(
         gamma = gamma,
         states = states,
         v_maker = { NSet(states) { 0.0 } },
@@ -45,7 +45,7 @@ inline fun NSetMDP(gamma: Double, state_dim: Any, action_dim: Any): MDP {
  * @param action_dim 依据状态索引确定动作维度，Q函数与状态集和动作集一致
  * @return 统一状态维度而动作维度异构的MDP实例
  */
-inline fun NSetMDP(gamma: Double, state_dim: Any, crossinline action_dim: (ReadOnlyIntSlice) -> Any): MDP {
+inline fun NSetMDP(gamma: Double, state_dim: Any, crossinline action_dim: (IntSlice) -> Any): MDP {
     val s_dim = state_dim.toDim()
     return MDP(
             gamma = gamma,

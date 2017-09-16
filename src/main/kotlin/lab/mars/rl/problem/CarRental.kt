@@ -63,11 +63,11 @@ object CarRental {
             max_L1_to_L2 + max_L2_to_L1 + 1
         }
         for (s in mdp.states) {
-            val s_1 = s.idx[0]
-            val s_2 = s.idx[1]
+            val s_1 = s[0]
+            val s_2 = s[1]
             val max_L1_to_L2 = max_move(s_1, s_2)
             for (action in s.actions) {
-                val idx = action.idx[0]
+                val idx = action[0]
                 val L1_to_L2 = max_L1_to_L2 - idx
                 val nL1 = s_1 - L1_to_L2
                 val nL2 = s_2 + L1_to_L2

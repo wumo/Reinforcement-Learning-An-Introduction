@@ -24,10 +24,10 @@ object Gambler {
                           action_dim = { min(it[0], goal_coin - it[0]) + 1 })
         mdp.apply {
             for (s in states) {
-                val capital = s.idx[0]
+                val capital = s[0]
                 val max_stake = min(capital, goal_coin - capital)
                 for (action in s.actions) {
-                    val stake = action.idx[0]
+                    val stake = action[0]
                     action.possibles = if (max_stake == 0)
                         NSet.of(Possible(states[capital], 0.0, 1.0))
                     else

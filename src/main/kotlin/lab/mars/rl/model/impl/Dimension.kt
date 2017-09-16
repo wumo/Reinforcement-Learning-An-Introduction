@@ -2,7 +2,7 @@
 
 package lab.mars.rl.model.impl
 
-import lab.mars.rl.util.IntSlice
+import lab.mars.rl.util.DefaultIntSlice
 
 /**
  * <p>
@@ -11,27 +11,27 @@ import lab.mars.rl.util.IntSlice
  *
  * @author wumo
  */
-class Dimension(val rootDim: IntSlice, val sub: Array<Dimension>)
+class Dimension(val rootDim: DefaultIntSlice, val sub: Array<Dimension>)
 
 val empty = Array<Dimension>(0) { throw IllegalStateException() }
 
-inline operator fun Int.invoke(vararg s: Any) = make(IntSlice.of(this), s)
+inline operator fun Int.invoke(vararg s: Any) = make(DefaultIntSlice.of(this), s)
 
-inline operator fun IntSlice.invoke(vararg s: Any) = make(this, s)
+inline operator fun DefaultIntSlice.invoke(vararg s: Any) = make(this, s)
 
 fun Any.toDim() = when (this) {
-    is Int -> Dimension(IntSlice.of(this), empty)
-    is IntSlice -> Dimension(this, empty)
+    is Int -> Dimension(DefaultIntSlice.of(this), empty)
+    is DefaultIntSlice -> Dimension(this, empty)
     is Dimension -> this
     else -> throw IllegalArgumentException(this.toString())
 }
 
-fun make(dim: IntSlice, s: Array<out Any>): Dimension {
+fun make(dim: DefaultIntSlice, s: Array<out Any>): Dimension {
     val array = Array(s.size) {
         val tmp = s[it]
         when (tmp) {
-            is Int -> Dimension(IntSlice.of(tmp), empty)
-            is IntSlice -> Dimension(tmp, empty)
+            is Int -> Dimension(DefaultIntSlice.of(tmp), empty)
+            is DefaultIntSlice -> Dimension(tmp, empty)
             is Dimension -> tmp
             else -> throw IllegalArgumentException(tmp.toString())
         }
@@ -44,7 +44,7 @@ inline fun Dim(vararg dim: Int) = dim
 class D {
 
     constructor(vararg s: Any)
-    constructor(a: IntSlice)
+    constructor(a: DefaultIntSlice)
     constructor(a: Int)
 
     operator fun invoke(vararg s: Any) {
@@ -52,41 +52,41 @@ class D {
     }
 }
 
-inline fun o(a: IntSlice, block: TreeDim.() -> Unit): TreeDim {
+inline fun o(a: DefaultIntSlice, block: TreeDim.() -> Unit): TreeDim {
     val d = TreeDim(a)
     block(d)
     return d
 }
 
-inline fun o(a: Int, block: TreeDim.() -> Unit) = o(IntSlice.of(a), block)
+inline fun o(a: Int, block: TreeDim.() -> Unit) = o(DefaultIntSlice.of(a), block)
 
-inline fun o(block: TreeDim.() -> Unit) = o(IntSlice.of(0), block)
+inline fun o(block: TreeDim.() -> Unit) = o(DefaultIntSlice.of(0), block)
 
-inline fun o(a: IntSlice) = LeafDim(a)
+inline fun o(a: DefaultIntSlice) = LeafDim(a)
 
-inline fun o(a: Int) = LeafDim(IntSlice.of(a))
+inline fun o(a: Int) = LeafDim(DefaultIntSlice.of(a))
 
-infix fun IntSlice.x(a: Int) = apply { append(a) }
+infix fun DefaultIntSlice.x(a: Int) = apply { append(a) }
 
-infix fun Int.x(a: Int) = IntSlice.of(this, a)
+infix fun Int.x(a: Int) = DefaultIntSlice.of(this, a)
 
-operator fun IntSlice.invoke(block: TreeDim.() -> Unit): TreeDim {
+operator fun DefaultIntSlice.invoke(block: TreeDim.() -> Unit): TreeDim {
     val tmp = TreeDim(this)
     block(tmp)
     return tmp
 }
 
 operator fun Int.invoke(block: TreeDim.() -> Unit): TreeDim {
-    val tmp = TreeDim(IntSlice.of(this))
+    val tmp = TreeDim(DefaultIntSlice.of(this))
     block(tmp)
     return tmp
 }
 
 interface IDim
-class LeafDim(val idx: IntSlice) : IDim
+class LeafDim(val idx: DefaultIntSlice) : IDim
 
-class TreeDim(val dim: IntSlice) : IDim {
-    constructor(dim: Int) : this(IntSlice.of(dim))
+class TreeDim(val dim: DefaultIntSlice) : IDim {
+    constructor(dim: Int) : this(DefaultIntSlice.of(dim))
     constructor() : this(0)
 
     val sub = arrayListOf<IDim>()
@@ -103,10 +103,10 @@ class TreeDim(val dim: IntSlice) : IDim {
         }
 
         operator fun set(vararg a: Int, s: Int) {
-            special[a] = LeafDim(IntSlice.of(s))
+            special[a] = LeafDim(DefaultIntSlice.of(s))
         }
 
-        operator fun set(vararg a: Int, s: IntSlice) {
+        operator fun set(vararg a: Int, s: DefaultIntSlice) {
             special[a] = LeafDim(s)
         }
 
@@ -121,14 +121,14 @@ class TreeDim(val dim: IntSlice) : IDim {
         }
 
         operator fun invoke(a: Int) {
-            sub.add(LeafDim(IntSlice.of(a)))
+            sub.add(LeafDim(DefaultIntSlice.of(a)))
         }
 
-        operator fun invoke(a: IntSlice) {
+        operator fun invoke(a: DefaultIntSlice) {
             sub.add(LeafDim(a))
         }
 
-        inline operator fun invoke(a: IntSlice, block: TreeDim.() -> Unit) {
+        inline operator fun invoke(a: DefaultIntSlice, block: TreeDim.() -> Unit) {
             val s = TreeDim(a)
             block(s)
             sub.add(s)

@@ -3,8 +3,10 @@
 package lab.mars.rl.model.impl
 
 import lab.mars.rl.model.*
-import lab.mars.rl.util.ReadOnlyIntSlice
 import lab.mars.rl.util.IntSlice
+import lab.mars.rl.util.DefaultIntSlice
+import lab.mars.rl.util.Index
+import lab.mars.rl.util.RandomAccessCollection
 import java.util.NoSuchElementException
 
 /**
@@ -22,7 +24,7 @@ import java.util.NoSuchElementException
  *
  * @receiver 表示index的数组链表
  */
-fun IntSlice.increment(dim: IntArray) {
+fun DefaultIntSlice.increment(dim: IntArray) {
     val offset = lastIndex - dim.size + 1
     for (idx in dim.lastIndex downTo 0) {
         val this_idx = offset + idx
@@ -55,7 +57,7 @@ fun strideOfDim(dim: IntArray): IntArray {
  * @param root 根节点一维数组
  */
 class NSet<E>(private val dim: IntArray, private val stride: IntArray, private val root: Array<Any?>) :
-        IndexedCollection<E>() {
+        RandomAccessCollection<E>() {
     constructor(dim: IntArray, root: Array<Any?>) : this(dim, strideOfDim(dim), root)
 
     private var parent: NSet<E>? = null
@@ -75,8 +77,8 @@ class NSet<E>(private val dim: IntArray, private val stride: IntArray, private v
      * 使用构造lambda [element_maker]来为数组的每个元素初始化
      * @param element_maker 提供了每个元素的index
      */
-    fun init(element_maker: (ReadOnlyIntSlice) -> Any?) {
-        val index = IntSlice.zero(dim.size)
+    fun init(element_maker: (IntSlice) -> Any?) {
+        val index = DefaultIntSlice.zero(dim.size)
         for (i in 0 until root.size) {
             val tmp = element_maker(index)
             root[i] = refParent(tmp).apply {
@@ -91,34 +93,34 @@ class NSet<E>(private val dim: IntArray, private val stride: IntArray, private v
             return invoke(elements.size) { elements[i++] }
         }
 
-        fun <T> reuse(dim: IntArray, element_maker: (ReadOnlyIntSlice) -> Any? = { null }): NSet<T> {
+        fun <T> reuse(dim: IntArray, element_maker: (IntSlice) -> Any? = { null }): NSet<T> {
             val stride = strideOfDim(dim)
             val total = dim[0] * stride[0]
             return NSet<T>(dim, stride, Array(total) { null }).apply { init(element_maker) }
         }
 
-        operator fun <T> invoke(dim: Int, element_maker: (ReadOnlyIntSlice) -> Any? = { null })
+        operator fun <T> invoke(dim: Int, element_maker: (IntSlice) -> Any? = { null })
                 = reuse<T>(intArrayOf(dim), element_maker)
 
-        operator fun <T> invoke(dim: IntSlice, element_maker: (ReadOnlyIntSlice) -> Any? = { null })
+        operator fun <T> invoke(dim: DefaultIntSlice, element_maker: (IntSlice) -> Any? = { null })
                 = reuse<T>(dim.toIntArray(), element_maker)
 
-        operator fun <T> invoke(vararg dim: Int, element_maker: (ReadOnlyIntSlice) -> Any? = { null })
+        operator fun <T> invoke(vararg dim: Int, element_maker: (IntSlice) -> Any? = { null })
                 = reuse<T>(dim, element_maker)
 
         /**
          * 构造一个与[shape]相同形状的[NSet]（维度、树深度都相同）
          */
-        operator fun <T> invoke(shape: NSet<*>, element_maker: (ReadOnlyIntSlice) -> Any? = { null }): NSet<T> {
+        operator fun <T> invoke(shape: NSet<*>, element_maker: (IntSlice) -> Any? = { null }): NSet<T> {
             return NSet<T>(shape.dim, shape.stride, Array(shape.root.size) { null }).apply {
-                val index = IntSlice.zero(shape.dim.size)
+                val index = DefaultIntSlice.zero(shape.dim.size)
                 for (idx in 0 until this.root.size)
                     copycat(this, shape.root[idx], index, element_maker)
                             .apply { index.increment(shape.dim) }
             }
         }
 
-        private fun <T> copycat(origin: NSet<T>, prototype: Any?, index: IntSlice, element_maker: (ReadOnlyIntSlice) -> Any?): Any? {
+        private fun <T> copycat(origin: NSet<T>, prototype: Any?, index: DefaultIntSlice, element_maker: (IntSlice) -> Any?): Any? {
             return when (prototype) {
                 is NSet<*> -> NSet<T>(prototype.dim, prototype.stride, Array(prototype.root.size) { null }).apply {
                     parent = origin
@@ -133,10 +135,17 @@ class NSet<E>(private val dim: IntArray, private val stride: IntArray, private v
         }
     }
 
-    private fun <T> get_or_set(idx: IntSlice, start: Int, set: Boolean, s: T?): T {
+    private fun <T> get_or_set(idx: Index, start: Int, set: Boolean, s: T?): T {
         var offset = 0
         val idx_size = idx.size - start
         if (idx_size < dim.size) throw RuntimeException("index.length=${idx.size - start}  < Dim.length=${dim.size}")
+        idx.forEach(start, start + dim.lastIndex) { idx, value ->
+            val a = idx - start
+            if (value < 0 || value > dim[a])
+                throw ArrayIndexOutOfBoundsException("index[$a]= $value while Dim[$a]=${dim[a]}")
+            offset += value * stride[a]
+        }
+
         for (a in 0 until dim.size) {
             if (idx[start + a] < 0 || idx[start + a] > dim[a])
                 throw ArrayIndexOutOfBoundsException("index[$a]= ${idx[start + a]} while Dim[$a]=${dim[a]}")
@@ -155,21 +164,21 @@ class NSet<E>(private val dim: IntArray, private val stride: IntArray, private v
         }
     }
 
-    override fun get(idx: IntSlice): E = get_or_set<E>(idx, 0, false, null)
+    override fun get(idx: Index): E = get_or_set<E>(idx, 0, false, null)
 
-    override fun set(idx: IntSlice, s: E) {
+    override fun set(idx: Index, s: E) {
         get_or_set(idx, 0, true, s)
     }
 
     operator fun set(vararg index: Int, s: NSet<E>) {
         require(index.size == dim.size) { "setting subset requires index.size == Dim.size" }
-        get_or_set(IntSlice.reuse(index), 0, true, s)
+        get_or_set(DefaultIntSlice.reuse(index), 0, true, s)
     }
 
     override fun iterator() = GeneralIterator<E>().apply { traverse = Traverse(this, {}, {}, {}, { it }) }
 
-    fun indices() = GeneralIterator<ReadOnlyIntSlice>().apply {
-        val index = IntSlice.zero(this.set.dim.size).apply { this[lastIndex] = -1 }
+    fun indices() = GeneralIterator<IntSlice>().apply {
+        val index = DefaultIntSlice.zero(this.set.dim.size).apply { this[lastIndex] = -1 }
         traverse = Traverse(this,
                             forward = {
                                 index.apply {
@@ -188,9 +197,9 @@ class NSet<E>(private val dim: IntArray, private val stride: IntArray, private v
         }
     }
 
-    fun withIndices() = GeneralIterator<Pair<out ReadOnlyIntSlice, E>>().apply {
-        val index = IntSlice.zero(this.set.dim.size).apply { this[lastIndex] = -1 }
-        var pair: Pair<out ReadOnlyIntSlice, E>? = null
+    fun withIndices() = GeneralIterator<Pair<out IntSlice, E>>().apply {
+        val index = DefaultIntSlice.zero(this.set.dim.size).apply { this[lastIndex] = -1 }
+        var pair: Pair<out IntSlice, E>? = null
         traverse = Traverse(this,
                             forward = {
                                 index.apply {
