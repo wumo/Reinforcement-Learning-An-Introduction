@@ -2,7 +2,6 @@
 
 package lab.mars.rl.util
 
-import com.sun.org.apache.bcel.internal.generic.RETURN
 import java.util.*
 
 /**
@@ -32,6 +31,11 @@ fun DefaultIntSlice.increment(dim: IntArray) {
 }
 
 /**
+ * 直接使用[elements]构建[NSet]的全部内容
+ */
+inline fun <T> nsetOf(vararg elements: T) = NSet<T>(intArrayOf(elements.size), intArrayOf(1), Array(elements.size) { elements[it] })
+
+/**
  * 1. 可以定义任意维的多维数组，并使用`[]`进行取值赋值
  *如: `val a=Nset(2 x 3)`定义了一个2x3的矩阵，可以使用`a[0,0]=0`这样的用法
  *
@@ -44,29 +48,19 @@ fun DefaultIntSlice.increment(dim: IntArray) {
  * @param stride 各维度在一维数组上的跨度
  * @param root 根节点一维数组
  */
-class NSet<E> private constructor(private val dim: IntArray, private val stride: IntArray, private val root: Array<Any?>) :
+class NSet<E>(private val dim: IntArray, private val stride: IntArray, private val root: Array<Any?>) :
         RandomAccessCollection<E>() {
     companion object {
-        inline fun <T> of(vararg elements: T): NSet<T> {
-            var i = 0
-            return invoke(elements.size) { elements[i++] }
-        }
-
         /**
          * 构造一个与[shape]相同形状的[NSet]（维度、树深度都相同）
          */
-        operator fun <T> invoke(shape: NSet<*>, element_maker: (IntSlice) -> Any? = { null }): NSet<T> =
+        fun <T> copycat(shape: NSet<*>, element_maker: (IntSlice) -> Any? = { null }): NSet<T> =
                 NSet<T>(shape.dim, shape.stride, Array(shape.root.size) { null }).apply {
                     val index = DefaultIntSlice.zero(shape.dim.size)
                     for (idx in 0 until this.root.size)
                         copycat(this, shape.root[idx], index, element_maker)
                                 .apply { index.increment(shape.dim) }
                 }
-
-        operator fun <T> invoke(dimension: Any, element_maker: (IntSlice) -> Any? = { null }): NSet<T> {
-            val _dim = dimension.toDim()
-            return make(_dim.rootDim, _dim.sub, DefaultIntSlice.new(), element_maker)
-        }
 
         private fun <T> copycat(origin: NSet<T>, prototype: Any?, index: DefaultIntSlice, element_maker: (IntSlice) -> Any?): Any? =
                 when (prototype) {
@@ -80,32 +74,6 @@ class NSet<E> private constructor(private val dim: IntArray, private val stride:
                     }
                     else -> origin.refParent(element_maker(index))
                 }
-
-        private val zeroDim = DefaultIntSlice.of(0)
-        private fun <T> make(rootDim: IntSlice, sub: Array<Dimension>, index: DefaultIntSlice,
-                             element_maker: (IntSlice) -> Any? = { null }): NSet<T> {
-            val dim = rootDim.toIntArray()
-            val isZero = dim.size == 1 && dim[0] == 0
-            if (isZero) {
-                dim[0] = sub.size
-                index.append(0)
-            } else
-                index.append(rootDim.size, 0)
-
-            val stride = IntArray(dim.size)
-            stride[stride.lastIndex] = 1
-            for (a in stride.lastIndex - 1 downTo 0)
-                stride[a] = dim[a + 1] * stride[a + 1]
-
-            val total = dim[0] * stride[0]
-            return NSet(dim, stride, Array(total) {
-                when {
-                    sub.isEmpty() -> element_maker(index)
-                    isZero -> make<T>(sub[it].rootDim, sub[it].sub, index, element_maker)
-                    else -> make<T>(zeroDim, sub, index, element_maker)
-                }.apply { index.increment(dim) }
-            }.apply { index.removeLast(dim.size) })
-        }
     }
 
     private var parent: NSet<E>? = null

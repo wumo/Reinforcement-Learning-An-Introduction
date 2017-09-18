@@ -1,6 +1,5 @@
 package lab.mars.rl.problem
 
-import lab.mars.rl.model.Action
 import lab.mars.rl.model.MDP
 import lab.mars.rl.model.Possible
 import lab.mars.rl.model.State
@@ -24,12 +23,17 @@ object Blackjack {
     private lateinit var draw: State
     private lateinit var lose: State
 
+    private const val reward_win = 1.0
+    private const val reward_draw = 0.0
+    private const val reward_lose = -1.0
+
     private const val ace_idx = 1
     private const val player_idx = 2
     private const val dealer_idx = 3
     private const val player_offset = 12
     private const val dealer_offset = 1
     private val rand = Random(System.nanoTime())
+
     fun make(): MDP {
         val mdp = NSetMDP(gamma = 1.0, state_dim = 0(3, 2 x 10 x 10), action_dim = { if (it[0] == 0) 0 else 2 })
         mdp.apply {
@@ -37,65 +41,61 @@ object Blackjack {
             draw = states[0, 1]
             lose = states[0, 2]
             for (s in states)
-                for (action in s.actions)
-                    when (action[0]) {
-                        0 -> sticks(s, action)
-                        1 -> hits(action, s)
+                for (a in s.actions)
+                    when (a[0]) {
+                        0 -> a.sample = sticks(s)
+                        1 -> a.sample = hits(s)
                     }
         }
         return mdp
     }
 
-    private fun MDP.sticks(s: State, action: Action) {
-        action.sample = {
-            var dealer = s[dealer_idx] + dealer_offset
-            var usableAceDealer = dealer == 1
-            if (usableAceDealer)
-                dealer += 10
-            while (dealer < 17) {
-                val card = drawCard()
-                dealer += card
-                if (dealer > 21 && usableAceDealer) {
-                    dealer -= 10
-                    usableAceDealer = false
+    private fun MDP.sticks(s: State) =
+            {
+                var dealer = s[dealer_idx] + dealer_offset
+                var usableAceDealer = dealer == 1
+                if (usableAceDealer)
+                    dealer += 10
+                while (dealer < 17) {
+                    val card = drawCard()
+                    dealer += card
+                    if (dealer > 21 && usableAceDealer) {
+                        dealer -= 10
+                        usableAceDealer = false
+                    }
                 }
+                if (dealer <= 21) {
+                    val player = s[player_idx] + player_offset
+                    when {
+                        player > dealer -> Possible(win, reward_win, 1.0)
+                        player == dealer -> Possible(draw, reward_draw, 1.0)
+                        player < dealer -> Possible(lose, reward_lose, 1.0)
+                        else -> throw Exception("impossible")
+                    }
+                } else//deal goes bust
+                    Possible(win, reward_win, 1.0)
             }
-            if (dealer <= 21) {
-                val player = s[player_idx] + player_offset
-                when {
-                    player > dealer -> Possible(win, 1.0, 1.0)
-                    player == dealer -> Possible(draw, 0.0, 1.0)
-                    player < dealer -> Possible(lose, -1.0, 1.0)
-                    else -> throw Exception("impossible")
-                }
-            } else//deal goes bust
-                Possible(win, 1.0, 1.0)
-        }
-    }
 
-    private fun MDP.hits(action: Action, s: State) {
-        action.sample = {
-            var player = s[player_idx] + player_offset
-            val card = drawCard()
-            player += card
-            when {
-                player <= 21 -> {
-                    val idx = DefaultIntSlice.from(s)
-                    idx[player_idx] = player - player_offset
-                    Possible(states[idx], 0.0, 1.0)
-                }
-                s[ace_idx] == 0 -> Possible(lose, -1.0, 1.0)
-                else -> {
-                    player -= 10
-                    val idx = DefaultIntSlice.from(s)
-                    idx[ace_idx] = 0
-                    idx[player_idx] = player - player_offset
-                    Possible(states[idx], 0.0, 1.0)
-                }
+    private fun MDP.hits(s: State) = {
+        var player = s[player_idx] + player_offset
+        val card = drawCard()
+        player += card
+        when {
+            player <= 21 -> {
+                val idx = DefaultIntSlice.from(s)
+                idx[player_idx] = player - player_offset
+                Possible(states[idx], 0.0, 1.0)
+            }
+            s[ace_idx] == 0 -> Possible(lose, -1.0, 1.0)
+            else -> {
+                player -= 10
+                val idx = DefaultIntSlice.from(s)
+                idx[ace_idx] = 0
+                idx[player_idx] = player - player_offset
+                Possible(states[idx], 0.0, 1.0)
             }
         }
     }
-
 
     private fun drawCard(): Int {
         val index = rand.nextInt(playingCard.size)

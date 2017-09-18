@@ -3,6 +3,7 @@ package lab.mars.rl.problem
 import lab.mars.rl.model.*
 import lab.mars.rl.util.NSet
 import lab.mars.rl.model.impl.NSetMDP
+import lab.mars.rl.util.extension.nsetOf
 import lab.mars.rl.util.x
 import org.apache.commons.math3.special.Gamma
 import org.apache.commons.math3.util.FastMath.*
@@ -70,10 +71,10 @@ object CarRental {
                 val L1_to_L2 = max_L1_to_L2 - idx
                 val nL1 = s_1 - L1_to_L2
                 val nL2 = s_2 + L1_to_L2
-                val possibles = NSet<Possible>((max_car + 1) x (max_car + 1))
+                val possibles = nsetOf<Possible>((max_car + 1) x (max_car + 1))
                 for (_L1 in 0..max_car)
                     for (_L2 in 0..max_car)
-                        possibles[_L1, _L2] = NSet(min(_L1, nL1) + min(_L2, nL2) + 1)
+                        possibles[_L1, _L2] = nsetOf(min(_L1, nL1) + min(_L2, nL2) + 1)
                 val cost = if (exercise4_4_version) {
                     val move_cost = (if (L1_to_L2 >= 1) L1_to_L2 - 1 else abs(L1_to_L2)) * cost_per_car_moved
                     val parking_cost = (ceil(nL1.toDouble() / max_car_per_parking_lot) - 1 + ceil(nL2.toDouble() / max_car_per_parking_lot) - 1) * cost_per_parking_lot
@@ -163,7 +164,7 @@ private val EXACT_STIRLING_ERRORS = doubleArrayOf(0.0, /* 0.0 */
                                                   0.005554733551962801371038690 /* 15.0 */)
 
 /**
- * Compute the error of Stirling's series at the given value.
+ * Compute the error nsetOf Stirling's series at the given value.
  * References:
  *
  *  1. Eric W. Weisstein. "Stirling's Series." From MathWorld--A Wolfram Web
@@ -191,11 +192,11 @@ fun getStirlingError(z: Double): Double {
 }
 
 /**
- * A part of the deviance portion of the saddle point approximation.
+ * A part nsetOf the deviance portion nsetOf the saddle point approximation.
  *
  * References:
  *
- *  1. Catherine Loader (2000). "Fast and Accurate Computation of Binomial
+ *  1. Catherine Loader (2000). "Fast and Accurate Computation nsetOf Binomial
  * Probabilities.". [
  * http://www.herine.net/stat/papers/dbinom.pdf](http://www.herine.net/stat/papers/dbinom.pdf)
  *
@@ -203,7 +204,7 @@ fun getStirlingError(z: Double): Double {
  * the e value.
  * @param mu
  * the average.
- * @return a part of the deviance.
+ * @return a part nsetOf the deviance.
  */
 fun getDeviancePart(x: Double, mu: Double): Double {
     val ret: Double

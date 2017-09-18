@@ -1,9 +1,9 @@
 package lab.mars.rl.problem
 
 import lab.mars.rl.model.*
-import lab.mars.rl.util.NSet
 import lab.mars.rl.model.impl.NSetMDP
 import lab.mars.rl.util.x
+import lab.mars.rl.util.extension.nsetOf
 
 /**
  * <p>
@@ -35,7 +35,7 @@ object GridWorld {
                         x = s[0]
                         y = s[1]
                     }
-                    action.possibles = NSet(1) { Possible(states[x, y], -1.0, 1.0) }
+                    action.possibles = nsetOf(1) { Possible(states[x, y], -1.0, 1.0) }
                 }
             states[0, 0].actions = emptyActions
             states[n - 1, n - 1].actions = emptyActions

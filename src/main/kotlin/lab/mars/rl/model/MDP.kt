@@ -15,7 +15,7 @@ typealias StateSet = RandomAccessCollection<State>
 typealias StateValueFunction = RandomAccessCollection<Double>
 typealias ActionValueFunction = RandomAccessCollection<Double>
 typealias DeterminedPolicy = RandomAccessCollection<Action?>
-
+typealias NonDeterminedPolicy=RandomAccessCollection<Double>
 /**
  *
  * @property states 状态集
