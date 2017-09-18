@@ -2,6 +2,7 @@ package lab.mars.rl.model.impl
 
 import lab.mars.rl.algo.PolicyIteration
 import lab.mars.rl.algo.ValueIteration
+import lab.mars.rl.problem.Blackjack
 import lab.mars.rl.problem.CarRental
 import lab.mars.rl.problem.GridWorld
 import org.junit.Assert
@@ -82,5 +83,11 @@ class TestProblems {
         for (a in CarRental.max_car downTo 0)
             for (b in 0..CarRental.max_car)
                 Assert.assertEquals(`Car Rental Result`[i++], V[prob.states[a, b]].format(2))
+    }
+
+    @Test
+    fun `Blackjack Prediction`() {
+        val (prob, policy1) = Blackjack.make()
+
     }
 }
