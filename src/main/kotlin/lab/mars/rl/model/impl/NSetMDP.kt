@@ -6,6 +6,8 @@ import lab.mars.rl.model.Action
 import lab.mars.rl.model.MDP
 import lab.mars.rl.model.State
 import lab.mars.rl.util.IntSlice
+import lab.mars.rl.util.NSet
+import lab.mars.rl.util.toDim
 
 /**
  * <p>

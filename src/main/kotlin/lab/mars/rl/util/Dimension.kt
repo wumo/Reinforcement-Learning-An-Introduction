@@ -1,8 +1,6 @@
 @file:Suppress("NOTHING_TO_INLINE")
 
-package lab.mars.rl.model.impl
-
-import lab.mars.rl.util.DefaultIntSlice
+package lab.mars.rl.util
 
 /**
  * <p>

@@ -1,9 +1,9 @@
 package lab.mars.rl.problem
 
 import lab.mars.rl.model.*
-import lab.mars.rl.model.impl.NSet
+import lab.mars.rl.util.NSet
 import lab.mars.rl.model.impl.NSetMDP
-import lab.mars.rl.model.impl.x
+import lab.mars.rl.util.x
 
 /**
  * <p>

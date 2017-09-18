@@ -1,12 +1,7 @@
 @file:Suppress("NOTHING_TO_INLINE", "UNCHECKED_CAST")
 
-package lab.mars.rl.model.impl
+package lab.mars.rl.util
 
-import lab.mars.rl.model.*
-import lab.mars.rl.util.IntSlice
-import lab.mars.rl.util.DefaultIntSlice
-import lab.mars.rl.util.Index
-import lab.mars.rl.util.RandomAccessCollection
 import java.util.NoSuchElementException
 
 /**
@@ -133,6 +128,33 @@ class NSet<E>(private val dim: IntArray, private val stride: IntArray, private v
                 else -> origin.refParent(element_maker(index))
             }
         }
+
+        operator fun <T> invoke(dimension: Dimension, element_maker: (IntSlice) -> Any? = { null }): NSet<T> =
+                make(dimension, DefaultIntSlice.new(), element_maker)
+
+        private val zeroDim = DefaultIntSlice.of(0)
+        private fun <T> make(dimension: Dimension, index: DefaultIntSlice,
+                             element_maker: (IntSlice) -> Any? = { null }): NSet<T> {
+            val rootDim = dimension.rootDim
+            val sub = dimension.sub
+            val dim = rootDim.toIntArray()
+            val isZero = dim.size == 1 && dim[0] == 0
+            if (isZero) {
+                dim[0] = dimension.sub.size
+                index.append(0)
+            } else
+                index.append(rootDim.size, 0)
+            val stride = strideOfDim(dim)
+            val total = dim[0] * stride[0]
+            return NSet(dim, stride, Array(total) {
+                when {
+                    sub.isEmpty() -> element_maker(index)
+                    isZero -> make<T>(sub[it], index, element_maker)
+                    else -> make<T>(Dimension(zeroDim, sub), index, element_maker)
+                }.apply { index.increment(dim) }
+            }.apply { index.removeLast(dim.size) })
+        }
+
     }
 
     private fun <T> get_or_set(idx: Index, start: Int, set: Boolean, s: T?): T {
@@ -146,11 +168,6 @@ class NSet<E>(private val dim: IntArray, private val stride: IntArray, private v
             offset += value * stride[a]
         }
 
-        for (a in 0 until dim.size) {
-            if (idx[start + a] < 0 || idx[start + a] > dim[a])
-                throw ArrayIndexOutOfBoundsException("index[$a]= ${idx[start + a]} while Dim[$a]=${dim[a]}")
-            offset += idx[start + a] * stride[a]
-        }
         return if (idx_size == dim.size) {
             val tmp = root[offset]
             if (set) {
@@ -210,7 +227,7 @@ class NSet<E>(private val dim: IntArray, private val stride: IntArray, private v
                             backward = { index.removeLast(current.set.dim.size) },
                             translate = { index.increment(current.set.dim) },
                             visitor = {
-                                val tmp = pair ?: Pair(index, it)
+                                val tmp = pair ?: lab.mars.rl.util.NSet.Pair(index, it)
                                 pair = tmp
                                 tmp.second = it
                                 tmp

@@ -13,14 +13,14 @@ interface Index {
      */
     operator fun get(dim: Int): Int
 
-    fun forEach(start: Int, end: Int, block: (Int, Int) -> Unit) {
-        for (i in 0..lastIndex)
+    fun forEach(start: Int = 0, end: Int = lastIndex, block: (Int, Int) -> Unit) {
+        for (i in start..end)
             block(i, get(i))
     }
 }
 
 
-class WrappedIndex(val indices: Array<out Index>) : Index {
+class WrappedIndex(private val indices: Array<out Index>) : Index {
     override fun forEach(start: Int, end: Int, block: (Int, Int) -> Unit) {
         var start_index = -1
         var start_index_offset = 0

@@ -2,10 +2,8 @@ package lab.mars.rl.problem
 
 import lab.mars.rl.model.MDP
 import lab.mars.rl.model.Possible
-import lab.mars.rl.model.impl.Dim
-import lab.mars.rl.model.impl.NSet
+import lab.mars.rl.util.NSet
 import lab.mars.rl.model.impl.NSetMDP
-import org.apache.commons.math3.util.FastMath
 import org.apache.commons.math3.util.FastMath.min
 
 /**

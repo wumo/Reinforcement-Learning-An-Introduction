@@ -1,10 +1,9 @@
 package lab.mars.rl.problem
 
 import lab.mars.rl.model.*
-import lab.mars.rl.model.impl.NSet
+import lab.mars.rl.util.NSet
 import lab.mars.rl.model.impl.NSetMDP
-import lab.mars.rl.model.impl.Dim
-import lab.mars.rl.model.impl.x
+import lab.mars.rl.util.x
 import org.apache.commons.math3.special.Gamma
 import org.apache.commons.math3.util.FastMath.*
 import org.apache.commons.math3.util.MathUtils
@@ -177,16 +176,16 @@ private val EXACT_STIRLING_ERRORS = doubleArrayOf(0.0, /* 0.0 */
  */
 fun getStirlingError(z: Double): Double {
     val ret: Double
-    if (z < 15.0) {
+    ret = if (z < 15.0) {
         val z2 = 2.0 * z
         if (floor(z2) == z2) {
-            ret = EXACT_STIRLING_ERRORS[z2.toInt()]
+            EXACT_STIRLING_ERRORS[z2.toInt()]
         } else {
-            ret = Gamma.logGamma(z + 1.0) - (z + 0.5) * log(z) + z - HALF_LOG_2_PI
+            Gamma.logGamma(z + 1.0) - (z + 0.5) * log(z) + z - HALF_LOG_2_PI
         }
     } else {
         val z2 = z * z
-        ret = (0.083333333333333333333 - (0.00277777777777777777778 - (0.00079365079365079365079365 - (0.000595238095238095238095238 - 0.0008417508417508417508417508 / z2) / z2) / z2) / z2) / z
+        (0.083333333333333333333 - (0.00277777777777777777778 - (0.00079365079365079365079365 - (0.000595238095238095238095238 - 0.0008417508417508417508417508 / z2) / z2) / z2) / z2) / z
     }
     return ret
 }

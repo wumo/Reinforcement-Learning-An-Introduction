@@ -1,6 +1,9 @@
 package lab.mars.rl.model.impl
 
 import lab.mars.rl.model.MDP
+import lab.mars.rl.util.NSet
+import lab.mars.rl.util.o
+import lab.mars.rl.util.x
 import org.junit.Assert
 import org.junit.Test
 
@@ -16,7 +19,7 @@ class TestNSet {
     fun `make nset using dim2`() {
         val r1 = mutableListOf<IntArray>()
         val r2 = mutableListOf<IntArray>()
-        val set = NSet<Int>(1(3, 2 x 10 x 10)) { r1.add(it.toIntArray());null }
+        val set = NSet<Int>(0(3, 2 x 10 x 10)) { r1.add(it.toIntArray());null }
         for (index in set.indices()) {
             r2.add(index.toIntArray())
         }

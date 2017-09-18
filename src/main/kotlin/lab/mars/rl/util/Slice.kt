@@ -11,9 +11,7 @@ import java.util.*
  *
  * @author wumo
  */
-fun IntArray.slice(start: Int, end: Int): DefaultIntSlice {
-    return DefaultIntSlice.reuse(this, start, end)
-}
+fun IntArray.slice(start: Int, end: Int): DefaultIntSlice = DefaultIntSlice.reuse(this, start, end)
 
 interface IntSlice : Index {
     operator fun get(start: Int, end: Int): IntSlice
