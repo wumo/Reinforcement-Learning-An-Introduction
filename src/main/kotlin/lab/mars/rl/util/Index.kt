@@ -20,7 +20,7 @@ interface Index {
 }
 
 
-class WrappedIndex(private val indices: Array<out Index>) : Index {
+class MultiIndex(private val indices: Array<out Index>) : Index {
     override fun forEach(start: Int, end: Int, block: (Int, Int) -> Unit) {
         var start_index = -1
         var start_index_offset = 0
@@ -70,10 +70,6 @@ class WrappedIndex(private val indices: Array<out Index>) : Index {
         for (i in start_offset..minOf(end_offset, index.size - 1))
             block(start + _count++, index[i])
         return _count
-    }
-
-    companion object {
-        inline fun of(indices: Array<out Index>) = WrappedIndex(indices)
     }
 
     override val size: Int = indices.sumBy { it.size }

@@ -19,19 +19,6 @@ import lab.mars.rl.util.toDim
 
 /**
  * @param gamma gamma 衰减因子
- * @param states 指定状态集，V函数与状态集一致
- * @param action_dim 依据状态索引确定动作维度，Q函数与状态集和动作集一致
- * @return 使用指定状态集，动态动作维度的MDP实例
- */
-fun NSetMDP(gamma: Double, states: NSet<State>, action_dim: (IntSlice) -> IntArray) = MDP(
-        gamma = gamma,
-        states = states,
-        v_maker = { NSet(states) { 0.0 } },
-        q_maker = { NSet(states) { NSet.reuse<Double>(action_dim(it)) { 0.0 } } },
-        pi_maker = { NSet(states) })
-
-/**
- * @param gamma gamma 衰减因子
  * @param state_dim 统一的状态维度，V函数与状态集一致
  * @param action_dim 统一的动作维度，Q函数与状态集和动作集一致
  * @return 所有状态维度相同和动作维度相同的MDP实例

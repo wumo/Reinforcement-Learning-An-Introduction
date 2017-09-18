@@ -5,7 +5,7 @@ package lab.mars.rl.util
 abstract class RandomAccessCollection<E> : Iterable<E> {
     abstract operator fun get(idx: Index): E
     inline operator fun get(vararg idx: Int): E = get(DefaultIntSlice.reuse(idx))
-    inline operator fun get(vararg indexable: Index): E = get(WrappedIndex.of(indexable))
+    inline operator fun get(vararg indexable: Index): E = get(MultiIndex(indexable))
 
     abstract operator fun set(idx: Index, s: E)
 
@@ -14,7 +14,7 @@ abstract class RandomAccessCollection<E> : Iterable<E> {
     }
 
     inline operator fun set(vararg indexable: Index, s: E) {
-        set(WrappedIndex.of(indexable), s)
+        set(MultiIndex(indexable), s)
     }
 }
 

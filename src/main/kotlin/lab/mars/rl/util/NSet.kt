@@ -2,7 +2,8 @@
 
 package lab.mars.rl.util
 
-import java.util.NoSuchElementException
+import com.sun.org.apache.bcel.internal.generic.RETURN
+import java.util.*
 
 /**
  * <p>
@@ -30,17 +31,9 @@ fun DefaultIntSlice.increment(dim: IntArray) {
     }
 }
 
-fun strideOfDim(dim: IntArray): IntArray {
-    val stride = IntArray(dim.size)
-    stride[stride.lastIndex] = 1
-    for (a in stride.lastIndex - 1 downTo 0)
-        stride[a] = dim[a + 1] * stride[a + 1]
-    return stride
-}
-
 /**
  * 1. 可以定义任意维的多维数组，并使用`[]`进行取值赋值
- *如: `val a=Nset(2,3)`定义了一个2x3的矩阵，可以使用`a[0,0]=0`这样的用法
+ *如: `val a=Nset(2 x 3)`定义了一个2x3的矩阵，可以使用`a[0,0]=0`这样的用法
  *
  * 2. 可以嵌套使用[NSet]，定义不规则形状的树形结构
  * 如: `val a=Nset(2), a[0]=Nset(1), a[1]=Nset(2)`定义了一个不规则的结构，
@@ -51,9 +44,69 @@ fun strideOfDim(dim: IntArray): IntArray {
  * @param stride 各维度在一维数组上的跨度
  * @param root 根节点一维数组
  */
-class NSet<E>(private val dim: IntArray, private val stride: IntArray, private val root: Array<Any?>) :
+class NSet<E> private constructor(private val dim: IntArray, private val stride: IntArray, private val root: Array<Any?>) :
         RandomAccessCollection<E>() {
-    constructor(dim: IntArray, root: Array<Any?>) : this(dim, strideOfDim(dim), root)
+    companion object {
+        inline fun <T> of(vararg elements: T): NSet<T> {
+            var i = 0
+            return invoke(elements.size) { elements[i++] }
+        }
+
+        /**
+         * 构造一个与[shape]相同形状的[NSet]（维度、树深度都相同）
+         */
+        operator fun <T> invoke(shape: NSet<*>, element_maker: (IntSlice) -> Any? = { null }): NSet<T> =
+                NSet<T>(shape.dim, shape.stride, Array(shape.root.size) { null }).apply {
+                    val index = DefaultIntSlice.zero(shape.dim.size)
+                    for (idx in 0 until this.root.size)
+                        copycat(this, shape.root[idx], index, element_maker)
+                                .apply { index.increment(shape.dim) }
+                }
+
+        operator fun <T> invoke(dimension: Any, element_maker: (IntSlice) -> Any? = { null }): NSet<T> {
+            val _dim = dimension.toDim()
+            return make(_dim.rootDim, _dim.sub, DefaultIntSlice.new(), element_maker)
+        }
+
+        private fun <T> copycat(origin: NSet<T>, prototype: Any?, index: DefaultIntSlice, element_maker: (IntSlice) -> Any?): Any? =
+                when (prototype) {
+                    is NSet<*> -> NSet<T>(prototype.dim, prototype.stride, Array(prototype.root.size) { null }).apply {
+                        parent = origin
+                        index.append(prototype.dim.size, 0)
+                        for (idx in 0 until root.size)
+                            copycat(this, prototype.root[idx], index, element_maker)
+                                    .apply { index.increment(prototype.dim) }
+                        index.removeLast(prototype.dim.size)
+                    }
+                    else -> origin.refParent(element_maker(index))
+                }
+
+        private val zeroDim = DefaultIntSlice.of(0)
+        private fun <T> make(rootDim: IntSlice, sub: Array<Dimension>, index: DefaultIntSlice,
+                             element_maker: (IntSlice) -> Any? = { null }): NSet<T> {
+            val dim = rootDim.toIntArray()
+            val isZero = dim.size == 1 && dim[0] == 0
+            if (isZero) {
+                dim[0] = sub.size
+                index.append(0)
+            } else
+                index.append(rootDim.size, 0)
+
+            val stride = IntArray(dim.size)
+            stride[stride.lastIndex] = 1
+            for (a in stride.lastIndex - 1 downTo 0)
+                stride[a] = dim[a + 1] * stride[a + 1]
+
+            val total = dim[0] * stride[0]
+            return NSet(dim, stride, Array(total) {
+                when {
+                    sub.isEmpty() -> element_maker(index)
+                    isZero -> make<T>(sub[it].rootDim, sub[it].sub, index, element_maker)
+                    else -> make<T>(zeroDim, sub, index, element_maker)
+                }.apply { index.increment(dim) }
+            }.apply { index.removeLast(dim.size) })
+        }
+    }
 
     private var parent: NSet<E>? = null
     private fun refParent(s: Any?): Any? {
@@ -66,95 +119,6 @@ class NSet<E>(private val dim: IntArray, private val stride: IntArray, private v
         val sub = s as? NSet<E>
         if (sub != null) sub.parent = null
         return s
-    }
-
-    /**
-     * 使用构造lambda [element_maker]来为数组的每个元素初始化
-     * @param element_maker 提供了每个元素的index
-     */
-    fun init(element_maker: (IntSlice) -> Any?) {
-        val index = DefaultIntSlice.zero(dim.size)
-        for (i in 0 until root.size) {
-            val tmp = element_maker(index)
-            root[i] = refParent(tmp).apply {
-                index.increment(dim)
-            }
-        }
-    }
-
-    companion object {
-        inline fun <T> of(vararg elements: T): NSet<T> {
-            var i = 0
-            return invoke(elements.size) { elements[i++] }
-        }
-
-        fun <T> reuse(dim: IntArray, element_maker: (IntSlice) -> Any? = { null }): NSet<T> {
-            val stride = strideOfDim(dim)
-            val total = dim[0] * stride[0]
-            return NSet<T>(dim, stride, Array(total) { null }).apply { init(element_maker) }
-        }
-
-        operator fun <T> invoke(dim: Int, element_maker: (IntSlice) -> Any? = { null })
-                = reuse<T>(intArrayOf(dim), element_maker)
-
-        operator fun <T> invoke(dim: DefaultIntSlice, element_maker: (IntSlice) -> Any? = { null })
-                = reuse<T>(dim.toIntArray(), element_maker)
-
-        operator fun <T> invoke(vararg dim: Int, element_maker: (IntSlice) -> Any? = { null })
-                = reuse<T>(dim, element_maker)
-
-        /**
-         * 构造一个与[shape]相同形状的[NSet]（维度、树深度都相同）
-         */
-        operator fun <T> invoke(shape: NSet<*>, element_maker: (IntSlice) -> Any? = { null }): NSet<T> {
-            return NSet<T>(shape.dim, shape.stride, Array(shape.root.size) { null }).apply {
-                val index = DefaultIntSlice.zero(shape.dim.size)
-                for (idx in 0 until this.root.size)
-                    copycat(this, shape.root[idx], index, element_maker)
-                            .apply { index.increment(shape.dim) }
-            }
-        }
-
-        private fun <T> copycat(origin: NSet<T>, prototype: Any?, index: DefaultIntSlice, element_maker: (IntSlice) -> Any?): Any? {
-            return when (prototype) {
-                is NSet<*> -> NSet<T>(prototype.dim, prototype.stride, Array(prototype.root.size) { null }).apply {
-                    parent = origin
-                    index.append(prototype.dim.size, 0)
-                    for (idx in 0 until root.size)
-                        copycat(this, prototype.root[idx], index, element_maker)
-                                .apply { index.increment(prototype.dim) }
-                    index.removeLast(prototype.dim.size)
-                }
-                else -> origin.refParent(element_maker(index))
-            }
-        }
-
-        operator fun <T> invoke(dimension: Dimension, element_maker: (IntSlice) -> Any? = { null }): NSet<T> =
-                make(dimension, DefaultIntSlice.new(), element_maker)
-
-        private val zeroDim = DefaultIntSlice.of(0)
-        private fun <T> make(dimension: Dimension, index: DefaultIntSlice,
-                             element_maker: (IntSlice) -> Any? = { null }): NSet<T> {
-            val rootDim = dimension.rootDim
-            val sub = dimension.sub
-            val dim = rootDim.toIntArray()
-            val isZero = dim.size == 1 && dim[0] == 0
-            if (isZero) {
-                dim[0] = dimension.sub.size
-                index.append(0)
-            } else
-                index.append(rootDim.size, 0)
-            val stride = strideOfDim(dim)
-            val total = dim[0] * stride[0]
-            return NSet(dim, stride, Array(total) {
-                when {
-                    sub.isEmpty() -> element_maker(index)
-                    isZero -> make<T>(sub[it], index, element_maker)
-                    else -> make<T>(Dimension(zeroDim, sub), index, element_maker)
-                }.apply { index.increment(dim) }
-            }.apply { index.removeLast(dim.size) })
-        }
-
     }
 
     private fun <T> get_or_set(idx: Index, start: Int, set: Boolean, s: T?): T {

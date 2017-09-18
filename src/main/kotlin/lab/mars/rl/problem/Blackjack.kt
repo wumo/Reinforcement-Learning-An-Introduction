@@ -20,16 +20,15 @@ import java.util.*
 
 object Blackjack {
     private val playingCard = intArrayOf(1/*A*/, 2, 3, 4, 5, 6, 7, 8, 9, 10, 10/*J*/, 10/*Q*/, 10/*K*/)
-    private const val player_offset = 12
-    private const val dealer_offset = 1
-
     private lateinit var win: State
     private lateinit var draw: State
     private lateinit var lose: State
 
-    private const val usableAce_idx = 1
-    private const val playerSum_idx = 2
-    private const val dealShownCard_idx = 3
+    private const val ace_idx = 1
+    private const val player_idx = 2
+    private const val dealer_idx = 3
+    private const val player_offset = 12
+    private const val dealer_offset = 1
     private val rand = Random(System.nanoTime())
     fun make(): MDP {
         val mdp = NSetMDP(gamma = 1.0, state_dim = 0(3, 2 x 10 x 10), action_dim = { if (it[0] == 0) 0 else 2 })
@@ -40,16 +39,16 @@ object Blackjack {
             for (s in states)
                 for (action in s.actions)
                     when (action[0]) {
-                        0 -> sticks(action, s)
+                        0 -> sticks(s, action)
                         1 -> hits(action, s)
                     }
         }
         return mdp
     }
 
-    private fun MDP.sticks(action: Action, s: State) {
+    private fun MDP.sticks(s: State, action: Action) {
         action.sample = {
-            var dealer = s[dealShownCard_idx] + dealer_offset
+            var dealer = s[dealer_idx] + dealer_offset
             var usableAceDealer = dealer == 1
             if (usableAceDealer)
                 dealer += 10
@@ -62,7 +61,7 @@ object Blackjack {
                 }
             }
             if (dealer <= 21) {
-                val player = s[playerSum_idx] + player_offset
+                val player = s[player_idx] + player_offset
                 when {
                     player > dealer -> Possible(win, 1.0, 1.0)
                     player == dealer -> Possible(draw, 0.0, 1.0)
@@ -76,21 +75,21 @@ object Blackjack {
 
     private fun MDP.hits(action: Action, s: State) {
         action.sample = {
-            var player = s[playerSum_idx] + player_offset
+            var player = s[player_idx] + player_offset
             val card = drawCard()
             player += card
             when {
                 player <= 21 -> {
                     val idx = DefaultIntSlice.from(s)
-                    idx[playerSum_idx] = player - player_offset
+                    idx[player_idx] = player - player_offset
                     Possible(states[idx], 0.0, 1.0)
                 }
-                s[usableAce_idx] == 0 -> Possible(lose, -1.0, 1.0)
+                s[ace_idx] == 0 -> Possible(lose, -1.0, 1.0)
                 else -> {
                     player -= 10
                     val idx = DefaultIntSlice.from(s)
-                    idx[usableAce_idx] = 0
-                    idx[playerSum_idx] = player - player_offset
+                    idx[ace_idx] = 0
+                    idx[player_idx] = player - player_offset
                     Possible(states[idx], 0.0, 1.0)
                 }
             }
