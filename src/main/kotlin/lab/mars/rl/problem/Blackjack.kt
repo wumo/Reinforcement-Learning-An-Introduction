@@ -54,8 +54,17 @@ object Blackjack {
             {
                 var dealer = s[dealer_idx] + dealer_offset
                 var usableAceDealer = dealer == 1
+                //前两张牌决定是否是Ace
                 if (usableAceDealer)
                     dealer += 10
+                else {
+                    val card = drawCard()
+                    dealer += card
+                    if (card == 1) {
+                        usableAceDealer = true
+                        dealer += 10
+                    }
+                }
                 while (dealer < 17) {
                     val card = drawCard()
                     dealer += card

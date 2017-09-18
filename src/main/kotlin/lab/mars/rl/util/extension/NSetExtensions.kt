@@ -23,7 +23,7 @@ private fun <T> make(rootDim: IntSlice, sub: Array<Dimension>, index: DefaultInt
         dim[0] = sub.size
         index.append(0)
     } else
-        index.append(rootDim.size, 0)
+        index.append(dim.size, 0)
 
     val stride = IntArray(dim.size)
     stride[stride.lastIndex] = 1
