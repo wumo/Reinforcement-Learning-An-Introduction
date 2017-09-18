@@ -2,7 +2,7 @@ package lab.mars.rl.algo
 
 import lab.mars.rl.model.MDP
 import lab.mars.rl.model.StateValueFunction
-import lab.mars.rl.model.ifAny
+import lab.mars.rl.util.ifAny
 import org.apache.commons.math3.util.FastMath.abs
 import org.apache.commons.math3.util.FastMath.max
 

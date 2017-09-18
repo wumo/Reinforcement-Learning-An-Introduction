@@ -20,7 +20,6 @@ interface IntSlice : Index {
 
     fun toIntArray(): IntArray
     fun copy(): IntSlice
-    fun reuseBacked(): IntSlice
 }
 
 interface MutableIntSlice : IntSlice {
@@ -41,6 +40,8 @@ interface MutableIntSlice : IntSlice {
     fun add(s: Int)
 
     fun add(num: Int, s: Int)
+
+    fun reuseBacked(): IntSlice
 }
 
 interface AppendableIntSlice : MutableIntSlice {
