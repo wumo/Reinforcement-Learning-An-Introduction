@@ -44,9 +44,7 @@ class PolicyIteration(mdp: MDP) {
                     if (old_action !== PI[s]) policy_stable = false
                 }
         } while (!policy_stable)
-        for (s in states)
-            for (a in s.actions)
-                Q[s, a] = sigma(a.possibles) { probability * (reward + gamma * V[next]) }
+        V_from_Q(gamma, states, V, Q)
         return Triple(PI, V, Q)
     }
 
@@ -78,10 +76,7 @@ class PolicyIteration(mdp: MDP) {
                     if (old_action !== PI[s]) policy_stable = false
                 }
         } while (!policy_stable)
-        for (s in states)
-            s.actions.ifAny {
-                V[s] = Q[s, PI[s]]
-            }
+        Q_from_V(states, V, Q, PI)
         return Triple(PI, V, Q)
     }
 

@@ -1,5 +1,10 @@
 package lab.mars.rl.algo
 
+import lab.mars.rl.model.ActionValueFunction
+import lab.mars.rl.model.DeterminedPolicy
+import lab.mars.rl.model.StateSet
+import lab.mars.rl.model.StateValueFunction
+
 /**
  * <p>
  * Created on 2017-09-06.
@@ -41,4 +46,18 @@ inline fun <T> argmax(set: Iterable<T>, evaluate: T.() -> Double): T {
         }
     }
     return max_a
+}
+
+
+fun V_from_Q(gamma: Double, states: StateSet, V: StateValueFunction, Q: ActionValueFunction) {
+    for (s in states)
+        for (a in s.actions)
+            Q[s, a] = sigma(a.possibles) { probability * (reward + gamma * V[next]) }
+}
+
+fun Q_from_V(states: StateSet, V: StateValueFunction, Q: ActionValueFunction, PI: DeterminedPolicy) {
+    for (s in states)
+        s.actions.ifAny {
+            V[s] = Q[s, PI[s]]
+        }
 }

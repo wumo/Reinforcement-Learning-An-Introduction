@@ -79,6 +79,7 @@ val emptyActions = object : RandomAccessCollection<Action>() {
     override fun iterator(): Iterator<Action> = emptyIterator()
 
     override fun ifAny(block: RandomAccessCollection<Action>.() -> Unit) {}
+    override fun isEmpty() = true
 }
 
 val emptyPossibles = object : RandomAccessCollection<Possible>() {
@@ -97,6 +98,7 @@ val emptyPossibles = object : RandomAccessCollection<Possible>() {
     override fun iterator(): Iterator<Possible> = emptyIterator()
 
     override fun ifAny(block: RandomAccessCollection<Possible>.() -> Unit) {}
+    override fun isEmpty() = true
 }
 
 fun <T> emptyIterator() = object : Iterator<T> {

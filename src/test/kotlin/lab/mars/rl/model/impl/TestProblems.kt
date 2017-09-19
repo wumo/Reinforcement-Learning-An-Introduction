@@ -113,7 +113,8 @@ class TestProblems {
     fun `Blackjack Prediction`() {
         val (prob, policy1) = Blackjack.make()
         val algo = MonteCarlo(prob)
-        val V = algo.prediction(policy1, 50000)
+        algo.max_iteration = 50000
+        val V = algo.prediction(policy1)
         for (a in 0 until 10) {
             for (b in 0 until 10)
                 print("${V[1, 1, a, b].format(2)} ")

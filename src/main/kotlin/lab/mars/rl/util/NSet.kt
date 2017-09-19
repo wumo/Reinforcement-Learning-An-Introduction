@@ -117,6 +117,8 @@ class NSet<E : Any>(private val dim: IntArray, private val stride: IntArray, pri
         if (!root.isEmpty()) block(this)
     }
 
+    override fun isEmpty() = root.isEmpty()
+
     override fun <T : Any> _get(idx: Index): T = get_or_set<T>(idx, 0) { it }
 
     override fun <T : Any> _set(idx: Index, s: T) {

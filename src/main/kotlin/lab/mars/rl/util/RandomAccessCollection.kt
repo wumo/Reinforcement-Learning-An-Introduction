@@ -48,6 +48,11 @@ abstract class RandomAccessCollection<E : Any> : Iterable<E> {
         for (element in this) return block(this)
     }
 
+    open fun isEmpty(): Boolean {
+        for (element in this) return true
+        return false
+    }
+
     override fun toString(): String {
         val sb = StringBuilder()
         for (withIndex in withIndices())
