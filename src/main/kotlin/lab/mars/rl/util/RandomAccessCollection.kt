@@ -47,4 +47,11 @@ abstract class RandomAccessCollection<E : Any> : Iterable<E> {
     open fun ifAny(block: RandomAccessCollection<E>.() -> Unit) {
         for (element in this) return block(this)
     }
+
+    override fun toString(): String {
+        val sb = StringBuilder()
+        for (withIndex in withIndices())
+            sb.append(withIndex).append("\n")
+        return sb.toString()
+    }
 }

@@ -81,7 +81,7 @@ class NSet<E : Any>(private val dim: IntArray, private val stride: IntArray, pri
     }
 
     private fun reset(sub: NSet<E>, index: DefaultIntSlice, element_maker: (IntSlice, E) -> E) {
-        index.append(dim.size, 0)
+        index.append(sub.dim.size, 0)
         for (a in 0 until sub.root.size) {
             val tmp = sub.root[a] as? NSet<E>
             if (tmp == null)
@@ -90,7 +90,7 @@ class NSet<E : Any>(private val dim: IntArray, private val stride: IntArray, pri
                 reset(tmp, index, element_maker)
             index.increment(sub.dim)
         }
-        index.removeLast(dim.size)
+        index.removeLast(sub.dim.size)
     }
 
     private fun <T : Any> get_or_set(idx: Index, start: Int, op: (Any) -> Any): T {

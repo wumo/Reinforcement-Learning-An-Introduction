@@ -17,19 +17,20 @@ class MonteCarlo(val mdp: MDP) {
     val Q = mdp.q_maker()
 
     fun prediction(policy: DeterminedPolicy, iteration: Int): StateValueFunction {
+        val V=mdp.v_maker()
         val tmpV = mdp.v_maker()
         tmpV.set { _, _ -> Double.NaN }
         val count = mdp.v_maker()
         for (_s in states) _s.actions.ifAny {
-            var a = policy[_s]
             for (i in 0 until iteration) {
                 var s = _s
                 var accumulate = 0.0
+                var a = policy[_s]
                 while (a !== null_action) {
                     val possible = s.actions[a].sample()
                     accumulate += possible.reward
-                    if (tmpV[possible.next].isNaN())
-                        tmpV[possible.next] = accumulate
+                    if (tmpV[s].isNaN())
+                        tmpV[s] = accumulate
                     s = possible.next
                     a = policy[s]
                 }
@@ -48,10 +49,6 @@ class MonteCarlo(val mdp: MDP) {
                 V[s] = V[s] / n
         }
         return V
-    }
-
-    private fun evaluate(possible: Possible) {
-
     }
 
     fun iteration() {

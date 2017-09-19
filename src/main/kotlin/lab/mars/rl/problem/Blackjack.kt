@@ -50,7 +50,7 @@ object Blackjack {
         }
         val policy1 = mdp.pi_maker()
         for (s in mdp.states(1))
-            if (s[player_idx] >= 20)
+            if (s[player_idx] >= 20 - player_offset)
                 policy1[s] = s.actions[0]
             else
                 policy1[s] = s.actions[1]
