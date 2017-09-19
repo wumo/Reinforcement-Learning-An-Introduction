@@ -41,7 +41,7 @@ object Blackjack {
             win = states[0, 0]
             draw = states[0, 1]
             lose = states[0, 2]
-            for (s in states)
+            for (s in states(1))
                 for (a in s.actions)
                     when (a[0]) {
                         0 -> a.sample = sticks(s)
@@ -49,50 +49,47 @@ object Blackjack {
                     }
         }
         val policy1 = mdp.pi_maker()
-        for (s in mdp.states)
-            if (s[0] == 1) {
-                if (s[player_idx] >= 20)
-                    policy1[s] = s.actions[0]
-                else
-                    policy1[s] = s.actions[1]
-            }
+        for (s in mdp.states(1))
+            if (s[player_idx] >= 20)
+                policy1[s] = s.actions[0]
+            else
+                policy1[s] = s.actions[1]
         return Pair(mdp, policy1)
     }
 
-    private fun MDP.sticks(s: State) =
-            {
-                var dealer = s[dealer_idx] + dealer_offset
-                var usableAceDealer = dealer == 1
-                //前两张牌决定是否是Ace
-                if (usableAceDealer)
-                    dealer += 10
-                else {
-                    val card = drawCard()
-                    dealer += card
-                    if (card == 1) {
-                        usableAceDealer = true
-                        dealer += 10
-                    }
-                }
-                while (dealer < 17) {
-                    val card = drawCard()
-                    dealer += card
-                    if (dealer > 21 && usableAceDealer) {
-                        dealer -= 10
-                        usableAceDealer = false
-                    }
-                }
-                if (dealer <= 21) {
-                    val player = s[player_idx] + player_offset
-                    when {
-                        player > dealer -> Possible(win, reward_win, 1.0)
-                        player == dealer -> Possible(draw, reward_draw, 1.0)
-                        player < dealer -> Possible(lose, reward_lose, 1.0)
-                        else -> throw Exception("impossible")
-                    }
-                } else//deal goes bust
-                    Possible(win, reward_win, 1.0)
+    private fun MDP.sticks(s: State) = {
+        var dealer = s[dealer_idx] + dealer_offset
+        var usableAceDealer = dealer == 1
+        //前两张牌决定是否是Ace
+        if (usableAceDealer)
+            dealer += 10
+        else {
+            val card = drawCard()
+            dealer += card
+            if (card == 1) {
+                usableAceDealer = true
+                dealer += 10
             }
+        }
+        while (dealer < 17) {
+            val card = drawCard()
+            dealer += card
+            if (dealer > 21 && usableAceDealer) {
+                dealer -= 10
+                usableAceDealer = false
+            }
+        }
+        if (dealer <= 21) {
+            val player = s[player_idx] + player_offset
+            when {
+                player > dealer -> Possible(win, reward_win, 1.0)
+                player == dealer -> Possible(draw, reward_draw, 1.0)
+                player < dealer -> Possible(lose, reward_lose, 1.0)
+                else -> throw Exception("impossible")
+            }
+        } else//deal goes bust
+            Possible(win, reward_win, 1.0)
+    }
 
     private fun MDP.hits(s: State) = {
         var player = s[player_idx] + player_offset

@@ -164,16 +164,16 @@ private val EXACT_STIRLING_ERRORS = doubleArrayOf(0.0, /* 0.0 */
                                                   0.005554733551962801371038690 /* 15.0 */)
 
 /**
- * Compute the error nsetOf Stirling's series at the given value.
+ * Compute the error nsetOf Stirling'asSet series at the given value.
  * References:
  *
- *  1. Eric W. Weisstein. "Stirling's Series." From MathWorld--A Wolfram Web
+ *  1. Eric W. Weisstein. "Stirling'asSet Series." From MathWorld--A Wolfram Web
  * Resource. [
  * http://mathworld.wolfram.com/StirlingsSeries.html](http://mathworld.wolfram.com/StirlingsSeries.html)
  *
  * @param z
  * the value.
- * @return the Striling's series error.
+ * @return the Striling'asSet series error.
  */
 fun getStirlingError(z: Double): Double {
     val ret: Double

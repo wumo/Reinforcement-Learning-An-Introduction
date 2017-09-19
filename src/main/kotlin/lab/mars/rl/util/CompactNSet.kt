@@ -8,15 +8,19 @@ package lab.mars.rl.util
  * @author wumo
  */
 class CompactNSet<T> : RandomAccessCollection<T>() {
-    class description {
-
-    }
-
-    override fun get(idx: Index): T {
+    override fun indices(): Iterator<IntSlice> {
         TODO("not implemented")
     }
 
-    override fun set(idx: Index, s: T) {
+    override fun withIndices(): Iterator<Pair<out IntSlice, T>> {
+        TODO("not implemented")
+    }
+
+    override fun <T> _get(idx: Index): T {
+        TODO("not implemented")
+    }
+
+    override fun <T> _set(idx: Index, s: T) {
         TODO("not implemented")
     }
 

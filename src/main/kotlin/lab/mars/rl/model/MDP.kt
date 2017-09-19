@@ -15,7 +15,7 @@ typealias StateSet = RandomAccessCollection<State>
 typealias StateValueFunction = RandomAccessCollection<Double>
 typealias ActionValueFunction = RandomAccessCollection<Double>
 typealias DeterminedPolicy = RandomAccessCollection<Action?>
-typealias NonDeterminedPolicy=RandomAccessCollection<Double>
+typealias NonDeterminedPolicy = RandomAccessCollection<Double>
 /**
  *
  * @property states 状态集
@@ -58,33 +58,39 @@ class Action(val index: IntSlice) : Index {
 class Possible(var next: State, var reward: Double, var probability: Double)
 
 val emptyActions = object : RandomAccessCollection<Action>() {
-    override fun get(idx: Index): Action {
-        throw Exception()
+    override fun indices(): Iterator<IntSlice> = emptyIterator()
+
+    override fun withIndices(): Iterator<Pair<out IntSlice, Action>> = emptyIterator()
+
+    override fun <T> _set(idx: Index, s: T) {
+        throw IndexOutOfBoundsException()
     }
 
-    override fun set(idx: Index, s: Action) {
-        throw Exception()
+    override fun <T> _get(idx: Index): T {
+        throw IndexOutOfBoundsException()
     }
 
-    override fun iterator(): Iterator<Action> = object : Iterator<Action> {
-        override fun hasNext() = false
-
-        override fun next() = throw Exception()
-    }
+    override fun iterator(): Iterator<Action> = emptyIterator()
 }
 
 val emptyPossibles = object : RandomAccessCollection<Possible>() {
-    override fun get(idx: Index): Possible {
-        throw Exception()
+    override fun indices(): Iterator<IntSlice> = emptyIterator()
+
+    override fun withIndices(): Iterator<Pair<out IntSlice, Possible>> = emptyIterator()
+
+    override fun <T> _set(idx: Index, s: T) {
+        throw IndexOutOfBoundsException()
     }
 
-    override fun set(idx: Index, s: Possible) {
-        throw Exception()
+    override fun <T> _get(idx: Index): T {
+        throw IndexOutOfBoundsException()
     }
 
-    override fun iterator(): Iterator<Possible> = object : Iterator<Possible> {
-        override fun hasNext() = false
+    override fun iterator(): Iterator<Possible> = emptyIterator()
+}
 
-        override fun next() = throw Exception()
-    }
+fun <T> emptyIterator() = object : Iterator<T> {
+    override fun hasNext() = false
+
+    override fun next() = throw IndexOutOfBoundsException()
 }

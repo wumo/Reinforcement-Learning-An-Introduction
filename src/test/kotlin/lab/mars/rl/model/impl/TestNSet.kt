@@ -1,9 +1,10 @@
 package lab.mars.rl.model.impl
 
 import lab.mars.rl.util.NSet
+import lab.mars.rl.util.NSet.Companion.copycat
+import lab.mars.rl.util.nsetOf
 import lab.mars.rl.util.extension.nsetOf
 import lab.mars.rl.util.invoke
-import lab.mars.rl.util.nsetOf
 import lab.mars.rl.util.x
 import org.junit.Assert
 import org.junit.Test
@@ -80,6 +81,20 @@ class TestNSet {
     }
 
     @Test
+    fun `get sub set`() {
+        var i = 0
+        val set = nsetOf<Int>(2) { nsetOf<Int>(3 x 4) { i++ } }
+        for (withIndex in set.withIndices()) {
+            println(withIndex)
+        }
+
+        for (withIndex in set(1).withIndices()) {
+            println(withIndex)
+        }
+
+    }
+
+    @Test
     fun `one level iterate`() {
         var i = 0
         val set = nsetOf<Int>(5) { i++ }
@@ -113,7 +128,7 @@ class TestNSet {
         var i = 0
         val set = nsetOf<Int>(3 x 3) { nsetOf<Int>(it[0] + 1) { i++ } }
 
-        val set2 = nsetOf<String>(set) { println(it); it.toString() }
+        val set2 = copycat<String>(set) { println(it); it.toString() }
     }
 
     @Test

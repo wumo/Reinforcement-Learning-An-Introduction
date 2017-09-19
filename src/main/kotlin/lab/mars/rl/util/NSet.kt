@@ -65,28 +65,14 @@ class NSet<E>(private val dim: IntArray, private val stride: IntArray, private v
         private fun <T> copycat(origin: NSet<T>, prototype: Any?, index: DefaultIntSlice, element_maker: (IntSlice) -> Any?): Any? =
                 when (prototype) {
                     is NSet<*> -> NSet<T>(prototype.dim, prototype.stride, Array(prototype.root.size) { null }).apply {
-                        parent = origin
                         index.append(prototype.dim.size, 0)
                         for (idx in 0 until root.size)
                             copycat(this, prototype.root[idx], index, element_maker)
                                     .apply { index.increment(prototype.dim) }
                         index.removeLast(prototype.dim.size)
                     }
-                    else -> origin.refParent(element_maker(index))
+                    else -> element_maker(index)
                 }
-    }
-
-    private var parent: NSet<E>? = null
-    private fun refParent(s: Any?): Any? {
-        val sub = s as? NSet<E>
-        if (sub != null) sub.parent = this
-        return s
-    }
-
-    private fun unrefParent(s: Any?): Any? {
-        val sub = s as? NSet<E>
-        if (sub != null) sub.parent = null
-        return s
     }
 
     private fun <T> get_or_set(idx: Index, start: Int, set: Boolean, s: T?): T {
@@ -103,30 +89,24 @@ class NSet<E>(private val dim: IntArray, private val stride: IntArray, private v
         return if (idx_size == dim.size) {
             val tmp = root[offset]
             if (set) {
-                if (tmp != null) unrefParent(tmp)
-                root[offset] = refParent(s)
+                root[offset] = s
             }
             tmp as T
         } else {
-            val sub = root[offset] as? NSet<T> ?: throw RuntimeException("index dimension is larger than this set's element's dimension")
+            val sub = root[offset] as? NSet<T> ?: throw RuntimeException("index dimension is larger than this set'asSet element'asSet dimension")
             sub.get_or_set(idx, start + dim.size, set, s)
         }
     }
 
-    override fun get(idx: Index): E = get_or_set<E>(idx, 0, false, null)
+    override fun <T> _get(idx: Index): T = get_or_set<T>(idx, 0, false, null)
 
-    override fun set(idx: Index, s: E) {
+    override fun <T> _set(idx: Index, s: T) {
         get_or_set(idx, 0, true, s)
-    }
-
-    operator fun set(vararg index: Int, s: NSet<E>) {
-        require(index.size == dim.size) { "setting subset requires index.size == Dim.size" }
-        get_or_set(DefaultIntSlice.reuse(index), 0, true, s)
     }
 
     override fun iterator() = GeneralIterator<E>().apply { traverse = Traverse(this, {}, {}, {}, { it }) }
 
-    fun indices() = GeneralIterator<IntSlice>().apply {
+    override fun indices() = GeneralIterator<IntSlice>().apply {
         val index = DefaultIntSlice.zero(this.set.dim.size).apply { this[lastIndex] = -1 }
         traverse = Traverse(this,
                             forward = {
@@ -140,13 +120,7 @@ class NSet<E>(private val dim: IntArray, private val stride: IntArray, private v
                             visitor = { index })
     }
 
-    data class Pair<A, B>(var first: A, var second: B) {
-        override fun toString(): String {
-            return "($first, $second)"
-        }
-    }
-
-    fun withIndices() = GeneralIterator<Pair<out IntSlice, E>>().apply {
+    override fun withIndices() = GeneralIterator<Pair<out IntSlice, E>>().apply {
         val index = DefaultIntSlice.zero(this.set.dim.size).apply { this[lastIndex] = -1 }
         var pair: Pair<out IntSlice, E>? = null
         traverse = Traverse(this,
@@ -159,7 +133,7 @@ class NSet<E>(private val dim: IntArray, private val stride: IntArray, private v
                             backward = { index.removeLast(current.set.dim.size) },
                             translate = { index.increment(current.set.dim) },
                             visitor = {
-                                val tmp = pair ?: lab.mars.rl.util.NSet.Pair(index, it)
+                                val tmp = pair ?: Pair(index, it)
                                 pair = tmp
                                 tmp.second = it
                                 tmp

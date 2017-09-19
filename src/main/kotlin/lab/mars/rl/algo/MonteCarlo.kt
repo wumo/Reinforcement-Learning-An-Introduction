@@ -34,7 +34,7 @@ class MonteCarlo(mdp: MDP) {
     }
 
     private fun evaluate(possible: Possible) {
-        TODO("not implemented") //To change body of created functions use File | Settings | File Templates.
+
     }
 
     fun iteration() {
