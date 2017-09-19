@@ -20,29 +20,29 @@ class PolicyIteration(mdp: MDP) {
     fun v_iteration(): Triple<DeterminedPolicy, StateValueFunction, ActionValueFunction> {
         //Initialization
         for (s in states)
-            PI[s] = s.actions.firstOrNull()
+            PI[s] = s.actions.firstOrNull() ?: null_action
 
         do {
             //Policy Evaluation
             do {
                 var delta = 0.0
-                for (s in states) {
-                    val v = V[s]
-                    PI[s]?.apply {
-                        V[s] = sigma(possibles) { probability * (reward + gamma * V[next]) }
+                for (s in states)
+                    s.actions.ifAny {
+                        val v = V[s]
+                        V[s] = sigma(PI[s].possibles) { probability * (reward + gamma * V[next]) }
                         delta = max(delta, abs(v - V[s]))
                     }
-                }
                 println("delta=$delta")
             } while (delta >= theta)
 
             //Policy Improvement
             var policy_stable = true
-            for (s in states) {
-                val old_action = PI[s]
-                PI[s] = argmax(s.actions) { sigma(possibles) { probability * (reward + gamma * V[next]) } }
-                if (old_action !== PI[s]) policy_stable = false
-            }
+            for (s in states)
+                s.actions.ifAny {
+                    val old_action = PI[s]
+                    PI[s] = argmax(s.actions) { sigma(possibles) { probability * (reward + gamma * V[next]) } }
+                    if (old_action !== PI[s]) policy_stable = false
+                }
         } while (!policy_stable)
         for (s in states)
             for (a in s.actions)
@@ -53,7 +53,7 @@ class PolicyIteration(mdp: MDP) {
     fun q_iteration(): Triple<DeterminedPolicy, StateValueFunction, ActionValueFunction> {
         //Initialization
         for (s in states)
-            PI[s] = s.actions.firstOrNull()
+            PI[s] = s.actions.firstOrNull() ?: null_action
 
         do {
             //Policy Evaluation
@@ -62,7 +62,7 @@ class PolicyIteration(mdp: MDP) {
                 for (s in states) {
                     for (a in s.actions) {
                         val q = Q[s, a]
-                        Q[s, a] = sigma(a.possibles) { probability * (reward + gamma * if (next.actions.any()) Q[next, PI[next]!!] else 0.0) }
+                        Q[s, a] = sigma(a.possibles) { probability * (reward + gamma * if (next.actions.any()) Q[next, PI[next]] else 0.0) }
                         delta = max(delta, abs(q - Q[s, a]))
                     }
                 }
@@ -71,15 +71,16 @@ class PolicyIteration(mdp: MDP) {
 
             //Policy Improvement
             var policy_stable = true
-            for (s in states) {
-                val old_action = PI[s]
-                PI[s] = argmax(s.actions) { Q[s, this] }
-                if (old_action !== PI[s]) policy_stable = false
-            }
+            for (s in states)
+                s.actions.ifAny {
+                    val old_action = PI[s]
+                    PI[s] = argmax(s.actions) { Q[s, this] }
+                    if (old_action !== PI[s]) policy_stable = false
+                }
         } while (!policy_stable)
         for (s in states)
-            PI[s]?.apply {
-                V[s] = Q[s, this]
+            s.actions.ifAny {
+                V[s] = Q[s, PI[s]]
             }
         return Triple(PI, V, Q)
     }

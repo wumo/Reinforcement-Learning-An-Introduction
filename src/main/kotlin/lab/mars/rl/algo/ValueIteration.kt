@@ -2,7 +2,6 @@ package lab.mars.rl.algo
 
 import lab.mars.rl.model.MDP
 import lab.mars.rl.model.StateValueFunction
-import lab.mars.rl.util.ifAny
 import org.apache.commons.math3.util.FastMath.abs
 import org.apache.commons.math3.util.FastMath.max
 
@@ -34,9 +33,10 @@ class ValueIteration(mdp: MDP) {
             println("delta=$delta")
         } while (delta >= theta)
         //policy generation
-        for (s in states) {
-            PI[s] = argmax(s.actions) { sigma(possibles) { probability * (reward + gamma * V[next]) } }
-        }
+        for (s in states)
+            s.actions.ifAny {
+                PI[s] = argmax(s.actions) { sigma(possibles) { probability * (reward + gamma * V[next]) } }
+            }
         return V
     }
 }

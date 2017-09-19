@@ -14,7 +14,7 @@ import lab.mars.rl.util.*
 typealias StateSet = RandomAccessCollection<State>
 typealias StateValueFunction = RandomAccessCollection<Double>
 typealias ActionValueFunction = RandomAccessCollection<Double>
-typealias DeterminedPolicy = RandomAccessCollection<Action?>
+typealias DeterminedPolicy = RandomAccessCollection<Action>
 typealias NonDeterminedPolicy = RandomAccessCollection<Double>
 /**
  *
@@ -57,36 +57,46 @@ class Action(val index: IntSlice) : Index {
 
 class Possible(var next: State, var reward: Double, var probability: Double)
 
+val null_index = DefaultIntSlice.of(-1)
+val null_state = State(null_index)
+val null_action = Action(null_index)
+val null_possible = Possible(null_state, 0.0, 0.0)
+
 val emptyActions = object : RandomAccessCollection<Action>() {
+    override fun <T : Any> _get(idx: Index): T {
+        throw IndexOutOfBoundsException()
+    }
+
+    override fun <T : Any> _set(idx: Index, s: T) {
+        throw IndexOutOfBoundsException()
+    }
+
     override fun indices(): Iterator<IntSlice> = emptyIterator()
 
     override fun withIndices(): Iterator<Pair<out IntSlice, Action>> = emptyIterator()
 
-    override fun <T> _set(idx: Index, s: T) {
-        throw IndexOutOfBoundsException()
-    }
-
-    override fun <T> _get(idx: Index): T {
-        throw IndexOutOfBoundsException()
-    }
 
     override fun iterator(): Iterator<Action> = emptyIterator()
+
+    override fun ifAny(block: RandomAccessCollection<Action>.() -> Unit) {}
 }
 
 val emptyPossibles = object : RandomAccessCollection<Possible>() {
+    override fun <T : Any> _get(idx: Index): T {
+        throw IndexOutOfBoundsException()
+    }
+
+    override fun <T : Any> _set(idx: Index, s: T) {
+        throw IndexOutOfBoundsException()
+    }
+
     override fun indices(): Iterator<IntSlice> = emptyIterator()
 
     override fun withIndices(): Iterator<Pair<out IntSlice, Possible>> = emptyIterator()
 
-    override fun <T> _set(idx: Index, s: T) {
-        throw IndexOutOfBoundsException()
-    }
-
-    override fun <T> _get(idx: Index): T {
-        throw IndexOutOfBoundsException()
-    }
-
     override fun iterator(): Iterator<Possible> = emptyIterator()
+
+    override fun ifAny(block: RandomAccessCollection<Possible>.() -> Unit) {}
 }
 
 fun <T> emptyIterator() = object : Iterator<T> {

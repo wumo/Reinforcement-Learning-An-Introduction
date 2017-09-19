@@ -1,7 +1,6 @@
 package lab.mars.rl.problem
 
 import lab.mars.rl.model.*
-import lab.mars.rl.util.NSet
 import lab.mars.rl.model.impl.NSetMDP
 import lab.mars.rl.util.extension.nsetOf
 import lab.mars.rl.util.x
@@ -71,10 +70,9 @@ object CarRental {
                 val L1_to_L2 = max_L1_to_L2 - idx
                 val nL1 = s_1 - L1_to_L2
                 val nL2 = s_2 + L1_to_L2
-                val possibles = nsetOf<Possible>((max_car + 1) x (max_car + 1))
-                for (_L1 in 0..max_car)
-                    for (_L2 in 0..max_car)
-                        possibles[_L1, _L2] = nsetOf(min(_L1, nL1) + min(_L2, nL2) + 1)
+                val possibles = nsetOf<Possible>((max_car + 1) x (max_car + 1)) {
+                    nsetOf<Possible>(min(it[0], nL1) + min(it[1], nL2) + 1) { null_possible }
+                }
                 val cost = if (exercise4_4_version) {
                     val move_cost = (if (L1_to_L2 >= 1) L1_to_L2 - 1 else abs(L1_to_L2)) * cost_per_car_moved
                     val parking_cost = (ceil(nL1.toDouble() / max_car_per_parking_lot) - 1 + ceil(nL2.toDouble() / max_car_per_parking_lot) - 1) * cost_per_parking_lot
@@ -96,8 +94,8 @@ object CarRental {
                                 val new_L1 = nL1 - rent_L1 + return_L1
                                 val new_L2 = nL2 - rent_L2 + return_L2
                                 val min_rent = max(0, nL1 - new_L1) + max(0, nL2 - new_L2)
-                                var possible: Possible? = possibles[new_L1, new_L2, total_rent - min_rent]
-                                if (possible === null) {
+                                var possible = possibles[new_L1, new_L2, total_rent - min_rent]
+                                if (possible === null_possible) {
                                     possible = Possible(mdp.states[new_L1, new_L2], reward, _prob2)
                                     possibles[new_L1, new_L2, total_rent - min_rent] = possible
                                 } else

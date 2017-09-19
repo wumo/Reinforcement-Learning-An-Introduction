@@ -5,6 +5,7 @@ package lab.mars.rl.model.impl
 import lab.mars.rl.model.Action
 import lab.mars.rl.model.MDP
 import lab.mars.rl.model.State
+import lab.mars.rl.model.null_action
 import lab.mars.rl.util.IntSlice
 import lab.mars.rl.util.toDim
 import lab.mars.rl.util.extension.nsetOf
@@ -34,7 +35,7 @@ inline fun NSetMDP(gamma: Double, state_dim: Any, action_dim: Any): MDP {
  * @param action_dim 依据状态索引确定动作维度，Q函数与状态集和动作集一致
  * @return 统一状态维度而动作维度异构的MDP实例
  */
-inline fun NSetMDP(gamma: Double, state_dim: Any, crossinline action_dim: (IntSlice) -> Any): MDP {
+fun NSetMDP(gamma: Double, state_dim: Any, action_dim: (IntSlice) -> Any): MDP {
     val s_dim = state_dim.toDim()
     return MDP(
             gamma = gamma,
@@ -43,5 +44,5 @@ inline fun NSetMDP(gamma: Double, state_dim: Any, crossinline action_dim: (IntSl
             },
             v_maker = { nsetOf(s_dim) { 0.0 } },
             q_maker = { nsetOf(s_dim) { nsetOf<Double>(action_dim(it).toDim()) { 0.0 } } },
-            pi_maker = { nsetOf(s_dim) })
+            pi_maker = { nsetOf(s_dim) { null_action } })
 }

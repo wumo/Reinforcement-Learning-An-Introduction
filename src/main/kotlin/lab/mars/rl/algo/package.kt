@@ -18,23 +18,26 @@ inline fun <T> sigma(set: Iterable<T>, evaluate: T.() -> Double): Double {
 }
 
 inline fun <T> max(set: Iterable<T>, evaluate: T.() -> Double): Double {
-    var max = Double.NEGATIVE_INFINITY
-    set.forEach {
-        val p = evaluate(it)
+    val iterator = set.iterator()
+    var max = evaluate(iterator.next())
+    while (iterator.hasNext()) {
+        val p = evaluate(iterator.next())
         if (p > max)
             max = p
     }
     return max
 }
 
-inline fun <T> argmax(set: Iterable<T>, evaluate: T.() -> Double): T? {
-    var max = Double.NEGATIVE_INFINITY
-    var max_a: T? = null
-    set.forEach {
-        val p = evaluate(it)
+inline fun <T> argmax(set: Iterable<T>, evaluate: T.() -> Double): T {
+    val iterator = set.iterator()
+    var max_a: T = iterator.next()
+    var max = evaluate(max_a)
+    while (iterator.hasNext()) {
+        val tmp = iterator.next()
+        val p = evaluate(tmp)
         if (p > max) {
             max = p
-            max_a = it
+            max_a = tmp
         }
     }
     return max_a

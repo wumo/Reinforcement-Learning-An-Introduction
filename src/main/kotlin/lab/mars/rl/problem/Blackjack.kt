@@ -29,8 +29,8 @@ object Blackjack {
     private const val reward_lose = -1.0
 
     private const val ace_idx = 1
-    private const val player_idx = 2
-    private const val dealer_idx = 3
+    private const val dealer_idx = 2
+    private const val player_idx = 3
     private const val player_offset = 12
     private const val dealer_offset = 1
     private val rand = Random(System.nanoTime())

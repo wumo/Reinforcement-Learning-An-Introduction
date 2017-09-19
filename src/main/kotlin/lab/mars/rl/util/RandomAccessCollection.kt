@@ -2,7 +2,7 @@
 
 package lab.mars.rl.util
 
-abstract class RandomAccessCollection<E> : Iterable<E> {
+abstract class RandomAccessCollection<E : Any> : Iterable<E> {
     data class Pair<A, B>(var first: A, var second: B) {
         override fun toString(): String {
             return "$first=$second"
@@ -13,12 +13,12 @@ abstract class RandomAccessCollection<E> : Iterable<E> {
 
     abstract fun withIndices(): Iterator<Pair<out IntSlice, E>>
 
-    abstract fun <T> _get(idx: Index): T
+    abstract fun <T : Any> _get(idx: Index): T
     inline operator fun get(idx: Index): E = _get(idx)
     inline operator fun get(vararg idx: Int): E = get(DefaultIntSlice.reuse(idx))
     inline operator fun get(vararg indexable: Index): E = get(MultiIndex(indexable))
 
-    abstract fun <T> _set(idx: Index, s: T)
+    abstract fun <T : Any> _set(idx: Index, s: T)
     inline operator fun set(idx: Index, s: E) = _set(idx, s)
     inline operator fun set(vararg idx: Int, s: E) = _set(DefaultIntSlice.reuse(idx), s)
     inline operator fun set(vararg indexable: Index, s: E) = _set(MultiIndex(indexable), s)
@@ -37,11 +37,14 @@ abstract class RandomAccessCollection<E> : Iterable<E> {
     inline operator fun set(idx: Index, s: RandomAccessCollection<E>) = _set(idx, s)
     inline operator fun set(vararg idx: Int, s: RandomAccessCollection<E>) = _set(DefaultIntSlice.reuse(idx), s)
     inline operator fun set(vararg indexable: Index, s: RandomAccessCollection<E>) = _set(MultiIndex(indexable), s)
-}
+    open fun set(element_maker: (IntSlice, E) -> E) {
+        withIndices().forEach { (idx, value) -> set(idx, element_maker(idx, value)) }
+    }
 
-/**
- * 如果集合不为空，则执行[block]
- */
-inline fun <E> RandomAccessCollection<E>.ifAny(block: RandomAccessCollection<E>.() -> Unit) {
-    for (element in this) return block()
+    /**
+     * 如果集合不为空，则执行[block]
+     */
+    open fun ifAny(block: RandomAccessCollection<E>.() -> Unit) {
+        for (element in this) return block(this)
+    }
 }

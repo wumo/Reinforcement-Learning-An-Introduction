@@ -1,5 +1,6 @@
 package lab.mars.rl.model.impl
 
+import lab.mars.rl.algo.MonteCarlo
 import lab.mars.rl.algo.PolicyIteration
 import lab.mars.rl.algo.ValueIteration
 import lab.mars.rl.problem.Blackjack
@@ -73,7 +74,6 @@ class TestProblems {
                 Assert.assertEquals(`Car Rental Result`[i++], V[prob.states[a, b]].format(2))
     }
 
-
     @Test
     fun `Car Rental  Value Iteration`() {
         val prob = CarRental.make(false)
@@ -88,6 +88,17 @@ class TestProblems {
     @Test
     fun `Blackjack Prediction`() {
         val (prob, policy1) = Blackjack.make()
-
+        val algo = MonteCarlo(prob)
+        val V = algo.prediction(policy1, 100)
+        for (a in 0 until 10) {
+            for (b in 0 until 10)
+                println("${V[1, 1, a, b].format(2)} ")
+            println()
+        }
+        for (a in 0 until 10) {
+            for (b in 0 until 10)
+                println("${V[1, 0, a, b].format(2)} ")
+            println()
+        }
     }
 }

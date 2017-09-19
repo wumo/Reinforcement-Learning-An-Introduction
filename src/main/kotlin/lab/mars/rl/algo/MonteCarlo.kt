@@ -1,7 +1,6 @@
 package lab.mars.rl.algo
 
 import lab.mars.rl.model.*
-import lab.mars.rl.util.ifAny
 
 /**
  * <p>
@@ -10,7 +9,7 @@ import lab.mars.rl.util.ifAny
  *
  * @author wumo
  */
-class MonteCarlo(mdp: MDP) {
+class MonteCarlo(val mdp: MDP) {
     val states = mdp.states
     val gamma = mdp.gamma
     val V = mdp.v_maker()
@@ -18,17 +17,35 @@ class MonteCarlo(mdp: MDP) {
     val Q = mdp.q_maker()
 
     fun prediction(policy: DeterminedPolicy, iteration: Int): StateValueFunction {
-        for (_s in states) {
-            var a: Action? = policy[_s] ?: continue
+        val tmpV = mdp.v_maker()
+        tmpV.set { _, _ -> Double.NaN }
+        val count = mdp.v_maker()
+        for (_s in states) _s.actions.ifAny {
+            var a = policy[_s]
             for (i in 0 until iteration) {
                 var s = _s
-                while (a != null) {
+                var accumulate = 0.0
+                while (a !== null_action) {
                     val possible = s.actions[a].sample()
-                    evaluate(possible)
+                    accumulate += possible.reward
+                    if (tmpV[possible.next].isNaN())
+                        tmpV[possible.next] = accumulate
                     s = possible.next
                     a = policy[s]
                 }
+                tmpV.set { idx, value ->
+                    if (!value.isNaN()) {
+                        V[idx] += value
+                        count[idx] += 1.0
+                    }
+                    Double.NaN
+                }
             }
+        }
+        for (s in states) {
+            val n = count[s].toInt()
+            if (n > 0)
+                V[s] = V[s] / n
         }
         return V
     }

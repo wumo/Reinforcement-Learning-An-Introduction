@@ -1,6 +1,5 @@
 package lab.mars.rl.model.impl
 
-import lab.mars.rl.util.NSet
 import lab.mars.rl.util.NSet.Companion.copycat
 import lab.mars.rl.util.nsetOf
 import lab.mars.rl.util.extension.nsetOf
@@ -17,11 +16,19 @@ import org.junit.Test
  * @author wumo
  */
 class TestNSet {
+    @Test(expected = ClassCastException::class)
+    fun `init using unit`() {
+        val set = nsetOf<Int>(2 x 3) {}
+        for (i in set) {
+            println(i)
+        }
+    }
+
     @Test
     fun `make nset using dim2`() {
         val r1 = mutableListOf<IntArray>()
         val r2 = mutableListOf<IntArray>()
-        val set = nsetOf<Int>(0(3, 2 x 10 x 10)) { r1.add(it.toIntArray());null }
+        val set = nsetOf<Int>(0(3, 2 x 10 x 10)) { r1.add(it.toIntArray());0 }
         for (index in set.indices()) {
             r2.add(index.toIntArray())
         }
@@ -47,7 +54,7 @@ class TestNSet {
                                 )
                         )
                 )
-        val set = nsetOf<Int>(dim) { r1.add(it.toIntArray());null }
+        val set = nsetOf<Int>(dim) { r1.add(it.toIntArray());0 }
         for (index in set.indices()) {
             println(index)
             r2.add(index.toIntArray())
@@ -133,19 +140,19 @@ class TestNSet {
 
     @Test
     fun `test null`() {
-        val set = nsetOf<Int>(2 x 2)
+        val set = nsetOf<Int>(2 x 2) { 0 }
         val result: Int? = set[0, 0]
     }
 
     @Test
     fun `inti raw with correct index and 0`() {
         var i = 0
-        var set = nsetOf<Int?>(3 x 4 x 5) { idx -> println(idx); i++ }
+        var set = nsetOf<Int>(3 x 4 x 5) { idx -> println(idx); i++ }
 //            set.forEach { println(it) }
 //            println(set[2, 3, 4])
         set[2, 3, 4] = 100
 //            println(set[2, 3, 4])
-        set = nsetOf(3 x 4 x 5)
+        set = nsetOf(3 x 4 x 5) { 0 }
         set[0, 0, 0] = 1
 //            println(set[0, 0, 0])
     }
@@ -168,5 +175,31 @@ class TestNSet {
         set[0, 0] = nsetOf(2) { 1 }
         println(set[0, 0, 1])
         println(set[2, 3, 4])
+    }
+
+    @Test
+    fun `reset`() {
+        val dim =
+                0(
+                        2,
+                        2,
+                        2,
+                        0(
+                                2,
+                                2 x 3 x 4,
+                                (2 x 3)(
+                                        2,
+                                        3 x 4
+                                )
+                        )
+                )
+        val set = nsetOf<Int>(dim) { 0 }
+        for (withIndex in set.withIndices()) {
+            println(withIndex)
+        }
+        set.set { _, old -> println(old);2 }
+        for (withIndex in set.withIndices()) {
+            println(withIndex)
+        }
     }
 }

@@ -1,4 +1,4 @@
-@file:Suppress("NOTHING_TO_INLINE", "UNCHECKED_CAST")
+@file:Suppress("NOTHING_TO_INLINE", "UNCHECKED_CAST", "OVERRIDE_BY_INLINE")
 
 package lab.mars.rl.util
 
@@ -33,7 +33,7 @@ fun DefaultIntSlice.increment(dim: IntArray) {
 /**
  * 直接使用[elements]构建[NSet]的全部内容
  */
-inline fun <T> nsetOf(vararg elements: T) = NSet<T>(intArrayOf(elements.size), intArrayOf(1), Array(elements.size) { elements[it] })
+inline fun <T : Any> nsetOf(vararg elements: T) = NSet<T>(intArrayOf(elements.size), intArrayOf(1), Array(elements.size) { elements[it] })
 
 /**
  * 1. 可以定义任意维的多维数组，并使用`[]`进行取值赋值
@@ -48,34 +48,52 @@ inline fun <T> nsetOf(vararg elements: T) = NSet<T>(intArrayOf(elements.size), i
  * @param stride 各维度在一维数组上的跨度
  * @param root 根节点一维数组
  */
-class NSet<E>(private val dim: IntArray, private val stride: IntArray, private val root: Array<Any?>) :
+class NSet<E : Any>(private val dim: IntArray, private val stride: IntArray, private val root: Array<Any>) :
         RandomAccessCollection<E>() {
     companion object {
         /**
          * 构造一个与[shape]相同形状的[NSet]（维度、树深度都相同）
          */
-        fun <T> copycat(shape: NSet<*>, element_maker: (IntSlice) -> Any? = { null }): NSet<T> =
-                NSet<T>(shape.dim, shape.stride, Array(shape.root.size) { null }).apply {
-                    val index = DefaultIntSlice.zero(shape.dim.size)
-                    for (idx in 0 until this.root.size)
-                        copycat(this, shape.root[idx], index, element_maker)
-                                .apply { index.increment(shape.dim) }
-                }
+        fun <T : Any> copycat(shape: NSet<*>, element_maker: (IntSlice) -> Any): NSet<T> {
+            val index = DefaultIntSlice.zero(shape.dim.size)
+            return NSet(shape.dim, shape.stride, Array(shape.root.size) {
+                copycat<T>(shape.root[it], index, element_maker)
+                        .apply { index.increment(shape.dim) }
+            })
+        }
 
-        private fun <T> copycat(origin: NSet<T>, prototype: Any?, index: DefaultIntSlice, element_maker: (IntSlice) -> Any?): Any? =
+        private fun <T : Any> copycat(prototype: Any, index: DefaultIntSlice, element_maker: (IntSlice) -> Any): Any =
                 when (prototype) {
-                    is NSet<*> -> NSet<T>(prototype.dim, prototype.stride, Array(prototype.root.size) { null }).apply {
+                    is NSet<*> -> {
                         index.append(prototype.dim.size, 0)
-                        for (idx in 0 until root.size)
-                            copycat(this, prototype.root[idx], index, element_maker)
+                        NSet<T>(prototype.dim, prototype.stride, Array(prototype.root.size) {
+                            copycat<T>(prototype.root[it], index, element_maker)
                                     .apply { index.increment(prototype.dim) }
-                        index.removeLast(prototype.dim.size)
+                        }).apply { index.removeLast(prototype.dim.size) }
                     }
                     else -> element_maker(index)
                 }
     }
 
-    private fun <T> get_or_set(idx: Index, start: Int, set: Boolean, s: T?): T {
+    override fun set(element_maker: (IntSlice, E) -> E) {
+        val index = DefaultIntSlice.new()
+        reset(this, index, element_maker)
+    }
+
+    private fun reset(sub: NSet<E>, index: DefaultIntSlice, element_maker: (IntSlice, E) -> E) {
+        index.append(dim.size, 0)
+        for (a in 0 until sub.root.size) {
+            val tmp = sub.root[a] as? NSet<E>
+            if (tmp == null)
+                sub.root[a] = element_maker(index, sub.root[a] as E)
+            else
+                reset(tmp, index, element_maker)
+            index.increment(sub.dim)
+        }
+        index.removeLast(dim.size)
+    }
+
+    private fun <T : Any> get_or_set(idx: Index, start: Int, op: (Any) -> Any): T {
         var offset = 0
         val idx_size = idx.size - start
         if (idx_size < dim.size) throw RuntimeException("index.length=${idx.size - start}  < Dim.length=${dim.size}")
@@ -87,21 +105,22 @@ class NSet<E>(private val dim: IntArray, private val stride: IntArray, private v
         }
 
         return if (idx_size == dim.size) {
-            val tmp = root[offset]
-            if (set) {
-                root[offset] = s
-            }
-            tmp as T
+            root[offset] = op(root[offset])
+            root[offset] as T
         } else {
             val sub = root[offset] as? NSet<T> ?: throw RuntimeException("index dimension is larger than this set'asSet element'asSet dimension")
-            sub.get_or_set(idx, start + dim.size, set, s)
+            sub.get_or_set(idx, start + dim.size, op)
         }
     }
 
-    override fun <T> _get(idx: Index): T = get_or_set<T>(idx, 0, false, null)
+    override fun ifAny(block: RandomAccessCollection<E>.() -> Unit) {
+        if (!root.isEmpty()) block(this)
+    }
 
-    override fun <T> _set(idx: Index, s: T) {
-        get_or_set(idx, 0, true, s)
+    override fun <T : Any> _get(idx: Index): T = get_or_set<T>(idx, 0) { it }
+
+    override fun <T : Any> _set(idx: Index, s: T) {
+        get_or_set<T>(idx, 0) { s }
     }
 
     override fun iterator() = GeneralIterator<E>().apply { traverse = Traverse(this, {}, {}, {}, { it }) }
