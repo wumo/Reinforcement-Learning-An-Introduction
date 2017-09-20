@@ -8,6 +8,10 @@ package lab.mars.rl.util
  * @author wumo
  */
 class CompactNSet<T:Any> : RandomAccessCollection<T>() {
+    override fun <T : Any> copycat(element_maker: (IntSlice) -> T): RandomAccessCollection<T> {
+        TODO("not implemented")
+    }
+
     override fun <T : Any> _get(idx: Index): T {
         TODO("not implemented")
     }

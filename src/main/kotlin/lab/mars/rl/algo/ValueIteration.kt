@@ -1,7 +1,9 @@
 package lab.mars.rl.algo
 
+import lab.mars.rl.model.Action
 import lab.mars.rl.model.MDP
 import lab.mars.rl.model.StateValueFunction
+import lab.mars.rl.model.null_action
 import org.apache.commons.math3.util.FastMath.abs
 import org.apache.commons.math3.util.FastMath.max
 
@@ -15,9 +17,8 @@ import org.apache.commons.math3.util.FastMath.max
 class ValueIteration(mdp: MDP) {
     val states = mdp.states
     val gamma = mdp.gamma
-    val V = mdp.v_maker()
-    val PI = mdp.pi_maker()
-    val Q = mdp.q_maker()
+    val V = mdp.stateActionFunc<Double> { 0.0 }
+    val PI = mdp.stateFunc<Action> { null_action }
 
     fun iteration(): StateValueFunction {
         //value iteration

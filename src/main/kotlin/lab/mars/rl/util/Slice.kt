@@ -48,11 +48,12 @@ interface AppendableIntSlice : MutableIntSlice {
     fun append(s: Int)
 
     fun append(num: Int, s: Int)
+
+    fun append(another: IntSlice)
 }
 
-open class DefaultIntSlice constructor(internal var backed: IntArray, internal var offset: Int, size: Int, cap: Int = size) :
+open class DefaultIntSlice constructor(private var backed: IntArray, private var offset: Int, size: Int, cap: Int = size) :
         AppendableIntSlice {
-
     companion object {
         val MAX_ARRAY_SIZE = Integer.MAX_VALUE - 8
         /**
@@ -163,6 +164,12 @@ open class DefaultIntSlice constructor(internal var backed: IntArray, internal v
     final inline override fun append(num: Int, s: Int) {
         ensure(size + num)
         add(num, s)
+    }
+
+    override fun append(another: IntSlice) {
+        ensure(size + another.size)
+        for (a in 0 until another.size)
+            add(another[a])
     }
 
     override fun toString(): String {

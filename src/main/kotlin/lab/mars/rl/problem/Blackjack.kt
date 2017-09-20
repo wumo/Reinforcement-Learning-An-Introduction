@@ -1,9 +1,6 @@
 package lab.mars.rl.problem
 
-import lab.mars.rl.model.DeterminedPolicy
-import lab.mars.rl.model.MDP
-import lab.mars.rl.model.Possible
-import lab.mars.rl.model.State
+import lab.mars.rl.model.*
 import lab.mars.rl.model.impl.*
 import lab.mars.rl.util.DefaultIntSlice
 import lab.mars.rl.util.invoke
@@ -48,7 +45,7 @@ object Blackjack {
                         1 -> a.sample = hits(s)
                     }
         }
-        val policy1 = mdp.pi_maker()
+        val policy1 = mdp.stateFunc<Action> { null_action }
         for (s in mdp.states(1))
             if (s[player_idx] >= 20 - player_offset)
                 policy1[s] = s.actions[0]

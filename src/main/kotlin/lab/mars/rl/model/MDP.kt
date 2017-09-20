@@ -1,4 +1,4 @@
-@file:Suppress("NOTHING_TO_INLINE", "OVERRIDE_BY_INLINE")
+@file:Suppress("NOTHING_TO_INLINE", "OVERRIDE_BY_INLINE", "UNCHECKED_CAST")
 
 package lab.mars.rl.model
 
@@ -20,16 +20,28 @@ typealias NonDeterminedPolicy = RandomAccessCollection<Double>
  *
  * @property states 状态集
  * @property gamma 衰减因子
- * @property v_maker 状态V函数的构造器（不同的[states]实现对应着不同的[v_maker]）
- * @property q_maker 状态动作Q函数的构造器（不同的[states]和[Action]实现实现对应着不同的[q_maker]）
- * @property pi_maker 策略构造器（不同的[states]实现对应着不同的[pi_maker]
+ * @property state_function 状态V函数的构造器（不同的[states]实现对应着不同的[state_function]）
+ * @property state_action_function 状态动作Q函数的构造器（不同的[states]和[Action]实现实现对应着不同的[state_action_function]）
  */
 class MDP(
         val gamma: Double,
         val states: StateSet,
-        val v_maker: () -> StateValueFunction,
-        val q_maker: () -> ActionValueFunction,
-        val pi_maker: () -> DeterminedPolicy)
+        private val state_function: ((IntSlice) -> Any) -> RandomAccessCollection<Any>,
+        private val state_action_function: ((IntSlice) -> Any) -> RandomAccessCollection<Any>) {
+    /**
+     * 创建由[State]索引的state function
+     */
+    fun <T : Any> stateFunc(element_maker: (IntSlice) -> Any): RandomAccessCollection<T> {
+        return state_function(element_maker) as RandomAccessCollection<T>
+    }
+
+    /**
+     * 创建由[State]和[Action]索引的state action function
+     */
+    fun <T : Any> stateActionFunc(element_maker: (IntSlice) -> Any): RandomAccessCollection<T> {
+        return state_action_function(element_maker) as RandomAccessCollection<T>
+    }
+}
 
 class State(val index: IntSlice) : Index {
     inline override val size: Int
@@ -63,6 +75,10 @@ val null_action = Action(null_index)
 val null_possible = Possible(null_state, 0.0, 0.0)
 
 val emptyActions = object : RandomAccessCollection<Action>() {
+    override fun <T : Any> copycat(element_maker: (IntSlice) -> T): RandomAccessCollection<T> {
+        return this as RandomAccessCollection<T>
+    }
+
     override fun <T : Any> _get(idx: Index): T {
         throw IndexOutOfBoundsException()
     }
@@ -83,6 +99,10 @@ val emptyActions = object : RandomAccessCollection<Action>() {
 }
 
 val emptyPossibles = object : RandomAccessCollection<Possible>() {
+    override fun <T : Any> copycat(element_maker: (IntSlice) -> T): RandomAccessCollection<T> {
+        return this as RandomAccessCollection<T>
+    }
+
     override fun <T : Any> _get(idx: Index): T {
         throw IndexOutOfBoundsException()
     }

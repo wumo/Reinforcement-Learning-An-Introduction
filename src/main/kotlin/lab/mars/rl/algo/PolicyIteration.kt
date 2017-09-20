@@ -13,9 +13,9 @@ import org.apache.commons.math3.util.FastMath.*
 class PolicyIteration(mdp: MDP) {
     val states = mdp.states
     private val gamma = mdp.gamma
-    private val V = mdp.v_maker()
-    private val PI = mdp.pi_maker()
-    private val Q = mdp.q_maker()
+    private val V = mdp.stateFunc<Double> { 0.0 }
+    private val PI = mdp.stateFunc<Action> { null_action }
+    private val Q = mdp.stateActionFunc<Double> { 0.0 }
 
     fun v_iteration(): Triple<DeterminedPolicy, StateValueFunction, ActionValueFunction> {
         //Initialization

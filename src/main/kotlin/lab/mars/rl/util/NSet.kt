@@ -50,30 +50,26 @@ inline fun <T : Any> nsetOf(vararg elements: T) = NSet<T>(intArrayOf(elements.si
  */
 class NSet<E : Any>(private val dim: IntArray, private val stride: IntArray, private val root: Array<Any>) :
         RandomAccessCollection<E>() {
-    companion object {
-        /**
-         * 构造一个与[shape]相同形状的[NSet]（维度、树深度都相同）
-         */
-        fun <T : Any> copycat(shape: NSet<*>, element_maker: (IntSlice) -> Any): NSet<T> {
-            val index = DefaultIntSlice.zero(shape.dim.size)
-            return NSet(shape.dim, shape.stride, Array(shape.root.size) {
-                copycat<T>(shape.root[it], index, element_maker)
-                        .apply { index.increment(shape.dim) }
-            })
-        }
 
-        private fun <T : Any> copycat(prototype: Any, index: DefaultIntSlice, element_maker: (IntSlice) -> Any): Any =
-                when (prototype) {
-                    is NSet<*> -> {
-                        index.append(prototype.dim.size, 0)
-                        NSet<T>(prototype.dim, prototype.stride, Array(prototype.root.size) {
-                            copycat<T>(prototype.root[it], index, element_maker)
-                                    .apply { index.increment(prototype.dim) }
-                        }).apply { index.removeLast(prototype.dim.size) }
-                    }
-                    else -> element_maker(index)
-                }
+    override fun <T : Any> copycat(element_maker: (IntSlice) -> T): RandomAccessCollection<T> {
+        val index = DefaultIntSlice.zero(dim.size)
+        return NSet(dim, stride, Array(root.size) {
+            copycat(root[it], index, element_maker)
+                    .apply { index.increment(dim) }
+        })
     }
+
+    private fun <T : Any> copycat(prototype: Any, index: DefaultIntSlice, element_maker: (IntSlice) -> T): Any =
+            when (prototype) {
+                is NSet<*> -> {
+                    index.append(prototype.dim.size, 0)
+                    NSet<T>(prototype.dim, prototype.stride, Array(prototype.root.size) {
+                        copycat(prototype.root[it], index, element_maker)
+                                .apply { index.increment(prototype.dim) }
+                    }).apply { index.removeLast(prototype.dim.size) }
+                }
+                else -> element_maker(index)
+            }
 
     override fun set(element_maker: (IntSlice, E) -> E) {
         val index = DefaultIntSlice.new()

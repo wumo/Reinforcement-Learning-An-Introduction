@@ -9,6 +9,11 @@ abstract class RandomAccessCollection<E : Any> : Iterable<E> {
         }
     }
 
+    /**
+     * 构造一个与[shape]相同形状的[NSet]（维度、树深度都相同）
+     */
+    abstract fun <T : Any> copycat(element_maker: (IntSlice) -> T): RandomAccessCollection<T>
+
     abstract fun indices(): Iterator<IntSlice>
 
     abstract fun withIndices(): Iterator<Pair<out IntSlice, E>>
@@ -39,6 +44,10 @@ abstract class RandomAccessCollection<E : Any> : Iterable<E> {
     inline operator fun set(vararg indexable: Index, s: RandomAccessCollection<E>) = _set(MultiIndex(indexable), s)
     open fun set(element_maker: (IntSlice, E) -> E) {
         withIndices().forEach { (idx, value) -> set(idx, element_maker(idx, value)) }
+    }
+
+    open fun raw_set(element_maker: (IntSlice, Any) -> Any) {
+        withIndices().forEach { (idx, value) -> _set(idx, element_maker(idx, value)) }
     }
 
     /**
