@@ -13,6 +13,11 @@ import org.junit.Test
  */
 class TestNSet {
     @Test
+    fun `empty set`() {
+        val set = nsetOf(0) { throw Exception() }
+    }
+
+    @Test
     fun `example`() {
         val set = nsetOf(2(3, 4)) { println(it);0 }
     }

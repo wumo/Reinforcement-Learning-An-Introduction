@@ -26,7 +26,7 @@ fun <E : Any> nsetOf(dim: Int, recipe: (IntBuf) -> E) = dim.NSet(recipe)
 
 sealed class Dimension {
     internal abstract fun <E : Any> fill(slot: DefaultIntBuf, recipe: (IntBuf) -> Any): NSet<E>
-    fun <E : Any> NSet(recipe: (IntBuf) -> E) =
+    open fun <E : Any> NSet(recipe: (IntBuf) -> E) =
             fill<E>(DefaultIntBuf.new(), recipe)
 }
 
@@ -41,7 +41,7 @@ inline fun <T> Array<T>.isSingle() = this.size == 1
 class EnumeratedDimension(private val enumerated: Array<Dimension>) : Dimension() {
     override fun <E : Any> fill(slot: DefaultIntBuf, recipe: (IntBuf) -> Any): NSet<E> {
         return when {
-            enumerated.isEmpty() -> emptyNSet as NSet<E>
+            enumerated.isEmpty() -> emptyNSet()
             enumerated.isSingle() -> enumerated.single().fill(slot, recipe)
             else -> {
                 val dim = intArrayOf(enumerated.size)
@@ -60,7 +60,7 @@ inline fun DefaultIntBuf.isZero() = this.size == 1 && this[0] == 0
 class GeneralDimension(internal val dim: DefaultIntBuf, internal val levels: ArrayList<Dimension>) : Dimension() {
     override fun <E : Any> fill(slot: DefaultIntBuf, recipe: (IntBuf) -> Any): NSet<E> {
         return if (dim.isZero()) {//zero dimension
-            if (levels.isEmpty()) emptyNSet as NSet<E>
+            if (levels.isEmpty()) emptyNSet()
             else cascade(slot, recipe)//to sibling slot
         } else {
             val dim = dim.toIntArray()
@@ -73,6 +73,11 @@ class GeneralDimension(internal val dim: DefaultIntBuf, internal val levels: Arr
                 }.apply { slot.increment(dim) }
             }).apply { slot.removeLast(dim.size) }//to parent slot
         }
+    }
+
+    override fun <E : Any> NSet(recipe: (IntBuf) -> E): NSet<E> {
+        if (dim.isZero() && levels.isEmpty()) return emptyNSet()
+        return super.NSet(recipe)
     }
 
     private fun <E : Any> cascade(slot: DefaultIntBuf, recipe: (IntBuf) -> Any): NSet<E> {
