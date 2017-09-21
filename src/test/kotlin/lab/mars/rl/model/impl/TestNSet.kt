@@ -20,11 +20,47 @@ class TestNSet {
     @Test
     fun `terminal set`() {
         val set = nsetFrom(0(!3, !3, 2 x 3)) { println(it);0 }
+        val expected = arrayOf(
+                DefaultIntBuf.of(0),
+                DefaultIntBuf.of(1),
+                DefaultIntBuf.of(2),
+                DefaultIntBuf.of(3),
+                DefaultIntBuf.of(4),
+                DefaultIntBuf.of(5),
+                DefaultIntBuf.of(6, 0, 0),
+                DefaultIntBuf.of(6, 0, 1),
+                DefaultIntBuf.of(6, 0, 2),
+                DefaultIntBuf.of(6, 1, 0),
+                DefaultIntBuf.of(6, 1, 1),
+                DefaultIntBuf.of(6, 1, 2))
+        var i = 0
+        for (index in set.indices()) {
+            Assert.assertTrue(index.equals(expected[i++]))
+        }
     }
 
     @Test
-    fun `example`() {
+    fun `enumerate`() {
         val set = nsetFrom(2(3, 4)) { println(it);0 }
+        val expected = arrayOf(
+                DefaultIntBuf.of(0, 0, 0),
+                DefaultIntBuf.of(0, 0, 1),
+                DefaultIntBuf.of(0, 0, 2),
+                DefaultIntBuf.of(0, 1, 0),
+                DefaultIntBuf.of(0, 1, 1),
+                DefaultIntBuf.of(0, 1, 2),
+                DefaultIntBuf.of(0, 1, 3),
+                DefaultIntBuf.of(1, 0, 0),
+                DefaultIntBuf.of(1, 0, 1),
+                DefaultIntBuf.of(1, 0, 2),
+                DefaultIntBuf.of(1, 1, 0),
+                DefaultIntBuf.of(1, 1, 1),
+                DefaultIntBuf.of(1, 1, 2),
+                DefaultIntBuf.of(1, 1, 3))
+        var i = 0
+        for (index in set.indices()) {
+            Assert.assertTrue(index.equals(expected[i++]))
+        }
     }
 
     @Test
@@ -165,63 +201,36 @@ class TestNSet {
                     for (d in 0 until 6)
                         exp.add(DefaultIntBuf.of(a, b, c, d))
         var set = nsetFrom(3 x 4 x 5 x 6) {
-            println(it)
             Assert.assertTrue(it.equals(exp[i])); i++
         }
         i = 0
         nsetFrom(0 x 3 x 4 x 0 x 5 x 6) {
-            println(it)
             Assert.assertTrue(it.equals(exp[i])); i++
         }
         i = 0
         nsetFrom((3 x 4 x 5) x 6) {
-            println(it)
             Assert.assertTrue(it.equals(exp[i])); i++
         }
         i = 0
         set = nsetFrom((3 x 4 x 5) x 6 x 0) {
-            println(it)
             Assert.assertTrue(it.equals(exp[i])); i++
         }
-        println(set[0, 0, 0, 0])
+        set[0, 0, 0, 0]
         i = 0
         nsetFrom(3 x (4 x 5) x 6) {
-            println(it)
             Assert.assertTrue(it.equals(exp[i])); i++
         }
         i = 0
         set = nsetFrom(0 x (3 x 4 x 5) x 6) {
-            println(it)
             Assert.assertTrue(it.equals(exp[i])); i++
         }
-        println(set[0, 0, 0, 0])
+        set[0, 0, 0, 0]
         i = 0
         set = nsetFrom(0 x (3 x 4 x 5) x (6 x 0)) {
-            println(it)
             Assert.assertTrue(it.equals(exp[i])); i++
         }
-        println(set[0, 0, 0, 0])
+        set[0, 0, 0, 0]
     }
-
-//    @Test
-//    fun `variational bound`() {
-//        var i = 0
-//        val set = nsetFrom<Int>(3 x 4) { nsetFrom<Int>(5) { i++ } }
-//        for (a in set) {
-//            print("$a,")
-//        }
-//        println()
-//        val a = set[2, 3, 4]
-//        for (a in 0 until 3)
-//            for (b in 0 until 4)
-//                for (c in 0 until 5) {
-//                    println(set[a, b, c])
-//                }
-//        set[2, 3, 4] = 100
-//        set[0, 0] = nsetFrom(2) { 1 }
-//        println(set[0, 0, 1])
-//        println(set[2, 3, 4])
-//    }
 
     @Test
     fun `reset`() {
