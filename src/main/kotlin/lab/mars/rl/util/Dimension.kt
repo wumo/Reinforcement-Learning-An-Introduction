@@ -52,9 +52,9 @@ class EnumeratedDimension(private val enumerated: Array<Dimension>) : Dimension(
                 val total = enumerated.sumBy { (it as? ExpandDimension)?.dim ?: 1 }
                 val dim = intArrayOf(total)
                 val stride = intArrayOf(1)
-                slot.append(0)//extend to subtree
                 val array = Array<Any>(total) {}
                 var i = 0
+                slot.append(0)//extend to subtree
                 for (dimension in enumerated)
                     when (dimension) {
                         is ExpandDimension ->
@@ -111,7 +111,7 @@ class GeneralDimension(internal val dim: DefaultIntBuf, internal val levels: Arr
         //attach leaves
         tree.set { idx, _ ->
             slot.append(idx)
-            recipe(idx).apply {
+            recipe(slot).apply {
                 slot.removeLast(idx.size)
             }
         }
