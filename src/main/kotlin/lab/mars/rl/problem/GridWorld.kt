@@ -3,7 +3,7 @@ package lab.mars.rl.problem
 import lab.mars.rl.model.*
 import lab.mars.rl.model.impl.NSetMDP
 import lab.mars.rl.util.x
-import lab.mars.rl.util.extension.nsetOf
+import lab.mars.rl.util.nsetOf
 
 /**
  * <p>

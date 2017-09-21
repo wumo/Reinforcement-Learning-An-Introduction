@@ -17,8 +17,15 @@ interface Index {
         for (i in start..end)
             block(i, get(i))
     }
-}
 
+    fun equals(other: Index): Boolean {
+        if (this === other) return true
+        if (size != other.size) return false
+        for (i in 0..lastIndex)
+            if (get(i) != other[i]) return false
+        return true
+    }
+}
 
 class MultiIndex(private val indices: Array<out Index>) : Index {
     override fun forEach(start: Int, end: Int, block: (Int, Int) -> Unit) {

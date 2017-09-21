@@ -4,6 +4,7 @@ package lab.mars.rl.util
 
 import org.apache.commons.math3.util.FastMath
 import org.apache.commons.math3.util.FastMath.min
+import java.util.*
 
 /**
  * <p>
@@ -47,6 +48,7 @@ interface MutableIntBuf : IntBuf {
     fun remove(start: Int, end: Int)
 
     fun remove(index: Int) = remove(index, index)
+    fun removeFirst(num: Int) = remove(0, num - 1)
     fun removeLast(num: Int) = remove(lastIndex - num + 1, lastIndex)
 
     fun reuseBacked(): IntBuf
@@ -94,6 +96,7 @@ open class DefaultIntBuf(private var ring: IntArray, private var offset: Int, si
         get() = _size
     override val cap: Int
         get() = _cap
+
 
     private inline fun index(i: Int): Int = (offset + i) % ring.size
 
@@ -177,14 +180,17 @@ open class DefaultIntBuf(private var ring: IntArray, private var offset: Int, si
 
     override fun prepend(s: Int) {
         ensure(_size + 1)
-        ring[index(-1 + _size)] = s
+        val new_offset = index(-1 + ring.size)
+        ring[new_offset] = s
+        offset = new_offset
         _size++
     }
 
     override fun prepend(num: Int, s: Int) {
         ensure(_size + num)
         for (a in 0 until num)
-            ring[index(-num + a + _size)] = s
+            ring[index(-num + a + ring.size)] = s
+        offset = index(-num + ring.size)
         _size += num
     }
 
@@ -192,7 +198,8 @@ open class DefaultIntBuf(private var ring: IntArray, private var offset: Int, si
         val num = another.size
         ensure(_size + num)
         for (a in 0 until num)
-            ring[index(-num + a + _size)] = another[a]
+            ring[index(-num + a + ring.size)] = another[a]
+        offset = index(-num + ring.size)
         _size += num
     }
 
@@ -226,6 +233,5 @@ open class DefaultIntBuf(private var ring: IntArray, private var offset: Int, si
         sb.append("]")
         return sb.toString()
     }
-
 
 }

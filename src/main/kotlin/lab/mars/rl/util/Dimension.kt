@@ -10,7 +10,7 @@ package lab.mars.rl.util
  * @author wumo
  */
 
-val emptyNSet = NSet<Any>(intArrayOf(), intArrayOf(), Array(0) {})
+val emptyLevels = ArrayList<Dimension>(0)
 val NULL_obj = object : Any() {}
 val `placeholder's recipe`: (IntBuf) -> Any = { NULL_obj }
 
@@ -22,29 +22,34 @@ private fun strideOfDim(dim: IntArray): IntArray {
     return stride
 }
 
+fun <E : Any> nsetOf(dim: Dimension, recipe: (IntBuf) -> E) = dim.NSet(recipe)
+fun <E : Any> nsetOf(dim: Int, recipe: (IntBuf) -> E) = dim.NSet(recipe)
+
 sealed class Dimension {
-    abstract fun <T : Any> fill(slot: DefaultIntBuf, recipe: (IntBuf) -> Any): Any
+    internal abstract fun fill(slot: DefaultIntBuf, recipe: (IntBuf) -> Any): Any
+    fun <E : Any> NSet(recipe: (IntBuf) -> E) =
+            fill(DefaultIntBuf.new(), recipe) as NSet<E>
 }
 
 class VariationalDimension(private val dimFunc: (IntBuf) -> Any) : Dimension() {
-    override fun <T : Any> fill(slot: DefaultIntBuf, recipe: (IntBuf) -> Any): Any {
+    override fun fill(slot: DefaultIntBuf, recipe: (IntBuf) -> Any): Any {
         val dim = dimFunc(slot).toDim()
-        return dim.fill<T>(slot, recipe)
+        return dim.fill(slot, recipe)
     }
 }
 
 inline fun <T> Array<T>.isSingle() = this.size == 1
 class EnumeratedDimension(private val enumerated: Array<Dimension>) : Dimension() {
-    override fun <T : Any> fill(slot: DefaultIntBuf, recipe: (IntBuf) -> Any): Any {
+    override fun fill(slot: DefaultIntBuf, recipe: (IntBuf) -> Any): Any {
         return when {
             enumerated.isEmpty() -> recipe(slot)
-            enumerated.isSingle() -> enumerated.single().fill<T>(slot, recipe)
+            enumerated.isSingle() -> enumerated.single().fill(slot, recipe)
             else -> {
                 val dim = intArrayOf(enumerated.size)
                 val stride = intArrayOf(1)
                 slot.append(0)//extend to subtree
-                NSet<T>(dim, stride, Array(enumerated.size) {
-                    enumerated[it].fill<T>(slot, recipe)
+                NSet<Any>(dim, stride, Array(enumerated.size) {
+                    enumerated[it].fill(slot, recipe)
                             .apply { slot.increment(dim) }
                 }).apply { slot.removeLast(1) }
             }
@@ -53,17 +58,17 @@ class EnumeratedDimension(private val enumerated: Array<Dimension>) : Dimension(
 }
 
 inline fun DefaultIntBuf.isZero() = this.size == 1 && this[0] == 0
-class GeneralDimension(val dimSlice: DefaultIntBuf, val levels: ArrayList<Dimension>) : Dimension() {
-    override fun <T : Any> fill(slot: DefaultIntBuf, recipe: (IntBuf) -> Any): Any {
-        return if (dimSlice.isZero()) {//zero dimension
-            cascade<T>(slot, recipe)//to sibling slot
+class GeneralDimension(internal val dim: DefaultIntBuf, internal val levels: ArrayList<Dimension>) : Dimension() {
+    override fun fill(slot: DefaultIntBuf, recipe: (IntBuf) -> Any): Any {
+        return if (dim.isZero()) {//zero dimension
+            cascade(slot, recipe)//to sibling slot
         } else {
-            val dim = dimSlice.toIntArray()
+            val dim = dim.toIntArray()
             val stride = strideOfDim(dim)
             slot.append(dim.size, 0)//to children slot
-            NSet<T>(dim, stride, Array(dim[0] * stride[0]) {
+            NSet<Any>(dim, stride, Array(dim[0] * stride[0]) {
                 //to sibling slot
-                cascade<T>(slot, recipe).apply {
+                cascade(slot, recipe).apply {
                     slot.increment(dim)
                 }
             }).apply {
@@ -72,15 +77,15 @@ class GeneralDimension(val dimSlice: DefaultIntBuf, val levels: ArrayList<Dimens
         }
     }
 
-    private fun <T : Any> cascade(slot: DefaultIntBuf, recipe: (IntBuf) -> Any): Any {
+    private fun cascade(slot: DefaultIntBuf, recipe: (IntBuf) -> Any): Any {
         if (levels.isEmpty()) return recipe(slot)
-        val tree = levels[0].fill<T>(slot, `placeholder's recipe`)
+        val tree = levels[0].fill(slot, `placeholder's recipe`)
         if (tree !is NSet<*>) return tree
         //grow branches
         for (level in 1..levels.lastIndex)
             tree.set { idx, _ ->
                 slot.append(idx)
-                levels[level].fill<T>(slot, `placeholder's recipe`).apply {
+                levels[level].fill(slot, `placeholder's recipe`).apply {
                     slot.removeLast(idx.size)
                 }
             }
@@ -101,8 +106,22 @@ private fun DefaultIntBuf.simplifyLast(): DefaultIntBuf {
         val last1 = this[lastIndex]
         val last2 = this[lastIndex - 1]
         if (last1 == 0 || last2 == 0) {
-            removeLast(1)
+            remove(lastIndex)
             this[lastIndex] = last1 + last2
+            continue
+        }
+        break
+    }
+    return this
+}
+
+private fun DefaultIntBuf.simplifyFirst(): DefaultIntBuf {
+    while (this.size >= 2) {
+        val last1 = this[0]
+        val last2 = this[1]
+        if (last1 == 0 || last2 == 0) {
+            remove(0)
+            this[0] = last1 + last2
             continue
         }
         break
@@ -122,6 +141,9 @@ operator fun Int.invoke(vararg s: Any): GeneralDimension {
     }
 }
 
+fun <E : Any> Int.NSet(recipe: (IntBuf) -> E) =
+        GeneralDimension(DefaultIntBuf.of(this), emptyLevels).NSet(recipe)
+
 infix fun Int.x(a: Int): GeneralDimension {
     require(this >= 0 && a >= 0)
     return GeneralDimension(DefaultIntBuf.of(this, a).simplifyLast(), ArrayList())
@@ -134,7 +156,10 @@ infix fun Int.x(block: (IntBuf) -> Any): GeneralDimension {
 
 infix fun Int.x(d: GeneralDimension): GeneralDimension {
     require(this >= 0)
-    return GeneralDimension(DefaultIntBuf.of(this), arrayListOf(d))
+    return d.apply {
+        dim.prepend(this@x)
+        dim.simplifyFirst()
+    }
 }
 
 operator fun GeneralDimension.invoke(vararg s: Any) =
@@ -146,17 +171,22 @@ operator fun GeneralDimension.invoke(vararg s: Any) =
 infix fun GeneralDimension.x(a: Int): GeneralDimension {
     require(a >= 0)
     return this.apply {
-        if (levels.isNotEmpty()) {
+        if (levels.isEmpty())
+            dim.apply {
+                append(a)
+                simplifyLast()
+            }
+        else {
             val last = levels.last()
             if (last is GeneralDimension && last.levels.isEmpty()) {//simplification
-                last.dimSlice.apply {
+                last.dim.apply {
                     append(a)
                     simplifyLast()
                 }
                 return@apply
             }
+            levels.add(GeneralDimension(DefaultIntBuf.of(a), emptyLevels))
         }
-        levels.add(GeneralDimension(DefaultIntBuf.of(a), emptyLevels))
     }
 }
 
@@ -164,16 +194,29 @@ infix fun GeneralDimension.x(block: (IntBuf) -> Any) =
         this.apply { levels.add(VariationalDimension(block)) }
 
 
-infix fun GeneralDimension.x(d: GeneralDimension) =
-        this.apply {
-            when {
-                levels.isEmpty() -> {
-
-                }
-
-            }
-            levels.add(d)
+infix fun GeneralDimension.x(d: GeneralDimension): GeneralDimension {
+    val first = this
+    val second = d
+    when {
+        first.levels.isEmpty() -> {
+            second.dim.prepend(first.dim)
+            second.dim.simplifyLast().simplifyFirst()
+            return second
         }
+        else -> {
+            val last = first.levels.last()
+            if (last is GeneralDimension && last.levels.isEmpty()) {//simplification
+                last.dim.apply {
+                    append(second.dim)
+                    simplifyLast().simplifyFirst()
+                }
+                first.levels.addAll(second.levels)
+            } else
+                first.levels.add(d)
+            return first
+        }
+    }
+}
 
 fun Any.toDim() = when (this) {
     is Dimension -> this
@@ -184,65 +227,3 @@ fun Any.toDim() = when (this) {
     else -> throw IllegalArgumentException(this.toString())
 }
 
-
-val emptyLevels = ArrayList<Dimension>(0)
-
-fun <T : Any> nsetOf(dimension: Any, element_maker: (IntBuf) -> T): NSet<T> {
-    val _dim = dimension.toDim()
-    return when (_dim) {
-        is GeneralDimension -> fill(_dim.dimSlice, _dim.levels, DefaultIntBuf.new(), element_maker)
-        else -> throw IllegalArgumentException("${_dim::class} is not supported in creating ${NSet::class} directly!")
-    }
-}
-
-private val zeroDim = DefaultIntBuf.of(0)
-private fun <T : Any> fill(rootDim: IntBuf, sub: ArrayList<Dimension>,
-                           index: DefaultIntBuf,
-                           element_maker: (IntBuf) -> T): NSet<T> {
-    val dim = rootDim.toIntArray()
-    val isZero = dim.size == 1 && dim[0] == 0
-    if (isZero) {
-        dim[0] = sub.size
-        index.append(0)
-    } else
-        index.append(dim.size, 0)
-
-    val stride = IntArray(dim.size)
-    stride[stride.lastIndex] = 1
-    for (a in stride.lastIndex - 1 downTo 0)
-        stride[a] = dim[a + 1] * stride[a + 1]
-
-    val total = dim[0] * stride[0]
-
-    return when {
-        sub.isEmpty() -> NSet<T>(dim, stride, Array(total) {
-            element_maker(index).apply { index.increment(dim) }
-        })
-        isZero || sub.size == 1 -> NSet<T>(dim, stride, Array(total) {
-            val tmp = sub[it]
-            when (tmp) {
-                is VariationalDimension -> {
-                    val sub_dim = tmp.dimSlice(index).toDim()
-
-                }
-                is EnumeratedDimension -> {
-
-                }
-                is GeneralDimension -> {
-                }
-            }
-            fill(sub[it].dimSlice, sub[it].dimSlice, index, element_maker).apply { index.increment(dim) }
-        })
-        else -> fill(zeroDim, sub, index, element_maker)
-    }.apply { index.removeLast(dim.size) }
-
-//    return NSet(dim
-//                , stride, Array(total) {
-//        when {
-//            sub.isEmpty() -> element_maker(index)
-//            isZero -> fill(sub[it].dim, sub[it].sub, index, element_maker)
-//            sub.size == 1 -> fill(sub[0].toDim(), sub[0].sub, index, element_maker)
-//            else -> fill(zeroDim, sub, index, element_maker)
-//        }.apply { index.increment(dim) }
-//    }.apply { index.removeLast(dim.size) })
-}

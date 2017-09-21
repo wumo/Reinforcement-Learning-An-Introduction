@@ -2,7 +2,7 @@ package lab.mars.rl.problem
 
 import lab.mars.rl.model.*
 import lab.mars.rl.model.impl.NSetMDP
-import lab.mars.rl.util.extension.nsetOf
+import lab.mars.rl.util.nsetOf
 import lab.mars.rl.util.x
 import org.apache.commons.math3.special.Gamma
 import org.apache.commons.math3.util.FastMath.*
@@ -70,10 +70,7 @@ object CarRental {
                 val L1_to_L2 = max_L1_to_L2 - idx
                 val nL1 = s_1 - L1_to_L2
                 val nL2 = s_2 + L1_to_L2
-                val possibles = nsetOf((max_car + 1) x (max_car + 1)) { null_possible }
-                for (a in 0..max_car)
-                    for (b in 0..max_car)
-                        possibles[a, b] = nsetOf(min(a, nL1) + min(b, nL2) + 1) { null_possible }
+                val possibles = nsetOf((max_car + 1) x (max_car + 1) x { min(it[0], nL1) + min(it[1], nL2) + 1 }) { null_possible }
                 val cost = if (exercise4_4_version) {
                     val move_cost = (if (L1_to_L2 >= 1) L1_to_L2 - 1 else abs(L1_to_L2)) * cost_per_car_moved
                     val parking_cost = (ceil(nL1.toDouble() / max_car_per_parking_lot) - 1 + ceil(nL2.toDouble() / max_car_per_parking_lot) - 1) * cost_per_parking_lot
