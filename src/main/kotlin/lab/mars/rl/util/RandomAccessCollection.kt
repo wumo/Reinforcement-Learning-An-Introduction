@@ -12,20 +12,20 @@ abstract class RandomAccessCollection<E : Any> : Iterable<E> {
     /**
      * 构造一个与[shape]相同形状的[NSet]（维度、树深度都相同）
      */
-    abstract fun <T : Any> copycat(element_maker: (IntSlice) -> T): RandomAccessCollection<T>
+    abstract fun <T : Any> copycat(element_maker: (IntBuf) -> T): RandomAccessCollection<T>
 
-    abstract fun indices(): Iterator<IntSlice>
+    abstract fun indices(): Iterator<IntBuf>
 
-    abstract fun withIndices(): Iterator<Pair<out IntSlice, E>>
+    abstract fun withIndices(): Iterator<Pair<out IntBuf, E>>
 
     abstract fun <T : Any> _get(idx: Index): T
     inline operator fun get(idx: Index): E = _get(idx)
-    inline operator fun get(vararg idx: Int): E = get(DefaultIntSlice.reuse(idx))
+    inline operator fun get(vararg idx: Int): E = get(DefaultIntBuf.reuse(idx))
     inline operator fun get(vararg indexable: Index): E = get(MultiIndex(indexable))
 
     abstract fun <T : Any> _set(idx: Index, s: T)
     inline operator fun set(idx: Index, s: E) = _set(idx, s)
-    inline operator fun set(vararg idx: Int, s: E) = _set(DefaultIntSlice.reuse(idx), s)
+    inline operator fun set(vararg idx: Int, s: E) = _set(DefaultIntBuf.reuse(idx), s)
     inline operator fun set(vararg indexable: Index, s: E) = _set(MultiIndex(indexable), s)
     /**
      * 对应位置元素为[RandomAccessCollection<E>]，则可以使用invoke操作符进行部分获取，
@@ -34,19 +34,15 @@ abstract class RandomAccessCollection<E : Any> : Iterable<E> {
     inline operator fun invoke(idx: Index): RandomAccessCollection<E> = _get(idx)
 
     /**@see invoke */
-    inline operator fun invoke(vararg idx: Int): RandomAccessCollection<E> = _get(DefaultIntSlice.reuse(idx))
+    inline operator fun invoke(vararg idx: Int): RandomAccessCollection<E> = _get(DefaultIntBuf.reuse(idx))
 
     /**@see invoke */
     inline operator fun invoke(vararg indexable: Index): RandomAccessCollection<E> = _get(MultiIndex(indexable))
 
     inline operator fun set(idx: Index, s: RandomAccessCollection<E>) = _set(idx, s)
-    inline operator fun set(vararg idx: Int, s: RandomAccessCollection<E>) = _set(DefaultIntSlice.reuse(idx), s)
+    inline operator fun set(vararg idx: Int, s: RandomAccessCollection<E>) = _set(DefaultIntBuf.reuse(idx), s)
     inline operator fun set(vararg indexable: Index, s: RandomAccessCollection<E>) = _set(MultiIndex(indexable), s)
-    open fun set(element_maker: (IntSlice, E) -> E) {
-        withIndices().forEach { (idx, value) -> set(idx, element_maker(idx, value)) }
-    }
-
-    open fun raw_set(element_maker: (IntSlice, Any) -> Any) {
+    open fun<T:Any> set(element_maker: (IntBuf, E) -> T) {
         withIndices().forEach { (idx, value) -> _set(idx, element_maker(idx, value)) }
     }
 

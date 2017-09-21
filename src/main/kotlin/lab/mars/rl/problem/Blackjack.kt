@@ -2,7 +2,7 @@ package lab.mars.rl.problem
 
 import lab.mars.rl.model.*
 import lab.mars.rl.model.impl.*
-import lab.mars.rl.util.DefaultIntSlice
+import lab.mars.rl.util.DefaultIntBuf
 import lab.mars.rl.util.invoke
 import lab.mars.rl.util.x
 import java.util.*
@@ -94,14 +94,14 @@ object Blackjack {
         player += card
         when {
             player <= 21 -> {
-                val idx = DefaultIntSlice.from(s)
+                val idx = DefaultIntBuf.from(s)
                 idx[player_idx] = player - player_offset
                 Possible(states[idx], 0.0, 1.0)
             }
             s[ace_idx] == 0 -> Possible(lose, -1.0, 1.0)
             else -> {
                 player -= 10
-                val idx = DefaultIntSlice.from(s)
+                val idx = DefaultIntBuf.from(s)
                 idx[ace_idx] = 0
                 idx[player_idx] = player - player_offset
                 Possible(states[idx], 0.0, 1.0)

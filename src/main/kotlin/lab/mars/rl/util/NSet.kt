@@ -19,7 +19,7 @@ import java.util.*
  *
  * @receiver 表示index的数组链表
  */
-fun DefaultIntSlice.increment(dim: IntArray) {
+fun DefaultIntBuf.increment(dim: IntArray) {
     val offset = lastIndex - dim.size + 1
     for (idx in dim.lastIndex downTo 0) {
         val this_idx = offset + idx
@@ -51,15 +51,15 @@ inline fun <T : Any> nsetOf(vararg elements: T) = NSet<T>(intArrayOf(elements.si
 class NSet<E : Any>(private val dim: IntArray, private val stride: IntArray, private val root: Array<Any>) :
         RandomAccessCollection<E>() {
 
-    override fun <T : Any> copycat(element_maker: (IntSlice) -> T): RandomAccessCollection<T> {
-        val index = DefaultIntSlice.zero(dim.size)
+    override fun <T : Any> copycat(element_maker: (IntBuf) -> T): RandomAccessCollection<T> {
+        val index = DefaultIntBuf.zero(dim.size)
         return NSet(dim, stride, Array(root.size) {
             copycat(root[it], index, element_maker)
                     .apply { index.increment(dim) }
         })
     }
 
-    private fun <T : Any> copycat(prototype: Any, index: DefaultIntSlice, element_maker: (IntSlice) -> T): Any =
+    private fun <T : Any> copycat(prototype: Any, index: DefaultIntBuf, element_maker: (IntBuf) -> T): Any =
             when (prototype) {
                 is NSet<*> -> {
                     index.append(prototype.dim.size, 0)
@@ -71,12 +71,12 @@ class NSet<E : Any>(private val dim: IntArray, private val stride: IntArray, pri
                 else -> element_maker(index)
             }
 
-    override fun set(element_maker: (IntSlice, E) -> E) {
-        val index = DefaultIntSlice.new()
+    override fun <T : Any> set(element_maker: (IntBuf, E) -> T) {
+        val index = DefaultIntBuf.new()
         reset(this, index, element_maker)
     }
 
-    private fun reset(sub: NSet<E>, index: DefaultIntSlice, element_maker: (IntSlice, E) -> E) {
+    private fun <T : Any> reset(sub: NSet<E>, index: DefaultIntBuf, element_maker: (IntBuf, E) -> T) {
         index.append(sub.dim.size, 0)
         for (a in 0 until sub.root.size) {
             val tmp = sub.root[a] as? NSet<E>
@@ -123,8 +123,8 @@ class NSet<E : Any>(private val dim: IntArray, private val stride: IntArray, pri
 
     override fun iterator() = GeneralIterator<E>().apply { traverse = Traverse(this, {}, {}, {}, { it }) }
 
-    override fun indices() = GeneralIterator<IntSlice>().apply {
-        val index = DefaultIntSlice.zero(this.set.dim.size).apply { this[lastIndex] = -1 }
+    override fun indices() = GeneralIterator<IntBuf>().apply {
+        val index = DefaultIntBuf.zero(this.set.dim.size).apply { this[lastIndex] = -1 }
         traverse = Traverse(this,
                             forward = {
                                 index.apply {
@@ -137,9 +137,9 @@ class NSet<E : Any>(private val dim: IntArray, private val stride: IntArray, pri
                             visitor = { index })
     }
 
-    override fun withIndices() = GeneralIterator<Pair<out IntSlice, E>>().apply {
-        val index = DefaultIntSlice.zero(this.set.dim.size).apply { this[lastIndex] = -1 }
-        var pair: Pair<out IntSlice, E>? = null
+    override fun withIndices() = GeneralIterator<Pair<out IntBuf, E>>().apply {
+        val index = DefaultIntBuf.zero(this.set.dim.size).apply { this[lastIndex] = -1 }
+        var pair: Pair<out IntBuf, E>? = null
         traverse = Traverse(this,
                             forward = {
                                 index.apply {

@@ -9,9 +9,9 @@ interface Index {
         get() = size - 1
 
     /**
-     * 获取指定维度[dim]上的数值
+     * 获取指定维度[idx]上的数值
      */
-    operator fun get(dim: Int): Int
+    operator fun get(idx: Int): Int
 
     fun forEach(start: Int = 0, end: Int = lastIndex, block: (Int, Int) -> Unit) {
         for (i in start..end)
@@ -74,10 +74,10 @@ class MultiIndex(private val indices: Array<out Index>) : Index {
 
     override val size: Int = indices.sumBy { it.size }
 
-    override fun get(dim: Int): Int {
-        var _dim = dim
+    override fun get(idx: Int): Int {
+        var _dim = idx
         for (index in indices)
-            if (_dim < index.size) return index[dim]
+            if (_dim < index.size) return index[idx]
             else _dim -= index.size
         throw IndexOutOfBoundsException()
     }

@@ -26,39 +26,39 @@ typealias NonDeterminedPolicy = RandomAccessCollection<Double>
 class MDP(
         val gamma: Double,
         val states: StateSet,
-        private val state_function: ((IntSlice) -> Any) -> RandomAccessCollection<Any>,
-        private val state_action_function: ((IntSlice) -> Any) -> RandomAccessCollection<Any>) {
+        private val state_function: ((IntBuf) -> Any) -> RandomAccessCollection<Any>,
+        private val state_action_function: ((IntBuf) -> Any) -> RandomAccessCollection<Any>) {
     /**
      * 创建由[State]索引的state function
      */
-    fun <T : Any> stateFunc(element_maker: (IntSlice) -> Any): RandomAccessCollection<T> {
+    fun <T : Any> stateFunc(element_maker: (IntBuf) -> Any): RandomAccessCollection<T> {
         return state_function(element_maker) as RandomAccessCollection<T>
     }
 
     /**
      * 创建由[State]和[Action]索引的state action function
      */
-    fun <T : Any> stateActionFunc(element_maker: (IntSlice) -> Any): RandomAccessCollection<T> {
+    fun <T : Any> stateActionFunc(element_maker: (IntBuf) -> Any): RandomAccessCollection<T> {
         return state_action_function(element_maker) as RandomAccessCollection<T>
     }
 }
 
-class State(val index: IntSlice) : Index {
+class State(val index: IntBuf) : Index {
     inline override val size: Int
         get() = index.size
 
-    inline override operator fun get(dim: Int) = index[dim]
+    inline override operator fun get(idx: Int) = index[idx]
 
     var actions: RandomAccessCollection<Action> = emptyActions
 
     override fun toString() = index.toString()
 }
 
-class Action(val index: IntSlice) : Index {
+class Action(val index: IntBuf) : Index {
     inline override val size: Int
         get() = index.size
 
-    inline override operator fun get(dim: Int) = index[dim]
+    inline override operator fun get(idx: Int) = index[idx]
 
     var possibles: RandomAccessCollection<Possible> = emptyPossibles
 
@@ -69,13 +69,13 @@ class Action(val index: IntSlice) : Index {
 
 class Possible(var next: State, var reward: Double, var probability: Double)
 
-val null_index = DefaultIntSlice.of(-1)
+val null_index = DefaultIntBuf.of(-1)
 val null_state = State(null_index)
 val null_action = Action(null_index)
 val null_possible = Possible(null_state, 0.0, 0.0)
 
 val emptyActions = object : RandomAccessCollection<Action>() {
-    override fun <T : Any> copycat(element_maker: (IntSlice) -> T): RandomAccessCollection<T> {
+    override fun <T : Any> copycat(element_maker: (IntBuf) -> T): RandomAccessCollection<T> {
         return this as RandomAccessCollection<T>
     }
 
@@ -87,9 +87,9 @@ val emptyActions = object : RandomAccessCollection<Action>() {
         throw IndexOutOfBoundsException()
     }
 
-    override fun indices(): Iterator<IntSlice> = emptyIterator()
+    override fun indices(): Iterator<IntBuf> = emptyIterator()
 
-    override fun withIndices(): Iterator<Pair<out IntSlice, Action>> = emptyIterator()
+    override fun withIndices(): Iterator<Pair<out IntBuf, Action>> = emptyIterator()
 
 
     override fun iterator(): Iterator<Action> = emptyIterator()
@@ -99,7 +99,7 @@ val emptyActions = object : RandomAccessCollection<Action>() {
 }
 
 val emptyPossibles = object : RandomAccessCollection<Possible>() {
-    override fun <T : Any> copycat(element_maker: (IntSlice) -> T): RandomAccessCollection<T> {
+    override fun <T : Any> copycat(element_maker: (IntBuf) -> T): RandomAccessCollection<T> {
         return this as RandomAccessCollection<T>
     }
 
@@ -111,9 +111,9 @@ val emptyPossibles = object : RandomAccessCollection<Possible>() {
         throw IndexOutOfBoundsException()
     }
 
-    override fun indices(): Iterator<IntSlice> = emptyIterator()
+    override fun indices(): Iterator<IntBuf> = emptyIterator()
 
-    override fun withIndices(): Iterator<Pair<out IntSlice, Possible>> = emptyIterator()
+    override fun withIndices(): Iterator<Pair<out IntBuf, Possible>> = emptyIterator()
 
     override fun iterator(): Iterator<Possible> = emptyIterator()
 

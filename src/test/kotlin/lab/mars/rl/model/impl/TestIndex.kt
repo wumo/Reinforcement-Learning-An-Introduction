@@ -1,6 +1,6 @@
 package lab.mars.rl.model.impl
 
-import lab.mars.rl.util.DefaultIntSlice
+import lab.mars.rl.util.DefaultIntBuf
 import lab.mars.rl.util.MultiIndex
 import org.junit.Assert
 import org.junit.Test
@@ -15,9 +15,9 @@ import org.junit.Test
 class TestIndex {
     @Test
     fun `range forEach`() {
-        val indices = arrayOf(DefaultIntSlice.of(0),
-                              DefaultIntSlice.of(1, 2, 3),
-                              DefaultIntSlice.of(4, 5, 6, 7))
+        val indices = arrayOf(DefaultIntBuf.of(0),
+                              DefaultIntBuf.of(1, 2, 3),
+                              DefaultIntBuf.of(4, 5, 6, 7))
         val idx = MultiIndex(indices)
         val expected = IntArray(8) { it }
         idx.forEach(0,0) { idx, value ->
