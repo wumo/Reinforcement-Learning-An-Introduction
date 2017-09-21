@@ -4,7 +4,7 @@ import lab.mars.rl.model.*
 import lab.mars.rl.model.impl.NSetMDP
 import lab.mars.rl.util.emptyNSet
 import lab.mars.rl.util.x
-import lab.mars.rl.util.nsetOf
+import lab.mars.rl.util.nsetFrom
 
 /**
  * <p>
@@ -36,7 +36,7 @@ object GridWorld {
                         x = s[0]
                         y = s[1]
                     }
-                    action.possibles = nsetOf(1) { Possible(states[x, y], -1.0, 1.0) }
+                    action.possibles = nsetFrom(1) { Possible(states[x, y], -1.0, 1.0) }
                 }
             states[0, 0].actions = emptyNSet()
             states[n - 1, n - 1].actions =  emptyNSet()

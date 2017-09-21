@@ -14,12 +14,17 @@ import org.junit.Test
 class TestNSet {
     @Test
     fun `empty set`() {
-        val set = nsetOf(0) { throw Exception() }
+        val set = nsetFrom(0) { throw Exception() }
+    }
+
+    @Test
+    fun `terminal set`() {
+        val set = nsetFrom(0(!3, !3, 2 x 3)) { println(it);0 }
     }
 
     @Test
     fun `example`() {
-        val set = nsetOf(2(3, 4)) { println(it);0 }
+        val set = nsetFrom(2(3, 4)) { println(it);0 }
     }
 
     @Test
@@ -52,7 +57,7 @@ class TestNSet {
                                 )
                         )
                 )
-        val set = nsetOf(dim) { r1.add(it.toIntArray());0 }
+        val set = nsetFrom(dim) { r1.add(it.toIntArray());0 }
         for (index in set.indices()) {
             println(index)
             r2.add(index.toIntArray())
@@ -71,7 +76,7 @@ class TestNSet {
                 (2 x { 3 x 4 } x 4 x { 4 } x 2(3, 3))(2, 3 x 4 x { 1 }, 4)
         val dim2 = 2 x 2(3)
         val dim3 = 2 x 0(3, 4, 5)
-        val set = nsetOf(dim) { println(it); 0 }
+        val set = nsetFrom(dim) { println(it); 0 }
     }
 
     @Test
@@ -85,8 +90,8 @@ class TestNSet {
     @Test
     fun `test general shape`() {
         var i = 0
-        val tmp = nsetOf(2) { i++ }
-        val set = nsetOf(2 x { 3 x 4 }) { i++ }
+        val tmp = nsetFrom(2) { i++ }
+        val set = nsetFrom(2 x { 3 x 4 }) { i++ }
         println(set[0, 0, 0])
         set[1] = tmp
         Assert.assertEquals(0, set[1, 0])
@@ -97,7 +102,7 @@ class TestNSet {
     @Test
     fun `get sub set`() {
         var i = 0
-        val set = nsetOf(2 x { 3 x 4 }) { i++ }
+        val set = nsetFrom(2 x { 3 x 4 }) { i++ }
         for (withIndex in set.withIndices()) {
             println(withIndex)
         }
@@ -111,7 +116,7 @@ class TestNSet {
     @Test
     fun `one level iterate`() {
         var i = 0
-        val set = nsetOf(5) { i++ }
+        val set = nsetFrom(5) { i++ }
         i = 0
         for (a in set) {
             println(a)
@@ -123,7 +128,7 @@ class TestNSet {
     @Test
     fun `two level iterate`() {
         var i = 0
-        val set = nsetOf(5(3)) { i++ }
+        val set = nsetFrom(5(3)) { i++ }
         i = 0
         for (a in set) {
             println(a)
@@ -140,13 +145,13 @@ class TestNSet {
     @Test
     fun `test copycat`() {
         var i = 0
-        val set = nsetOf(3 x 3 x { it[it.lastIndex] + 1 }) { i++ }
+        val set = nsetFrom(3 x 3 x { it[it.lastIndex] + 1 }) { i++ }
         val set2 = set.copycat { println(it); it.toString() }
     }
 
     @Test
     fun `test null`() {
-        val set = nsetOf(2 x 2) { 0 }
+        val set = nsetFrom(2 x 2) { 0 }
         val result: Int? = set[0, 0]
     }
 
@@ -159,39 +164,39 @@ class TestNSet {
                 for (c in 0 until 5)
                     for (d in 0 until 6)
                         exp.add(DefaultIntBuf.of(a, b, c, d))
-        var set = nsetOf(3 x 4 x 5 x 6) {
+        var set = nsetFrom(3 x 4 x 5 x 6) {
             println(it)
             Assert.assertTrue(it.equals(exp[i])); i++
         }
         i = 0
-        nsetOf(0 x 3 x 4 x 0 x 5 x 6) {
+        nsetFrom(0 x 3 x 4 x 0 x 5 x 6) {
             println(it)
             Assert.assertTrue(it.equals(exp[i])); i++
         }
         i = 0
-        nsetOf((3 x 4 x 5) x 6) {
+        nsetFrom((3 x 4 x 5) x 6) {
             println(it)
             Assert.assertTrue(it.equals(exp[i])); i++
         }
         i = 0
-        set = nsetOf((3 x 4 x 5) x 6 x 0) {
-            println(it)
-            Assert.assertTrue(it.equals(exp[i])); i++
-        }
-        println(set[0, 0, 0, 0])
-        i = 0
-        nsetOf(3 x (4 x 5) x 6) {
-            println(it)
-            Assert.assertTrue(it.equals(exp[i])); i++
-        }
-        i = 0
-        set = nsetOf(0 x (3 x 4 x 5) x 6) {
+        set = nsetFrom((3 x 4 x 5) x 6 x 0) {
             println(it)
             Assert.assertTrue(it.equals(exp[i])); i++
         }
         println(set[0, 0, 0, 0])
         i = 0
-        set = nsetOf(0 x (3 x 4 x 5) x (6 x 0)) {
+        nsetFrom(3 x (4 x 5) x 6) {
+            println(it)
+            Assert.assertTrue(it.equals(exp[i])); i++
+        }
+        i = 0
+        set = nsetFrom(0 x (3 x 4 x 5) x 6) {
+            println(it)
+            Assert.assertTrue(it.equals(exp[i])); i++
+        }
+        println(set[0, 0, 0, 0])
+        i = 0
+        set = nsetFrom(0 x (3 x 4 x 5) x (6 x 0)) {
             println(it)
             Assert.assertTrue(it.equals(exp[i])); i++
         }
@@ -201,7 +206,7 @@ class TestNSet {
 //    @Test
 //    fun `variational bound`() {
 //        var i = 0
-//        val set = nsetOf<Int>(3 x 4) { nsetOf<Int>(5) { i++ } }
+//        val set = nsetFrom<Int>(3 x 4) { nsetFrom<Int>(5) { i++ } }
 //        for (a in set) {
 //            print("$a,")
 //        }
@@ -213,7 +218,7 @@ class TestNSet {
 //                    println(set[a, b, c])
 //                }
 //        set[2, 3, 4] = 100
-//        set[0, 0] = nsetOf(2) { 1 }
+//        set[0, 0] = nsetFrom(2) { 1 }
 //        println(set[0, 0, 1])
 //        println(set[2, 3, 4])
 //    }
@@ -234,7 +239,7 @@ class TestNSet {
                                 )
                         )
                 )
-        val set = nsetOf<Int>(dim) { 0 }
+        val set = nsetFrom<Int>(dim) { 0 }
         for (withIndex in set.withIndices()) {
             println(withIndex)
         }

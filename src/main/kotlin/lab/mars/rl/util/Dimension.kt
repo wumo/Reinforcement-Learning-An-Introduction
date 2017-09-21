@@ -21,13 +21,18 @@ private fun strideOfDim(dim: IntArray): IntArray {
     return stride
 }
 
-fun <E : Any> nsetOf(dim: Dimension, recipe: (IntBuf) -> E) = dim.NSet(recipe)
-fun <E : Any> nsetOf(dim: Int, recipe: (IntBuf) -> E) = dim.NSet(recipe)
+fun <E : Any> nsetFrom(dim: Dimension, recipe: (IntBuf) -> E) = dim.NSet(recipe)
+fun <E : Any> nsetFrom(dim: Int, recipe: (IntBuf) -> E) = dim.NSet(recipe)
 
 sealed class Dimension {
     internal abstract fun <E : Any> fill(slot: DefaultIntBuf, recipe: (IntBuf) -> Any): NSet<E>
     open fun <E : Any> NSet(recipe: (IntBuf) -> E) =
             fill<E>(DefaultIntBuf.new(), recipe)
+}
+
+class ExpandDimension(val dim: Int) : Dimension() {
+    override fun <E : Any> fill(slot: DefaultIntBuf, recipe: (IntBuf) -> Any): NSet<E>
+            = dim.toDim().fill(slot, recipe)
 }
 
 class VariationalDimension(private val dimFunc: (IntBuf) -> Any) : Dimension() {
@@ -44,13 +49,25 @@ class EnumeratedDimension(private val enumerated: Array<Dimension>) : Dimension(
             enumerated.isEmpty() -> emptyNSet()
             enumerated.isSingle() -> enumerated.single().fill(slot, recipe)
             else -> {
-                val dim = intArrayOf(enumerated.size)
+                val total = enumerated.sumBy { (it as? ExpandDimension)?.dim ?: 1 }
+                val dim = intArrayOf(total)
                 val stride = intArrayOf(1)
                 slot.append(0)//extend to subtree
-                NSet<E>(dim, stride, Array<Any>(enumerated.size) {
-                    enumerated[it].fill<E>(slot, recipe)
-                            .apply { slot.increment(dim) }
-                }).apply { slot.removeLast(1) }
+                val array = Array<Any>(total) {}
+                var i = 0
+                for (dimension in enumerated)
+                    when (dimension) {
+                        is ExpandDimension ->
+                            repeat(dimension.dim) {
+                                array[i++] = recipe(slot)
+                                slot.increment(dim)
+                            }
+                        else -> {
+                            array[i++] = dimension.fill<E>(slot, recipe)
+                            slot.increment(dim)
+                        }
+                    }
+                NSet<E>(dim, stride, array).apply { slot.removeLast(1) }
             }
         }
     }
@@ -128,6 +145,11 @@ private fun DefaultIntBuf.simplifyFirst(): DefaultIntBuf {
         break
     }
     return this
+}
+
+operator fun Int.not(): ExpandDimension {
+    require(this >= 0)
+    return ExpandDimension(this)
 }
 
 operator fun Int.invoke(vararg s: Any): GeneralDimension {

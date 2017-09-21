@@ -4,7 +4,7 @@ package lab.mars.rl.model.impl
 
 import lab.mars.rl.model.*
 import lab.mars.rl.util.IntBuf
-import lab.mars.rl.util.nsetOf
+import lab.mars.rl.util.nsetFrom
 import lab.mars.rl.util.toDim
 
 /**
@@ -36,9 +36,9 @@ fun NSetMDP(gamma: Double, state_dim: Any, action_dim: (IntBuf) -> Any): MDP {
     val s_dim = state_dim.toDim()
     return MDP(
             gamma = gamma,
-            states = nsetOf(s_dim) {
-                State(it.copy()).apply { actions = nsetOf(action_dim(it).toDim()) { Action(it.copy()) } }
+            states = nsetFrom(s_dim) {
+                State(it.copy()).apply { actions = nsetFrom(action_dim(it).toDim()) { Action(it.copy()) } }
             },
-            state_function = { element_maker -> nsetOf(s_dim, element_maker) },
-            state_action_function = { element_maker -> nsetOf(s_dim) { nsetOf(action_dim(it).toDim(), element_maker) } })
+            state_function = { element_maker -> nsetFrom(s_dim, element_maker) },
+            state_action_function = { element_maker -> nsetFrom(s_dim) { nsetFrom(action_dim(it).toDim(), element_maker) } })
 }

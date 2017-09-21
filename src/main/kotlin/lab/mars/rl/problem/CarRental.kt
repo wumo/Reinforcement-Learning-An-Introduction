@@ -2,7 +2,7 @@ package lab.mars.rl.problem
 
 import lab.mars.rl.model.*
 import lab.mars.rl.model.impl.NSetMDP
-import lab.mars.rl.util.nsetOf
+import lab.mars.rl.util.nsetFrom
 import lab.mars.rl.util.x
 import org.apache.commons.math3.special.Gamma
 import org.apache.commons.math3.util.FastMath.*
@@ -70,7 +70,7 @@ object CarRental {
                 val L1_to_L2 = max_L1_to_L2 - idx
                 val nL1 = s_1 - L1_to_L2
                 val nL2 = s_2 + L1_to_L2
-                val possibles = nsetOf((max_car + 1) x (max_car + 1) x { min(it[0], nL1) + min(it[1], nL2) + 1 }) { null_possible }
+                val possibles = nsetFrom((max_car + 1) x (max_car + 1) x { min(it[0], nL1) + min(it[1], nL2) + 1 }) { null_possible }
                 val cost = if (exercise4_4_version) {
                     val move_cost = (if (L1_to_L2 >= 1) L1_to_L2 - 1 else abs(L1_to_L2)) * cost_per_car_moved
                     val parking_cost = (ceil(nL1.toDouble() / max_car_per_parking_lot) - 1 + ceil(nL2.toDouble() / max_car_per_parking_lot) - 1) * cost_per_parking_lot
@@ -160,7 +160,7 @@ private val EXACT_STIRLING_ERRORS = doubleArrayOf(0.0, /* 0.0 */
                                                   0.005554733551962801371038690 /* 15.0 */)
 
 /**
- * Compute the error nsetOf Stirling'asSet series at the given value.
+ * Compute the error nsetFrom Stirling'asSet series at the given value.
  * References:
  *
  *  1. Eric W. Weisstein. "Stirling'asSet Series." From MathWorld--A Wolfram Web
@@ -188,11 +188,11 @@ fun getStirlingError(z: Double): Double {
 }
 
 /**
- * A part nsetOf the deviance portion nsetOf the saddle point approximation.
+ * A part nsetFrom the deviance portion nsetFrom the saddle point approximation.
  *
  * References:
  *
- *  1. Catherine Loader (2000). "Fast and Accurate Computation nsetOf Binomial
+ *  1. Catherine Loader (2000). "Fast and Accurate Computation nsetFrom Binomial
  * Probabilities.". [
  * http://www.herine.net/stat/papers/dbinom.pdf](http://www.herine.net/stat/papers/dbinom.pdf)
  *
@@ -200,7 +200,7 @@ fun getStirlingError(z: Double): Double {
  * the e value.
  * @param mu
  * the average.
- * @return a part nsetOf the deviance.
+ * @return a part nsetFrom the deviance.
  */
 fun getDeviancePart(x: Double, mu: Double): Double {
     val ret: Double
