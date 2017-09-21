@@ -17,7 +17,7 @@ import org.apache.commons.math3.util.FastMath.max
 class ValueIteration(mdp: MDP) {
     val states = mdp.states
     val gamma = mdp.gamma
-    val V = mdp.stateActionFunc<Double> { 0.0 }
+    val V = mdp.stateFunc<Double> { 0.0 }
     val PI = mdp.stateFunc<Action> { null_action }
 
     fun iteration(): StateValueFunction {
@@ -25,8 +25,8 @@ class ValueIteration(mdp: MDP) {
         do {
             var delta = 0.0
             for (s in states) {
-                val v = V[s]
                 s.actions.ifAny {
+                    val v = V[s]
                     V[s] = max(this) { sigma(possibles) { probability * (reward + gamma * V[next]) } }
                     delta = max(delta, abs(v - V[s]))
                 }

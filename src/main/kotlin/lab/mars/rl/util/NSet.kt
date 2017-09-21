@@ -35,6 +35,9 @@ fun DefaultIntBuf.increment(dim: IntArray) {
  */
 inline fun <T : Any> nsetOf(vararg elements: T) = NSet<T>(intArrayOf(elements.size), intArrayOf(1), Array(elements.size) { elements[it] })
 
+val emptyNSet = NSet<Any>(IntArray(0), IntArray(0), Array(0) {})
+inline fun <E : Any> emptyNSet(): NSet<E> = emptyNSet as NSet<E>
+
 /**
  * 1. 可以定义任意维的多维数组，并使用`[]`进行取值赋值
  *如: `val a=Nset(2 x 3)`定义了一个2x3的矩阵，可以使用`a[0,0]=0`这样的用法
@@ -92,7 +95,7 @@ class NSet<E : Any>(private val dim: IntArray, private val stride: IntArray, pri
     private fun <T : Any> get_or_set(idx: Index, start: Int, op: (Any) -> Any): T {
         var offset = 0
         val idx_size = idx.size - start
-        if (idx_size < dim.size) throw RuntimeException("index.length=${idx.size - start}  < Dim.length=${dim.size}")
+        if (idx_size < dim.size) throw ArrayIndexOutOfBoundsException("index.length=${idx.size - start}  < Dim.length=${dim.size}")
         idx.forEach(start, start + dim.lastIndex) { idx, value ->
             val a = idx - start
             if (value < 0 || value > dim[a])
@@ -104,7 +107,7 @@ class NSet<E : Any>(private val dim: IntArray, private val stride: IntArray, pri
             root[offset] = op(root[offset])
             root[offset] as T
         } else {
-            val sub = root[offset] as? NSet<T> ?: throw RuntimeException("index dimension is larger than this set'asSet element'asSet dimension")
+            val sub = root[offset] as? NSet<T> ?: throw ArrayIndexOutOfBoundsException("index dimension is larger than this set'asSet element'asSet dimension")
             sub.get_or_set(idx, start + dim.size, op)
         }
     }

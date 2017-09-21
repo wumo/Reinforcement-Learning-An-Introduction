@@ -9,7 +9,6 @@ package lab.mars.rl.util
  *
  * @author wumo
  */
-
 val emptyLevels = ArrayList<Dimension>(0)
 val NULL_obj = object : Any() {}
 val `placeholder's recipe`: (IntBuf) -> Any = { NULL_obj }
@@ -26,13 +25,13 @@ fun <E : Any> nsetOf(dim: Dimension, recipe: (IntBuf) -> E) = dim.NSet(recipe)
 fun <E : Any> nsetOf(dim: Int, recipe: (IntBuf) -> E) = dim.NSet(recipe)
 
 sealed class Dimension {
-    internal abstract fun fill(slot: DefaultIntBuf, recipe: (IntBuf) -> Any): Any
+    internal abstract fun <E : Any> fill(slot: DefaultIntBuf, recipe: (IntBuf) -> Any): NSet<E>
     fun <E : Any> NSet(recipe: (IntBuf) -> E) =
-            fill(DefaultIntBuf.new(), recipe) as NSet<E>
+            fill<E>(DefaultIntBuf.new(), recipe)
 }
 
 class VariationalDimension(private val dimFunc: (IntBuf) -> Any) : Dimension() {
-    override fun fill(slot: DefaultIntBuf, recipe: (IntBuf) -> Any): Any {
+    override fun <E : Any> fill(slot: DefaultIntBuf, recipe: (IntBuf) -> Any): NSet<E> {
         val dim = dimFunc(slot).toDim()
         return dim.fill(slot, recipe)
     }
@@ -40,16 +39,16 @@ class VariationalDimension(private val dimFunc: (IntBuf) -> Any) : Dimension() {
 
 inline fun <T> Array<T>.isSingle() = this.size == 1
 class EnumeratedDimension(private val enumerated: Array<Dimension>) : Dimension() {
-    override fun fill(slot: DefaultIntBuf, recipe: (IntBuf) -> Any): Any {
+    override fun <E : Any> fill(slot: DefaultIntBuf, recipe: (IntBuf) -> Any): NSet<E> {
         return when {
-            enumerated.isEmpty() -> recipe(slot)
+            enumerated.isEmpty() -> emptyNSet as NSet<E>
             enumerated.isSingle() -> enumerated.single().fill(slot, recipe)
             else -> {
                 val dim = intArrayOf(enumerated.size)
                 val stride = intArrayOf(1)
                 slot.append(0)//extend to subtree
-                NSet<Any>(dim, stride, Array(enumerated.size) {
-                    enumerated[it].fill(slot, recipe)
+                NSet<E>(dim, stride, Array<Any>(enumerated.size) {
+                    enumerated[it].fill<E>(slot, recipe)
                             .apply { slot.increment(dim) }
                 }).apply { slot.removeLast(1) }
             }
@@ -59,33 +58,30 @@ class EnumeratedDimension(private val enumerated: Array<Dimension>) : Dimension(
 
 inline fun DefaultIntBuf.isZero() = this.size == 1 && this[0] == 0
 class GeneralDimension(internal val dim: DefaultIntBuf, internal val levels: ArrayList<Dimension>) : Dimension() {
-    override fun fill(slot: DefaultIntBuf, recipe: (IntBuf) -> Any): Any {
+    override fun <E : Any> fill(slot: DefaultIntBuf, recipe: (IntBuf) -> Any): NSet<E> {
         return if (dim.isZero()) {//zero dimension
-            cascade(slot, recipe)//to sibling slot
+            if (levels.isEmpty()) emptyNSet as NSet<E>
+            else cascade(slot, recipe)//to sibling slot
         } else {
             val dim = dim.toIntArray()
             val stride = strideOfDim(dim)
             slot.append(dim.size, 0)//to children slot
-            NSet<Any>(dim, stride, Array(dim[0] * stride[0]) {
-                //to sibling slot
-                cascade(slot, recipe).apply {
-                    slot.increment(dim)
-                }
-            }).apply {
-                slot.removeLast(dim.size)//to parent slot
-            }
+            NSet<E>(dim, stride, Array(dim[0] * stride[0]) {
+                when {
+                    levels.isEmpty() -> recipe(slot)
+                    else -> cascade<E>(slot, recipe)//to sibling slot
+                }.apply { slot.increment(dim) }
+            }).apply { slot.removeLast(dim.size) }//to parent slot
         }
     }
 
-    private fun cascade(slot: DefaultIntBuf, recipe: (IntBuf) -> Any): Any {
-        if (levels.isEmpty()) return recipe(slot)
-        val tree = levels[0].fill(slot, `placeholder's recipe`)
-        if (tree !is NSet<*>) return tree
+    private fun <E : Any> cascade(slot: DefaultIntBuf, recipe: (IntBuf) -> Any): NSet<E> {
+        val tree = levels[0].fill<E>(slot, `placeholder's recipe`)
         //grow branches
         for (level in 1..levels.lastIndex)
             tree.set { idx, _ ->
                 slot.append(idx)
-                levels[level].fill(slot, `placeholder's recipe`).apply {
+                levels[level].fill<E>(slot, `placeholder's recipe`).apply {
                     slot.removeLast(idx.size)
                 }
             }
