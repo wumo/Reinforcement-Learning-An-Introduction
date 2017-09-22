@@ -1,6 +1,7 @@
 package lab.mars.rl.algo
 
 import lab.mars.rl.model.*
+import lab.mars.rl.util.emptyNSet
 
 /**
  * <p>
@@ -9,10 +10,10 @@ import lab.mars.rl.model.*
  *
  * @author wumo
  */
-class MonteCarlo(val mdp: MDP) {
+class MonteCarlo(val mdp: MDP, private var policy: DeterminedPolicy = emptyNSet()) {
     val states = mdp.states
     var max_iteration: Int = 10000
-    fun prediction(policy: DeterminedPolicy): StateValueFunction {
+    fun prediction(): StateValueFunction {
         val V = mdp.VFunc<Double> { 0.0 }
         val tmpV = mdp.VFunc<Double> { Double.NaN }
         val count = mdp.VFunc<Int> { 0 }
@@ -52,7 +53,8 @@ class MonteCarlo(val mdp: MDP) {
     }
 
     fun iteration_ES(): Triple<DeterminedPolicy, StateValueFunction, ActionValueFunction> {
-        val policy = mdp.VFunc<Action> { states[it].actions.firstOrNull() ?: null_action }
+        if (policy === emptyNSet)
+            policy = mdp.VFunc { states[it].actions.firstOrNull() ?: null_action }
         val Q = mdp.QFunc<Double> { 0.0 }
         val tmpQ = mdp.QFunc<Double> { Double.NaN }
         val count = mdp.QFunc<Int> { 0 }

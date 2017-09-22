@@ -143,9 +143,21 @@ class TestProblems {
     @Test
     fun `Blackjack Prediction`() {
         val (prob, policy1) = Blackjack.make()
-        val algo = MonteCarlo(prob)
+        val algo = MonteCarlo(prob,policy1)
         algo.max_iteration = 10000
-        val V = algo.prediction(policy1)
+        val V = algo.prediction()
+        println("---------------------Usable Ace--------------------------")
+        for (a in 9 downTo 0) {
+            for (b in 0 until 10)
+                print("${color(policy1[1, 1, b, a][0])}  ${reset()}")
+            println()
+        }
+        println("---------------------No Usable Ace--------------------------")
+        for (a in 9 downTo 0) {
+            for (b in 0 until 10)
+                print("${color(policy1[1, 0, b, a][0])}  ${reset()}")
+            println()
+        }
         for (a in 0 until 10) {
             for (b in 0 until 10)
                 print("${V[1, 1, a, b].format(2)} ")
@@ -162,7 +174,7 @@ class TestProblems {
     @Test
     fun `Blackjack Optimal`() {
         val (prob, policy1) = Blackjack.make()
-        val algo = MonteCarlo(prob)
+        val algo = MonteCarlo(prob,policy1)
         algo.max_iteration = 1000
         val (PI, V, Q) = algo.iteration_ES()
         println("---------------------Usable Ace--------------------------")
