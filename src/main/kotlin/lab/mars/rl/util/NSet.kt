@@ -124,35 +124,35 @@ class NSet<E : Any>(private val dim: IntArray, private val stride: IntArray, pri
         get_or_set<T>(idx, 0) { s }
     }
 
-    override fun iterator() = GeneralIterator<E>().apply { traverse = Traverse(this, {}, {}, {}, { it }) }
+    override fun iterator() = GeneralIterator<E>().apply { traverser = Traverser(this, {}, {}, {}, { it }) }
 
     override fun indices() = GeneralIterator<IntBuf>().apply {
         val index = DefaultIntBuf.zero(this.set.dim.size).apply { this[lastIndex] = -1 }
-        traverse = Traverse(this,
-                            forward = {
+        traverser = Traverser(this,
+                              forward = {
                                 index.apply {
                                     append(current.set.dim.size, 0)
                                     this[lastIndex] = -1
                                 }
                             },
-                            backward = { index.removeLast(current.set.dim.size) },
-                            translate = { index.increment(current.set.dim) },
-                            visitor = { index })
+                              backward = { index.removeLast(current.set.dim.size) },
+                              translate = { index.increment(current.set.dim) },
+                              visitor = { index })
     }
 
     override fun withIndices() = GeneralIterator<Pair<out IntBuf, E>>().apply {
         val index = DefaultIntBuf.zero(this.set.dim.size).apply { this[lastIndex] = -1 }
         var pair: Pair<out IntBuf, E>? = null
-        traverse = Traverse(this,
-                            forward = {
+        traverser = Traverser(this,
+                              forward = {
                                 index.apply {
                                     append(current.set.dim.size, 0)
                                     this[lastIndex] = -1
                                 }
                             },
-                            backward = { index.removeLast(current.set.dim.size) },
-                            translate = { index.increment(current.set.dim) },
-                            visitor = {
+                              backward = { index.removeLast(current.set.dim.size) },
+                              translate = { index.increment(current.set.dim) },
+                              visitor = {
                                 val tmp = pair ?: Pair(index, it)
                                 pair = tmp
                                 tmp.second = it
@@ -168,13 +168,13 @@ class NSet<E : Any>(private val dim: IntArray, private val stride: IntArray, pri
          * @param translate 当前节点进行宽度范围内的下一个搜索
          * @param visitor 获取当前非子树元素的值
          */
-        inner class Traverse(var current: GeneralIterator<T>,
-                             val forward: Traverse.() -> Unit,
-                             val backward: Traverse.() -> Unit,
-                             val translate: Traverse.() -> Unit,
-                             val visitor: Traverse.(E) -> T)
+        inner class Traverser(var current: GeneralIterator<T>,
+                              val forward: Traverser.() -> Unit,
+                              val backward: Traverser.() -> Unit,
+                              val translate: Traverser.() -> Unit,
+                              val visitor: Traverser.(E) -> T)
 
-        internal lateinit var traverse: Traverse
+        internal lateinit var traverser: Traverser
         private var visited = -1
         internal val set = this@NSet
         private var parent: GeneralIterator<T> = this
@@ -184,24 +184,24 @@ class NSet<E : Any>(private val dim: IntArray, private val stride: IntArray, pri
         }
 
         override fun next(): T {
-            return dfs({ traverse.current.increment();traverse.visitor(traverse, it) }, { throw NoSuchElementException() })
+            return dfs({ traverser.current.increment();traverser.visitor(traverser, it) }, { throw NoSuchElementException() })
         }
 
         private inline fun increment(): Int {
-            traverse.translate(traverse)
+            traverser.translate(traverser)
             return visited++
         }
 
         private inline fun <T> dfs(element: (E) -> T, nomore: () -> T): T {
             while (true) {
-                while (traverse.current.visited + 1 < traverse.current.set.root.size) {
-                    val tmp = traverse.current
+                while (traverser.current.visited + 1 < traverser.current.set.root.size) {
+                    val tmp = traverser.current
                     val next = tmp.set.root[tmp.visited + 1]
                     tmp.inspect_next_type(next) ?: return element(next as E)
                 }
-                if (traverse.current === this) return nomore()
-                traverse.backward(traverse)
-                traverse.current = traverse.current.parent
+                if (traverser.current === this) return nomore()
+                traverser.backward(traverser)
+                traverser.current = traverser.current.parent
             }
         }
 
@@ -209,11 +209,11 @@ class NSet<E : Any>(private val dim: IntArray, private val stride: IntArray, pri
             val next_type = next as? NSet<E>
             next_type?.apply {
                 val new = this.GeneralIterator<T>()
-                new.traverse = traverse
-                new.parent = traverse.current
+                new.traverser = traverser
+                new.parent = traverser.current
                 new.parent.increment()
-                traverse.current = new
-                traverse.forward(traverse)
+                traverser.current = new
+                traverser.forward(traverser)
             }
             return next_type
         }
