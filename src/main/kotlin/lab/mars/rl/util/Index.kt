@@ -3,7 +3,7 @@
 package lab.mars.rl.util
 
 
-interface Index {
+interface Index : Iterable<Int> {
     val size: Int
     val lastIndex: Int
         get() = size - 1
@@ -24,6 +24,13 @@ interface Index {
         for (i in 0..lastIndex)
             if (get(i) != other[i]) return false
         return true
+    }
+
+    override fun iterator() = object : Iterator<Int> {
+        var a = 0
+        override fun hasNext() = a < size
+
+        override fun next() = get(a++)
     }
 }
 
@@ -80,6 +87,23 @@ class MultiIndex(private val indices: Array<out Index>) : Index {
     }
 
     override val size: Int = indices.sumBy { it.size }
+
+    override fun iterator() = object : Iterator<Int> {
+        var a = 0
+        var b = 0
+        override fun hasNext() = a < indices.size && b < indices[a].size
+
+        override fun next(): Int {
+            val result = indices[a][b]
+            b++
+            if (b >= indices[a].size) {
+                a++
+                b = 0
+            }
+            return result
+        }
+
+    }
 
     override fun get(idx: Int): Int {
         var _dim = idx

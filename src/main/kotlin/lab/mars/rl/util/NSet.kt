@@ -92,23 +92,23 @@ class NSet<E : Any>(private val dim: IntArray, private val stride: IntArray, pri
         index.removeLast(sub.dim.size)
     }
 
-    private fun <T : Any> get_or_set(idx: Index, start: Int, op: (Any) -> Any): T {
+    private fun <T : Any> get_or_set(idxIter: Iterator<Int>, op: (Any) -> Any): T {
         var offset = 0
-        val idx_size = idx.size - start
-        if (idx_size < dim.size) throw ArrayIndexOutOfBoundsException("index.length=${idx.size - start}  < Dim.length=${dim.size}")
-        idx.forEach(start, start + dim.lastIndex) { idx, value ->
-            val a = idx - start
+        for (a in 0 until dim.size) {
+            if (!idxIter.hasNext())
+                throw ArrayIndexOutOfBoundsException("index.length < Dim.length=${dim.size}")
+            val value = idxIter.next()
             if (value < 0 || value > dim[a])
                 throw ArrayIndexOutOfBoundsException("index[$a]= $value while Dim[$a]=${dim[a]}")
             offset += value * stride[a]
         }
 
-        return if (idx_size == dim.size) {
+        return if (!idxIter.hasNext()) {
             root[offset] = op(root[offset])
             root[offset] as T
         } else {
             val sub = root[offset] as? NSet<T> ?: throw ArrayIndexOutOfBoundsException("index dimension is larger than this set'asSet element'asSet dimension")
-            sub.get_or_set(idx, start + dim.size, op)
+            sub.get_or_set(idxIter, op)
         }
     }
 
@@ -118,10 +118,10 @@ class NSet<E : Any>(private val dim: IntArray, private val stride: IntArray, pri
 
     override fun isEmpty() = root.isEmpty()
 
-    override fun <T : Any> _get(idx: Index): T = get_or_set<T>(idx, 0) { it }
+    override fun <T : Any> _get(idx: Index): T = get_or_set(idx.iterator()) { it }
 
     override fun <T : Any> _set(idx: Index, s: T) {
-        get_or_set<T>(idx, 0) { s }
+        get_or_set<T>(idx.iterator()) { s }
     }
 
     override fun iterator() = GeneralIterator<E>().apply { traverser = Traverser(this, {}, {}, {}, { it }) }
@@ -130,11 +130,11 @@ class NSet<E : Any>(private val dim: IntArray, private val stride: IntArray, pri
         val index = DefaultIntBuf.zero(this.set.dim.size).apply { this[lastIndex] = -1 }
         traverser = Traverser(this,
                               forward = {
-                                index.apply {
-                                    append(current.set.dim.size, 0)
-                                    this[lastIndex] = -1
-                                }
-                            },
+                                  index.apply {
+                                      append(current.set.dim.size, 0)
+                                      this[lastIndex] = -1
+                                  }
+                              },
                               backward = { index.removeLast(current.set.dim.size) },
                               translate = { index.increment(current.set.dim) },
                               visitor = { index })
@@ -145,19 +145,19 @@ class NSet<E : Any>(private val dim: IntArray, private val stride: IntArray, pri
         var pair: Pair<out IntBuf, E>? = null
         traverser = Traverser(this,
                               forward = {
-                                index.apply {
-                                    append(current.set.dim.size, 0)
-                                    this[lastIndex] = -1
-                                }
-                            },
+                                  index.apply {
+                                      append(current.set.dim.size, 0)
+                                      this[lastIndex] = -1
+                                  }
+                              },
                               backward = { index.removeLast(current.set.dim.size) },
                               translate = { index.increment(current.set.dim) },
                               visitor = {
-                                val tmp = pair ?: Pair(index, it)
-                                pair = tmp
-                                tmp.second = it
-                                tmp
-                            })
+                                  val tmp = pair ?: Pair(index, it)
+                                  pair = tmp
+                                  tmp.second = it
+                                  tmp
+                              })
     }
 
     inner class GeneralIterator<out T> : Iterator<T> {
