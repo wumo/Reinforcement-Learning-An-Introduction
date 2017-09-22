@@ -2,6 +2,8 @@
 
 package lab.mars.rl.util
 
+import jdk.nashorn.api.tree.ReturnTree
+
 abstract class RandomAccessCollection<E : Any> : Iterable<E> {
     data class Pair<A, B>(var first: A, var second: B) {
         override fun toString(): String {
@@ -42,7 +44,7 @@ abstract class RandomAccessCollection<E : Any> : Iterable<E> {
     inline operator fun set(idx: Index, s: RandomAccessCollection<E>) = _set(idx, s)
     inline operator fun set(vararg idx: Int, s: RandomAccessCollection<E>) = _set(DefaultIntBuf.reuse(idx), s)
     inline operator fun set(vararg indexable: Index, s: RandomAccessCollection<E>) = _set(MultiIndex(indexable), s)
-    open fun<T:Any> set(element_maker: (IntBuf, E) -> T) {
+    open fun <T : Any> set(element_maker: (IntBuf, E) -> T) {
         withIndices().forEach { (idx, value) -> _set(idx, element_maker(idx, value)) }
     }
 
@@ -58,7 +60,18 @@ abstract class RandomAccessCollection<E : Any> : Iterable<E> {
         return false
     }
 
-    override fun toString(): String {
+    val size: Int
+        get() {
+            var count = 0
+            for (element in this)
+                count++
+            return count
+        }
+
+
+    override
+
+    fun toString(): String {
         val sb = StringBuilder()
         for (withIndex in withIndices())
             sb.append(withIndex).append("\n")

@@ -138,7 +138,7 @@ class TestNSet {
     @Test
     fun `get sub set`() {
         var i = 0
-        val set = nsetFrom(2 x { 3 x 4 }) { i++ }
+        val set = nsetFrom(2 x  { 3 x 4 }) { i++ }
         for (withIndex in set.withIndices()) {
             println(withIndex)
         }

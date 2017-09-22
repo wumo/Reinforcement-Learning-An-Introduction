@@ -13,28 +13,33 @@ class MonteCarlo(val mdp: MDP) {
     val states = mdp.states
     var max_iteration: Int = 10000
     fun prediction(policy: DeterminedPolicy): StateValueFunction {
-        val V = mdp.stateFunc<Double> { 0.0 }
-        val tmpV = mdp.stateFunc<Double> { Double.NaN }
-        val count = mdp.stateFunc<Int> { 0 }
-        for (_s in states) _s.actions.ifAny {
-            for (i in 0 until max_iteration) {
-                var accumulate = 0.0
-                var s = _s
-                var a = policy[_s]
-                while (a !== null_action) {
-                    val possible = s.actions[a].sample()
-                    accumulate += possible.reward
-                    if (tmpV[s].isNaN())
-                        tmpV[s] = accumulate
-                    s = possible.next
-                    a = policy[s]
-                }
-                tmpV.set { idx, value ->
-                    if (!value.isNaN()) {
-                        V[idx] += value
-                        count[idx] += 1
+        val V = mdp.VFunc<Double> { 0.0 }
+        val tmpV = mdp.VFunc<Double> { Double.NaN }
+        val count = mdp.VFunc<Int> { 0 }
+        val total_states = states.size
+        var i = 1
+        for (_s in states) {
+            println("${i++}/$total_states")
+            _s.actions.ifAny {
+                for (i in 0 until max_iteration) {
+                    var accumulate = 0.0
+                    var s = _s
+                    var a = policy[_s]
+                    while (a !== null_action) {
+                        val possible = s.actions[a].sample()
+                        accumulate += possible.reward
+                        if (tmpV[s].isNaN())
+                            tmpV[s] = accumulate
+                        s = possible.next
+                        a = policy[s]
                     }
-                    Double.NaN
+                    tmpV.set { idx, value ->
+                        if (!value.isNaN()) {
+                            V[idx] += value
+                            count[idx] += 1
+                        }
+                        Double.NaN
+                    }
                 }
             }
         }
@@ -47,11 +52,14 @@ class MonteCarlo(val mdp: MDP) {
     }
 
     fun iteration_ES(): Triple<DeterminedPolicy, StateValueFunction, ActionValueFunction> {
-        val policy = mdp.stateFunc<Action> { states[it].actions.firstOrNull() ?: null_action }
-        val Q = mdp.stateActionFunc<Double> { 0.0 }
-        val tmpQ = mdp.stateActionFunc<Double> { Double.NaN }
-        val count = mdp.stateActionFunc<Int> { 0 }
-        for (_s in states)
+        val policy = mdp.VFunc<Action> { states[it].actions.firstOrNull() ?: null_action }
+        val Q = mdp.QFunc<Double> { 0.0 }
+        val tmpQ = mdp.QFunc<Double> { Double.NaN }
+        val count = mdp.QFunc<Int> { 0 }
+        val total_states = states.size
+        var i = 1
+        for (_s in states) {
+            println("${i++}/$total_states")
             for (_a in _s.actions) {
                 for (i in 0 until max_iteration) {
                     var accumulate = 0.0
@@ -73,18 +81,19 @@ class MonteCarlo(val mdp: MDP) {
                         Double.NaN
                     }
                     policy.set { idx, _ ->
-                        val s = states[idx]
-                        if (s.actions.isEmpty()) null_action
-                        else argmax(s.actions) {
-                            val n = count[idx]
+                        val ss = states[idx]
+                        if (ss.actions.isEmpty()) null_action
+                        else argmax(ss.actions) {
+                            val n = count[ss, this]
                             if (n > 0)
-                                Q[idx] / n
+                                Q[ss, this] / n
                             else
-                                Q[idx]
+                                Q[ss, this]
                         }
                     }
                 }
             }
+        }
         Q.set { idx, value ->
             val n = count[idx]
             if (n > 0)
@@ -92,9 +101,10 @@ class MonteCarlo(val mdp: MDP) {
             else
                 value
         }
-        val V = mdp.stateActionFunc<Double> { 0.0 }
-        V_from_Q(mdp.gamma, states, V, Q)
-        return Triple(policy, V, Q)
+        val V = mdp.VFunc<Double> { 0.0 }
+        val result = Triple(policy, V, Q)
+        V_from_Q(states, result)
+        return result
     }
 
     fun iteration() {

@@ -32,14 +32,14 @@ class MDP(
     /**
      * 创建由[State]索引的state function
      */
-    fun <T : Any> stateFunc(element_maker: (IntBuf) -> Any): RandomAccessCollection<T> {
+    fun <T : Any> VFunc(element_maker: (IntBuf) -> Any): RandomAccessCollection<T> {
         return state_function(element_maker) as RandomAccessCollection<T>
     }
 
     /**
      * 创建由[State]和[Action]索引的state action function
      */
-    fun <T : Any> stateActionFunc(element_maker: (IntBuf) -> Any): RandomAccessCollection<T> {
+    fun <T : Any> QFunc(element_maker: (IntBuf) -> Any): RandomAccessCollection<T> {
         return state_action_function(element_maker) as RandomAccessCollection<T>
     }
 }

@@ -49,15 +49,17 @@ inline fun <T> argmax(set: Iterable<T>, evaluate: T.() -> Double): T {
 }
 
 
-fun V_from_Q(gamma: Double, states: StateSet, V: StateValueFunction, Q: ActionValueFunction) {
-    for (s in states)
-        for (a in s.actions)
-            Q[s, a] = sigma(a.possibles) { probability * (reward + gamma * V[next]) }
-}
-
-fun Q_from_V(states: StateSet, V: StateValueFunction, Q: ActionValueFunction, PI: DeterminedPolicy) {
+fun V_from_Q(states: StateSet, pvq: Triple<DeterminedPolicy, StateValueFunction, ActionValueFunction>) {
+    val (PI, V, Q) = pvq
     for (s in states)
         s.actions.ifAny {
             V[s] = Q[s, PI[s]]
         }
+}
+
+fun Q_from_V(gamma: Double, states: StateSet, pvq: Triple<DeterminedPolicy, StateValueFunction, ActionValueFunction>) {
+    val (_, V, Q) = pvq
+    for (s in states)
+        for (a in s.actions)
+            Q[s, a] = sigma(a.possibles) { probability * (reward + gamma * V[next]) }
 }

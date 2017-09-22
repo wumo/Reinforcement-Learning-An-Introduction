@@ -48,8 +48,15 @@ interface MutableIntBuf : IntBuf {
     fun remove(start: Int, end: Int)
 
     fun remove(index: Int) = remove(index, index)
-    fun removeFirst(num: Int) = remove(0, num - 1)
-    fun removeLast(num: Int) = remove(lastIndex - num + 1, lastIndex)
+    fun removeFirst(num: Int) {
+        if (num == 0) return
+        remove(0, num - 1)
+    }
+
+    fun removeLast(num: Int) {
+        if (num == 0) return
+        remove(lastIndex - num + 1, lastIndex)
+    }
 
     fun reuseBacked(): IntBuf
 }

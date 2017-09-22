@@ -14,13 +14,12 @@ import org.apache.commons.math3.util.FastMath.max
  *
  * @author wumo
  */
-class ValueIteration(mdp: MDP) {
+class ValueIteration(private val mdp: MDP) {
     val states = mdp.states
     val gamma = mdp.gamma
-    val V = mdp.stateFunc<Double> { 0.0 }
-    val PI = mdp.stateFunc<Action> { null_action }
-
     fun iteration(): StateValueFunction {
+        val V = mdp.VFunc<Double> { 0.0 }
+        val PI = mdp.VFunc<Action> { null_action }
         //value iteration
         do {
             var delta = 0.0
