@@ -96,10 +96,10 @@ class NSet<E : Any>(private val dim: IntArray, private val stride: IntArray, pri
         var offset = 0
         for (a in 0 until dim.size) {
             if (!idxIter.hasNext())
-                throw ArrayIndexOutOfBoundsException("index.length < Dim.length=${dim.size}")
+                throw IndexOutOfDimensionException()
             val value = idxIter.next()
             if (value < 0 || value > dim[a])
-                throw ArrayIndexOutOfBoundsException("index[$a]= $value while Dim[$a]=${dim[a]}")
+                throw IndexOutOfDimensionException()
             offset += value * stride[a]
         }
 
@@ -107,7 +107,7 @@ class NSet<E : Any>(private val dim: IntArray, private val stride: IntArray, pri
             root[offset] = op(root[offset])
             root[offset] as T
         } else {
-            val sub = root[offset] as? NSet<T> ?: throw ArrayIndexOutOfBoundsException("index dimension is larger than this set'asSet element'asSet dimension")
+            val sub = root[offset] as? NSet<T> ?:  throw IndexOutOfDimensionException()
             sub.get_or_set(idxIter, op)
         }
     }
