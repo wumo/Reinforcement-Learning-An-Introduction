@@ -2,6 +2,8 @@
 
 package lab.mars.rl.util
 
+import java.util.*
+
 /**
  * <p>
  * Created on 2017-09-14.
@@ -13,7 +15,7 @@ val emptyLevels = ArrayList<Dimension>(0)
 val NULL_obj = object : Any() {}
 val `placeholder's recipe`: (IntBuf) -> Any = { NULL_obj }
 
-private fun strideOfDim(dim: IntArray): IntArray {
+fun strideOfDim(dim: IntArray): IntArray {
     val stride = IntArray(dim.size)
     stride[stride.lastIndex] = 1
     for (a in stride.lastIndex - 1 downTo 0)
@@ -21,33 +23,48 @@ private fun strideOfDim(dim: IntArray): IntArray {
     return stride
 }
 
-fun <E : Any> nsetFrom(dim: Dimension, recipe: (IntBuf) -> E) = dim.NSet(recipe)
+fun <E : Any> nsetFrom(dim: Dimension, recipe: (IntBuf) -> E) = dim.NSet<E>(recipe = recipe)
 fun <E : Any> nsetFrom(dim: Int, recipe: (IntBuf) -> E) = dim.NSet(recipe)
 
 sealed class Dimension {
-    internal abstract fun <E : Any> fill(slot: DefaultIntBuf, recipe: (IntBuf) -> Any): NSet<E>
-    open fun <E : Any> NSet(recipe: (IntBuf) -> E) =
-            fill<E>(DefaultIntBuf.new(), recipe)
+    abstract fun <E : Any> NSet(slot: DefaultIntBuf, recipe: (IntBuf) -> Any): NSet<E>
+    open fun <E : Any> NSet(recipe: (IntBuf) -> E): NSet<E> {
+        return NSet(DefaultIntBuf.new(), recipe)
+    }
+
+    abstract fun sum(slot: DefaultIntBuf, outerLevels: List<Dimension>): Int
 }
 
-class ExpandDimension(val dim: Int) : Dimension() {
-    override fun <E : Any> fill(slot: DefaultIntBuf, recipe: (IntBuf) -> Any): NSet<E>
-            = dim.toDim().fill(slot, recipe)
+class ExpandDimension(internal val dim: Int) : Dimension() {
+    override fun sum(slot: DefaultIntBuf, outerLevels: List<Dimension>): Int {
+        TODO("not implemented") //To change body of created functions use File | Settings | File Templates.
+    }
+
+    override fun <E : Any> NSet(slot: DefaultIntBuf, recipe: (IntBuf) -> Any): NSet<E>
+            = dim.toDim().NSet(slot, recipe)
 }
 
-class VariationalDimension(private val dimFunc: (IntBuf) -> Any) : Dimension() {
-    override fun <E : Any> fill(slot: DefaultIntBuf, recipe: (IntBuf) -> Any): NSet<E> {
+class VariationalDimension(internal val dimFunc: (IntBuf) -> Any) : Dimension() {
+    override fun sum(slot: DefaultIntBuf, outerLevels: List<Dimension>): Int {
+        TODO("not implemented") //To change body of created functions use File | Settings | File Templates.
+    }
+
+    override fun <E : Any> NSet(slot: DefaultIntBuf, recipe: (IntBuf) -> Any): NSet<E> {
         val dim = dimFunc(slot).toDim()
-        return dim.fill(slot, recipe)
+        return dim.NSet(slot, recipe)
     }
 }
 
 inline fun <T> Array<T>.isSingle() = this.size == 1
-class EnumeratedDimension(private val enumerated: Array<Dimension>) : Dimension() {
-    override fun <E : Any> fill(slot: DefaultIntBuf, recipe: (IntBuf) -> Any): NSet<E> {
+class EnumeratedDimension(internal val enumerated: Array<Dimension>) : Dimension() {
+    override fun sum(slot: DefaultIntBuf, outerLevels: List<Dimension>): Int {
+        TODO("not implemented") //To change body of created functions use File | Settings | File Templates.
+    }
+
+    override fun <E : Any> NSet(slot: DefaultIntBuf, recipe: (IntBuf) -> Any): NSet<E> {
         return when {
             enumerated.isEmpty() -> emptyNSet()
-            enumerated.isSingle() -> enumerated.single().fill(slot, recipe)
+            enumerated.isSingle() -> enumerated.single().NSet(slot, recipe)
             else -> {
                 val total = enumerated.sumBy { (it as? ExpandDimension)?.dim ?: 1 }
                 val dim = intArrayOf(total)
@@ -63,7 +80,7 @@ class EnumeratedDimension(private val enumerated: Array<Dimension>) : Dimension(
                                 slot.increment(dim)
                             }
                         else -> {
-                            array[i++] = dimension.fill<E>(slot, recipe)
+                            array[i++] = dimension.NSet<E>(slot, recipe)
                             slot.increment(dim)
                         }
                     }
@@ -74,8 +91,8 @@ class EnumeratedDimension(private val enumerated: Array<Dimension>) : Dimension(
 }
 
 inline fun DefaultIntBuf.isZero() = this.size == 1 && this[0] == 0
-class GeneralDimension(internal val dim: DefaultIntBuf, internal val levels: ArrayList<Dimension>) : Dimension() {
-    override fun <E : Any> fill(slot: DefaultIntBuf, recipe: (IntBuf) -> Any): NSet<E> {
+class GeneralDimension(internal val dim: DefaultIntBuf, internal val levels: LinkedList<Dimension>) : Dimension() {
+    override fun <E : Any> NSet(slot: DefaultIntBuf, recipe: (IntBuf) -> Any): NSet<E> {
         return if (dim.isZero()) {//zero dimension
             if (levels.isEmpty()) emptyNSet()
             else cascade(slot, recipe)//to sibling slot
@@ -92,18 +109,13 @@ class GeneralDimension(internal val dim: DefaultIntBuf, internal val levels: Arr
         }
     }
 
-    override fun <E : Any> NSet(recipe: (IntBuf) -> E): NSet<E> {
-        if (dim.isZero() && levels.isEmpty()) return emptyNSet()
-        return super.NSet(recipe)
-    }
-
     private fun <E : Any> cascade(slot: DefaultIntBuf, recipe: (IntBuf) -> Any): NSet<E> {
-        val tree = levels[0].fill<E>(slot, `placeholder's recipe`)
+        val tree = levels.first().NSet<E>(slot, `placeholder's recipe`)
         //grow branches
         for (level in 1..levels.lastIndex)
             tree.set { idx, _ ->
                 slot.append(idx)
-                levels[level].fill<E>(slot, `placeholder's recipe`).apply {
+                levels[level].NSet<E>(slot, `placeholder's recipe`).apply {
                     slot.removeLast(idx.size)
                 }
             }
@@ -117,6 +129,41 @@ class GeneralDimension(internal val dim: DefaultIntBuf, internal val levels: Arr
         }
         return tree
     }
+
+    override fun sum(slot: DefaultIntBuf, outerLevels: List<Dimension>): Int {
+        return if (dim.isZero()) {
+            if (levels.isEmpty()) outerLevels.sum(slot)
+            else cascadeSum(slot, levels, outerLevels)
+        } else {
+            val dim = dim.toIntArray()
+            val stride = strideOfDim(dim)
+            val total = dim[0] * stride[0]
+            return when {
+                levels.isEmpty() -> total
+                else -> {
+                    slot.append(dim.size, 0)
+                    var sum = 0
+                    for (a in 0 until total)
+                        sum += cascadeSum(slot, levels, outerLevels).apply { slot.increment(dim) }
+                    slot.removeLast(dim.size)
+                    sum
+                }
+            }
+        }
+    }
+
+    private fun cascadeSum(slot: DefaultIntBuf, innerlevels: List<Dimension>, outerLevels: List<Dimension>): Int {
+        if (innerlevels.isEmpty()) return outerLevels.sum(slot)
+        return innerlevels.first().sum(slot, innerlevels + outerLevels)
+    }
+}
+
+fun List<Dimension>.plus(slot: DefaultIntBuf): List<Dimension> {
+    TODO()
+}
+
+fun List<Dimension>.sum(slot: DefaultIntBuf): Int {
+    TODO()
 }
 
 private fun DefaultIntBuf.simplifyLast(): DefaultIntBuf {
@@ -165,7 +212,7 @@ operator fun Int.invoke(vararg s: Any): GeneralDimension {
 }
 
 fun <E : Any> Int.NSet(recipe: (IntBuf) -> E) =
-        GeneralDimension(DefaultIntBuf.of(this), emptyLevels).NSet(recipe)
+        GeneralDimension(DefaultIntBuf.of(this), emptyLevels).NSet<E>(recipe = recipe)
 
 infix fun Int.x(a: Int): GeneralDimension {
     require(this >= 0 && a >= 0)
