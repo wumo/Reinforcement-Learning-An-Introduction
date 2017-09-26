@@ -2,6 +2,8 @@
 
 package lab.mars.rl.util
 
+import lab.mars.rl.util.RandomAccessCollection.tuple2
+
 /**
  * <p>
  * Created on 2017-09-18.
@@ -15,9 +17,9 @@ package lab.mars.rl.util
  * @param offset 子集的偏置
  */
 class CompactNSet<E : Any> private constructor(
-        private val data: Slice<Any>,
+        private val data: Buf<Any>,
         private val range: Int,
-        private val offset: Int) : RandomAccessCollection<E>() {
+        private val offset: Int) : RandomAccessCollection<E> {
 
     override fun <T : Any> copycat(element_maker: (IntBuf) -> T): RandomAccessCollection<T> {
         TODO("not implemented")
@@ -35,21 +37,18 @@ class CompactNSet<E : Any> private constructor(
         return op(offset)
     }
 
-    override fun <T : Any> _get(idx: Index) =
-            operation(idx.iterator()) { data[it] } as T
+    override fun get(idx: Index) =
+            operation(idx.iterator()) { data[it] } as E
 
-    override fun <T : Any> _set(idx: Index, s: T) =
+    override fun set(idx: Index, s: E) =
             operation(idx.iterator()) { data[it] = s }
 
-    override fun <T : Any> set(element_maker: (IntBuf, E) -> T) {
-
-    }
 
     override fun indices(): Iterator<IntBuf> {
         TODO("not implemented")
     }
 
-    override fun withIndices(): Iterator<Pair<out IntBuf, E>> {
+    override fun withIndices(): Iterator<tuple2<out IntBuf, E>> {
         TODO("not implemented")
     }
 

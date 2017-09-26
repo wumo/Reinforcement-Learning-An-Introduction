@@ -2,6 +2,7 @@
 
 package lab.mars.rl.util
 
+import lab.mars.rl.util.RandomAccessCollection.tuple2
 import java.util.*
 
 /**
@@ -19,7 +20,7 @@ import java.util.*
  *
  * @receiver 表示index的数组链表
  */
-fun DefaultIntBuf.increment(dim: IntArray) {
+fun MutableIntBuf.increment(dim: IntArray) {
     val offset = lastIndex - dim.size + 1
     for (idx in dim.lastIndex downTo 0) {
         val this_idx = offset + idx
@@ -52,8 +53,7 @@ inline fun <E : Any> emptyNSet(): NSet<E> = emptyNSet as NSet<E>
  * @param root 根节点一维数组
  */
 class NSet<E : Any>(private val dim: IntArray, private val stride: IntArray, private val root: Array<Any>) :
-        RandomAccessCollection<E>() {
-
+        ExtendableRAC<E> {
     override fun <T : Any> copycat(element_maker: (IntBuf) -> T): RandomAccessCollection<T> {
         val index = DefaultIntBuf.zero(dim.size)
         return NSet(dim, stride, Array(root.size) {
@@ -74,7 +74,7 @@ class NSet<E : Any>(private val dim: IntArray, private val stride: IntArray, pri
                 else -> element_maker(index)
             }
 
-    override fun <T : Any> set(element_maker: (IntBuf, E) -> T) {
+    override fun <T : Any> raw_set(element_maker: (IntBuf, E) -> T) {
         val index = DefaultIntBuf.new()
         reset(this, index, element_maker)
     }
@@ -107,7 +107,7 @@ class NSet<E : Any>(private val dim: IntArray, private val stride: IntArray, pri
             root[offset] = op(root[offset])
             root[offset] as T
         } else {
-            val sub = root[offset] as? NSet<T> ?:  throw IndexOutOfDimensionException()
+            val sub = root[offset] as? NSet<T> ?: throw IndexOutOfDimensionException()
             sub.get_or_set(idxIter, op)
         }
     }
@@ -118,9 +118,21 @@ class NSet<E : Any>(private val dim: IntArray, private val stride: IntArray, pri
 
     override fun isEmpty() = root.isEmpty()
 
-    override fun <T : Any> _get(idx: Index): T = get_or_set(idx.iterator()) { it }
+    override fun get(idx: Index): E = _get(idx)
 
-    override fun <T : Any> _set(idx: Index, s: T) {
+    override fun set(idx: Index, s: E) {
+        _set(idx, s)
+    }
+
+    override fun set(idx: Index, s: RandomAccessCollection<E>) {
+        _set(idx, s)
+    }
+
+    override fun invoke(idx: Index): RandomAccessCollection<E> = _get(idx)
+
+    private fun <T : Any> _get(idx: Index): T = get_or_set(idx.iterator()) { it }
+
+    private fun <T : Any> _set(idx: Index, s: T) {
         get_or_set<T>(idx.iterator()) { s }
     }
 
@@ -140,9 +152,9 @@ class NSet<E : Any>(private val dim: IntArray, private val stride: IntArray, pri
                               visitor = { index })
     }
 
-    override fun withIndices() = GeneralIterator<Pair<out IntBuf, E>>().apply {
+    override fun withIndices(): Iterator<tuple2<out IntBuf, E>> = GeneralIterator<tuple2<out IntBuf, E>>().apply {
         val index = DefaultIntBuf.zero(this.set.dim.size).apply { this[lastIndex] = -1 }
-        var pair: Pair<out IntBuf, E>? = null
+        var tuple2: tuple2<out IntBuf, E>? = null
         traverser = Traverser(this,
                               forward = {
                                   index.apply {
@@ -153,8 +165,8 @@ class NSet<E : Any>(private val dim: IntArray, private val stride: IntArray, pri
                               backward = { index.removeLast(current.set.dim.size) },
                               translate = { index.increment(current.set.dim) },
                               visitor = {
-                                  val tmp = pair ?: Pair(index, it)
-                                  pair = tmp
+                                  val tmp = tuple2 ?: tuple2(index, it)
+                                  tuple2 = tmp
                                   tmp.second = it
                                   tmp
                               })

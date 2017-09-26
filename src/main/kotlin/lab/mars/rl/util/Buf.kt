@@ -2,10 +2,6 @@
 
 package lab.mars.rl.util
 
-import org.apache.commons.math3.util.FastMath
-import org.apache.commons.math3.util.FastMath.min
-import java.util.*
-
 /**
  * <p>
  * Created on 2017-09-11.
@@ -56,6 +52,10 @@ interface MutableIntBuf : IntBuf {
     fun removeLast(num: Int) {
         if (num == 0) return
         remove(lastIndex - num + 1, lastIndex)
+    }
+
+    fun clear() {
+        removeLast(size)
     }
 
     fun reuseBacked(): IntBuf
@@ -241,4 +241,52 @@ open class DefaultIntBuf(private var ring: IntArray, private var offset: Int, si
         return sb.toString()
     }
 
+}
+
+inline fun <reified T> Array<T>.slice(start: Int = 0, end: Int = this.lastIndex) = Buf(this)
+
+class Buf<T>(private val backed: Array<T>,
+             private val start: Int = 0,
+             end: Int = backed.lastIndex,
+             private val cap: Int = backed.size - start) {
+    companion object {
+        inline fun <reified T> new(cap: Int = 8, size: Int = 0) = Buf(Array<T>(cap) { NULL_obj as T }, 0, 0)
+    }
+
+    init {
+        require(start in 0..end)
+        require(end < backed.size)
+    }
+
+    var size = end - start + 1
+        private set
+
+    var end = start + size - 1
+        private set
+
+    var lastIndex = size - 1
+        private set
+
+    operator fun get(idx: Int): T {
+        require(idx in 0..lastIndex)
+        return backed[start + idx]
+    }
+
+    operator fun set(idx: Int, s: T) {
+        require(idx in 0..lastIndex)
+        backed[start + idx] = s
+    }
+
+    operator fun plusAssign(s: T) {
+        require(size + 1 <= cap)
+        backed[start + size] = s
+        size++
+    }
+
+    fun unfold(num: Int) {
+        require(size + num <= cap)
+        size += num
+    }
+
+    fun subBuf(start: Int, end: Int) = Buf(backed, this.start + start, minOf(this.end, this.start + end))
 }

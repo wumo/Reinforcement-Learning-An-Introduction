@@ -252,7 +252,7 @@ class TestNSet {
         for (withIndex in set.withIndices()) {
             println(withIndex)
         }
-        set.set { _, old -> println(old);2 }
+        set.raw_set { _, old -> println(old);2 }
         for (withIndex in set.withIndices()) {
             println(withIndex)
         }

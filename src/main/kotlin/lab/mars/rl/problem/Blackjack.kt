@@ -1,7 +1,7 @@
 package lab.mars.rl.problem
 
 import lab.mars.rl.model.*
-import lab.mars.rl.model.impl.*
+import lab.mars.rl.model.impl.NSetMDP
 import lab.mars.rl.util.DefaultIntBuf
 import lab.mars.rl.util.invoke
 import lab.mars.rl.util.x
@@ -38,7 +38,7 @@ object Blackjack {
             win = states[0, 0]
             draw = states[0, 1]
             lose = states[0, 2]
-            for (s in states(1))
+            for (s in states)
                 for (a in s.actions)
                     when (a[0]) {
                         0 -> a.sample = sticks(s)
@@ -46,7 +46,7 @@ object Blackjack {
                     }
         }
         val policy1 = mdp.VFunc<Action> { null_action }
-        for (s in mdp.states(1))
+        for (s in mdp.states)
             if (s[player_idx] >= 20 - player_offset)
                 policy1[s] = s.actions[0]
             else
