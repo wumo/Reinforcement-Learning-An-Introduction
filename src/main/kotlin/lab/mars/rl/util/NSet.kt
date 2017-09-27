@@ -136,6 +136,13 @@ class NSet<E : Any>(private val dim: IntArray, private val stride: IntArray, pri
         get_or_set<T>(idx.iterator()) { s }
     }
 
+    override fun toString(): String {
+        val sb = StringBuilder()
+        for ((idx, value) in withIndices())
+            sb.append("$idx=$value").append("\n")
+        return sb.toString()
+    }
+
     override fun iterator() = GeneralIterator<E>().apply { traverser = Traverser(this, {}, {}, {}, { it }) }
 
     override fun indices() = GeneralIterator<IntBuf>().apply {

@@ -243,33 +243,31 @@ open class DefaultIntBuf(private var ring: IntArray, private var offset: Int, si
 
 }
 
-inline fun <reified T> Array<T>.slice(start: Int = 0, end: Int = this.lastIndex) = Buf(this)
+inline fun <reified T : Any> Array<T>.slice(start: Int = 0, end: Int = this.lastIndex) = Buf<T>(this as Array<Any>, start, end - start + 1)
 
-class Buf<T>(private val backed: Array<T>,
-             private val start: Int = 0,
-             end: Int = backed.lastIndex,
-             private val cap: Int = backed.size - start) {
+class Buf<T : Any>(val backed: Array<Any>,
+                   val start: Int = 0,
+                   size: Int = backed.lastIndex,
+                   val cap: Int = backed.size - start) {
     companion object {
-        inline fun <reified T> new(cap: Int = 8, size: Int = 0) = Buf(Array<T>(cap) { NULL_obj as T }, 0, 0)
+        inline fun <reified T : Any> new(cap: Int = 8, size: Int = 0) = Buf<T>(Array(cap) { NULL_obj }, 0, size)
     }
 
     init {
-        require(start in 0..end)
-        require(end < backed.size)
+        require(start in 0..backed.lastIndex)
+        require(size in 0..backed.size)
     }
 
-    var size = end - start + 1
+    var size = size
         private set
 
-    var end = start + size - 1
+    var lastIndex = this.size - 1
         private set
-
-    var lastIndex = size - 1
-        private set
+        get() = this.size - 1
 
     operator fun get(idx: Int): T {
         require(idx in 0..lastIndex)
-        return backed[start + idx]
+        return backed[start + idx] as T
     }
 
     operator fun set(idx: Int, s: T) {
@@ -288,5 +286,11 @@ class Buf<T>(private val backed: Array<T>,
         size += num
     }
 
-    fun subBuf(start: Int, end: Int) = Buf(backed, this.start + start, minOf(this.end, this.start + end))
+    fun subBuf(start: Int, end: Int) = Buf<T>(backed, this.start + start, minOf(this.size, end - start + 1))
+
+    inline fun forEach(start: Int = 0, end: Int = lastIndex, block: (T) -> Unit) {
+        for (a in start..end)
+            block(backed[this.start + a] as T)
+    }
+
 }

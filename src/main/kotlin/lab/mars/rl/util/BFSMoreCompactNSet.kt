@@ -3,6 +3,7 @@
 package lab.mars.rl.util
 
 import lab.mars.rl.util.RandomAccessCollection.tuple2
+import java.util.*
 
 /**
  * <p>
@@ -12,7 +13,7 @@ import lab.mars.rl.util.RandomAccessCollection.tuple2
  * @author wumo
  */
 
-class MoreCompactNSet<E : Any>
+class BFSMoreCompactNSet<E : Any>
 constructor(internal val data: Buf<Any>)
     : RandomAccessCollection<E> {
 
@@ -20,6 +21,8 @@ constructor(internal val data: Buf<Any>)
 
     val SubTree.lastOffset: Int
         get() = offset2nd + size - 2
+    val SubTree.lastIndex: Int
+        get() = size - 1
 
     /**
      * 不存在[subtrees]为空的情况，如果[subtrees]为空，则必须将此
@@ -110,12 +113,46 @@ constructor(internal val data: Buf<Any>)
     }
 
     override fun withIndices() = object : Iterator<tuple2<out IntBuf, E>> {
-        override fun hasNext(): Boolean {
-            TODO("not implemented")
-        }
+        var offset = 0
+        var visited = 0
+        val stack = LinkedList<tuple2<SubTree, Int>>()
+        val slot = DefaultIntBuf.new()
+        var idxElement: tuple2<out IntBuf, E>? = null
+
+        override fun hasNext() = visited < data.size
 
         override fun next(): tuple2<out IntBuf, E> {
-            TODO("not implemented")
+            //correct the slot
+            if (stack.isEmpty())
+                deepDown()
+            else while (true) {
+                val toVisit = stack.peek()
+                if (toVisit.second < toVisit.first.lastIndex) {
+                    toVisit.second++
+                    slot[slot.lastIndex]++
+                    offset = toVisit.first.offset2nd + toVisit.second - 1
+                    deepDown()
+                    break
+                } else {//finish visited this SubTree
+                    stack.pop()
+                    slot.removeLast(1)
+                }
+            }
+            visited++
+            val e = _get(offset)
+            return idxElement?.apply { second = e }
+                   ?: tuple2<IntBuf, E>(slot, e).apply { idxElement = this }
+        }
+
+        fun deepDown() {
+            val cell = data[offset] as? Cell<E>
+            if (cell != null) {
+                val subtrees = cell.subtrees
+                subtrees.forEach {
+                    stack.push(tuple2(it, 0))
+                }
+                slot.append(subtrees.size, 0)
+            }
         }
     }
 
@@ -127,4 +164,11 @@ constructor(internal val data: Buf<Any>)
         override fun next() = _get(a++)
     }
 
+    override fun toString(): String {
+        val sb = StringBuilder()
+        for (withIndex in withIndices()) {
+            sb.append(withIndex).append("\n")
+        }
+        return sb.toString()
+    }
 }
