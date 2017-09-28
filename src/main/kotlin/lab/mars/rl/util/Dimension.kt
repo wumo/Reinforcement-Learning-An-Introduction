@@ -68,7 +68,7 @@ sealed class Dimension {
         return NSet(DefaultIntBuf.new(), recipe)
     }
 
-    abstract fun sum(slot: DefaultIntBuf = DefaultIntBuf.new(), successors: levelsIterator): Int
+    abstract fun sum(slot: DefaultIntBuf = DefaultIntBuf.new(), successors: levelsIterator = emptyLevelsIterator): Int
 
     abstract fun <E : Any> CNSet(offset: Int, slot: MutableIntBuf, set: CompactNSet<E>)
 

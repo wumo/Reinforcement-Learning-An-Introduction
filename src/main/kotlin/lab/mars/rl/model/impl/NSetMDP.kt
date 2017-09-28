@@ -5,6 +5,7 @@ package lab.mars.rl.model.impl
 import lab.mars.rl.model.Action
 import lab.mars.rl.model.MDP
 import lab.mars.rl.model.State
+import lab.mars.rl.util.Bufkt.DefaultIntBuf
 import lab.mars.rl.util.Bufkt.IntBuf
 import lab.mars.rl.util.cnsetFrom
 import lab.mars.rl.util.nsetFrom
@@ -71,9 +72,10 @@ fun MCNSetMDP(gamma: Double, state_dim: Any, action_dim: (IntBuf) -> Any): MDP {
     val states = cnsetFrom(s_dim) {
         State(it.copy()).apply { actions = cnsetFrom(action_dim(it).toDim()) { Action(it.copy()) } }
     }
+    val size = s_a_dim.sum()
     return MDP(
             gamma = gamma,
             states = states,
             state_function = { element_maker -> states.copycat(element_maker) },
-            state_action_function = { element_maker -> cnsetFrom(s_a_dim, element_maker) })
+            state_action_function = { element_maker -> s_a_dim.CNSet(size, DefaultIntBuf.new(), element_maker) })
 }
