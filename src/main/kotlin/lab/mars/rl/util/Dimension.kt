@@ -72,10 +72,7 @@ sealed class Dimension {
 
     abstract fun <E : Any> MCNSet(offset: Int, slot: MutableIntBuf, set: BFSMoreCompactNSet<E>)
 
-    open fun <E : Any> MCNSet(recipe: (IntBuf) -> E)
-            : BFSMoreCompactNSet<E> {
-        val slot = DefaultIntBuf.new()
-        val size = sum(slot, emptyLevelsIterator)
+    fun <E : Any> MCNSet(size: Int, slot: MutableIntBuf = DefaultIntBuf.new(), recipe: (IntBuf) -> E): BFSMoreCompactNSet<E> {
         val data = Array(size) { NULL_obj }.buf(0, 0)
         val set = BFSMoreCompactNSet<E>(data)
         slot.clear()
@@ -85,6 +82,13 @@ sealed class Dimension {
             set._set(offset, recipe(slot))
         }
         return set
+    }
+
+    open fun <E : Any> MCNSet(recipe: (IntBuf) -> E)
+            : BFSMoreCompactNSet<E> {
+        val slot = DefaultIntBuf.new()
+        val size = sum(slot, emptyLevelsIterator)
+        return MCNSet(size, slot, recipe)
     }
 }
 

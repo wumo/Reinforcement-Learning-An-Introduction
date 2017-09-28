@@ -65,11 +65,12 @@ inline fun MCNSetMDP(gamma: Double, state_dim: Any, action_dim: Any): MDP {
  */
 fun MCNSetMDP(gamma: Double, state_dim: Any, action_dim: (IntBuf) -> Any): MDP {
     val s_dim = state_dim.toDim()
+    val states = mcnsetFrom(s_dim) {
+        State(it.copy()).apply { actions = mcnsetFrom(action_dim(it).toDim()) { Action(it.copy()) } }
+    }
     return MDP(
             gamma = gamma,
-            states = mcnsetFrom(s_dim) {
-                State(it.copy()).apply { actions = mcnsetFrom(action_dim(it).toDim()) { Action(it.copy()) } }
-            },
-            state_function = { element_maker -> mcnsetFrom(s_dim, element_maker) },
+            states = states,
+            state_function = { element_maker -> states.copycat(element_maker) },
             state_action_function = { element_maker -> nsetFrom(s_dim) { nsetFrom(action_dim(it).toDim(), element_maker) } })
 }
