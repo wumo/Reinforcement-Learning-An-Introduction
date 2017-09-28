@@ -6,6 +6,7 @@ import lab.mars.rl.model.Action
 import lab.mars.rl.model.MDP
 import lab.mars.rl.model.State
 import lab.mars.rl.util.Bufkt.IntBuf
+import lab.mars.rl.util.mcnsetFrom
 import lab.mars.rl.util.nsetFrom
 import lab.mars.rl.util.toDim
 
@@ -42,5 +43,33 @@ fun NSetMDP(gamma: Double, state_dim: Any, action_dim: (IntBuf) -> Any): MDP {
                 State(it.copy()).apply { actions = nsetFrom(action_dim(it).toDim()) { Action(it.copy()) } }
             },
             state_function = { element_maker -> nsetFrom(s_dim, element_maker) },
+            state_action_function = { element_maker -> nsetFrom(s_dim) { nsetFrom(action_dim(it).toDim(), element_maker) } })
+}
+
+/**
+ * @param gamma gamma 衰减因子
+ * @param state_dim 统一的状态维度，V函数与状态集一致
+ * @param action_dim 统一的动作维度，Q函数与状态集和动作集一致
+ * @return 所有状态维度相同和动作维度相同的MDP实例
+ */
+inline fun MCNSetMDP(gamma: Double, state_dim: Any, action_dim: Any): MDP {
+    val a_dim = action_dim.toDim()
+    return MCNSetMDP(gamma, state_dim.toDim(), { a_dim })
+}
+
+/**
+ * @param gamma  gamma 衰减因子
+ * @param state_dim 统一的状态维度，V函数与状态集一致
+ * @param action_dim 依据状态索引确定动作维度，Q函数与状态集和动作集一致
+ * @return 统一状态维度而动作维度异构的MDP实例
+ */
+fun MCNSetMDP(gamma: Double, state_dim: Any, action_dim: (IntBuf) -> Any): MDP {
+    val s_dim = state_dim.toDim()
+    return MDP(
+            gamma = gamma,
+            states = mcnsetFrom(s_dim) {
+                State(it.copy()).apply { actions = mcnsetFrom(action_dim(it).toDim()) { Action(it.copy()) } }
+            },
+            state_function = { element_maker -> mcnsetFrom(s_dim, element_maker) },
             state_action_function = { element_maker -> nsetFrom(s_dim) { nsetFrom(action_dim(it).toDim(), element_maker) } })
 }
