@@ -1,65 +1,17 @@
-@file:Suppress("NOTHING_TO_INLINE", "OVERRIDE_BY_INLINE")
+@file:Suppress("NOTHING_TO_INLINE")
 
-package lab.mars.rl.util
+package lab.mars.rl.util.Bufkt
+
+import lab.mars.rl.util.Index
 
 /**
  * <p>
- * Created on 2017-09-11.
+ * Created on 2017-09-28.
  * </p>
  *
  * @author wumo
  */
 fun IntArray.buf(start: Int, end: Int): DefaultIntBuf = DefaultIntBuf.reuse(this, start, end)
-
-interface IntBuf : Index {
-    /** [end]>=[start] */
-    operator fun get(start: Int, end: Int): IntBuf
-
-    fun toIntArray(): IntArray
-    fun copy(): IntBuf
-}
-
-interface MutableIntBuf : IntBuf {
-    val cap: Int
-    operator fun set(idx: Int, s: Int)
-
-    /** [end]>=[start] */
-    operator fun set(start: Int, end: Int, s: Int)
-
-    fun ensure(minCap: Int)
-
-    fun prepend(s: Int)
-    fun prepend(num: Int, s: Int)
-    fun prepend(another: IntBuf)
-
-    fun append(s: Int)
-    fun append(num: Int, s: Int)
-    fun append(another: IntBuf)
-
-    fun remove(range: IntRange) {
-        remove(range.start, range.endInclusive)
-    }
-
-    /** [end]>=[start] */
-    fun remove(start: Int, end: Int)
-
-    fun remove(index: Int) = remove(index, index)
-    fun removeFirst(num: Int) {
-        if (num == 0) return
-        remove(0, num - 1)
-    }
-
-    fun removeLast(num: Int) {
-        if (num == 0) return
-        remove(lastIndex - num + 1, lastIndex)
-    }
-
-    fun clear() {
-        removeLast(size)
-    }
-
-    fun reuseBacked(): IntBuf
-}
 
 open class DefaultIntBuf(private var ring: IntArray, private var offset: Int, size: Int, cap: Int = size) :
         MutableIntBuf {
@@ -239,58 +191,6 @@ open class DefaultIntBuf(private var ring: IntArray, private var offset: Int, si
         sb.append(ring[index(lastIndex)])
         sb.append("]")
         return sb.toString()
-    }
-
-}
-
-inline fun <reified T : Any> Array<T>.slice(start: Int = 0, end: Int = this.lastIndex) = Buf<T>(this as Array<Any>, start, end - start + 1)
-
-class Buf<T : Any>(val backed: Array<Any>,
-                   val start: Int = 0,
-                   size: Int = backed.lastIndex,
-                   val cap: Int = backed.size - start) {
-    companion object {
-        inline fun <reified T : Any> new(cap: Int = 8, size: Int = 0) = Buf<T>(Array(cap) { NULL_obj }, 0, size)
-    }
-
-    init {
-        require(start in 0..backed.lastIndex)
-        require(size in 0..backed.size)
-    }
-
-    var size = size
-        private set
-
-    var lastIndex = this.size - 1
-        private set
-        get() = this.size - 1
-
-    operator fun get(idx: Int): T {
-        require(idx in 0..lastIndex)
-        return backed[start + idx] as T
-    }
-
-    operator fun set(idx: Int, s: T) {
-        require(idx in 0..lastIndex)
-        backed[start + idx] = s
-    }
-
-    operator fun plusAssign(s: T) {
-        require(size + 1 <= cap)
-        backed[start + size] = s
-        size++
-    }
-
-    fun unfold(num: Int) {
-        require(size + num <= cap)
-        size += num
-    }
-
-    fun subBuf(start: Int, end: Int) = Buf<T>(backed, this.start + start, minOf(this.size, end - start + 1))
-
-    inline fun forEach(start: Int = 0, end: Int = lastIndex, block: (T) -> Unit) {
-        for (a in start..end)
-            block(backed[this.start + a] as T)
     }
 
 }

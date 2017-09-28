@@ -1,6 +1,8 @@
 package lab.mars.rl.model.impl
 
 import lab.mars.rl.util.*
+import lab.mars.rl.util.Bufkt.DefaultIntBuf
+import lab.mars.rl.util.Bufkt.IntBuf
 import org.junit.Assert
 import org.junit.Test
 

@@ -2,8 +2,10 @@
 
 package lab.mars.rl.model.impl
 
-import lab.mars.rl.model.*
-import lab.mars.rl.util.IntBuf
+import lab.mars.rl.model.Action
+import lab.mars.rl.model.MDP
+import lab.mars.rl.model.State
+import lab.mars.rl.util.Bufkt.IntBuf
 import lab.mars.rl.util.nsetFrom
 import lab.mars.rl.util.toDim
 

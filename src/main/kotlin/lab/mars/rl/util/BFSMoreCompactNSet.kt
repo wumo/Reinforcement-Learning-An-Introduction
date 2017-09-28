@@ -2,6 +2,7 @@
 
 package lab.mars.rl.util
 
+import lab.mars.rl.util.Bufkt.*
 import lab.mars.rl.util.RandomAccessCollection.tuple2
 import java.util.*
 
@@ -14,7 +15,7 @@ import java.util.*
  */
 
 class BFSMoreCompactNSet<E : Any>
-constructor(internal val data: Buf<Any>)
+constructor(internal val data: MutableBuf<Any>)
     : RandomAccessCollection<E> {
 
     class SubTree(val size: Int, val offset2nd: Int)
@@ -30,18 +31,27 @@ constructor(internal val data: Buf<Any>)
      * @param subtrees 此[Cell]中包含的子树集
      * @param value 此[Cell]存储的值
      */
-    class Cell<E : Any>(val subtrees: Buf<SubTree>, var value: E) {
+    class Cell<E : Any>(val subtrees: MutableBuf<SubTree>, var value: E) {
         inline operator fun get(idx: Int): SubTree {
             if (idx < 0 || idx >= subtrees.size)
                 throw IndexOutOfDimensionException()
             return subtrees[idx]
         }
+
+        fun copy() = Cell(subtrees, value)
     }
 
     override fun <T : Any>
             copycat(element_maker: (IntBuf) -> T)
             : RandomAccessCollection<T> {
-        TODO("not implemented")
+        val new_data = DefaultBuf.new<Any>(data.cap)
+        for (a in 0..data.lastIndex)
+            new_data += (data[a] as? Cell<E>)?.copy() ?: data[a]
+        return BFSMoreCompactNSet<T>(new_data).apply {
+            set { slot, _ ->
+                element_maker(slot)
+            }
+        }
     }
 
     private inline fun <R : Any>
@@ -77,6 +87,10 @@ constructor(internal val data: Buf<Any>)
         else data[idx] = s
     }
 
+    override fun at(idx: Int): E {
+        return _get(idx)
+    }
+
     override fun get(idx: Index): E =
             operation(idx.iterator()) { _get(it) }
 
@@ -84,11 +98,13 @@ constructor(internal val data: Buf<Any>)
             operation(idx.iterator()) { _set(it, s) }
 
     override fun set(element_maker: (IntBuf, E) -> E) {
-
+        dfs(0) { slot, offset ->
+            _set(offset, element_maker(slot, _get(offset)))
+        }
     }
 
-    fun dfs(offset: Int, end: Int = 0, slot: MutableIntBuf = DefaultIntBuf.new(),
-            visit: (MutableIntBuf, Int) -> Unit) {
+    internal fun dfs(offset: Int, end: Int = 0, slot: MutableIntBuf = DefaultIntBuf.new(),
+                     visit: (MutableIntBuf, Int) -> Unit) {
         val cell = data[offset] as? Cell<E> ?: return visit(slot, offset)
         val subtrees = cell.subtrees
         //防止遍历过程中改变，并且只会增多，不会减少
@@ -108,20 +124,27 @@ constructor(internal val data: Buf<Any>)
         slot.removeLast(end)
     }
 
-    override fun indices(): Iterator<IntBuf> {
-        TODO("not implemented")
+    override fun indices() = Itr { slot, _ -> slot }
+
+    override fun withIndices(): Iterator<tuple2<out IntBuf, E>> {
+        var idxElement: tuple2<out IntBuf, E>? = null
+        return Itr { slot, e ->
+            idxElement?.apply { second = e }
+            ?: tuple2(slot, e).apply { idxElement = this }
+        }
     }
 
-    override fun withIndices() = object : Iterator<tuple2<out IntBuf, E>> {
-        var offset = 0
-        var visited = 0
-        val stack = LinkedList<tuple2<SubTree, Int>>()
-        val slot = DefaultIntBuf.new()
-        var idxElement: tuple2<out IntBuf, E>? = null
+    inner class Itr<T>(
+            private val visitor: (IntBuf, E) -> T
+    ) : Iterator<T> {
+        private var offset = 0
+        private var visited = 0
+        private val stack = LinkedList<tuple2<SubTree, Int>>()
+        private val slot = DefaultIntBuf.new()
 
         override fun hasNext() = visited < data.size
 
-        override fun next(): tuple2<out IntBuf, E> {
+        override fun next(): T {
             //correct the slot
             if (stack.isEmpty())
                 deepDown()
@@ -140,11 +163,10 @@ constructor(internal val data: Buf<Any>)
             }
             visited++
             val e = _get(offset)
-            return idxElement?.apply { second = e }
-                   ?: tuple2<IntBuf, E>(slot, e).apply { idxElement = this }
+            return visitor(slot, e)
         }
 
-        fun deepDown() {
+        private fun deepDown() {
             val cell = data[offset] as? Cell<E>
             if (cell != null) {
                 val subtrees = cell.subtrees

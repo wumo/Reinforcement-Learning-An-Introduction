@@ -3,6 +3,8 @@
 package lab.mars.rl.model
 
 import lab.mars.rl.util.*
+import lab.mars.rl.util.Bufkt.DefaultIntBuf
+import lab.mars.rl.util.Bufkt.IntBuf
 
 /**
  * <p>

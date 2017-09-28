@@ -2,6 +2,8 @@
 
 package lab.mars.rl.util
 
+import lab.mars.rl.util.Bufkt.IntBuf
+import lab.mars.rl.util.Bufkt.MutableBuf
 import lab.mars.rl.util.RandomAccessCollection.tuple2
 
 /**
@@ -17,7 +19,7 @@ import lab.mars.rl.util.RandomAccessCollection.tuple2
  * @param offset 子集的偏置
  */
 class CompactNSet<E : Any> private constructor(
-        private val data: Buf<Any>,
+        private val data: MutableBuf<Any>,
         private val range: Int,
         private val offset: Int) : RandomAccessCollection<E> {
 

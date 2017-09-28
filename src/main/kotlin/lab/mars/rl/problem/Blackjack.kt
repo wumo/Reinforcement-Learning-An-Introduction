@@ -2,7 +2,7 @@ package lab.mars.rl.problem
 
 import lab.mars.rl.model.*
 import lab.mars.rl.model.impl.NSetMDP
-import lab.mars.rl.util.DefaultIntBuf
+import lab.mars.rl.util.Bufkt.DefaultIntBuf
 import lab.mars.rl.util.invoke
 import lab.mars.rl.util.x
 import java.util.*

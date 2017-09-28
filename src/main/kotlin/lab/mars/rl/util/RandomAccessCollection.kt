@@ -2,6 +2,9 @@
 
 package lab.mars.rl.util
 
+import lab.mars.rl.util.Bufkt.DefaultIntBuf
+import lab.mars.rl.util.Bufkt.IntBuf
+
 interface RandomAccessCollection<E : Any> : Iterable<E> {
     data class tuple2<A, B>(var first: A, var second: B) {
         override fun toString(): String {
@@ -21,6 +24,16 @@ interface RandomAccessCollection<E : Any> : Iterable<E> {
     operator fun get(idx: Index): E
     operator fun get(vararg idx: Int): E = get(DefaultIntBuf.reuse(idx))
     operator fun get(vararg indexable: Index): E = get(MultiIndex(indexable))
+
+    /**
+     * 返回第[idx]个元素，这里的元素顺序与[iterator()]的顺序一致
+     */
+    fun at(idx: Int): E {
+        var i = 0
+        for (element in this)
+            if (i++ == idx) return element
+        throw  NoSuchElementException()
+    }
 
     operator fun set(idx: Index, s: E)
     operator fun set(vararg idx: Int, s: E) = set(DefaultIntBuf.reuse(idx), s)

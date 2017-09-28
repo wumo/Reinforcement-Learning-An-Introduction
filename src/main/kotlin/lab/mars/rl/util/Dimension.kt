@@ -4,6 +4,7 @@ package lab.mars.rl.util
 
 import lab.mars.rl.util.BFSMoreCompactNSet.Cell
 import lab.mars.rl.util.BFSMoreCompactNSet.SubTree
+import lab.mars.rl.util.Bufkt.*
 import java.util.*
 
 /**
@@ -75,7 +76,7 @@ sealed class Dimension {
             : BFSMoreCompactNSet<E> {
         val slot = DefaultIntBuf.new()
         val size = sum(slot, emptyLevelsIterator)
-        val data = Array(size) { NULL_obj }.slice(0, 0)
+        val data = Array(size) { NULL_obj }.buf(0, 0)
         val set = BFSMoreCompactNSet<E>(data)
         slot.clear()
         MCNSet(0, slot, set)
@@ -162,6 +163,7 @@ constructor(private val enumerated: Array<Dimension>)
                 }
                 val dim = intArrayOf(total)
                 var count = 0
+                slot.append(0)
                 for (dimension in enumerated)
                     when (dimension) {
                         is ExpandDimension ->
@@ -171,10 +173,12 @@ constructor(private val enumerated: Array<Dimension>)
                                     count += succ.next().sum(slot, succ)
                                     slot.increment(dim)
                                 }
-                                else -> count += dimension.dim
+                                else -> {
+                                    count += dimension.dim
+                                    slot[slot.lastIndex] += dimension.dim
+                                }
                             }
                         else -> {
-                            slot.append(0)
                             count += dimension.sum(slot, successors.snapshot())
                             slot.increment(dim)
                         }
@@ -195,10 +199,11 @@ constructor(private val enumerated: Array<Dimension>)
                 if (total == 0) return
 
                 val tmp = set.data[offset] as? Cell<E>
-                          ?: Cell(Buf.new(), set.data[offset] as E)
+                          ?: Cell(DefaultBuf.new(), set.data[offset] as E)
                 val subtree = SubTree(size = total,
                                       offset2nd = set.data.size)
                 tmp.subtrees += subtree
+                set.data[offset] = tmp
                 set.data.unfold(total - 1)
                 //leaf node
                 var firstSlot = true
@@ -207,11 +212,8 @@ constructor(private val enumerated: Array<Dimension>)
                     when (dimension) {
                         is ExpandDimension -> {
                             if (dimension.dim == 0) continue@outer
-                            if (firstSlot) {
-                                firstSlot = false
-                                slot[slot.lastIndex] += dimension.dim - 1
-                            } else
-                                slot[slot.lastIndex] += dimension.dim
+                            slot[slot.lastIndex] += dimension.dim
+                            if (firstSlot) firstSlot = false
                         }
                         else -> {
                             if (firstSlot) {
@@ -330,7 +332,7 @@ class GeneralDimension(
                 if (d == 0) continue
                 set.dfs(offset, end, slot) { slot, offset ->
                     val tmp = set.data[offset] as? Cell<E>
-                              ?: Cell(Buf.new(), set.data[offset] as E)
+                              ?: Cell(DefaultBuf.new(), set.data[offset] as E)
                     val subtree = SubTree(size = d,
                                           offset2nd = set.data.size)
                     tmp.subtrees += subtree
