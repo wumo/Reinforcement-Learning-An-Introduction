@@ -9,6 +9,7 @@ import lab.mars.rl.util.Bufkt.IntBuf
 import lab.mars.rl.util.cnsetFrom
 import lab.mars.rl.util.nsetFrom
 import lab.mars.rl.util.toDim
+import lab.mars.rl.util.x
 
 /**
  * <p>
@@ -37,13 +38,14 @@ inline fun NSetMDP(gamma: Double, state_dim: Any, action_dim: Any): MDP {
  */
 fun NSetMDP(gamma: Double, state_dim: Any, action_dim: (IntBuf) -> Any): MDP {
     val s_dim = state_dim.toDim()
+    val s_a_dim = s_dim.copy() x action_dim
     return MDP(
             gamma = gamma,
             states = nsetFrom(s_dim) {
                 State(it.copy()).apply { actions = nsetFrom(action_dim(it).toDim()) { Action(it.copy()) } }
             },
             state_function = { element_maker -> nsetFrom(s_dim, element_maker) },
-            state_action_function = { element_maker -> nsetFrom(s_dim) { nsetFrom(action_dim(it).toDim(), element_maker) } })
+            state_action_function = { element_maker -> nsetFrom(s_a_dim, element_maker) })
 }
 
 /**
@@ -65,6 +67,7 @@ inline fun MCNSetMDP(gamma: Double, state_dim: Any, action_dim: Any): MDP {
  */
 fun MCNSetMDP(gamma: Double, state_dim: Any, action_dim: (IntBuf) -> Any): MDP {
     val s_dim = state_dim.toDim()
+    val s_a_dim = s_dim.copy() x action_dim
     val states = cnsetFrom(s_dim) {
         State(it.copy()).apply { actions = cnsetFrom(action_dim(it).toDim()) { Action(it.copy()) } }
     }
@@ -72,5 +75,5 @@ fun MCNSetMDP(gamma: Double, state_dim: Any, action_dim: (IntBuf) -> Any): MDP {
             gamma = gamma,
             states = states,
             state_function = { element_maker -> states.copycat(element_maker) },
-            state_action_function = { element_maker -> nsetFrom(s_dim) { nsetFrom(action_dim(it).toDim(), element_maker) } })
+            state_action_function = { element_maker -> cnsetFrom(s_a_dim, element_maker) })
 }

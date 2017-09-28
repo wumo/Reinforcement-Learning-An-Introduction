@@ -240,6 +240,9 @@ inline fun DefaultIntBuf.isZero() = this.size == 1 && this[0] == 0
 class GeneralDimension(
         internal val dim: DefaultIntBuf,
         internal val levels: LinkedList<Dimension>) : Dimension() {
+
+    fun copy() = GeneralDimension(dim.copy(), LinkedList(levels))
+
     override fun <E : Any> NSet(slot: DefaultIntBuf, recipe: (IntBuf) -> Any): NSet<E> {
         return if (dim.isZero()) {//zero dimension
             if (levels.isEmpty()) emptyNSet()
@@ -486,7 +489,7 @@ infix fun GeneralDimension.x(d: GeneralDimension): GeneralDimension {
 }
 
 fun Any.toDim() = when (this) {
-    is Dimension -> this
+    is GeneralDimension -> this
     is Int -> {
         require(this >= 0)
         GeneralDimension(DefaultIntBuf.of(this), emptyLevels)

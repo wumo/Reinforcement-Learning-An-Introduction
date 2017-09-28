@@ -47,10 +47,12 @@ object Blackjack {
         }
         val policy1 = mdp.VFunc<Action> { null_action }
         for (s in mdp.states)
-            if (s[player_idx] >= 20 - player_offset)
-                policy1[s] = s.actions[0]
-            else
-                policy1[s] = s.actions[1]
+            if(s[0]==1) {
+                if (s[player_idx] >= 20 - player_offset)
+                    policy1[s] = s.actions[0]
+                else
+                    policy1[s] = s.actions[1]
+            }
         return Pair(mdp, policy1)
     }
 
