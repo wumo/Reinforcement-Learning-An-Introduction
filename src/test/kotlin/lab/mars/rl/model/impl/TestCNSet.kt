@@ -1,8 +1,8 @@
 package lab.mars.rl.model.impl
 
 import lab.mars.rl.util.*
-import lab.mars.rl.util.BFSMoreCompactNSet.Cell
-import lab.mars.rl.util.BFSMoreCompactNSet.SubTree
+import lab.mars.rl.util.CompactNSet.Cell
+import lab.mars.rl.util.CompactNSet.SubTree
 import lab.mars.rl.util.Bufkt.DefaultIntBuf
 import lab.mars.rl.util.Bufkt.IntBuf
 import lab.mars.rl.util.Bufkt.buf
@@ -32,7 +32,7 @@ class TestCNSet {
             3          4
          */
         val data = arrayOf(Cell(arrayOf(SubTree(2, 4), SubTree(3, 1)).buf(), 1), 2, Cell(arrayOf(SubTree(2, 3)).buf(), 3), 4, 5)
-        val set = BFSMoreCompactNSet<Int>(data.buf())
+        val set = CompactNSet<Int>(data.buf())
         val slots = arrayOf(
                 DefaultIntBuf.of(0, 0),
                 DefaultIntBuf.of(0, 1),
@@ -50,7 +50,7 @@ class TestCNSet {
     @Test
     fun `make using GeneralDimension 3`() {
         var i = 0
-        val set = mcnsetFrom(3) { i++ }
+        val set = cnsetFrom(3) { i++ }
         val expected = PlainSet(
                 slots = arrayOf(
                         DefaultIntBuf.of(0),
@@ -68,7 +68,7 @@ class TestCNSet {
     @Test
     fun `make using GeneralDimension 2 x 3`() {
         var i = 0
-        val set = mcnsetFrom(2 x 3) { i++ }
+        val set = cnsetFrom(2 x 3) { i++ }
         val expected = PlainSet(
                 slots = arrayOf(
                         DefaultIntBuf.of(0, 0),
@@ -90,7 +90,7 @@ class TestCNSet {
     @Test
     fun `make using GeneralDimension 2 x 3 x 4`() {
         var i = 0
-        val set = mcnsetFrom(2 x 3 x 4) { i++ }
+        val set = cnsetFrom(2 x 3 x 4) { i++ }
         i = 0
         val slotList = arrayListOf<IntBuf>()
         val valuesList = arrayListOf<Int>()
@@ -112,7 +112,7 @@ class TestCNSet {
     @Test
     fun `make using GeneralDimension 2 x { it+1 }`() {
         var i = 0
-        val set = mcnsetFrom(2 x { it[0] + 1 }) { i++ }
+        val set = cnsetFrom(2 x { it[0] + 1 }) { i++ }
 
         val expected = PlainSet(
                 slots = arrayOf(
@@ -131,7 +131,7 @@ class TestCNSet {
     @Test
     fun `make using Enumerated 0(!3) `() {
         var i = 0
-        val set = mcnsetFrom(0(!3)) { i++ }
+        val set = cnsetFrom(0(!3)) { i++ }
         val expected = PlainSet(
                 slots = arrayOf(
                         DefaultIntBuf.of(0),
@@ -149,7 +149,7 @@ class TestCNSet {
     @Test
     fun `make using Enumerated 0(!3,!3) `() {
         var i = 0
-        val set = mcnsetFrom(0(!3, !3)) { i++ }
+        val set = cnsetFrom(0(!3, !3)) { i++ }
         val expected = PlainSet(
                 slots = arrayOf(
                         DefaultIntBuf.of(0),
@@ -170,7 +170,7 @@ class TestCNSet {
     @Test
     fun `make using GeneralDimension 0(!3, !3, 2 x 3) `() {
         var i = 0
-        val set = mcnsetFrom(0(!3, !3, 2 x 3)) { i++ }
+        val set = cnsetFrom(0(!3, !3, 2 x 3)) { i++ }
         val expected = PlainSet(
                 slots = arrayOf(
                         DefaultIntBuf.of(0),
@@ -233,7 +233,7 @@ class TestCNSet {
         var i = 0
         val set = nsetFrom(dim) { i++ }
         i = 0
-        val set2 = mcnsetFrom(dim) { i++ }
+        val set2 = cnsetFrom(dim) { i++ }
         val slotList = arrayListOf<IntBuf>()
         val valueLIst = arrayListOf<Int>()
         i = 0
@@ -246,7 +246,7 @@ class TestCNSet {
         assertEquals(expected, set2)
     }
 
-    private fun <T : Any> assertEquals(expected: PlainSet<T>, set: BFSMoreCompactNSet<T>, testCopycat: Boolean = true) {
+    private fun <T : Any> assertEquals(expected: PlainSet<T>, set: CompactNSet<T>, testCopycat: Boolean = true) {
         println(set)
         expected.apply {
             //test copycat
@@ -281,7 +281,7 @@ class TestCNSet {
             i = 0
             for (slot in expected.slots)
                 new_values.add(i++)
-            assertEquals(PlainSet(expected.slots, new_values.toTypedArray()), new_set as BFSMoreCompactNSet<Int>, false)
+            assertEquals(PlainSet(expected.slots, new_values.toTypedArray()), new_set as CompactNSet<Int>, false)
         }
     }
 }

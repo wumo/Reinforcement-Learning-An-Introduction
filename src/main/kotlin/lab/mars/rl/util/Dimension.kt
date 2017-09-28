@@ -2,8 +2,8 @@
 
 package lab.mars.rl.util
 
-import lab.mars.rl.util.BFSMoreCompactNSet.Cell
-import lab.mars.rl.util.BFSMoreCompactNSet.SubTree
+import lab.mars.rl.util.CompactNSet.Cell
+import lab.mars.rl.util.CompactNSet.SubTree
 import lab.mars.rl.util.Bufkt.*
 import java.util.*
 
@@ -32,11 +32,11 @@ fun <E : Any> nsetFrom(dim: Dimension, recipe: (IntBuf) -> E) =
 fun <E : Any> nsetFrom(dim: Int, recipe: (IntBuf) -> E) =
         dim.NSet(recipe)
 
-fun <E : Any> mcnsetFrom(dim: Dimension, recipe: (IntBuf) -> E) =
-        dim.MCNSet(recipe)
+fun <E : Any> cnsetFrom(dim: Dimension, recipe: (IntBuf) -> E) =
+        dim.CNSet(recipe)
 
-fun <E : Any> mcnsetFrom(dim: Int, recipe: (IntBuf) -> E) =
-        dim.MCNSet(recipe)
+fun <E : Any> cnsetFrom(dim: Int, recipe: (IntBuf) -> E) =
+        dim.CNSet(recipe)
 
 interface levelsIterator : Iterator<Dimension> {
     fun snapshot(): levelsIterator
@@ -57,8 +57,8 @@ fun <E : Any> Int.NSet(recipe: (IntBuf) -> E) =
         GeneralDimension(DefaultIntBuf.of(this), emptyLevels).NSet(recipe)
 
 
-fun <E : Any> Int.MCNSet(recipe: (IntBuf) -> E) =
-        GeneralDimension(DefaultIntBuf.of(this), emptyLevels).MCNSet(recipe)
+fun <E : Any> Int.CNSet(recipe: (IntBuf) -> E) =
+        GeneralDimension(DefaultIntBuf.of(this), emptyLevels).CNSet(recipe)
 
 
 sealed class Dimension {
@@ -70,13 +70,13 @@ sealed class Dimension {
 
     abstract fun sum(slot: DefaultIntBuf = DefaultIntBuf.new(), successors: levelsIterator): Int
 
-    abstract fun <E : Any> MCNSet(offset: Int, slot: MutableIntBuf, set: BFSMoreCompactNSet<E>)
+    abstract fun <E : Any> CNSet(offset: Int, slot: MutableIntBuf, set: CompactNSet<E>)
 
-    fun <E : Any> MCNSet(size: Int, slot: MutableIntBuf = DefaultIntBuf.new(), recipe: (IntBuf) -> E): BFSMoreCompactNSet<E> {
+    fun <E : Any> CNSet(size: Int, slot: MutableIntBuf = DefaultIntBuf.new(), recipe: (IntBuf) -> E): CompactNSet<E> {
         val data = Array(size) { NULL_obj }.buf(0, 0)
-        val set = BFSMoreCompactNSet<E>(data)
+        val set = CompactNSet<E>(data)
         slot.clear()
-        MCNSet(0, slot, set)
+        CNSet(0, slot, set)
         slot.clear()
         set.dfs(0, 0, slot) { slot, offset ->
             set._set(offset, recipe(slot))
@@ -84,11 +84,11 @@ sealed class Dimension {
         return set
     }
 
-    open fun <E : Any> MCNSet(recipe: (IntBuf) -> E)
-            : BFSMoreCompactNSet<E> {
+    open fun <E : Any> CNSet(recipe: (IntBuf) -> E)
+            : CompactNSet<E> {
         val slot = DefaultIntBuf.new()
         val size = sum(slot, emptyLevelsIterator)
-        return MCNSet(size, slot, recipe)
+        return CNSet(size, slot, recipe)
     }
 }
 
@@ -99,8 +99,8 @@ class ExpandDimension(internal val dim: Int) : Dimension() {
     override fun sum(slot: DefaultIntBuf, successors: levelsIterator)
             = dim.toDim().sum(slot, successors)
 
-    override fun <E : Any> MCNSet(offset: Int, slot: MutableIntBuf, set: BFSMoreCompactNSet<E>)
-            = dim.toDim().MCNSet(offset, slot, set)
+    override fun <E : Any> CNSet(offset: Int, slot: MutableIntBuf, set: CompactNSet<E>)
+            = dim.toDim().CNSet(offset, slot, set)
 }
 
 class VariationalDimension(private val dimFunc: (IntBuf) -> Any)
@@ -113,8 +113,8 @@ class VariationalDimension(private val dimFunc: (IntBuf) -> Any)
     override fun sum(slot: DefaultIntBuf, successors: levelsIterator)
             = dimFunc(slot).toDim().sum(slot, successors)
 
-    override fun <E : Any> MCNSet(offset: Int, slot: MutableIntBuf, set: BFSMoreCompactNSet<E>)
-            = dimFunc(slot).toDim().MCNSet(offset, slot, set)
+    override fun <E : Any> CNSet(offset: Int, slot: MutableIntBuf, set: CompactNSet<E>)
+            = dimFunc(slot).toDim().CNSet(offset, slot, set)
 }
 
 inline fun <T> Array<T>.isSingle() = this.size == 1
@@ -192,10 +192,10 @@ constructor(private val enumerated: Array<Dimension>)
         }
     }
 
-    override fun <E : Any> MCNSet(offset: Int, slot: MutableIntBuf, set: BFSMoreCompactNSet<E>) {
+    override fun <E : Any> CNSet(offset: Int, slot: MutableIntBuf, set: CompactNSet<E>) {
         when {
             enumerated.isEmpty() -> return
-            enumerated.isSingle() -> enumerated.single().MCNSet(offset, slot, set)
+            enumerated.isSingle() -> enumerated.single().CNSet(offset, slot, set)
             else -> {
                 val total = enumerated.sumBy {
                     (it as? ExpandDimension)?.dim ?: 1
@@ -222,10 +222,10 @@ constructor(private val enumerated: Array<Dimension>)
                         else -> {
                             if (firstSlot) {
                                 firstSlot = false
-                                dimension.MCNSet(offset, slot, set)
+                                dimension.CNSet(offset, slot, set)
                             } else {
                                 val data_offset = subtree.offset2nd + slot[slot.lastIndex] - 1
-                                dimension.MCNSet(data_offset, slot, set)
+                                dimension.CNSet(data_offset, slot, set)
                             }
                             slot[slot.lastIndex]++
                         }
@@ -326,7 +326,7 @@ class GeneralDimension(
     private inline fun cascadeSum(slot: DefaultIntBuf, successors: levelsIterator)
             = if (successors.hasNext()) successors.next().sum(slot, successors) else 0
 
-    override fun <E : Any> MCNSet(offset: Int, slot: MutableIntBuf, set: BFSMoreCompactNSet<E>) {
+    override fun <E : Any> CNSet(offset: Int, slot: MutableIntBuf, set: CompactNSet<E>) {
         val end = (set.data[offset] as? Cell<E>)?.subtrees?.size ?: 0
         if (dim.isZero()) {
             if (levels.isEmpty()) return
@@ -350,11 +350,11 @@ class GeneralDimension(
 
     private fun <E : Any> cascade2(offset: Int, end: Int, slot: MutableIntBuf,
                                    levels: LinkedList<Dimension>,
-                                   set: BFSMoreCompactNSet<E>) {
+                                   set: CompactNSet<E>) {
         if (levels.isEmpty()) return
         for (dimension in levels)
             set.dfs(offset, end, slot) { slot, offset ->
-                dimension.MCNSet(offset, slot, set)
+                dimension.CNSet(offset, slot, set)
             }
     }
 }
