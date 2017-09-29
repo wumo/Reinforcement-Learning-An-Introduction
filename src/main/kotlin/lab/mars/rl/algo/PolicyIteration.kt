@@ -1,7 +1,8 @@
 package lab.mars.rl.algo
 
 import lab.mars.rl.model.*
-import org.apache.commons.math3.util.FastMath.*
+import org.apache.commons.math3.util.FastMath.abs
+import org.apache.commons.math3.util.FastMath.max
 
 /**
  * <p>
@@ -45,7 +46,7 @@ class PolicyIteration(mdp: MDP) {
                 }
         } while (!policy_stable)
         val result = Triple(PI, V, Q)
-        V_from_Q(states, result)
+        Q_from_V(gamma, states, result)
         return result
     }
 
@@ -78,7 +79,7 @@ class PolicyIteration(mdp: MDP) {
                 }
         } while (!policy_stable)
         val result = Triple(PI, V, Q)
-        Q_from_V(gamma, states, result)
+        V_from_Q(states, result)
         return result
     }
 

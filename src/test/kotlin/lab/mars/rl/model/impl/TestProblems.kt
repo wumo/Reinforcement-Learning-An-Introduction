@@ -35,14 +35,14 @@ val ANSI_CYAN_BACKGROUND = "\u001B[46m"
 val ANSI_WHITE_BACKGROUND = "\u001B[47m"
 
 val colors = arrayOf(
-        ANSI_WHITE_BACKGROUND+ANSI_WHITE,
-        ANSI_BLACK_BACKGROUND+ANSI_BLACK,
-        ANSI_RED_BACKGROUND+ANSI_RED,
-        ANSI_GREEN_BACKGROUND+ANSI_GREEN,
-        ANSI_YELLOW_BACKGROUND+ANSI_YELLOW,
-        ANSI_BLUE_BACKGROUND+ANSI_BLUE,
-        ANSI_PURPLE_BACKGROUND+ANSI_PURPLE,
-        ANSI_CYAN_BACKGROUND+ANSI_CYAN)
+        ANSI_WHITE_BACKGROUND + ANSI_WHITE,
+        ANSI_BLACK_BACKGROUND + ANSI_BLACK,
+        ANSI_RED_BACKGROUND + ANSI_RED,
+        ANSI_GREEN_BACKGROUND + ANSI_GREEN,
+        ANSI_YELLOW_BACKGROUND + ANSI_YELLOW,
+        ANSI_BLUE_BACKGROUND + ANSI_BLUE,
+        ANSI_PURPLE_BACKGROUND + ANSI_PURPLE,
+        ANSI_CYAN_BACKGROUND + ANSI_CYAN)
 
 fun color(idx: Int) = colors[idx]
 fun reset() = ANSI_RESET
@@ -143,7 +143,7 @@ class TestProblems {
     @Test
     fun `Blackjack Prediction`() {
         val (prob, policy1) = Blackjack.make()
-        val algo = MonteCarlo(prob,policy1)
+        val algo = MonteCarlo(prob, policy1)
         algo.max_iteration = 10000
         val V = algo.prediction()
         println("---------------------Usable Ace--------------------------")
@@ -174,7 +174,7 @@ class TestProblems {
     @Test
     fun `Blackjack Optimal`() {
         val (prob, policy1) = Blackjack.make()
-        val algo = MonteCarlo(prob,policy1)
+        val algo = MonteCarlo(prob, policy1)
         algo.max_iteration = 1000
         val (PI, V, Q) = algo.iteration_ES()
         println("---------------------Usable Ace--------------------------")

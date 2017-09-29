@@ -52,9 +52,9 @@ fun NSetMDP(gamma: Double, state_dim: Any, action_dim: (IntBuf) -> Any): MDP {
  * @param action_dim 统一的动作维度，Q函数与状态集和动作集一致
  * @return 所有状态维度相同和动作维度相同的MDP实例
  */
-inline fun MCNSetMDP(gamma: Double, state_dim: Any, action_dim: Any): MDP {
+inline fun CNSetMDP(gamma: Double, state_dim: Any, action_dim: Any): MDP {
     val a_dim = action_dim.toDim() as GeneralDimension
-    return MCNSetMDP(gamma, state_dim.toDim(), { a_dim })
+    return CNSetMDP(gamma, state_dim.toDim(), { a_dim })
 }
 
 /**
@@ -63,7 +63,7 @@ inline fun MCNSetMDP(gamma: Double, state_dim: Any, action_dim: Any): MDP {
  * @param action_dim 依据状态索引确定动作维度，Q函数与状态集和动作集一致
  * @return 统一状态维度而动作维度异构的MDP实例
  */
-fun MCNSetMDP(gamma: Double, state_dim: Any, action_dim: (IntBuf) -> Any): MDP {
+fun CNSetMDP(gamma: Double, state_dim: Any, action_dim: (IntBuf) -> Any): MDP {
     val s_dim = state_dim.toDim() as GeneralDimension
     val s_a_dim = s_dim.copy() x action_dim
     val states = cnsetFrom(s_dim) {
@@ -74,5 +74,5 @@ fun MCNSetMDP(gamma: Double, state_dim: Any, action_dim: (IntBuf) -> Any): MDP {
             gamma = gamma,
             states = states,
             state_function = { element_maker -> states.copycat(element_maker) },
-            state_action_function = { element_maker -> s_a_dim.CNSet(size, DefaultIntBuf.new(), element_maker) })
+            state_action_function = { element_maker -> s_a_dim.CNSetDFS(size, DefaultIntBuf.new(), element_maker) })
 }
