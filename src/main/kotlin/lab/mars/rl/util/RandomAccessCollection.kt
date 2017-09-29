@@ -26,6 +26,18 @@ interface RandomAccessCollection<E : Any> : Iterable<E> {
     operator fun get(vararg indexable: Index): E = get(MultiIndex(indexable))
 
     /**
+     * 对应位置元素为[RandomAccessCollection<E>]，则可以使用invoke操作符进行部分获取，
+     * 由于获取的是子集，索引维度将要去掉前缀长度，如：原来通过`[0,0,0]`来索引，`invoke(0)`之后，则只能通过`[0,0]`来获取
+     */
+    operator fun invoke(idx: Index): RandomAccessCollection<E>
+
+    /**@see invoke */
+    operator fun invoke(vararg idx: Int): RandomAccessCollection<E> = invoke(DefaultIntBuf.reuse(idx))
+
+    /**@see invoke */
+    operator fun invoke(vararg indexable: Index): RandomAccessCollection<E> = invoke(MultiIndex(indexable))
+
+    /**
      * 返回第[idx]个元素，这里的元素顺序与[iterator()]的顺序一致
      */
     fun at(idx: Int): E {
@@ -75,17 +87,6 @@ interface ExtendableRAC<E : Any> : RandomAccessCollection<E> {
     operator fun set(idx: Index, s: RandomAccessCollection<E>)
     operator fun set(vararg idx: Int, s: RandomAccessCollection<E>) = set(DefaultIntBuf.reuse(idx), s)
     operator fun set(vararg indexable: Index, s: RandomAccessCollection<E>) = set(MultiIndex(indexable), s)
-    /**
-     * 对应位置元素为[RandomAccessCollection<E>]，则可以使用invoke操作符进行部分获取，
-     * 由于获取的是子集，索引维度将要去掉前缀长度，如：原来通过`[0,0,0]`来索引，`invoke(0)`之后，则只能通过`[0,0]`来获取
-     */
-    operator fun invoke(idx: Index): RandomAccessCollection<E>
-
-    /**@see invoke */
-    operator fun invoke(vararg idx: Int): RandomAccessCollection<E> = invoke(DefaultIntBuf.reuse(idx))
-
-    /**@see invoke */
-    operator fun invoke(vararg indexable: Index): RandomAccessCollection<E> = invoke(MultiIndex(indexable))
 
     fun <T : Any> raw_set(element_maker: (IntBuf, E) -> T) {
         withIndices().forEach { (idx, value) ->

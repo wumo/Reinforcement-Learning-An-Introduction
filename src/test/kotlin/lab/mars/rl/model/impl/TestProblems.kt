@@ -44,7 +44,12 @@ val colors = arrayOf(
         ANSI_PURPLE_BACKGROUND + ANSI_PURPLE,
         ANSI_CYAN_BACKGROUND + ANSI_CYAN)
 
-fun color(idx: Int) = colors[idx]
+fun color(idx: Int): String {
+    if (idx in 0..colors.lastIndex)
+        return colors[idx]
+    return idx.toString()
+}
+
 fun reset() = ANSI_RESET
 
 class TestProblems {
@@ -139,6 +144,37 @@ class TestProblems {
 -0.31 -0.38 -0.46 -0.54 -0.62 -0.69 -0.77 -0.85 0.76 0.94
 -0.31 -0.39 -0.46 -0.54 -0.62 -0.69 -0.77 -0.85 0.44 0.89
 """
+
+    @Test
+    fun `Blackjack Prediction Rand`() {
+        val (prob, policy1) = Blackjack.make()
+        val algo = MonteCarlo(prob, policy1)
+        algo.max_iteration = 100000
+        val V = algo.predictionRand()
+        println("---------------------Usable Ace--------------------------")
+        for (a in 9 downTo 0) {
+            for (b in 0 until 10)
+                print("${color(policy1[1, 1, b, a][0])}  ${reset()}")
+            println()
+        }
+        println("---------------------No Usable Ace--------------------------")
+        for (a in 9 downTo 0) {
+            for (b in 0 until 10)
+                print("${color(policy1[1, 0, b, a][0])}  ${reset()}")
+            println()
+        }
+        for (a in 0 until 10) {
+            for (b in 0 until 10)
+                print("${V[1, 1, a, b].format(2)} ")
+            println()
+        }
+        println("------------------------------------------------------------")
+        for (a in 0 until 10) {
+            for (b in 0 until 10)
+                print("${V[1, 0, a, b].format(2)} ")
+            println()
+        }
+    }
 
     @Test
     fun `Blackjack Prediction`() {

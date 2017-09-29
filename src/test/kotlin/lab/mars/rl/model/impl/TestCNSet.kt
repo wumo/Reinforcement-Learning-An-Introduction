@@ -6,6 +6,7 @@ import lab.mars.rl.util.Bufkt.buf
 import lab.mars.rl.util.CompactNSet
 import lab.mars.rl.util.CompactNSet.Cell
 import lab.mars.rl.util.CompactNSet.SubTree
+import lab.mars.rl.util.cnsetOf
 import lab.mars.rl.util.dimension.*
 import org.junit.Assert
 import org.junit.Test
@@ -32,7 +33,7 @@ class TestCNSet {
               ╱  ╲
             3          4
          */
-        val data = arrayOf(Cell(arrayOf(SubTree(2, 4), SubTree(3, 1)).buf(), 1), 2, Cell(arrayOf(SubTree(2, 3)).buf(), 3), 4, 5)
+        val data = arrayOf(Cell(arrayOf(SubTree(2, 4, 4), SubTree(3, 1, 3)).buf(), 1), 2, Cell(arrayOf(SubTree(2, 3, 3)).buf(), 3), 4, 5)
         val set = CompactNSet<Int>(data.buf())
         val slots = arrayOf(
                 DefaultIntBuf.of(0, 0),
@@ -46,6 +47,23 @@ class TestCNSet {
         )
         assertEquals(PlainSet(slots, values), set)
 //        set.dfs(0) { idx, value -> println("$idx=$value") }
+    }
+
+    @Test
+    fun `test cnsetOf`() {
+        val set = cnsetOf(1, 2, 3)
+        val expected = PlainSet(
+                slots = arrayOf(
+                        DefaultIntBuf.of(0),
+                        DefaultIntBuf.of(1),
+                        DefaultIntBuf.of(2)
+                ),
+                values = arrayOf(
+                        1, 2, 3
+                )
+        )
+
+        assertEquals(expected, set)
     }
 
     @Test
@@ -257,7 +275,6 @@ class TestCNSet {
     private fun <T : Any> assertEquals(expected: PlainSet<T>, set: CompactNSet<T>, testCopycat: Boolean = true) {
         println(set)
         expected.apply {
-            //test copycat
             //test getter
             for (i in 0..slots.lastIndex)
                 Assert.assertEquals(values[i], set[slots[i]])
@@ -280,6 +297,15 @@ class TestCNSet {
             //test iterator
             for (value in set) {
 
+            }
+            //test dfs
+
+            //test subset
+            for (a in 0..slots.lastIndex) {
+                val slot = slots[a]
+                val last = slot.lastIndex
+                for (b in 0 until last - 1)
+                    Assert.assertEquals(randomValues[a], set(slot[0, b])[slot[b + 1, last]])
             }
         }
         if (testCopycat) {

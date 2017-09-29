@@ -14,11 +14,25 @@ import java.util.*
  * @author wumo
  */
 
-class CompactNSet<E : Any>
-constructor(internal val data: MutableBuf<Any>)
-    : RandomAccessCollection<E> {
+/**
+ * 直接使用[elements]构建[NSet]的全部内容
+ */
+fun <T : Any> cnsetOf(vararg elements: T): CompactNSet<T> {
+    val set = CompactNSet<T>(Array<Any>(elements.size) { elements[it] }.buf(0, 0))
+    set.expand(0, elements.size)
+    set.size
+    return set
+}
 
-    class SubTree(val size: Int, val offset2nd: Int)
+val emptyCNSet = CompactNSet<Any>(Array<Any>(1) {}.buf(0, -1))
+inline fun <E : Any> emptyCNSet(): CompactNSet<E> = emptyCNSet as CompactNSet<E>
+
+class CompactNSet<E : Any>
+constructor(internal val data: MutableBuf<Any>, val rootOffset: Int = 0, val subLevel: Int = 0)
+    : RandomAccessCollection<E> {
+    private var _size = -1
+
+    class SubTree(val size: Int, val offset2nd: Int, var offsetEnd: Int = -1)
 
     val SubTree.lastIndex: Int
         get() = size - 1
@@ -44,30 +58,34 @@ constructor(internal val data: MutableBuf<Any>)
         val new_data = DefaultBuf.new<Any>(data.cap)
         for (a in 0..data.lastIndex)
             new_data += (data[a] as? Cell<E>)?.copy() ?: data[a]
-        return CompactNSet<T>(new_data).apply {
+        return CompactNSet<T>(new_data, subLevel).apply {
             set { slot, _ ->
                 element_maker(slot)
             }
         }
     }
 
-    private inline fun <R : Any> operation(idx: Iterator<Int>, op: (Int) -> R): R {
-        var offset = 0
-        var level = 0
+    private inline fun <R : Any> operation(idx: Iterator<Int>, op: (Int, Int) -> R): R {
+        var offset = rootOffset
+        var level = subLevel
         while (true) {
             val d = idx.next()//子树索引
             val tmp = data[offset] as Cell<E>
             val subtree = tmp[level]
             require(d >= 0 && d < subtree.size)
-            if (d == 0) level++
-            else {
+            if (d == 0) {
+                level++
+            } else {
                 level = 0
                 offset = subtree.offset2nd + d - 1
             }
             if (!idx.hasNext()) break
         }
-        return op(offset)
+        return op(offset, level)
     }
+
+    fun location(idx: Index): Int =
+            operation(idx.iterator()) { offset, _ -> offset }
 
     fun _get(idx: Int): E {
         val tmp = data[idx]
@@ -83,24 +101,34 @@ constructor(internal val data: MutableBuf<Any>)
         else data[idx] = s
     }
 
+    override fun invoke(idx: Index): RandomAccessCollection<E> {
+        return operation(idx.iterator()) { offset, level ->
+            CompactNSet<E>(data, offset, level).apply { size }
+        }
+    }
+
     override fun at(idx: Int): E {
-        return _get(idx)
+        require(idx in 0 until _size)
+        val tmp = data[rootOffset] as Cell<E>
+        if (idx == 0) return tmp.value
+        val subtree = tmp[subLevel]
+        return _get(subtree.offset2nd + idx - 1)
     }
 
     override fun get(idx: Index): E =
-            operation(idx.iterator()) { _get(it) }
+            operation(idx.iterator()) { offset, _ -> _get(offset) }
 
     override fun set(idx: Index, s: E) =
-            operation(idx.iterator()) { _set(it, s) }
+            operation(idx.iterator()) { offset, _ -> _set(offset, s) }
 
     override fun set(element_maker: (IntBuf, E) -> E) {
-        dfs(0) { slot, offset ->
+        dfs(rootOffset, subLevel) { slot, offset ->
             _set(offset, element_maker(slot, _get(offset)))
         }
     }
 
-    internal fun dfs(offset: Int, end: Int = 0, slot: MutableIntBuf = DefaultIntBuf.new(),
-                     visit: (MutableIntBuf, Int) -> Unit) {
+    private fun dfs(offset: Int, end: Int = 0, slot: MutableIntBuf = DefaultIntBuf.new(),
+                    visit: (MutableIntBuf, Int) -> Unit) {
         val cell = data[offset] as? Cell<E> ?: return visit(slot, offset)
         val subtrees = cell.subtrees
         //防止遍历过程中改变，并且只会增多，不会减少
@@ -147,17 +175,17 @@ constructor(internal val data: MutableBuf<Any>)
     inner class Itr<T>(
             private val visitor: (IntBuf, E) -> T
     ) : Iterator<T> {
-        private var offset = 0
+        private var offset = rootOffset
         private var visited = 0
         private val stack = LinkedList<tuple2<SubTree, Int>>()
         private val slot = DefaultIntBuf.new()
 
-        override fun hasNext() = visited < data.size
+        override fun hasNext() = visited < _size
 
         override fun next(): T {
             //correct the slot
             if (stack.isEmpty())
-                deepDown()
+                deepDown(subLevel)
             else while (true) {
                 val toVisit = stack.peek()
                 if (toVisit.second < toVisit.first.lastIndex) {
@@ -176,24 +204,53 @@ constructor(internal val data: MutableBuf<Any>)
             return visitor(slot, e)
         }
 
-        private fun deepDown() {
+        private fun deepDown(level: Int = 0) {
             val cell = data[offset] as? Cell<E>
             if (cell != null) {
                 val subtrees = cell.subtrees
-                subtrees.forEach {
-                    stack.push(tuple2(it, 0))
+                subtrees.forEach(level) { _, subtree ->
+                    stack.push(tuple2(subtree, 0))
                 }
-                slot.append(subtrees.size, 0)
+                slot.append(subtrees.size - level, 0)
             }
         }
     }
 
+    override val size: Int
+        get():Int {
+            if (_size < 0) {
+                _size = if (data.isEmpty) 0
+                else {
+                    val tmp = data[rootOffset] as? Cell<E>
+                    when {
+                        tmp == null -> 0
+                        subLevel > tmp.subtrees.lastIndex -> 1
+                        else -> {
+                            val tmpSubtree = tmp[subLevel]
+                            tmpSubtree.offsetEnd - tmpSubtree.offset2nd + 2
+                        }
+                    }
+                }
+            }
+            return _size
+        }
 
     override fun iterator() = object : Iterator<E> {
-        var a = 0
-        override fun hasNext() = a < data.size
+        val offset2nd: Int
 
-        override fun next() = _get(a++)
+        init {
+            offset2nd =
+                    if (_size <= 1) 0
+                    else {
+                        val subtree = (data[rootOffset] as Cell<E>)[subLevel]
+                        subtree.offset2nd
+                    }
+        }
+
+        var a = 0
+        override fun hasNext() = a < _size
+
+        override fun next() = _get(if (a == 0) rootOffset else offset2nd + a - 1).apply { a++ }
     }
 
     override fun toString(): String {

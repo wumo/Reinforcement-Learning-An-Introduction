@@ -74,5 +74,5 @@ fun CNSetMDP(gamma: Double, state_dim: Any, action_dim: (IntBuf) -> Any): MDP {
             gamma = gamma,
             states = states,
             state_function = { element_maker -> states.copycat(element_maker) },
-            state_action_function = { element_maker -> s_a_dim.CNSetDFS(size, DefaultIntBuf.new(), element_maker) })
+            state_action_function = { element_maker -> s_a_dim.CNSet(size, DefaultIntBuf.new(), element_maker) })
 }

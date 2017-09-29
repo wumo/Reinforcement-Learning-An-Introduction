@@ -2,6 +2,7 @@ package lab.mars.rl.algo
 
 import lab.mars.rl.model.*
 import lab.mars.rl.util.emptyNSet
+import java.util.*
 
 /**
  * <p>
@@ -13,6 +14,45 @@ import lab.mars.rl.util.emptyNSet
 class MonteCarlo(val mdp: MDP, private var policy: DeterminedPolicy = emptyNSet()) {
     val states = mdp.states
     var max_iteration: Int = 10000
+    val rand = Random(System.nanoTime())
+    fun predictionRand(): StateValueFunction {
+        val V = mdp.VFunc<Double> { 0.0 }
+        val tmpV = mdp.VFunc<Double> { Double.NaN }
+        val count = mdp.VFunc<Int> { 0 }
+        val total_states = states.size
+        var i = 1
+        for (i in 0 until max_iteration) {
+            val _s = states.at(rand.nextInt(states.size))
+            println("$i/$max_iteration")
+            _s.actions.ifAny {
+                var accumulate = 0.0
+                var s = _s
+                var a = policy[_s]
+                while (a !== null_action) {
+                    val possible = s.actions[a].sample()
+                    accumulate += possible.reward
+                    if (tmpV[s].isNaN())
+                        tmpV[s] = accumulate
+                    s = possible.next
+                    a = policy[s]
+                }
+                tmpV.set { idx, value ->
+                    if (!value.isNaN()) {
+                        V[idx] += value
+                        count[idx] += 1
+                    }
+                    Double.NaN
+                }
+            }
+        }
+        for (s in states) {
+            val n = count[s]
+            if (n > 0)
+                V[s] = V[s] / n
+        }
+        return V
+    }
+
     fun prediction(): StateValueFunction {
         val V = mdp.VFunc<Double> { 0.0 }
         val tmpV = mdp.VFunc<Double> { Double.NaN }

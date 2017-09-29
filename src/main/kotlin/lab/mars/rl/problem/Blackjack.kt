@@ -1,7 +1,7 @@
 package lab.mars.rl.problem
 
 import lab.mars.rl.model.*
-import lab.mars.rl.model.impl.NSetMDP
+import lab.mars.rl.model.impl.CNSetMDP
 import lab.mars.rl.util.Bufkt.DefaultIntBuf
 import lab.mars.rl.util.dimension.invoke
 import lab.mars.rl.util.dimension.x
@@ -33,7 +33,7 @@ object Blackjack {
     private val rand = Random(System.nanoTime())
 
     fun make(): Pair<MDP, DeterminedPolicy> {
-        val mdp = NSetMDP(gamma = 1.0, state_dim = 0(3, 2 x 10 x 10), action_dim = { if (it[0] == 0) 0 else 2 })
+        val mdp = CNSetMDP(gamma = 1.0, state_dim = 0(3, 2 x 10 x 10), action_dim = { if (it[0] == 0) 0 else 2 })
         mdp.apply {
             win = states[0, 0]
             draw = states[0, 1]
@@ -46,13 +46,11 @@ object Blackjack {
                     }
         }
         val policy1 = mdp.VFunc<Action> { null_action }
-        for (s in mdp.states)
-            if(s[0]==1) {
-                if (s[player_idx] >= 20 - player_offset)
-                    policy1[s] = s.actions[0]
-                else
-                    policy1[s] = s.actions[1]
-            }
+        for (s in mdp.states(1))
+            if (s[player_idx] >= 20 - player_offset)
+                policy1[s] = s.actions[0]
+            else
+                policy1[s] = s.actions[1]
         return Pair(mdp, policy1)
     }
 

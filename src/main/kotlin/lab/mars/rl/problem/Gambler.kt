@@ -2,8 +2,8 @@ package lab.mars.rl.problem
 
 import lab.mars.rl.model.MDP
 import lab.mars.rl.model.Possible
-import lab.mars.rl.model.impl.NSetMDP
-import lab.mars.rl.util.nsetOf
+import lab.mars.rl.model.impl.CNSetMDP
+import lab.mars.rl.util.cnsetOf
 import org.apache.commons.math3.util.FastMath.min
 
 /**
@@ -17,9 +17,9 @@ object Gambler {
     val goal_coin = 100
 
     fun make(p_head: Double): MDP {
-        val mdp = NSetMDP(gamma = 1.0,
-                          state_dim = goal_coin + 1,
-                          action_dim = { min(it[0], goal_coin - it[0]) + 1 })
+        val mdp = CNSetMDP(gamma = 1.0,
+                           state_dim = goal_coin + 1,
+                           action_dim = { min(it[0], goal_coin - it[0]) + 1 })
         mdp.apply {
             for (s in states) {
                 val capital = s[0]
@@ -27,10 +27,10 @@ object Gambler {
                 for (action in s.actions) {
                     val stake = action[0]
                     action.possibles = if (max_stake == 0)
-                        nsetOf(Possible(states[capital], 0.0, 1.0))
+                        cnsetOf(Possible(states[capital], 0.0, 1.0))
                     else
-                        nsetOf(Possible(states[capital - stake], 0.0, 1 - p_head), //lose
-                               Possible(states[capital + stake], if (capital + stake == goal_coin) 1.0 else 0.0, p_head))//win
+                        cnsetOf(Possible(states[capital - stake], 0.0, 1 - p_head), //lose
+                                Possible(states[capital + stake], if (capital + stake == goal_coin) 1.0 else 0.0, p_head))//win
                 }
             }
         }

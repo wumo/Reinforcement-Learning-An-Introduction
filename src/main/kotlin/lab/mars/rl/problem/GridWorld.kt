@@ -1,10 +1,11 @@
 package lab.mars.rl.problem
 
-import lab.mars.rl.model.*
-import lab.mars.rl.model.impl.NSetMDP
-import lab.mars.rl.util.emptyNSet
+import lab.mars.rl.model.MDP
+import lab.mars.rl.model.Possible
+import lab.mars.rl.model.impl.CNSetMDP
+import lab.mars.rl.util.dimension.cnsetFrom
 import lab.mars.rl.util.dimension.x
-import lab.mars.rl.util.dimension.nsetFrom
+import lab.mars.rl.util.emptyNSet
 
 /**
  * <p>
@@ -24,9 +25,9 @@ object GridWorld {
     )
     val desc_move = arrayOf(" ↑", " ↓", "→", "←")
     fun make(): MDP {
-        val mdp = NSetMDP(gamma = 0.9, // 因为我们使用的是确定策略，但是GridWorld问题中存在确定策略的无限循环，此时便不是episode mdp，gamma必须小于1
-                          state_dim = n x n,
-                          action_dim = m)
+        val mdp = CNSetMDP(gamma = 0.9, // 因为我们使用的是确定策略，但是GridWorld问题中存在确定策略的无限循环，此时便不是episode mdp，gamma必须小于1
+                           state_dim = n x n,
+                           action_dim = m)
         mdp.apply {
             for (s in states)
                 for (action in s.actions) {
@@ -36,10 +37,10 @@ object GridWorld {
                         x = s[0]
                         y = s[1]
                     }
-                    action.possibles = nsetFrom(1) { Possible(states[x, y], -1.0, 1.0) }
+                    action.possibles = cnsetFrom(1) { Possible(states[x, y], -1.0, 1.0) }
                 }
             states[0, 0].actions = emptyNSet()
-            states[n - 1, n - 1].actions =  emptyNSet()
+            states[n - 1, n - 1].actions = emptyNSet()
         }
 
         return mdp

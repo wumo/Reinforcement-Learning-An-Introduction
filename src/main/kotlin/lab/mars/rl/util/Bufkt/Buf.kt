@@ -15,6 +15,8 @@ interface Buf<T : Any> : Iterable<T> {
     fun copy(): Buf<T>
 
     val size: Int
+    val isEmpty: Boolean
+        get() = size == 0
     val writePtr: Int
         get() = size
     val lastIndex: Int

@@ -67,7 +67,7 @@ open class DefaultIntBuf(private var ring: IntArray, private var offset: Int, si
     override operator fun get(start: Int, end: Int): DefaultIntBuf {
         require(start in 0..end)
         require(end < _size)
-        return DefaultIntBuf(ring, index(start), _size - (end - start))
+        return DefaultIntBuf(ring, index(start), (end - start) + 1)
     }
 
     override operator fun set(idx: Int, s: Int) {

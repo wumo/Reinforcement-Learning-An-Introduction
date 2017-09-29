@@ -11,7 +11,8 @@ import lab.mars.rl.util.dimension.NULL_obj
  *
  * @author wumo
  */
-inline fun <reified T : Any> Array<T>.buf(start: Int = 0, end: Int = this.lastIndex) =DefaultBuf.reuse<T>(this as Array<Any>,start,end)
+inline fun <reified T : Any> Array<T>.buf(start: Int = 0, end: Int = this.lastIndex) = DefaultBuf.reuse<T>(this as Array<Any>, start, end)
+
 open class DefaultBuf<T : Any>(private var ring: Array<Any>, private var offset: Int, size: Int, cap: Int = size) :
         MutableBuf<T> {
     companion object {
@@ -65,10 +66,10 @@ open class DefaultBuf<T : Any>(private var ring: Array<Any>, private var offset:
         return ring[index(idx)] as T
     }
 
-    override operator fun get(start: Int, end: Int): Buf<T> {
+    override operator fun get(start: Int, end: Int): DefaultBuf<T> {
         require(start in 0..end)
         require(end < _size)
-        return DefaultBuf(ring, index(start), _size - (end - start))
+        return DefaultBuf(ring, index(start), (end - start) + 1)
     }
 
     override operator fun set(idx: Int, s: T) {

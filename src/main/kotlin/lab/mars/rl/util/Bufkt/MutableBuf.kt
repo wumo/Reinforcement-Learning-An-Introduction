@@ -9,6 +9,9 @@ package lab.mars.rl.util.Bufkt
  */
 interface MutableBuf<T : Any> : Buf<T> {
     val cap: Int
+
+    override fun get(start: Int, end: Int): MutableBuf<T>
+
     operator fun set(idx: Int, s: T)
 
     /** [end]>=[start] */
