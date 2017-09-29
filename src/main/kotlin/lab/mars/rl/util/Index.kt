@@ -2,6 +2,15 @@
 
 package lab.mars.rl.util
 
+val emptyIndex = object : Index {
+    override val size: Int
+        get() = 0
+
+    override fun get(idx: Int): Int {
+        throw  NoSuchElementException()
+    }
+
+}
 
 interface Index : Iterable<Int> {
     val isEmpty: Boolean
@@ -36,7 +45,7 @@ interface Index : Iterable<Int> {
     }
 }
 
-class MultiIndex(private val indices: Array<out Index>) : Index {
+class MultiIndex(internal val indices: Array<Index>) : Index {
     override fun forEach(start: Int, end: Int, block: (Int, Int) -> Unit) {
         var start_index = -1
         var start_index_offset = 0

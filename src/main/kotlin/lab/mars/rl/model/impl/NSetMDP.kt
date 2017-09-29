@@ -5,9 +5,10 @@ package lab.mars.rl.model.impl
 import lab.mars.rl.model.Action
 import lab.mars.rl.model.MDP
 import lab.mars.rl.model.State
-import lab.mars.rl.util.Bufkt.DefaultIntBuf
 import lab.mars.rl.util.Bufkt.IntBuf
+import lab.mars.rl.util.MultiIndex
 import lab.mars.rl.util.dimension.*
+import lab.mars.rl.util.emptyIndex
 
 /**
  * <p>
@@ -65,14 +66,22 @@ inline fun CNSetMDP(gamma: Double, state_dim: Any, action_dim: Any): MDP {
  */
 fun CNSetMDP(gamma: Double, state_dim: Any, action_dim: (IntBuf) -> Any): MDP {
     val s_dim = state_dim.toDim() as GeneralDimension
-    val s_a_dim = s_dim.copy() x action_dim
     val states = cnsetFrom(s_dim) {
         State(it.copy()).apply { actions = cnsetFrom(action_dim(it).toDim()) { Action(it.copy()) } }
     }
-    val size = s_a_dim.sum()
     return MDP(
             gamma = gamma,
             states = states,
             state_function = { element_maker -> states.copycat(element_maker) },
-            state_action_function = { element_maker -> s_a_dim.CNSet(size, DefaultIntBuf.new(), element_maker) })
+            state_action_function = { element_maker ->
+                val indices = Array(2) { emptyIndex }
+                val muIdx = MultiIndex(indices)
+                states.copycat { state_id ->
+                    cnsetFrom(action_dim(state_id).toDim()) { action_id ->
+                        muIdx.indices[0] = state_id
+                        muIdx.indices[1] = action_id
+                        element_maker(muIdx)
+                    }
+                }
+            })
 }

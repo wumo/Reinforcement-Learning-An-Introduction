@@ -50,6 +50,12 @@ class TestCNSet {
     }
 
     @Test
+    fun `test zero dim`() {
+        val set = cnsetFrom(0(1, 1 ) x { if (it[0] == 0) 0 else 1 }) { 0 }
+        println(set.size)
+    }
+
+    @Test
     fun `test cnsetOf`() {
         val set = cnsetOf(1, 2, 3)
         val expected = PlainSet(

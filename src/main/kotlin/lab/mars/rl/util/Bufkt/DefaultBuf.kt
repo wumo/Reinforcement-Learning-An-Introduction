@@ -85,7 +85,7 @@ open class DefaultBuf<T : Any>(private var ring: Array<Any>, private var offset:
     }
 
     override fun unfold(num: Int) {
-        require(_size + num <= cap)
+        require(_size + num <= cap) { "$_size+$num >$cap" }
         _size += num
     }
 

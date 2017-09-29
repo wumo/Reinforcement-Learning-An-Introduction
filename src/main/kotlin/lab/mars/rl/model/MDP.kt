@@ -2,9 +2,11 @@
 
 package lab.mars.rl.model
 
-import lab.mars.rl.util.*
 import lab.mars.rl.util.Bufkt.DefaultIntBuf
 import lab.mars.rl.util.Bufkt.IntBuf
+import lab.mars.rl.util.Index
+import lab.mars.rl.util.RandomAccessCollection
+import lab.mars.rl.util.emptyNSet
 
 /**
  * <p>
@@ -29,19 +31,19 @@ typealias NonDeterminedPolicy = RandomAccessCollection<Double>
 class MDP(
         val gamma: Double,
         val states: StateSet,
-        private val state_function: ((IntBuf) -> Any) -> RandomAccessCollection<Any>,
-        private val state_action_function: ((IntBuf) -> Any) -> RandomAccessCollection<Any>) {
+        private val state_function: ((Index) -> Any) -> RandomAccessCollection<Any>,
+        private val state_action_function: ((Index) -> Any) -> RandomAccessCollection<Any>) {
     /**
      * 创建由[State]索引的state function
      */
-    fun <T : Any> VFunc(element_maker: (IntBuf) -> Any): RandomAccessCollection<T> {
+    fun <T : Any> VFunc(element_maker: (Index) -> Any): RandomAccessCollection<T> {
         return state_function(element_maker) as RandomAccessCollection<T>
     }
 
     /**
      * 创建由[State]和[Action]索引的state action function
      */
-    fun <T : Any> QFunc(element_maker: (IntBuf) -> Any): RandomAccessCollection<T> {
+    fun <T : Any> QFunc(element_maker: (Index) -> Any): RandomAccessCollection<T> {
         return state_action_function(element_maker) as RandomAccessCollection<T>
     }
 }

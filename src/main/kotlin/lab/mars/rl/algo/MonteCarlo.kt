@@ -149,7 +149,60 @@ class MonteCarlo(val mdp: MDP, private var policy: DeterminedPolicy = emptyNSet(
         return result
     }
 
-    fun iteration() {
+    fun iteration_ES_rand(): Triple<DeterminedPolicy, StateValueFunction, ActionValueFunction> {
+        if (policy === emptyNSet)
+            policy = mdp.VFunc { states[it].actions.firstOrNull() ?: null_action }
+        val Q = mdp.QFunc<Double> { 0.0 }
+        val tmpQ = mdp.QFunc<Double> { Double.NaN }
+        val count = mdp.QFunc<Int> { 0 }
+        val total_states = states.size
+        var i = 1
+        for (i in 0 until max_iteration) {
+            println("$i/$max_iteration")
+            val _s = states.at(rand.nextInt(states.size))
+            if (_s.actions.isEmpty()) continue
+            val _a = _s.actions.at(rand.nextInt(_s.actions.size))
 
+            var accumulate = 0.0
+            var s = _s
+            var a = _a
+            while (a !== null_action) {
+                val possible = s.actions[a].sample()
+                accumulate += possible.reward
+                if (tmpQ[s, a].isNaN())
+                    tmpQ[s, a] = accumulate
+                s = possible.next
+                a = policy[s]
+            }
+            tmpQ.set { idx, value ->
+                if (!value.isNaN()) {
+                    Q[idx] += value
+                    count[idx] += 1
+                }
+                Double.NaN
+            }
+            policy.set { idx, _ ->
+                val ss = states[idx]
+                if (ss.actions.isEmpty()) null_action
+                else argmax(ss.actions) {
+                    val n = count[ss, this]
+                    if (n > 0)
+                        Q[ss, this] / n
+                    else
+                        Q[ss, this]
+                }
+            }
+        }
+        Q.set { idx, value ->
+            val n = count[idx]
+            if (n > 0)
+                value / n
+            else
+                value
+        }
+        val V = mdp.VFunc<Double> { 0.0 }
+        val result = Triple(policy, V, Q)
+        V_from_Q(states, result)
+        return result
     }
 }
