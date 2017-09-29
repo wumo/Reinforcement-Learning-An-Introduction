@@ -7,10 +7,7 @@ import lab.mars.rl.model.MDP
 import lab.mars.rl.model.State
 import lab.mars.rl.util.Bufkt.DefaultIntBuf
 import lab.mars.rl.util.Bufkt.IntBuf
-import lab.mars.rl.util.cnsetFrom
-import lab.mars.rl.util.nsetFrom
-import lab.mars.rl.util.toDim
-import lab.mars.rl.util.x
+import lab.mars.rl.util.dimension.*
 
 /**
  * <p>
@@ -38,7 +35,7 @@ inline fun NSetMDP(gamma: Double, state_dim: Any, action_dim: Any): MDP {
  * @return 统一状态维度而动作维度异构的MDP实例
  */
 fun NSetMDP(gamma: Double, state_dim: Any, action_dim: (IntBuf) -> Any): MDP {
-    val s_dim = state_dim.toDim()
+    val s_dim = state_dim.toDim() as GeneralDimension
     val s_a_dim = s_dim.copy() x action_dim
     return MDP(
             gamma = gamma,
@@ -56,7 +53,7 @@ fun NSetMDP(gamma: Double, state_dim: Any, action_dim: (IntBuf) -> Any): MDP {
  * @return 所有状态维度相同和动作维度相同的MDP实例
  */
 inline fun MCNSetMDP(gamma: Double, state_dim: Any, action_dim: Any): MDP {
-    val a_dim = action_dim.toDim()
+    val a_dim = action_dim.toDim() as GeneralDimension
     return MCNSetMDP(gamma, state_dim.toDim(), { a_dim })
 }
 
@@ -67,7 +64,7 @@ inline fun MCNSetMDP(gamma: Double, state_dim: Any, action_dim: Any): MDP {
  * @return 统一状态维度而动作维度异构的MDP实例
  */
 fun MCNSetMDP(gamma: Double, state_dim: Any, action_dim: (IntBuf) -> Any): MDP {
-    val s_dim = state_dim.toDim()
+    val s_dim = state_dim.toDim() as GeneralDimension
     val s_a_dim = s_dim.copy() x action_dim
     val states = cnsetFrom(s_dim) {
         State(it.copy()).apply { actions = cnsetFrom(action_dim(it).toDim()) { Action(it.copy()) } }

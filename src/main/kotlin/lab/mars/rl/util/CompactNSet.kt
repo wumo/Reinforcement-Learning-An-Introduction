@@ -20,8 +20,6 @@ constructor(internal val data: MutableBuf<Any>)
 
     class SubTree(val size: Int, val offset2nd: Int)
 
-    val SubTree.lastOffset: Int
-        get() = offset2nd + size - 2
     val SubTree.lastIndex: Int
         get() = size - 1
 
@@ -120,6 +118,20 @@ constructor(internal val data: MutableBuf<Any>)
             }
         }
         slot.removeLast(end)
+    }
+
+    /**
+     * 扩展[offset]位置上的leaf node为[size]branch node
+     */
+    internal fun expand(offset: Int, size: Int): SubTree {
+        val tmp = data[offset] as? Cell<E>
+                  ?: Cell(DefaultBuf.new(), data[offset] as E)
+        val subtree = SubTree(size = size,
+                              offset2nd = data.writePtr)
+        tmp.subtrees += subtree
+        data[offset] = tmp
+        data.unfold(size - 1)
+        return subtree
     }
 
     override fun indices() = Itr { slot, _ -> slot }

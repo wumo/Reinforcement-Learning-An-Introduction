@@ -1,11 +1,12 @@
 package lab.mars.rl.model.impl
 
-import lab.mars.rl.util.*
-import lab.mars.rl.util.CompactNSet.Cell
-import lab.mars.rl.util.CompactNSet.SubTree
 import lab.mars.rl.util.Bufkt.DefaultIntBuf
 import lab.mars.rl.util.Bufkt.IntBuf
 import lab.mars.rl.util.Bufkt.buf
+import lab.mars.rl.util.CompactNSet
+import lab.mars.rl.util.CompactNSet.Cell
+import lab.mars.rl.util.CompactNSet.SubTree
+import lab.mars.rl.util.dimension.*
 import org.junit.Assert
 import org.junit.Test
 import java.util.*
@@ -197,7 +198,7 @@ class TestCNSet {
 
     @Test
     fun `nset test`() {
-        var dim =
+        val dim =
                 0(
                         2,
                         2,
@@ -211,6 +212,12 @@ class TestCNSet {
                                 )
                         )
                 )
+        compareNSet(dim)
+    }
+
+    @Test
+    fun `nset test2`() {
+        val dim = (1 x { 1 x 2 })(1 x 1)
         compareNSet(dim)
     }
 
@@ -232,6 +239,7 @@ class TestCNSet {
     private fun compareNSet(dim: Dimension) {
         var i = 0
         val set = nsetFrom(dim) { i++ }
+        println(set)
         i = 0
         val set2 = cnsetFrom(dim) { i++ }
         val slotList = arrayListOf<IntBuf>()

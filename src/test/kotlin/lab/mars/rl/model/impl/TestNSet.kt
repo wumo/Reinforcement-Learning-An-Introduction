@@ -1,8 +1,12 @@
 package lab.mars.rl.model.impl
 
-import lab.mars.rl.util.*
 import lab.mars.rl.util.Bufkt.DefaultIntBuf
 import lab.mars.rl.util.Bufkt.IntBuf
+import lab.mars.rl.util.dimension.invoke
+import lab.mars.rl.util.dimension.not
+import lab.mars.rl.util.dimension.nsetFrom
+import lab.mars.rl.util.dimension.x
+import lab.mars.rl.util.nsetOf
 import org.junit.Assert
 import org.junit.Test
 
@@ -140,7 +144,7 @@ class TestNSet {
     @Test
     fun `get sub set`() {
         var i = 0
-        val set = nsetFrom(2 x  { 3 x 4 }) { i++ }
+        val set = nsetFrom(2 x { 3 x 4 }) { i++ }
         for (withIndex in set.withIndices()) {
             println(withIndex)
         }

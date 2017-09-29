@@ -2,7 +2,7 @@
 
 package lab.mars.rl.util.Bufkt
 
-import lab.mars.rl.util.NULL_obj
+import lab.mars.rl.util.dimension.NULL_obj
 
 /**
  * <p>

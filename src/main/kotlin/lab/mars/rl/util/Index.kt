@@ -4,6 +4,8 @@ package lab.mars.rl.util
 
 
 interface Index : Iterable<Int> {
+    val isEmpty: Boolean
+        get() = size == 0
     val size: Int
     val lastIndex: Int
         get() = size - 1

@@ -2,8 +2,8 @@ package lab.mars.rl.problem
 
 import lab.mars.rl.model.*
 import lab.mars.rl.model.impl.NSetMDP
-import lab.mars.rl.util.nsetFrom
-import lab.mars.rl.util.x
+import lab.mars.rl.util.dimension.nsetFrom
+import lab.mars.rl.util.dimension.x
 import org.apache.commons.math3.special.Gamma
 import org.apache.commons.math3.util.FastMath.*
 import org.apache.commons.math3.util.MathUtils

@@ -3,8 +3,8 @@ package lab.mars.rl.problem
 import lab.mars.rl.model.*
 import lab.mars.rl.model.impl.NSetMDP
 import lab.mars.rl.util.emptyNSet
-import lab.mars.rl.util.x
-import lab.mars.rl.util.nsetFrom
+import lab.mars.rl.util.dimension.x
+import lab.mars.rl.util.dimension.nsetFrom
 
 /**
  * <p>
