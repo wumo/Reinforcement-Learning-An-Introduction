@@ -48,6 +48,7 @@ fun NSetMDP(gamma: Double, state_dim: Any, action_dim: (IntBuf) -> Any): MDP {
 }
 
 /**
+ *  注意：维度不能为0，如果需要为0，则需要在构建完成后，手动设定`emptyNSet()`
  * @param gamma gamma 衰减因子
  * @param state_dim 统一的状态维度，V函数与状态集一致
  * @param action_dim 统一的动作维度，Q函数与状态集和动作集一致
@@ -59,6 +60,7 @@ inline fun CNSetMDP(gamma: Double, state_dim: Any, action_dim: Any): MDP {
 }
 
 /**
+ * 注意：维度不能为0，如果需要为0，则需要在构建完成后，手动设定`emptyNSet()`
  * @param gamma  gamma 衰减因子
  * @param state_dim 统一的状态维度，V函数与状态集一致
  * @param action_dim 依据状态索引确定动作维度，Q函数与状态集和动作集一致
@@ -69,19 +71,10 @@ fun CNSetMDP(gamma: Double, state_dim: Any, action_dim: (IntBuf) -> Any): MDP {
     val states = cnsetFrom(s_dim) {
         State(it.copy()).apply { actions = cnsetFrom(action_dim(it).toDim()) { Action(it.copy()) } }
     }
+    val s_a_dim = s_dim.copy() x action_dim
     return MDP(
             gamma = gamma,
             states = states,
             state_function = { element_maker -> states.copycat(element_maker) },
-            state_action_function = { element_maker ->
-                val indices = Array(2) { emptyIndex }
-                val muIdx = MultiIndex(indices)
-                states.copycat { state_id ->
-                    cnsetFrom(action_dim(state_id).toDim()) { action_id ->
-                        muIdx.indices[0] = state_id
-                        muIdx.indices[1] = action_id
-                        element_maker(muIdx)
-                    }
-                }
-            })
+            state_action_function = { element_maker -> cnsetFrom(s_a_dim, element_maker) })
 }

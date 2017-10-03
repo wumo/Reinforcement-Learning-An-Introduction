@@ -23,7 +23,7 @@ interface RandomAccessCollection<E : Any> : Iterable<E> {
 
     operator fun get(idx: Index): E
     operator fun get(vararg idx: Int): E = get(DefaultIntBuf.reuse(idx))
-    operator fun get(vararg indexable: Index): E = get(MultiIndex(indexable))
+    operator fun get(vararg indexable: Index): E = get(MultiIndex(indexable as Array<Index>))
 
     /**
      * 对应位置元素为[RandomAccessCollection<E>]，则可以使用invoke操作符进行部分获取，
@@ -35,7 +35,7 @@ interface RandomAccessCollection<E : Any> : Iterable<E> {
     operator fun invoke(vararg idx: Int): RandomAccessCollection<E> = invoke(DefaultIntBuf.reuse(idx))
 
     /**@see invoke */
-    operator fun invoke(vararg indexable: Index): RandomAccessCollection<E> = invoke(MultiIndex(indexable))
+    operator fun invoke(vararg indexable: Index): RandomAccessCollection<E> = invoke(MultiIndex(indexable as Array<Index>))
 
     /**
      * 返回第[idx]个元素，这里的元素顺序与[iterator()]的顺序一致
@@ -49,7 +49,7 @@ interface RandomAccessCollection<E : Any> : Iterable<E> {
 
     operator fun set(idx: Index, s: E)
     operator fun set(vararg idx: Int, s: E) = set(DefaultIntBuf.reuse(idx), s)
-    operator fun set(vararg indexable: Index, s: E) = set(MultiIndex(indexable), s)
+    operator fun set(vararg indexable: Index, s: E) = set(MultiIndex(indexable as Array<Index>), s)
 
     fun set(element_maker: (IntBuf, E) -> E) {
         withIndices().forEach { (idx, value) -> set(idx, element_maker(idx, value)) }
@@ -63,8 +63,8 @@ interface RandomAccessCollection<E : Any> : Iterable<E> {
     }
 
     fun isEmpty(): Boolean {
-        for (element in this) return true
-        return false
+        for (element in this) return false
+        return true
     }
 
     val size: Int
@@ -86,7 +86,7 @@ interface RandomAccessCollection<E : Any> : Iterable<E> {
 interface ExtendableRAC<E : Any> : RandomAccessCollection<E> {
     operator fun set(idx: Index, s: RandomAccessCollection<E>)
     operator fun set(vararg idx: Int, s: RandomAccessCollection<E>) = set(DefaultIntBuf.reuse(idx), s)
-    operator fun set(vararg indexable: Index, s: RandomAccessCollection<E>) = set(MultiIndex(indexable), s)
+    operator fun set(vararg indexable: Index, s: RandomAccessCollection<E>) = set(MultiIndex(indexable as Array<Index>), s)
 
     fun <T : Any> raw_set(element_maker: (IntBuf, E) -> T) {
         withIndices().forEach { (idx, value) ->

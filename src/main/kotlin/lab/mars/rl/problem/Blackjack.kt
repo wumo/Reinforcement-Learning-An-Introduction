@@ -5,6 +5,7 @@ import lab.mars.rl.model.impl.CNSetMDP
 import lab.mars.rl.util.Bufkt.DefaultIntBuf
 import lab.mars.rl.util.dimension.invoke
 import lab.mars.rl.util.dimension.x
+import lab.mars.rl.util.emptyNSet
 import java.util.*
 
 /**
@@ -33,11 +34,14 @@ object Blackjack {
     private val rand = Random(System.nanoTime())
 
     fun make(): Pair<MDP, DeterminedPolicy> {
-        val mdp = CNSetMDP(gamma = 1.0, state_dim = 0(3, 2 x 10 x 10), action_dim = { if (it[0] == 0) 0 else 2 })
+        val mdp = CNSetMDP(gamma = 1.0, state_dim = 0(3, 2 x 10 x 10), action_dim = { if (it[0] == 0) 1 else 2 })
         mdp.apply {
             win = states[0, 0]
             draw = states[0, 1]
             lose = states[0, 2]
+            win.actions = emptyNSet()
+            draw.actions = emptyNSet()
+            lose.actions = emptyNSet()
             for (s in states)
                 for (a in s.actions)
                     when (a[0]) {

@@ -62,6 +62,7 @@ constructor(internal val data: MutableBuf<Any>, val rootOffset: Int = 0, val sub
             set { slot, _ ->
                 element_maker(slot)
             }
+            size
         }
     }
 

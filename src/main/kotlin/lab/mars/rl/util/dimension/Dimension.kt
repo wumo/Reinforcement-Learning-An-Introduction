@@ -330,7 +330,7 @@ class GeneralDimension(
     }
 
     private inline fun cascadeSum(slot: MutableIntBuf, successors: levelsIterator)
-            = if (successors.hasNext()) successors.next().sum(slot, successors) else 1
+            = if (successors.hasNext()) successors.next().sum(slot, successors) else 0
 
     override fun <E : Any> CNSet(set: CompactNSet<E>, offset: Int,
                                  slot: MutableIntBuf, successors: levelsIterator,
