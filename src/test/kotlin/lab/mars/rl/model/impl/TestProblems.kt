@@ -243,7 +243,7 @@ class TestProblems {
     fun `Blackjack Optimal Rand`() {
         val (prob, policy1) = Blackjack.make()
         val algo = MonteCarlo(prob, policy1)
-        algo.max_iteration = 1000
+        algo.max_iteration = 100000
         val (PI, V, Q) = algo.iteration_ES_rand()
         println("---------------------Usable Ace--------------------------")
         for (a in 9 downTo 0) {

@@ -155,8 +155,6 @@ class MonteCarlo(val mdp: MDP, private var policy: DeterminedPolicy = emptyNSet(
         val Q = mdp.QFunc<Double> { 0.0 }
         val tmpQ = mdp.QFunc<Double> { Double.NaN }
         val count = mdp.QFunc<Int> { 0 }
-        val total_states = states.size
-        var i = 1
         for (i in 0 until max_iteration) {
             println("$i/$max_iteration")
             val _s = states.at(rand.nextInt(states.size))
