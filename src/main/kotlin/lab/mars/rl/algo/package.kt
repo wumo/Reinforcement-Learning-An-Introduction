@@ -1,9 +1,6 @@
 package lab.mars.rl.algo
 
-import lab.mars.rl.model.ActionValueFunction
-import lab.mars.rl.model.DeterminedPolicy
-import lab.mars.rl.model.StateSet
-import lab.mars.rl.model.StateValueFunction
+import lab.mars.rl.model.*
 
 /**
  * <p>
@@ -54,6 +51,17 @@ fun V_from_Q(states: StateSet, pvq: Triple<DeterminedPolicy, StateValueFunction,
     for (s in states)
         s.actions.ifAny {
             V[s] = Q[s, PI[s]]
+        }
+}
+
+fun V_from_Q_ND(states: StateSet, pvq: Triple<NonDeterminedPolicy, StateValueFunction, ActionValueFunction>) {
+    val (PI, V, Q) = pvq
+    for (s in states)
+        s.actions.ifAny {
+            var sum = 0.0
+            for ((a, prob) in PI(s).withIndices())
+                sum += prob * Q[s, a]
+            V[s] = sum
         }
 }
 

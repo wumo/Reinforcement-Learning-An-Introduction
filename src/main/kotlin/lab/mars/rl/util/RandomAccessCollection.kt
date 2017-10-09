@@ -4,6 +4,7 @@ package lab.mars.rl.util
 
 import lab.mars.rl.util.Bufkt.DefaultIntBuf
 import lab.mars.rl.util.Bufkt.IntBuf
+import java.util.concurrent.ThreadLocalRandom
 
 interface RandomAccessCollection<E : Any> : Iterable<E> {
     data class tuple2<A, B>(var first: A, var second: B) {
@@ -45,6 +46,30 @@ interface RandomAccessCollection<E : Any> : Iterable<E> {
         for (element in this)
             if (i++ == idx) return element
         throw  NoSuchElementException()
+    }
+
+    /**
+     * 以等概率获取随意的一个元素
+     */
+    fun rand() = at(ThreadLocalRandom.current().nextInt(size))
+
+    /**
+     * 如果此集合内的元素是[Index]类型，则可以提供概率分布[prob]，以此概
+     * 率分布随机获取到元素
+     * @throws ClassCastException 如果此集合内的元素不是[Index]类型
+     * @throws IllegalArgumentException  如果提供的参数不是合法的概率分布
+     * @throws NoSuchElementException 如果集合为空
+     */
+    fun rand(prob: RandomAccessCollection<Double>): E {
+        if (isEmpty()) throw NoSuchElementException()
+        val p = ThreadLocalRandom.current().nextDouble()
+        var acc = 0.0
+        for (element in this) {
+            acc += prob[element as Index]
+            if (p <= acc)
+                return element
+        }
+        throw IllegalArgumentException("random=$p, but accumulation=$acc")
     }
 
     operator fun set(dim: Index, s: E)
