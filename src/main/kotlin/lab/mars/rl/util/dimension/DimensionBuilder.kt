@@ -64,8 +64,8 @@ infix fun Int.x(a: Int): GeneralDimension {
 
 fun <E> linkedListOf(vararg e: E): LinkedList<E> {
     val result = LinkedList<E>()
-    for (e in e)
-        result.addLast(e)
+    for (_e in e)
+        result.addLast(_e)
     return result
 }
 

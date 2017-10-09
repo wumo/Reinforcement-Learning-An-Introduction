@@ -121,17 +121,17 @@ class NSet<E : Any>(private val dim: IntArray, private val stride: IntArray, pri
 
     override fun isEmpty() = root.isEmpty()
 
-    override fun get(idx: Index): E = _get(idx)
+    override fun get(dim: Index): E = _get(dim)
 
-    override fun set(idx: Index, s: E) {
-        _set(idx, s)
+    override fun set(dim: Index, s: E) {
+        _set(dim, s)
     }
 
-    override fun set(idx: Index, s: RandomAccessCollection<E>) {
-        _set(idx, s)
+    override fun set(subset_dim: Index, s: RandomAccessCollection<E>) {
+        _set(subset_dim, s)
     }
 
-    override fun invoke(idx: Index): RandomAccessCollection<E> = _get(idx)
+    override fun invoke(subset_dim: Index): RandomAccessCollection<E> = _get(subset_dim)
 
     private fun <T : Any> _get(idx: Index): T = get_or_set(idx.iterator()) { it }
 

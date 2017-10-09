@@ -102,8 +102,8 @@ constructor(internal val data: MutableBuf<Any>, val rootOffset: Int = 0, val sub
         else data[idx] = s
     }
 
-    override fun invoke(idx: Index): RandomAccessCollection<E> {
-        return operation(idx.iterator()) { offset, level ->
+    override fun invoke(subset_dim: Index): RandomAccessCollection<E> {
+        return operation(subset_dim.iterator()) { offset, level ->
             CompactNSet<E>(data, offset, level).apply { size }
         }
     }
@@ -116,11 +116,11 @@ constructor(internal val data: MutableBuf<Any>, val rootOffset: Int = 0, val sub
         return _get(subtree.offset2nd + idx - 1)
     }
 
-    override fun get(idx: Index): E =
-            operation(idx.iterator()) { offset, _ -> _get(offset) }
+    override fun get(dim: Index): E =
+            operation(dim.iterator()) { offset, _ -> _get(offset) }
 
-    override fun set(idx: Index, s: E) =
-            operation(idx.iterator()) { offset, _ -> _set(offset, s) }
+    override fun set(dim: Index, s: E) =
+            operation(dim.iterator()) { offset, _ -> _set(offset, s) }
 
     override fun set(element_maker: (IntBuf, E) -> E) {
         dfs(rootOffset, subLevel) { slot, offset ->

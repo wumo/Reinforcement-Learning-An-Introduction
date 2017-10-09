@@ -19,8 +19,6 @@ class MonteCarlo(val mdp: MDP, private var policy: DeterminedPolicy = emptyNSet(
         val V = mdp.VFunc<Double> { 0.0 }
         val tmpV = mdp.VFunc<Double> { Double.NaN }
         val count = mdp.VFunc<Int> { 0 }
-        val total_states = states.size
-        var i = 1
         for (i in 0 until max_iteration) {
             val _s = states.at(rand.nextInt(states.size))
             println("$i/$max_iteration")
@@ -58,9 +56,9 @@ class MonteCarlo(val mdp: MDP, private var policy: DeterminedPolicy = emptyNSet(
         val tmpV = mdp.VFunc<Double> { Double.NaN }
         val count = mdp.VFunc<Int> { 0 }
         val total_states = states.size
-        var i = 1
+        var iteration = 1
         for (_s in states) {
-            println("${i++}/$total_states")
+            println("${iteration++}/$total_states")
             _s.actions.ifAny {
                 for (i in 0 until max_iteration) {
                     var accumulate = 0.0

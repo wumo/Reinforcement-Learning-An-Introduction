@@ -1,4 +1,4 @@
-@file:Suppress("NOTHING_TO_INLINE")
+@file:Suppress("NOTHING_TO_INLINE", "UNCHECKED_CAST")
 
 package lab.mars.rl.util
 
@@ -21,21 +21,21 @@ interface RandomAccessCollection<E : Any> : Iterable<E> {
 
     fun withIndices(): Iterator<tuple2<out IntBuf, E>>
 
-    operator fun get(idx: Index): E
-    operator fun get(vararg idx: Int): E = get(DefaultIntBuf.reuse(idx))
-    operator fun get(vararg indexable: Index): E = get(MultiIndex(indexable as Array<Index>))
+    operator fun get(dim: Index): E
+    operator fun get(vararg dim: Int): E = get(DefaultIntBuf.reuse(dim))
+    operator fun get(vararg dim: Index): E = get(MultiIndex(dim as Array<Index>))
 
     /**
      * 对应位置元素为[RandomAccessCollection<E>]，则可以使用invoke操作符进行部分获取，
      * 由于获取的是子集，索引维度将要去掉前缀长度，如：原来通过`[0,0,0]`来索引，`invoke(0)`之后，则只能通过`[0,0]`来获取
      */
-    operator fun invoke(idx: Index): RandomAccessCollection<E>
+    operator fun invoke(subset_dim: Index): RandomAccessCollection<E>
 
     /**@see invoke */
-    operator fun invoke(vararg idx: Int): RandomAccessCollection<E> = invoke(DefaultIntBuf.reuse(idx))
+    operator fun invoke(vararg subset_dim: Int): RandomAccessCollection<E> = invoke(DefaultIntBuf.reuse(subset_dim))
 
     /**@see invoke */
-    operator fun invoke(vararg indexable: Index): RandomAccessCollection<E> = invoke(MultiIndex(indexable as Array<Index>))
+    operator fun invoke(vararg subset_dim: Index): RandomAccessCollection<E> = invoke(MultiIndex(subset_dim as Array<Index>))
 
     /**
      * 返回第[idx]个元素，这里的元素顺序与[iterator()]的顺序一致
@@ -47,9 +47,9 @@ interface RandomAccessCollection<E : Any> : Iterable<E> {
         throw  NoSuchElementException()
     }
 
-    operator fun set(idx: Index, s: E)
-    operator fun set(vararg idx: Int, s: E) = set(DefaultIntBuf.reuse(idx), s)
-    operator fun set(vararg indexable: Index, s: E) = set(MultiIndex(indexable as Array<Index>), s)
+    operator fun set(dim: Index, s: E)
+    operator fun set(vararg dim: Int, s: E) = set(DefaultIntBuf.reuse(dim), s)
+    operator fun set(vararg dim: Index, s: E) = set(MultiIndex(dim as Array<Index>), s)
 
     fun set(element_maker: (IntBuf, E) -> E) {
         withIndices().forEach { (idx, value) -> set(idx, element_maker(idx, value)) }
@@ -84,9 +84,9 @@ interface RandomAccessCollection<E : Any> : Iterable<E> {
 }
 
 interface ExtendableRAC<E : Any> : RandomAccessCollection<E> {
-    operator fun set(idx: Index, s: RandomAccessCollection<E>)
-    operator fun set(vararg idx: Int, s: RandomAccessCollection<E>) = set(DefaultIntBuf.reuse(idx), s)
-    operator fun set(vararg indexable: Index, s: RandomAccessCollection<E>) = set(MultiIndex(indexable as Array<Index>), s)
+    operator fun set(subset_dim: Index, s: RandomAccessCollection<E>)
+    operator fun set(vararg subset_dim: Int, s: RandomAccessCollection<E>) = set(DefaultIntBuf.reuse(subset_dim), s)
+    operator fun set(vararg subset_dim: Index, s: RandomAccessCollection<E>) = set(MultiIndex(subset_dim as Array<Index>), s)
 
     fun <T : Any> raw_set(element_maker: (IntBuf, E) -> T) {
         withIndices().forEach { (idx, value) ->
