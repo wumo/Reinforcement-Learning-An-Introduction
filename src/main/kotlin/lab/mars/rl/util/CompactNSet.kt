@@ -2,7 +2,7 @@
 
 package lab.mars.rl.util
 
-import lab.mars.rl.util.Bufkt.*
+import lab.mars.rl.util.buf.*
 import lab.mars.rl.util.RandomAccessCollection.tuple2
 import java.util.*
 

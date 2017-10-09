@@ -2,7 +2,7 @@ package lab.mars.rl.problem
 
 import lab.mars.rl.model.*
 import lab.mars.rl.model.impl.CNSetMDP
-import lab.mars.rl.util.Bufkt.DefaultIntBuf
+import lab.mars.rl.util.buf.DefaultIntBuf
 import lab.mars.rl.util.dimension.invoke
 import lab.mars.rl.util.dimension.x
 import lab.mars.rl.util.emptyNSet

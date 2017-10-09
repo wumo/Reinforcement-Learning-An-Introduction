@@ -2,8 +2,8 @@
 
 package lab.mars.rl.model
 
-import lab.mars.rl.util.Bufkt.DefaultIntBuf
-import lab.mars.rl.util.Bufkt.IntBuf
+import lab.mars.rl.util.buf.DefaultIntBuf
+import lab.mars.rl.util.buf.IntBuf
 import lab.mars.rl.util.Index
 import lab.mars.rl.util.RandomAccessCollection
 import lab.mars.rl.util.emptyNSet

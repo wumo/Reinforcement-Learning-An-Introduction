@@ -1,7 +1,7 @@
 package lab.mars.rl.algo
 
 import lab.mars.rl.model.*
-import lab.mars.rl.util.Bufkt.DefaultBuf
+import lab.mars.rl.util.buf.DefaultBuf
 import lab.mars.rl.util.emptyNSet
 import java.util.*
 

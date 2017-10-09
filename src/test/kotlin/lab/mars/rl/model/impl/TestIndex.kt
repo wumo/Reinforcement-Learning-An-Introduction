@@ -2,7 +2,7 @@
 
 package lab.mars.rl.model.impl
 
-import lab.mars.rl.util.Bufkt.DefaultIntBuf
+import lab.mars.rl.util.buf.DefaultIntBuf
 import lab.mars.rl.util.Index
 import lab.mars.rl.util.MultiIndex
 import org.junit.Assert

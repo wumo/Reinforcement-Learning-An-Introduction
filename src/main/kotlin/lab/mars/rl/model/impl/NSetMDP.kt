@@ -5,10 +5,8 @@ package lab.mars.rl.model.impl
 import lab.mars.rl.model.Action
 import lab.mars.rl.model.MDP
 import lab.mars.rl.model.State
-import lab.mars.rl.util.Bufkt.IntBuf
-import lab.mars.rl.util.MultiIndex
+import lab.mars.rl.util.buf.IntBuf
 import lab.mars.rl.util.dimension.*
-import lab.mars.rl.util.emptyIndex
 
 /**
  * <p>

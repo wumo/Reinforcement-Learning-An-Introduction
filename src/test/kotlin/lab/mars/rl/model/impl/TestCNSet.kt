@@ -1,8 +1,8 @@
 package lab.mars.rl.model.impl
 
-import lab.mars.rl.util.Bufkt.DefaultIntBuf
-import lab.mars.rl.util.Bufkt.IntBuf
-import lab.mars.rl.util.Bufkt.buf
+import lab.mars.rl.util.buf.DefaultIntBuf
+import lab.mars.rl.util.buf.IntBuf
+import lab.mars.rl.util.buf.buf
 import lab.mars.rl.util.CompactNSet
 import lab.mars.rl.util.CompactNSet.Cell
 import lab.mars.rl.util.CompactNSet.SubTree

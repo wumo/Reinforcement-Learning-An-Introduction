@@ -2,8 +2,8 @@
 
 package lab.mars.rl.util
 
-import lab.mars.rl.util.Bufkt.DefaultIntBuf
-import lab.mars.rl.util.Bufkt.IntBuf
+import lab.mars.rl.util.buf.DefaultIntBuf
+import lab.mars.rl.util.buf.IntBuf
 import java.util.concurrent.ThreadLocalRandom
 
 interface RandomAccessCollection<E : Any> : Iterable<E> {
