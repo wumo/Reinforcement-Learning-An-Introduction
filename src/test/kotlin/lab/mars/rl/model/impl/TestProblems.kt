@@ -7,6 +7,7 @@ import lab.mars.rl.model.StateValueFunction
 import lab.mars.rl.problem.Blackjack
 import lab.mars.rl.problem.CarRental
 import lab.mars.rl.problem.GridWorld
+import lab.mars.rl.problem.RandomWalk
 import org.junit.Assert
 import org.junit.Test
 
@@ -147,19 +148,10 @@ class TestProblems {
 """
 
     @Test
-    fun `Blackjack MC Prediction Rand`() {
-        val (prob, PI) = Blackjack.make()
-        val algo = MonteCarlo(prob, PI)
-        algo.max_iteration = 100000
-        val V = algo.predictionRand()
-        printBlackjack(prob, PI, V)
-    }
-
-    @Test
     fun `Blackjack MC Prediction`() {
         val (prob, PI) = Blackjack.make()
         val algo = MonteCarlo(prob, PI)
-        algo.max_iteration = 10000
+        algo.max_iteration = 500000
         val V = algo.prediction()
         printBlackjack(prob, PI, V)
     }
@@ -168,17 +160,8 @@ class TestProblems {
     fun `Blackjack MC Optimal`() {
         val (prob, policy1) = Blackjack.make()
         val algo = MonteCarlo(prob, policy1)
-        algo.max_iteration = 1000
+        algo.max_iteration = 1000000
         val (PI, V, _) = algo.`Optimal Exploring Starts`()
-        printBlackjack(prob, PI, V)
-    }
-
-    @Test
-    fun `Blackjack MC Optimal Rand`() {
-        val (prob, policy1) = Blackjack.make()
-        val algo = MonteCarlo(prob, policy1)
-        algo.max_iteration = 100000
-        val (PI, V, _) = algo.`Optimal Exploring Starts Random`()
         printBlackjack(prob, PI, V)
     }
 
@@ -186,7 +169,7 @@ class TestProblems {
     fun `Blackjack Optimal On-policy first-visit MC control`() {
         val (prob, policy1) = Blackjack.make()
         val algo = MonteCarlo(prob, policy1)
-        algo.max_iteration = 500000
+        algo.max_iteration = 1000000
         val (PI, V, _) = algo.`On-policy first-visit MC control`()
         printBlackjack(prob, PI, V)
     }
@@ -195,9 +178,36 @@ class TestProblems {
     fun `Blackjack TD Prediction`() {
         val (prob, PI) = Blackjack.make()
         val algo = TemporalDifference(prob, PI)
-        algo.max_iteration = 1000000
+        algo.max_iteration = 500000
         val V = algo.prediction()
         printBlackjack(prob, PI, V)
+    }
+
+
+    @Test
+    fun `RandomWalk TD Prediction`() {
+        val (prob, PI) = RandomWalk.make()
+        val algo = TemporalDifference(prob, PI)
+        algo.max_iteration = 500000
+        val V = algo.prediction()
+        prob.apply {
+            for (s in states) {
+                println("${V[s].format(2)} ")
+            }
+        }
+    }
+
+    @Test
+    fun `RandomWalk MC Prediction`() {
+        val (prob, PI) = RandomWalk.make()
+        val algo = MonteCarlo(prob, PI)
+        algo.max_iteration = 500000
+        val V = algo.prediction()
+        prob.apply {
+            for (s in states) {
+                println("${V[s].format(2)} ")
+            }
+        }
     }
 
     private fun printBlackjack(prob: MDP, PI: NonDeterminedPolicy, V: StateValueFunction) {

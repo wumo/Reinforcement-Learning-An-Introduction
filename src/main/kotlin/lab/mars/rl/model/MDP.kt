@@ -57,6 +57,9 @@ class State(val index: IntBuf) : Index {
     var actions: RandomAccessCollection<Action> = emptyNSet as RandomAccessCollection<Action>
 
     override fun toString() = index.toString()
+
+    inline fun isTerminal() = actions.isEmpty()
+    inline fun isNotTerminal() = !actions.isEmpty()
 }
 
 class Action(val index: IntBuf) : Index {

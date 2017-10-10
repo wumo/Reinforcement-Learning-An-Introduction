@@ -16,15 +16,15 @@ class TemporalDifference(val mdp: MDP, private var policy: NonDeterminedPolicy =
     val gamma = mdp.gamma
     val states = mdp.states
     var max_iteration: Int = 10000
-    var alpha: Double = 0.001
+    var alpha: Double = 0.1
     fun prediction(): StateValueFunction {
         val V = mdp.VFunc { 0.0 }
         for (iteration in 0..max_iteration) {
             println("$iteration/$max_iteration")
             var s = states.rand()
-            if (s.actions.isEmpty()) continue
+            if (s.isTerminal()) continue
 
-            while (!s.actions.isEmpty()) {
+            while (s.isNotTerminal()) {
                 val a = s.actions.rand(policy(s))
                 val possible = a.sample()
                 V[s] += alpha * (possible.reward + gamma * V[possible.next] - V[s])
