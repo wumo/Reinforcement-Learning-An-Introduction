@@ -14,9 +14,9 @@ import org.apache.commons.math3.util.FastMath.max
 class PolicyIteration(mdp: MDP) {
     val states = mdp.states
     private val gamma = mdp.gamma
-    private val V = mdp.VFunc<Double> { 0.0 }
-    private val PI = mdp.VFunc<Action> { null_action }
-    private val Q = mdp.QFunc<Double> { 0.0 }
+    private val V = mdp.VFunc { 0.0 }
+    private val PI = mdp.VFunc { null_action }
+    private val Q = mdp.QFunc { 0.0 }
 
     fun v_iteration(): Triple<DeterminedPolicy, StateValueFunction, ActionValueFunction> {
         //Initialization

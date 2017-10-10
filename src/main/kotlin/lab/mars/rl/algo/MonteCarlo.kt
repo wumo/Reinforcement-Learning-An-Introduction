@@ -18,9 +18,9 @@ class MonteCarlo(val mdp: MDP, private var policy: DeterminedPolicy = emptyNSet(
     private val rand = Random(System.nanoTime())
 
     fun predictionRand(): StateValueFunction {
-        val V = mdp.VFunc<Double> { 0.0 }
-        val tmpV = mdp.VFunc<Double> { Double.NaN }
-        val count = mdp.VFunc<Int> { 0 }
+        val V = mdp.VFunc { 0.0 }
+        val tmpV = mdp.VFunc { Double.NaN }
+        val count = mdp.VFunc { 0 }
         for (i in 0 until max_iteration) {
             val _s = states.at(rand.nextInt(states.size))
             println("$i/$max_iteration")
@@ -54,9 +54,9 @@ class MonteCarlo(val mdp: MDP, private var policy: DeterminedPolicy = emptyNSet(
     }
 
     fun prediction(): StateValueFunction {
-        val V = mdp.VFunc<Double> { 0.0 }
-        val tmpV = mdp.VFunc<Double> { Double.NaN }
-        val count = mdp.VFunc<Int> { 0 }
+        val V = mdp.VFunc { 0.0 }
+        val tmpV = mdp.VFunc { Double.NaN }
+        val count = mdp.VFunc { 0 }
         val total_states = states.size
         var iteration = 1
         for (_s in states) {
@@ -95,9 +95,9 @@ class MonteCarlo(val mdp: MDP, private var policy: DeterminedPolicy = emptyNSet(
     fun `Optimal Exploring Starts`(): Triple<DeterminedPolicy, StateValueFunction, ActionValueFunction> {
         if (policy === emptyNSet)
             policy = mdp.VFunc { states[it].actions.firstOrNull() ?: null_action }
-        val Q = mdp.QFunc<Double> { 0.0 }
-        val tmpQ = mdp.QFunc<Double> { Double.NaN }
-        val count = mdp.QFunc<Int> { 0 }
+        val Q = mdp.QFunc { 0.0 }
+        val tmpQ = mdp.QFunc { Double.NaN }
+        val count = mdp.QFunc { 0 }
         val total_states = states.size
         var i = 1
         val tmpS = DefaultBuf.new<State>(states.size)
@@ -148,7 +148,7 @@ class MonteCarlo(val mdp: MDP, private var policy: DeterminedPolicy = emptyNSet(
             else
                 value
         }
-        val V = mdp.VFunc<Double> { 0.0 }
+        val V = mdp.VFunc { 0.0 }
         val result = Triple(policy, V, Q)
         V_from_Q(states, result)
         return result
@@ -157,9 +157,9 @@ class MonteCarlo(val mdp: MDP, private var policy: DeterminedPolicy = emptyNSet(
     fun `Optimal Exploring Starts Random`(): Triple<DeterminedPolicy, StateValueFunction, ActionValueFunction> {
         if (policy === emptyNSet)
             policy = mdp.VFunc { states[it].actions.firstOrNull() ?: null_action }
-        val Q = mdp.QFunc<Double> { 0.0 }
-        val tmpQ = mdp.QFunc<Double> { Double.NaN }
-        val count = mdp.QFunc<Int> { 0 }
+        val Q = mdp.QFunc { 0.0 }
+        val tmpQ = mdp.QFunc { Double.NaN }
+        val count = mdp.QFunc { 0 }
         val tmpS = DefaultBuf.new<State>(states.size)
         for (i in 0 until max_iteration) {
             println("$i/$max_iteration")
@@ -208,23 +208,23 @@ class MonteCarlo(val mdp: MDP, private var policy: DeterminedPolicy = emptyNSet(
             else
                 value
         }
-        val V = mdp.VFunc<Double> { 0.0 }
+        val V = mdp.VFunc { 0.0 }
         val result = Triple(policy, V, Q)
         V_from_Q(states, result)
         return result
     }
 
     fun `On-policy first-visit MC control`(epsilon: Double = 0.1): Triple<NonDeterminedPolicy, StateValueFunction, ActionValueFunction> {
-        val policy = mdp.QFunc<Double> { 0.0 }
+        val policy = mdp.QFunc { 0.0 }
         for (s in states) {
             if (s.actions.isEmpty()) continue
             val prob = 1.0 / s.actions.size
             for (a in s.actions)
                 policy[s, a] = prob
         }
-        val Q = mdp.QFunc<Double> { 0.0 }
-        val tmpQ = mdp.QFunc<Double> { Double.NaN }
-        val count = mdp.QFunc<Int> { 0 }
+        val Q = mdp.QFunc { 0.0 }
+        val tmpQ = mdp.QFunc { Double.NaN }
+        val count = mdp.QFunc { 0 }
         val tmpS = DefaultBuf.new<State>(states.size)
         for (i in 0 until max_iteration) {
             println("$i/$max_iteration")
@@ -276,7 +276,7 @@ class MonteCarlo(val mdp: MDP, private var policy: DeterminedPolicy = emptyNSet(
             else
                 value
         }
-        val V = mdp.VFunc<Double> { 0.0 }
+        val V = mdp.VFunc { 0.0 }
         val result = Triple(policy, V, Q)
         V_from_Q_ND(states, result)
         return result

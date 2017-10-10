@@ -49,7 +49,7 @@ object Blackjack {
                         1 -> a.sample = hits(s)
                     }
         }
-        val policy1 = mdp.VFunc<Action> { null_action }
+        val policy1 = mdp.VFunc { null_action }
         for (s in mdp.states(1))
             if (s[player_idx] >= 20 - player_offset)
                 policy1[s] = s.actions[0]

@@ -1,6 +1,5 @@
 package lab.mars.rl.algo
 
-import lab.mars.rl.model.Action
 import lab.mars.rl.model.MDP
 import lab.mars.rl.model.StateValueFunction
 import lab.mars.rl.model.null_action
@@ -18,8 +17,8 @@ class ValueIteration(private val mdp: MDP) {
     val states = mdp.states
     val gamma = mdp.gamma
     fun iteration(): StateValueFunction {
-        val V = mdp.VFunc<Double> { 0.0 }
-        val PI = mdp.VFunc<Action> { null_action }
+        val V = mdp.VFunc { 0.0 }
+        val PI = mdp.VFunc { null_action }
         //value iteration
         do {
             var delta = 0.0
