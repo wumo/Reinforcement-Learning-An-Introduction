@@ -12,7 +12,7 @@ import java.util.*
  *
  * @author wumo
  */
-class MonteCarlo(val mdp: MDP, private var policy: DeterminedPolicy = emptyNSet()) {
+class MonteCarlo(val mdp: MDP, private var policy: NonDeterminedPolicy = emptyNSet()) {
     val states = mdp.states
     var max_iteration: Int = 10000
     private val rand = Random(System.nanoTime())
@@ -22,27 +22,24 @@ class MonteCarlo(val mdp: MDP, private var policy: DeterminedPolicy = emptyNSet(
         val tmpV = mdp.VFunc { Double.NaN }
         val count = mdp.VFunc { 0 }
         for (i in 0 until max_iteration) {
-            val _s = states.at(rand.nextInt(states.size))
             println("$i/$max_iteration")
-            _s.actions.ifAny {
-                var accumulate = 0.0
-                var s = _s
-                var a = policy[_s]
-                while (a !== null_action) {
-                    val possible = s.actions[a].sample()
-                    accumulate += possible.reward
-                    if (tmpV[s].isNaN())
-                        tmpV[s] = accumulate
-                    s = possible.next
-                    a = policy[s]
+            var s = states.rand()
+            if (s.actions.isEmpty()) continue
+            var accumulate = 0.0
+            while (!s.actions.isEmpty()) {
+                val a = s.actions.rand(policy(s))
+                val possible = a.sample()
+                accumulate += possible.reward
+                if (tmpV[s].isNaN())
+                    tmpV[s] = accumulate
+                s = possible.next
+            }
+            tmpV.set { idx, value ->
+                if (!value.isNaN()) {
+                    V[idx] += value
+                    count[idx] += 1
                 }
-                tmpV.set { idx, value ->
-                    if (!value.isNaN()) {
-                        V[idx] += value
-                        count[idx] += 1
-                    }
-                    Double.NaN
-                }
+                Double.NaN
             }
         }
         for (s in states) {
@@ -61,26 +58,24 @@ class MonteCarlo(val mdp: MDP, private var policy: DeterminedPolicy = emptyNSet(
         var iteration = 1
         for (_s in states) {
             println("${iteration++}/$total_states")
-            _s.actions.ifAny {
-                for (i in 0 until max_iteration) {
-                    var accumulate = 0.0
-                    var s = _s
-                    var a = policy[_s]
-                    while (a !== null_action) {
-                        val possible = s.actions[a].sample()
-                        accumulate += possible.reward
-                        if (tmpV[s].isNaN())
-                            tmpV[s] = accumulate
-                        s = possible.next
-                        a = policy[s]
+            if (_s.actions.isEmpty()) continue
+            for (i in 0 until max_iteration) {
+                var accumulate = 0.0
+                var s = _s
+                while (!s.actions.isEmpty()) {
+                    val a = s.actions.rand(policy(s))
+                    val possible = a.sample()
+                    accumulate += possible.reward
+                    if (tmpV[s].isNaN())
+                        tmpV[s] = accumulate
+                    s = possible.next
+                }
+                tmpV.set { idx, value ->
+                    if (!value.isNaN()) {
+                        V[idx] += value
+                        count[idx] += 1
                     }
-                    tmpV.set { idx, value ->
-                        if (!value.isNaN()) {
-                            V[idx] += value
-                            count[idx] += 1
-                        }
-                        Double.NaN
-                    }
+                    Double.NaN
                 }
             }
         }
@@ -92,9 +87,14 @@ class MonteCarlo(val mdp: MDP, private var policy: DeterminedPolicy = emptyNSet(
         return V
     }
 
-    fun `Optimal Exploring Starts`(): Triple<DeterminedPolicy, StateValueFunction, ActionValueFunction> {
-        if (policy === emptyNSet)
-            policy = mdp.VFunc { states[it].actions.firstOrNull() ?: null_action }
+    fun `Optimal Exploring Starts`(): Triple<NonDeterminedPolicy, StateValueFunction, ActionValueFunction> {
+        if (policy.isEmpty()) {
+            policy = mdp.QFunc { 0.0 }
+            for (s in states)
+                s.actions.ifAny {
+                    policy[s, s.actions.first()] = 1.0
+                }
+        }
         val Q = mdp.QFunc { 0.0 }
         val tmpQ = mdp.QFunc { Double.NaN }
         val count = mdp.QFunc { 0 }
@@ -104,17 +104,18 @@ class MonteCarlo(val mdp: MDP, private var policy: DeterminedPolicy = emptyNSet(
         for (_s in states) {
             println("${i++}/$total_states")
             for (_a in _s.actions) {
-                for (i in 0 until max_iteration) {
+                repeat(max_iteration) {
                     var accumulate = 0.0
                     var s = _s
                     var a = _a
                     while (a !== null_action) {
-                        val possible = s.actions[a].sample()
+                        val possible = a.sample()
                         accumulate += possible.reward
                         if (tmpQ[s, a].isNaN())
                             tmpQ[s, a] = accumulate
                         s = possible.next
-                        a = policy[s]
+                        if (s.actions.isEmpty()) break
+                        a = s.actions.rand(policy(s))
                     }
                     tmpS.clear()
                     for (s in states) {
@@ -125,18 +126,20 @@ class MonteCarlo(val mdp: MDP, private var policy: DeterminedPolicy = emptyNSet(
                                 Q[s, a] += value
                                 count[s, a] += 1
                                 tmpS += s
-                                tmpQ[s,a]=Double.NaN
+                                tmpQ[s, a] = Double.NaN
                             }
                         }
                     }
                     for (s in tmpS) {
-                        policy[s] = argmax(s.actions) {
+                        val a_greedy = argmax(s.actions) {
                             val n = count[s, this]
                             if (n > 0)
                                 Q[s, this] / n
                             else
                                 Q[s, this]
                         }
+                        for (a in s.actions)
+                            policy[s, a] = if (a === a_greedy) 1.0 else 0.0
                     }
                 }
             }
@@ -150,33 +153,39 @@ class MonteCarlo(val mdp: MDP, private var policy: DeterminedPolicy = emptyNSet(
         }
         val V = mdp.VFunc { 0.0 }
         val result = Triple(policy, V, Q)
-        V_from_Q(states, result)
+        V_from_Q_ND(states, result)
         return result
     }
 
-    fun `Optimal Exploring Starts Random`(): Triple<DeterminedPolicy, StateValueFunction, ActionValueFunction> {
-        if (policy === emptyNSet)
-            policy = mdp.VFunc { states[it].actions.firstOrNull() ?: null_action }
+    fun `Optimal Exploring Starts Random`(): Triple<NonDeterminedPolicy, StateValueFunction, ActionValueFunction> {
+        if (policy.isEmpty()) {
+            policy = mdp.QFunc { 0.0 }
+            for (s in states)
+                s.actions.ifAny {
+                    policy[s, s.actions.first()] = 1.0
+                }
+        }
         val Q = mdp.QFunc { 0.0 }
         val tmpQ = mdp.QFunc { Double.NaN }
         val count = mdp.QFunc { 0 }
         val tmpS = DefaultBuf.new<State>(states.size)
         for (i in 0 until max_iteration) {
             println("$i/$max_iteration")
-            val _s = states.at(rand.nextInt(states.size))
+            val _s = states.rand()
             if (_s.actions.isEmpty()) continue
-            val _a = _s.actions.at(rand.nextInt(_s.actions.size))
+            val _a = _s.actions.rand()
 
             var accumulate = 0.0
             var s = _s
             var a = _a
             while (a !== null_action) {
-                val possible = s.actions[a].sample()
+                val possible = a.sample()
                 accumulate += possible.reward
                 if (tmpQ[s, a].isNaN())
                     tmpQ[s, a] = accumulate
                 s = possible.next
-                a = policy[s]
+                if (s.actions.isEmpty()) break
+                a = s.actions.rand(policy(s))
             }
             tmpS.clear()
             for (s in states) {
@@ -187,18 +196,20 @@ class MonteCarlo(val mdp: MDP, private var policy: DeterminedPolicy = emptyNSet(
                         Q[s, a] += value
                         count[s, a] += 1
                         tmpS += s
-                        tmpQ[s,a]=Double.NaN
+                        tmpQ[s, a] = Double.NaN
                     }
                 }
             }
             for (s in tmpS) {
-                policy[s] = argmax(s.actions) {
+                val a_greedy = argmax(s.actions) {
                     val n = count[s, this]
                     if (n > 0)
                         Q[s, this] / n
                     else
                         Q[s, this]
                 }
+                for (a in s.actions)
+                    policy[s, a] = if (a === a_greedy) 1.0 else 0.0
             }
         }
         Q.set { idx, value ->
@@ -210,7 +221,7 @@ class MonteCarlo(val mdp: MDP, private var policy: DeterminedPolicy = emptyNSet(
         }
         val V = mdp.VFunc { 0.0 }
         val result = Triple(policy, V, Q)
-        V_from_Q(states, result)
+        V_from_Q_ND(states, result)
         return result
     }
 
@@ -228,12 +239,12 @@ class MonteCarlo(val mdp: MDP, private var policy: DeterminedPolicy = emptyNSet(
         val tmpS = DefaultBuf.new<State>(states.size)
         for (i in 0 until max_iteration) {
             println("$i/$max_iteration")
-            var s = states.at(rand.nextInt(states.size))
+            var s = states.rand()
             if (s.actions.isEmpty()) continue
             var accumulate = 0.0
             while (!s.actions.isEmpty()) {
                 val a = s.actions.rand(policy(s))
-                val possible = s.actions[a].sample()
+                val possible = a.sample()
                 accumulate += possible.reward
                 if (tmpQ[s, a].isNaN())
                     tmpQ[s, a] = accumulate
@@ -248,7 +259,7 @@ class MonteCarlo(val mdp: MDP, private var policy: DeterminedPolicy = emptyNSet(
                         Q[s, a] += value
                         count[s, a] += 1
                         tmpS += s
-                        tmpQ[s,a]=Double.NaN
+                        tmpQ[s, a] = Double.NaN
                     }
                 }
             }

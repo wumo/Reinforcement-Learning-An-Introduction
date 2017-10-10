@@ -1,6 +1,9 @@
 package lab.mars.rl.problem
 
-import lab.mars.rl.model.*
+import lab.mars.rl.model.MDP
+import lab.mars.rl.model.NonDeterminedPolicy
+import lab.mars.rl.model.Possible
+import lab.mars.rl.model.State
 import lab.mars.rl.model.impl.CNSetMDP
 import lab.mars.rl.util.buf.DefaultIntBuf
 import lab.mars.rl.util.dimension.invoke
@@ -33,7 +36,7 @@ object Blackjack {
     private const val dealer_offset = 1
     private val rand = Random(System.nanoTime())
 
-    fun make(): Pair<MDP, DeterminedPolicy> {
+    fun make(): Pair<MDP, NonDeterminedPolicy> {
         val mdp = CNSetMDP(gamma = 1.0, state_dim = 0(3, 2 x 10 x 10), action_dim = { if (it[0] == 0) 1 else 2 })
         mdp.apply {
             win = states[0, 0]
@@ -49,12 +52,12 @@ object Blackjack {
                         1 -> a.sample = hits(s)
                     }
         }
-        val policy1 = mdp.VFunc { null_action }
+        val policy1 = mdp.QFunc { 0.0 }
         for (s in mdp.states(1))
             if (s[player_idx] >= 20 - player_offset)
-                policy1[s] = s.actions[0]
+                policy1[s, s.actions[0]] = 1.0
             else
-                policy1[s] = s.actions[1]
+                policy1[s, s.actions[1]] = 1.0
         return Pair(mdp, policy1)
     }
 

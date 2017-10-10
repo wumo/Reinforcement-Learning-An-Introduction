@@ -1,9 +1,9 @@
 package lab.mars.rl.model.impl
 
-import lab.mars.rl.algo.MonteCarlo
-import lab.mars.rl.algo.PolicyIteration
-import lab.mars.rl.algo.ValueIteration
-import lab.mars.rl.algo.argmax
+import lab.mars.rl.algo.*
+import lab.mars.rl.model.MDP
+import lab.mars.rl.model.NonDeterminedPolicy
+import lab.mars.rl.model.StateValueFunction
 import lab.mars.rl.problem.Blackjack
 import lab.mars.rl.problem.CarRental
 import lab.mars.rl.problem.GridWorld
@@ -147,129 +147,39 @@ class TestProblems {
 """
 
     @Test
-    fun `Blackjack Prediction Rand`() {
-        val (prob, policy1) = Blackjack.make()
-        val algo = MonteCarlo(prob, policy1)
+    fun `Blackjack MC Prediction Rand`() {
+        val (prob, PI) = Blackjack.make()
+        val algo = MonteCarlo(prob, PI)
         algo.max_iteration = 100000
         val V = algo.predictionRand()
-        println("---------------------Usable Ace--------------------------")
-        for (a in 9 downTo 0) {
-            for (b in 0 until 10)
-                print("${color(policy1[1, 1, b, a][0])}  ${reset()}")
-            println()
-        }
-        println("---------------------No Usable Ace--------------------------")
-        for (a in 9 downTo 0) {
-            for (b in 0 until 10)
-                print("${color(policy1[1, 0, b, a][0])}  ${reset()}")
-            println()
-        }
-        for (a in 0 until 10) {
-            for (b in 0 until 10)
-                print("${V[1, 1, a, b].format(2)} ")
-            println()
-        }
-        println("------------------------------------------------------------")
-        for (a in 0 until 10) {
-            for (b in 0 until 10)
-                print("${V[1, 0, a, b].format(2)} ")
-            println()
-        }
+        printBlackjack(prob, PI, V)
     }
 
     @Test
-    fun `Blackjack Prediction`() {
-        val (prob, policy1) = Blackjack.make()
-        val algo = MonteCarlo(prob, policy1)
+    fun `Blackjack MC Prediction`() {
+        val (prob, PI) = Blackjack.make()
+        val algo = MonteCarlo(prob, PI)
         algo.max_iteration = 10000
         val V = algo.prediction()
-        println("---------------------Usable Ace--------------------------")
-        for (a in 9 downTo 0) {
-            for (b in 0 until 10)
-                print("${color(policy1[1, 1, b, a][0])}  ${reset()}")
-            println()
-        }
-        println("---------------------No Usable Ace--------------------------")
-        for (a in 9 downTo 0) {
-            for (b in 0 until 10)
-                print("${color(policy1[1, 0, b, a][0])}  ${reset()}")
-            println()
-        }
-        for (a in 0 until 10) {
-            for (b in 0 until 10)
-                print("${V[1, 1, a, b].format(2)} ")
-            println()
-        }
-        println("------------------------------------------------------------")
-        for (a in 0 until 10) {
-            for (b in 0 until 10)
-                print("${V[1, 0, a, b].format(2)} ")
-            println()
-        }
+        printBlackjack(prob, PI, V)
     }
 
     @Test
-    fun `Blackjack Optimal`() {
+    fun `Blackjack MC Optimal`() {
         val (prob, policy1) = Blackjack.make()
         val algo = MonteCarlo(prob, policy1)
         algo.max_iteration = 1000
-        val (PI, V, Q) = algo.`Optimal Exploring Starts`()
-        println("---------------------Usable Ace--------------------------")
-        for (a in 9 downTo 0) {
-            for (b in 0 until 10)
-                print("${color(PI[1, 1, b, a][0])}  ${reset()}")
-            println()
-        }
-        println("---------------------No Usable Ace--------------------------")
-        for (a in 9 downTo 0) {
-            for (b in 0 until 10)
-                print("${color(PI[1, 0, b, a][0])}  ${reset()}")
-            println()
-        }
-        println("---------------------Usable Ace--------------------------")
-        for (a in 0 until 10) {
-            for (b in 0 until 10)
-                print("${V[1, 1, a, b].format(2)} ")
-            println()
-        }
-        println("---------------------No Usable Ace--------------------------")
-        for (a in 0 until 10) {
-            for (b in 0 until 10)
-                print("${V[1, 0, a, b].format(2)} ")
-            println()
-        }
+        val (PI, V, _) = algo.`Optimal Exploring Starts`()
+        printBlackjack(prob, PI, V)
     }
 
     @Test
-    fun `Blackjack Optimal Rand`() {
+    fun `Blackjack MC Optimal Rand`() {
         val (prob, policy1) = Blackjack.make()
         val algo = MonteCarlo(prob, policy1)
         algo.max_iteration = 100000
-        val (PI, V, Q) = algo.`Optimal Exploring Starts Random`()
-        println("---------------------Usable Ace--------------------------")
-        for (a in 9 downTo 0) {
-            for (b in 0 until 10)
-                print("${color(PI[1, 1, b, a][0])}  ${reset()}")
-            println()
-        }
-        println("---------------------No Usable Ace--------------------------")
-        for (a in 9 downTo 0) {
-            for (b in 0 until 10)
-                print("${color(PI[1, 0, b, a][0])}  ${reset()}")
-            println()
-        }
-        println("---------------------Usable Ace--------------------------")
-        for (a in 0 until 10) {
-            for (b in 0 until 10)
-                print("${V[1, 1, a, b].format(2)} ")
-            println()
-        }
-        println("---------------------No Usable Ace--------------------------")
-        for (a in 0 until 10) {
-            for (b in 0 until 10)
-                print("${V[1, 0, a, b].format(2)} ")
-            println()
-        }
+        val (PI, V, _) = algo.`Optimal Exploring Starts Random`()
+        printBlackjack(prob, PI, V)
     }
 
     @Test
@@ -277,7 +187,20 @@ class TestProblems {
         val (prob, policy1) = Blackjack.make()
         val algo = MonteCarlo(prob, policy1)
         algo.max_iteration = 500000
-        val (PI, V, Q) = algo.`On-policy first-visit MC control`()
+        val (PI, V, _) = algo.`On-policy first-visit MC control`()
+        printBlackjack(prob, PI, V)
+    }
+
+    @Test
+    fun `Blackjack TD Prediction`() {
+        val (prob, PI) = Blackjack.make()
+        val algo = TemporalDifference(prob, PI)
+        algo.max_iteration = 1000000
+        val V = algo.prediction()
+        printBlackjack(prob, PI, V)
+    }
+
+    private fun printBlackjack(prob: MDP, PI: NonDeterminedPolicy, V: StateValueFunction) {
         println("---------------------Usable Ace--------------------------")
         for (a in 9 downTo 0) {
             for (b in 0 until 10) {
@@ -294,17 +217,17 @@ class TestProblems {
             }
             println()
         }
-        println("---------------------Usable Ace--------------------------")
         for (a in 0 until 10) {
             for (b in 0 until 10)
                 print("${V[1, 1, a, b].format(2)} ")
             println()
         }
-        println("---------------------No Usable Ace--------------------------")
+        println("------------------------------------------------------------")
         for (a in 0 until 10) {
             for (b in 0 until 10)
                 print("${V[1, 0, a, b].format(2)} ")
             println()
         }
     }
+
 }
