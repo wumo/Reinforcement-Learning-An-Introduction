@@ -2,8 +2,8 @@
 
 package lab.mars.rl.util
 
-import lab.mars.rl.util.buf.*
 import lab.mars.rl.util.RandomAccessCollection.tuple2
+import lab.mars.rl.util.buf.*
 import java.util.*
 
 /**
@@ -57,7 +57,7 @@ constructor(internal val data: MutableBuf<Any>, val rootOffset: Int = 0, val sub
             : RandomAccessCollection<T> {
         val new_data = DefaultBuf.new<Any>(data.cap)
         for (a in 0..data.lastIndex)
-            new_data += (data[a] as? Cell<E>)?.copy() ?: data[a]
+            new_data.append((data[a] as? Cell<E>)?.copy() ?: data[a])
         return CompactNSet<T>(new_data, subLevel).apply {
             set { slot, _ ->
                 element_maker(slot)
@@ -157,7 +157,7 @@ constructor(internal val data: MutableBuf<Any>, val rootOffset: Int = 0, val sub
                   ?: Cell(DefaultBuf.new(), data[offset] as E)
         val subtree = SubTree(size = size,
                               offset2nd = data.writePtr)
-        tmp.subtrees += subtree
+        tmp.subtrees.append(subtree)
         data[offset] = tmp
         data.unfold(size - 1)
         return subtree

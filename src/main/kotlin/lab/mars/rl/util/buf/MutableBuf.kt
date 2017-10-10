@@ -29,8 +29,6 @@ interface MutableBuf<T : Any> : Buf<T> {
     fun append(num: Int, s: T)
     fun append(another: Buf<T>)
 
-    operator fun plusAssign(s: T)
-
     fun remove(range: IntRange) {
         remove(range.start, range.endInclusive)
     }

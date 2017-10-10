@@ -169,8 +169,6 @@ open class DefaultBuf<T : Any>(private var ring: Array<Any>, private var offset:
         _size += num
     }
 
-    override operator fun plusAssign(s: T) = append(s)
-
     override fun append(s: T) {
         ensure(_size + 1)
         ring[index(_size)] = s

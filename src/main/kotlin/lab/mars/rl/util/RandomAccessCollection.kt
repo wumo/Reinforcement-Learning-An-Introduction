@@ -108,6 +108,8 @@ interface RandomAccessCollection<E : Any> : Iterable<E> {
 //    }
 }
 
+inline fun <T : Any> RandomAccessCollection<T>.isNotEmpty() = !isEmpty()
+
 interface ExtendableRAC<E : Any> : RandomAccessCollection<E> {
     operator fun set(subset_dim: Index, s: RandomAccessCollection<E>)
     operator fun set(vararg subset_dim: Int, s: RandomAccessCollection<E>) = set(DefaultIntBuf.reuse(subset_dim), s)
