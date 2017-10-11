@@ -7,24 +7,23 @@ import lab.mars.rl.model.impl.CNSetMDP
 import lab.mars.rl.util.dimension.x
 import lab.mars.rl.util.emptyNSet
 
-object WindyGridwold {
+object WindyGridworld {
     val world_height = 7
     val world_width = 10
     val wind = intArrayOf(0, 0, 0, 1, 1, 1, 2, 2, 1, 0)//wind strength for each column
     val move = arrayOf(
-            intArrayOf(-1, 0), //up
-            intArrayOf(1, 0), //down
-            intArrayOf(0, 1), //right
-            intArrayOf(0, -1)//left
+            intArrayOf(0, 1), //up
+            intArrayOf(0, -1), //down
+            intArrayOf(-1, 0), //left
+            intArrayOf(1, 0)//right
     )
-    lateinit var goal: State
-
+    val desc_move = arrayOf(" ↑", " ↓", "←", "→")
     fun make(): MDP {
-        val mdp = CNSetMDP(gamma = 0.9, // 因为我们使用的是确定策略，但是GridWorld问题中存在确定策略的无限循环，此时便不是episode mdp，gamma必须小于1
+        val mdp = CNSetMDP(gamma = 1.0,
                            state_dim = world_width x world_height,
                            action_dim = 4)
         return mdp.apply {
-            goal = states[7, 3]
+            val goal = states[7, 3]
             goal.actions = emptyNSet()
             started = states(0, 3)
             for (s in states) {

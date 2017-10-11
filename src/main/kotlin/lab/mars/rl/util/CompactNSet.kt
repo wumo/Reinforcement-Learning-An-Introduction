@@ -71,7 +71,7 @@ constructor(internal val data: MutableBuf<Any>, val rootOffset: Int = 0, val sub
         var level = subLevel
         while (true) {
             val d = idx.next()//子树索引
-            val tmp = data[offset] as Cell<E>
+            val tmp = data[offset] as? Cell<E> ?: if (d == 0 && !idx.hasNext()) return op(offset, level) else throw IndexOutOfDimensionException()
             val subtree = tmp[level]
             require(d >= 0 && d < subtree.size)
             if (d == 0) {

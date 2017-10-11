@@ -4,10 +4,7 @@ import lab.mars.rl.algo.*
 import lab.mars.rl.model.MDP
 import lab.mars.rl.model.NonDeterminedPolicy
 import lab.mars.rl.model.StateValueFunction
-import lab.mars.rl.problem.Blackjack
-import lab.mars.rl.problem.CarRental
-import lab.mars.rl.problem.GridWorld
-import lab.mars.rl.problem.RandomWalk
+import lab.mars.rl.problem.*
 import lab.mars.rl.util.argmax
 import org.junit.Assert
 import org.junit.Test
@@ -194,6 +191,26 @@ class TestProblems {
                 println("${V[s].format(2)} ")
             }
         }
+    }
+
+    @Test
+    fun `WindyGridworld TD sarsa`() {
+        val prob = WindyGridworld.make()
+        val algo = TemporalDifference(prob)
+        algo.alpha = 0.5
+        algo.episodes = 500000
+        val (PI, V, _) = algo.sarsa()
+        var s = prob.started[0]
+        var sum = 0.0
+        print(s)
+        while (s.isNotTerminal()) {
+            val a = argmax(s.actions) { PI[s, this] }
+            val possible = a.sample()
+            s = possible.next
+            sum += possible.reward
+            print("${WindyGridworld.desc_move[a[0]]}$s")
+        }
+        println("\nreturn=$sum")
     }
 
     private fun printBlackjack(prob: MDP, PI: NonDeterminedPolicy, V: StateValueFunction) {

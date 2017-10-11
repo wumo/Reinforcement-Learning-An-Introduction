@@ -51,9 +51,10 @@ class TestCNSet {
     fun `subset`() {
         val data = arrayOf(Cell(arrayOf(SubTree(2, 4, 4), SubTree(3, 1, 3)).buf(), 1), 2, Cell(arrayOf(SubTree(2, 3, 3)).buf(), 3), 4, 5)
         val set = CompactNSet<Int>(data.buf())
-        val subset=set(1)
+        val subset = set(1)
         println(set[1])
-        println(subset)
+        print(subset)
+        println(subset[0])
     }
 
     @Test
