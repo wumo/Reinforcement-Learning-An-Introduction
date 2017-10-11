@@ -161,17 +161,25 @@ class TestProblems {
     fun `Blackjack TD Sarsa`() {
         val (prob, policy) = Blackjack.make()
         val algo = TemporalDifference(prob, policy)
-        algo.episodes = 20000000
+        algo.episodes = 10000
         val (PI, V, _) = algo.sarsa()
         printBlackjack(prob, PI, V)
     }
 
+    @Test
+    fun `Blackjack TD QLearning`() {
+        val (prob, policy) = Blackjack.make()
+        val algo = TemporalDifference(prob, policy)
+        algo.episodes = 100000
+        val (PI, V, _) = algo.QLearning()
+        printBlackjack(prob, PI, V)
+    }
 
     @Test
     fun `RandomWalk TD Prediction`() {
         val (prob, PI) = RandomWalk.make()
         val algo = TemporalDifference(prob, PI)
-        algo.episodes = 1000000
+        algo.episodes = 1000
         val V = algo.prediction()
         prob.apply {
             for (s in states) {
@@ -184,7 +192,7 @@ class TestProblems {
     fun `RandomWalk MC Prediction`() {
         val (prob, PI) = RandomWalk.make()
         val algo = MonteCarlo(prob, PI)
-        algo.episodes = 500000
+        algo.episodes = 1000
         val V = algo.prediction()
         prob.apply {
             for (s in states) {
@@ -198,7 +206,7 @@ class TestProblems {
         val prob = WindyGridworld.make()
         val algo = TemporalDifference(prob)
         algo.alpha = 0.5
-        algo.episodes = 500000
+        algo.episodes = 1000
         val (PI, V, _) = algo.sarsa()
         var s = prob.started[0]
         var sum = 0.0
@@ -210,9 +218,108 @@ class TestProblems {
             sum += possible.reward
             print("${WindyGridworld.desc_move[a[0]]}$s")
         }
-        println("\nreturn=$sum")
+        println("\nreturn=$sum")//optimal=-14
     }
 
+    @Test
+    fun `WindyGridworld King's Move TD sarsa`() {
+        val prob = WindyGridworld.make(true)
+        val algo = TemporalDifference(prob)
+        algo.alpha = 0.5
+        algo.episodes = 1000
+        val (PI, V, _) = algo.sarsa()
+        var s = prob.started[0]
+        var sum = 0.0
+        print(s)
+        while (s.isNotTerminal()) {
+            val a = argmax(s.actions) { PI[s, this] }
+            val possible = a.sample()
+            s = possible.next
+            sum += possible.reward
+            print("${WindyGridworld.desc_king_move[a[0]]}$s")
+        }
+        println("\nreturn=$sum")//optimal=-6
+    }
+
+    @Test
+    fun `WindyGridworld TD QLearning`() {
+        val prob = WindyGridworld.make()
+        val algo = TemporalDifference(prob)
+        algo.alpha = 0.5
+        algo.episodes = 1000
+        val (PI, V, _) = algo.QLearning()
+        var s = prob.started[0]
+        var sum = 0.0
+        print(s)
+        while (s.isNotTerminal()) {
+            val a = argmax(s.actions) { PI[s, this] }
+            val possible = a.sample()
+            s = possible.next
+            sum += possible.reward
+            print("${WindyGridworld.desc_move[a[0]]}$s")
+        }
+        println("\nreturn=$sum")//optimal=-14
+    }
+
+    @Test
+    fun `WindyGridworld King's Move TD QLearning`() {
+        val prob = WindyGridworld.make(true)
+        val algo = TemporalDifference(prob)
+        algo.alpha = 0.5
+        algo.episodes = 500000
+        val (PI, V, _) = algo.QLearning()
+        var s = prob.started[0]
+        var sum = 0.0
+        print(s)
+        while (s.isNotTerminal()) {
+            val a = argmax(s.actions) { PI[s, this] }
+            val possible = a.sample()
+            s = possible.next
+            sum += possible.reward
+            print("${WindyGridworld.desc_king_move[a[0]]}$s")
+        }
+        println("\nreturn=$sum")//optimal=-6
+    }
+
+
+    @Test
+    fun `Cliff Walking TD sarsa`() {
+        val prob = CliffWalking.make()
+        val algo = TemporalDifference(prob)
+        algo.alpha = 0.5
+        algo.episodes = 1000
+        val (PI, V, _) = algo.sarsa()
+        var s = prob.started[0]
+        var sum = 0.0
+        print(s)
+        while (s.isNotTerminal()) {
+            val a = argmax(s.actions) { PI[s, this] }
+            val possible = a.sample()
+            s = possible.next
+            sum += possible.reward
+            print("${WindyGridworld.desc_move[a[0]]}$s")
+        }
+        println("\nreturn=$sum")//optimal=-14
+    }
+    @Test
+    fun `Cliff Walking TD Q Learning`() {
+        val prob = CliffWalking.make()
+        val algo = TemporalDifference(prob)
+        algo.alpha = 0.5
+        algo.episodes = 1000
+        val (PI, V, _) = algo.QLearning()
+        var s = prob.started[0]
+        var sum = 0.0
+        print(s)
+        while (s.isNotTerminal()) {
+            val a = argmax(s.actions) { PI[s, this] }
+            val possible = a.sample()
+            s = possible.next
+            sum += possible.reward
+            print("${WindyGridworld.desc_move[a[0]]}$s")
+        }
+        println("\nreturn=$sum")//optimal=-14
+    }
     private fun printBlackjack(prob: MDP, PI: NonDeterminedPolicy, V: StateValueFunction) {
         println("---------------------Usable Ace--------------------------")
         for (a in 9 downTo 0) {

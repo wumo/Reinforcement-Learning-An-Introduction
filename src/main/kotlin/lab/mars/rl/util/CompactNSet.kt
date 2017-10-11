@@ -71,7 +71,8 @@ constructor(internal val data: MutableBuf<Any>, val rootOffset: Int = 0, val sub
         var level = subLevel
         while (true) {
             val d = idx.next()//子树索引
-            val tmp = data[offset] as? Cell<E> ?: if (d == 0 && !idx.hasNext()) return op(offset, level) else throw IndexOutOfDimensionException()
+            val tmp = data[offset] as? Cell<E> ?: return rootElement(d, idx) { op(offset, level) }
+            if (level > tmp.subtrees.lastIndex) return rootElement(d, idx) { op(offset, level) }
             val subtree = tmp[level]
             require(d >= 0 && d < subtree.size)
             if (d == 0) {
@@ -83,6 +84,14 @@ constructor(internal val data: MutableBuf<Any>, val rootOffset: Int = 0, val sub
             if (!idx.hasNext()) break
         }
         return op(offset, level)
+    }
+
+    private inline fun <R : Any> rootElement(d: Int, idx: Iterator<Int>,
+                                             op: () -> R): R {
+        if (d == 0 && !idx.hasNext())
+            return op()
+        else
+            throw IndexOutOfDimensionException()
     }
 
     fun location(idx: Index): Int =

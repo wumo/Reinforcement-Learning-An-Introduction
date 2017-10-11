@@ -1,11 +1,8 @@
 package lab.mars.rl.algo
 
 import lab.mars.rl.model.*
-import lab.mars.rl.util.Rand
-import lab.mars.rl.util.RandomAccessCollection
-import lab.mars.rl.util.argmax
+import lab.mars.rl.util.*
 import lab.mars.rl.util.buf.DefaultBuf
-import lab.mars.rl.util.emptyNSet
 
 /**
  * <p>
@@ -60,19 +57,6 @@ class TemporalDifference(val mdp: MDP, private var policy: NonDeterminedPolicy =
                     break
                 }
             }
-//            for (s in states) {
-//                if(s.isTerminal())continue
-//                val `a*` = argmax(s.actions) {
-//                    Q[s, this]
-//                }
-//                val size = s.actions.size
-//                for (a in s.actions) {
-//                    policy[s, a] = when {
-//                        a === `a*` -> 1 - epsilon + epsilon / size
-//                        else -> epsilon / size
-//                    }
-//                }
-//            }
         }
         val V = mdp.VFunc { 0.0 }
         val result = Triple(policy, V, Q)
@@ -91,5 +75,32 @@ class TemporalDifference(val mdp: MDP, private var policy: NonDeterminedPolicy =
                 else -> epsilon / size
             }
         }
+    }
+
+    fun QLearning(): OptimalSolution {
+        val policy = mdp.QFunc { 0.0 }
+        val Q = mdp.QFunc { 0.0 }
+
+        for (episode in 1..episodes) {
+//            println("$episode/$episodes")
+            var s = started.rand()
+            while (true) {
+                updatePolicy(s, Q, policy)
+                val a = s.actions.rand(policy(s))
+                val possible = a.sample()
+                val s_next = possible.next
+                if (s_next.isNotTerminal()) {
+                    Q[s, a] += alpha * (possible.reward + gamma * max(s_next.actions) { Q[s_next, this] } - Q[s, a])
+                    s = s_next
+                } else {
+                    Q[s, a] += alpha * (possible.reward + gamma * 0.0 - Q[s, a])//Q[terminalState,*]=0.0
+                    break
+                }
+            }
+        }
+        val V = mdp.VFunc { 0.0 }
+        val result = Triple(policy, V, Q)
+        V_from_Q_ND(states, result)
+        return result
     }
 }

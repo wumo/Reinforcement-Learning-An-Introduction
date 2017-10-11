@@ -17,11 +17,22 @@ object WindyGridworld {
             intArrayOf(-1, 0), //left
             intArrayOf(1, 0)//right
     )
+    val kingMove = arrayOf(
+            intArrayOf(0, 1), //up
+            intArrayOf(0, -1), //down
+            intArrayOf(-1, 0), //left
+            intArrayOf(1, 0),//right
+            intArrayOf(-1, 1), //up
+            intArrayOf(1, 1), //down
+            intArrayOf(1, -1), //left
+            intArrayOf(-1, -1)//right
+    )
     val desc_move = arrayOf(" ↑", " ↓", "←", "→")
-    fun make(): MDP {
+    val desc_king_move = arrayOf(" ↑", " ↓", "←", "→", "↖", "↗", "↘", "↙")
+    fun make(KingMove: Boolean = false): MDP {
         val mdp = CNSetMDP(gamma = 1.0,
                            state_dim = world_width x world_height,
-                           action_dim = 4)
+                           action_dim = if (KingMove) 8 else 4)
         return mdp.apply {
             val goal = states[7, 3]
             goal.actions = emptyNSet()
@@ -30,7 +41,7 @@ object WindyGridworld {
                 if (s.isTerminal()) continue
                 for (a in s.actions) {
                     a.sample = {
-                        val m = move[a[0]]
+                        val m = (if (KingMove) kingMove else move)[a[0]]
                         val x = (s[0] + m[0]).coerceIn(0, world_width - 1)
                         val y = (s[1] + wind[s[0]] + m[1]).coerceIn(0, world_height - 1)
                         val next = states[x, y]
