@@ -82,7 +82,7 @@ class TemporalDifference(val mdp: MDP, private var policy: NonDeterminedPolicy =
         val Q = mdp.QFunc { 0.0 }
 
         for (episode in 1..episodes) {
-//            println("$episode/$episodes")
+            println("$episode/$episodes")
             var s = started.rand()
             while (true) {
                 updatePolicy(s, Q, policy)
