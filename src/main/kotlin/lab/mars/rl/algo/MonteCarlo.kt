@@ -14,6 +14,7 @@ import java.util.*
  * @author wumo
  */
 class MonteCarlo(val mdp: MDP, private var policy: NonDeterminedPolicy = emptyNSet()) {
+    val started = mdp.started
     val states = mdp.states
     var episodes: Int = 10000
     private val rand = Random(System.nanoTime())
@@ -25,8 +26,7 @@ class MonteCarlo(val mdp: MDP, private var policy: NonDeterminedPolicy = emptyNS
 
         for (episode in 1..episodes) {
             println("$episode/$episodes")
-            var s = states.rand()
-            if (s.isTerminal()) continue
+            var s = started.rand()
             var accumulate = 0.0
             while (s.isNotTerminal()) {
                 val a = s.actions.rand(policy(s))
@@ -55,10 +55,8 @@ class MonteCarlo(val mdp: MDP, private var policy: NonDeterminedPolicy = emptyNS
     fun `Optimal Exploring Starts`(): OptimalSolution {
         if (policy.isEmpty()) {
             policy = mdp.QFunc { 0.0 }
-            for (s in states)
-                s.actions.ifAny {
-                    policy[s, s.actions.first()] = 1.0
-                }
+            for (s in started)
+                policy[s, s.actions.first()] = 1.0
         }
         val Q = mdp.QFunc { 0.0 }
         val tmpQ = mdp.QFunc { Double.NaN }
@@ -67,8 +65,7 @@ class MonteCarlo(val mdp: MDP, private var policy: NonDeterminedPolicy = emptyNS
 
         for (episode in 1..episodes) {
             println("$episode/$episodes")
-            var s = states.rand()
-            if (s.isTerminal()) continue
+            var s = started.rand()
             var a = s.actions.rand()//Exploring Starts
 
             var accumulate = 0.0
@@ -134,8 +131,7 @@ class MonteCarlo(val mdp: MDP, private var policy: NonDeterminedPolicy = emptyNS
 
         for (episode in 1..episodes) {
             println("$episode/$episodes")
-            var s = states.rand()
-            if (s.isTerminal()) continue
+            var s = started.rand()
             var accumulate = 0.0
             while (s.isNotTerminal()) {
                 val a = s.actions.rand(policy(s))

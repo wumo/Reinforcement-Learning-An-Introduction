@@ -19,8 +19,6 @@ import java.util.*
  *
  * @author wumo
  */
-private fun assert(expected: Any, actual: Any) = expected == actual
-
 class TestCNSet {
     @Test
     fun `raw make`() {
@@ -50,9 +48,12 @@ class TestCNSet {
     }
 
     @Test
-    fun `test zero dim`() {
-        val set = cnsetFrom(0(1, 1 ) x { if (it[0] == 0) 0 else 1 }) { 0 }
-        println(set.size)
+    fun `subset`() {
+        val data = arrayOf(Cell(arrayOf(SubTree(2, 4, 4), SubTree(3, 1, 3)).buf(), 1), 2, Cell(arrayOf(SubTree(2, 3, 3)).buf(), 3), 4, 5)
+        val set = CompactNSet<Int>(data.buf())
+        val subset=set(1)
+        println(set[1])
+        println(subset)
     }
 
     @Test

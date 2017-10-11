@@ -186,9 +186,11 @@ open class DefaultIntBuf(private var ring: IntArray, private var offset: Int, si
     override fun toString(): String {
         val sb = StringBuilder()
         sb.append("[")
-        for (idx in 0 until lastIndex)
-            sb.append(ring[index(idx)]).append(", ")
-        sb.append(ring[index(lastIndex)])
+        if (isNotEmpty) {
+            for (idx in 0 until lastIndex)
+                sb.append(ring[index(idx)]).append(", ")
+            sb.append(ring[index(lastIndex)])
+        }
         sb.append("]")
         return sb.toString()
     }

@@ -16,12 +16,12 @@ import lab.mars.rl.util.emptyNSet
  * @author wumo
  */
 typealias StateSet = RandomAccessCollection<State>
-typealias ActionSet= RandomAccessCollection<Action>
+typealias ActionSet = RandomAccessCollection<Action>
 typealias StateValueFunction = RandomAccessCollection<Double>
 typealias ActionValueFunction = RandomAccessCollection<Double>
 typealias DeterminedPolicy = RandomAccessCollection<Action>
 typealias NonDeterminedPolicy = RandomAccessCollection<Double>
-typealias OptimalSolution =Triple<NonDeterminedPolicy, StateValueFunction, ActionValueFunction>
+typealias OptimalSolution = Triple<NonDeterminedPolicy, StateValueFunction, ActionValueFunction>
 /**
  *
  * @property states 状态集
@@ -34,6 +34,7 @@ class MDP(
         val states: StateSet,
         private val state_function: ((Index) -> Any) -> RandomAccessCollection<Any>,
         private val state_action_function: ((Index) -> Any) -> RandomAccessCollection<Any>) {
+    var started = states
     /**
      * 创建由[State]索引的state function
      */

@@ -110,7 +110,7 @@ constructor(internal val data: MutableBuf<Any>, val rootOffset: Int = 0, val sub
 
     override fun at(idx: Int): E {
         require(idx in 0 until _size)
-        val tmp = data[rootOffset] as Cell<E>
+        val tmp = data[rootOffset] as? Cell<E> ?: return data[rootOffset] as E
         if (idx == 0) return tmp.value
         val subtree = tmp[subLevel]
         return _get(subtree.offset2nd + idx - 1)
@@ -224,7 +224,7 @@ constructor(internal val data: MutableBuf<Any>, val rootOffset: Int = 0, val sub
                 else {
                     val tmp = data[rootOffset] as? Cell<E>
                     when {
-                        tmp == null -> 0
+                        tmp == null -> 1
                         subLevel > tmp.subtrees.lastIndex -> 1
                         else -> {
                             val tmpSubtree = tmp[subLevel]

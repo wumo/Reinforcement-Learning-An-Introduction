@@ -15,6 +15,8 @@ val emptyIndex = object : Index {
 interface Index : Iterable<Int> {
     val isEmpty: Boolean
         get() = size == 0
+    val isNotEmpty: Boolean
+        get() = !isEmpty
     val size: Int
     val lastIndex: Int
         get() = size - 1

@@ -16,6 +16,7 @@ import lab.mars.rl.util.emptyNSet
  */
 class TemporalDifference(val mdp: MDP, private var policy: NonDeterminedPolicy = emptyNSet()) {
     val gamma = mdp.gamma
+    val started = mdp.started
     val states = mdp.states
     var episodes = 10000
     var alpha = 0.1
@@ -25,9 +26,7 @@ class TemporalDifference(val mdp: MDP, private var policy: NonDeterminedPolicy =
         val V = mdp.VFunc { 0.0 }
         for (episode in 1..episodes) {
             println("$episode/$episodes")
-            var s = states.rand()
-            if (s.isTerminal()) continue
-
+            var s = started.rand()
             while (s.isNotTerminal()) {
                 val a = s.actions.rand(policy(s))
                 val possible = a.sample()
@@ -44,12 +43,11 @@ class TemporalDifference(val mdp: MDP, private var policy: NonDeterminedPolicy =
 
         for (episode in 1..episodes) {
 //            println("$episode/$episodes")
-            var s = states.rand()
-            if (s.isTerminal()) continue
+            var s = started.rand()
             updatePolicy(s, Q, policy)
             var a = s.actions.rand(policy(s))
             while (true) {
-                 val possible = a.sample()
+                val possible = a.sample()
                 val s_next = possible.next
                 if (s_next.isNotTerminal()) {
                     updatePolicy(s_next, Q, policy)

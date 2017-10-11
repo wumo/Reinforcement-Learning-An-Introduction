@@ -20,6 +20,7 @@ object RandomWalk {
         mdp.apply {
             states[0].actions = emptyNSet()
             states[6].actions = emptyNSet()
+            started = states(3)
             for (a in 1..5) {
                 states[a].actions.apply {
                     this[0].sample = {
