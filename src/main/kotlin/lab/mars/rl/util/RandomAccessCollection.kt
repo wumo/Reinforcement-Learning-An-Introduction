@@ -51,7 +51,7 @@ interface RandomAccessCollection<E : Any> : Iterable<E> {
     /**
      * 以等概率获取随意的一个元素
      */
-    fun rand() = at(ThreadLocalRandom.current().nextInt(size))
+    fun rand() = at(Rand().nextInt(size))
 
     /**
      * 如果此集合内的元素是[Index]类型，则可以提供概率分布[prob]，以此概
@@ -62,7 +62,7 @@ interface RandomAccessCollection<E : Any> : Iterable<E> {
      */
     fun rand(prob: RandomAccessCollection<Double>): E {
         if (isEmpty()) throw NoSuchElementException()
-        val p = ThreadLocalRandom.current().nextDouble()
+        val p = Rand().nextDouble()
         var acc = 0.0
         for (element in this) {
             acc += prob[element as Index]

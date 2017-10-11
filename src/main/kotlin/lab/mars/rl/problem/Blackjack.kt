@@ -5,6 +5,7 @@ import lab.mars.rl.model.NonDeterminedPolicy
 import lab.mars.rl.model.Possible
 import lab.mars.rl.model.State
 import lab.mars.rl.model.impl.CNSetMDP
+import lab.mars.rl.util.Rand
 import lab.mars.rl.util.buf.DefaultIntBuf
 import lab.mars.rl.util.dimension.invoke
 import lab.mars.rl.util.dimension.x
@@ -34,7 +35,6 @@ object Blackjack {
     private const val player_idx = 3
     private const val player_offset = 12
     private const val dealer_offset = 1
-    private val rand = Random(System.nanoTime())
 
     fun make(): Pair<MDP, NonDeterminedPolicy> {
         val mdp = CNSetMDP(gamma = 1.0, state_dim = 0(3, 2 x 10 x 10), action_dim = { if (it[0] == 0) 1 else 2 })
@@ -117,7 +117,7 @@ object Blackjack {
     }
 
     private fun drawCard(): Int {
-        val index = rand.nextInt(playingCard.size)
+        val index = Rand().nextInt(playingCard.size)
         val card = playingCard[index]
         return card
     }

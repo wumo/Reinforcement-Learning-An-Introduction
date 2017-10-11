@@ -1,6 +1,7 @@
 package lab.mars.rl.algo
 
 import lab.mars.rl.model.*
+import lab.mars.rl.util.argmax
 import lab.mars.rl.util.buf.DefaultBuf
 import lab.mars.rl.util.emptyNSet
 import java.util.*
@@ -14,15 +15,16 @@ import java.util.*
  */
 class MonteCarlo(val mdp: MDP, private var policy: NonDeterminedPolicy = emptyNSet()) {
     val states = mdp.states
-    var max_iteration: Int = 10000
+    var episodes: Int = 10000
     private val rand = Random(System.nanoTime())
 
     fun prediction(): StateValueFunction {
         val V = mdp.VFunc { 0.0 }
         val tmpV = mdp.VFunc { Double.NaN }
         val count = mdp.VFunc { 0 }
-        for (i in 0 until max_iteration) {
-            println("$i/$max_iteration")
+
+        for (episode in 1..episodes) {
+            println("$episode/$episodes")
             var s = states.rand()
             if (s.isTerminal()) continue
             var accumulate = 0.0
@@ -50,7 +52,7 @@ class MonteCarlo(val mdp: MDP, private var policy: NonDeterminedPolicy = emptyNS
         return V
     }
 
-    fun `Optimal Exploring Starts`(): Triple<NonDeterminedPolicy, StateValueFunction, ActionValueFunction> {
+    fun `Optimal Exploring Starts`(): OptimalSolution {
         if (policy.isEmpty()) {
             policy = mdp.QFunc { 0.0 }
             for (s in states)
@@ -62,8 +64,9 @@ class MonteCarlo(val mdp: MDP, private var policy: NonDeterminedPolicy = emptyNS
         val tmpQ = mdp.QFunc { Double.NaN }
         val count = mdp.QFunc { 0 }
         val tmpS = DefaultBuf.new<State>(states.size)
-        for (i in 0 until max_iteration) {
-            println("$i/$max_iteration")
+
+        for (episode in 1..episodes) {
+            println("$episode/$episodes")
             var s = states.rand()
             if (s.isTerminal()) continue
             var a = s.actions.rand()//Exploring Starts
@@ -102,6 +105,7 @@ class MonteCarlo(val mdp: MDP, private var policy: NonDeterminedPolicy = emptyNS
                     policy[s, a] = if (a === a_greedy) 1.0 else 0.0
             }
         }
+
         Q.set { idx, value ->
             val n = count[idx]
             if (n > 0)
@@ -115,7 +119,7 @@ class MonteCarlo(val mdp: MDP, private var policy: NonDeterminedPolicy = emptyNS
         return result
     }
 
-    fun `On-policy first-visit MC control`(epsilon: Double = 0.1): Triple<NonDeterminedPolicy, StateValueFunction, ActionValueFunction> {
+    fun `On-policy first-visit MC control`(epsilon: Double = 0.1): OptimalSolution {
         val policy = mdp.QFunc { 0.0 }
         for (s in states) {
             if (s.isTerminal()) continue
@@ -127,8 +131,9 @@ class MonteCarlo(val mdp: MDP, private var policy: NonDeterminedPolicy = emptyNS
         val tmpQ = mdp.QFunc { Double.NaN }
         val count = mdp.QFunc { 0 }
         val tmpS = DefaultBuf.new<State>(states.size)
-        for (i in 0 until max_iteration) {
-            println("$i/$max_iteration")
+
+        for (episode in 1..episodes) {
+            println("$episode/$episodes")
             var s = states.rand()
             if (s.isTerminal()) continue
             var accumulate = 0.0
@@ -170,6 +175,7 @@ class MonteCarlo(val mdp: MDP, private var policy: NonDeterminedPolicy = emptyNS
                 }
             }
         }
+
         Q.set { idx, value ->
             val n = count[idx]
             if (n > 0)

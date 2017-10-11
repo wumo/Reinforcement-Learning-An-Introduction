@@ -3,6 +3,9 @@ package lab.mars.rl.algo
 import lab.mars.rl.model.MDP
 import lab.mars.rl.model.StateValueFunction
 import lab.mars.rl.model.null_action
+import lab.mars.rl.util.argmax
+import lab.mars.rl.util.max
+import lab.mars.rl.util.sigma
 import org.apache.commons.math3.util.FastMath.abs
 import org.apache.commons.math3.util.FastMath.max
 

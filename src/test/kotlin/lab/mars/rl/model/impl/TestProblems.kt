@@ -8,6 +8,7 @@ import lab.mars.rl.problem.Blackjack
 import lab.mars.rl.problem.CarRental
 import lab.mars.rl.problem.GridWorld
 import lab.mars.rl.problem.RandomWalk
+import lab.mars.rl.util.argmax
 import org.junit.Assert
 import org.junit.Test
 
@@ -60,7 +61,7 @@ class TestProblems {
     fun `GridWorld`() {
         val prob = GridWorld.make()
         val algo = PolicyIteration(prob)
-        val (PI, V, Q) = algo.v_iteration()
+        val (_, V, _) = algo.v_iteration()
         for (s in prob.states) {
             println(V[s])
         }
@@ -93,7 +94,7 @@ class TestProblems {
     fun `Car Rental Policy Iteration Value`() {
         val prob = CarRental.make(false)
         val algo = PolicyIteration(prob)
-        val (PI, V, Q) = algo.v_iteration()
+        val (_, V, _) = algo.v_iteration()
         val result = StringBuilder()
         var i = 0
         for (a in CarRental.max_car downTo 0)
@@ -105,7 +106,7 @@ class TestProblems {
     fun `Car Rental Policy Iteration Policy`() {
         val prob = CarRental.make(false)
         val algo = PolicyIteration(prob)
-        val (PI, V, Q) = algo.q_iteration()
+        val (_, V, _) = algo.q_iteration()
         var i = 0
         for (a in CarRental.max_car downTo 0)
             for (b in 0..CarRental.max_car)
@@ -123,35 +124,11 @@ class TestProblems {
                 Assert.assertEquals(`Car Rental Result`[i++], V[prob.states[a, b]].format(2))
     }
 
-    val expected = """
-0.00 0.00 0.00 0.00 0.00 0.00 0.00 0.00 0.15 0.64
-0.00 0.00 0.00 0.00 0.00 0.00 0.00 0.00 0.65 0.89
-0.00 0.00 0.00 0.00 0.00 0.00 0.00 0.00 0.66 0.89
-0.00 0.00 0.00 0.00 0.00 0.00 0.00 0.00 0.67 0.89
-0.00 0.00 0.00 0.00 0.00 0.00 0.00 0.00 0.68 0.89
-0.00 0.00 0.00 0.00 0.00 0.00 0.00 0.00 0.71 0.91
-0.00 0.00 0.00 0.00 0.00 0.00 0.00 0.00 0.78 0.93
-0.00 0.00 0.00 0.00 0.00 0.00 0.00 0.00 0.80 0.93
-0.00 0.00 0.00 0.00 0.00 0.00 0.00 0.00 0.76 0.94
-0.00 0.00 0.00 0.00 0.00 0.00 0.00 0.00 0.43 0.89
-------------------------------------------------------------
--0.31 -0.38 -0.46 -0.54 -0.61 -0.69 -0.77 -0.85 0.15 0.64
--0.31 -0.38 -0.46 -0.54 -0.62 -0.69 -0.77 -0.85 0.65 0.89
--0.31 -0.38 -0.46 -0.54 -0.62 -0.69 -0.77 -0.85 0.66 0.89
--0.31 -0.39 -0.46 -0.54 -0.61 -0.69 -0.77 -0.85 0.67 0.89
--0.31 -0.38 -0.46 -0.54 -0.61 -0.69 -0.77 -0.85 0.68 0.90
--0.31 -0.38 -0.46 -0.54 -0.62 -0.69 -0.77 -0.85 0.71 0.91
--0.31 -0.39 -0.46 -0.54 -0.61 -0.69 -0.77 -0.85 0.78 0.93
--0.31 -0.38 -0.46 -0.54 -0.62 -0.69 -0.77 -0.85 0.80 0.93
--0.31 -0.38 -0.46 -0.54 -0.62 -0.69 -0.77 -0.85 0.76 0.94
--0.31 -0.39 -0.46 -0.54 -0.62 -0.69 -0.77 -0.85 0.44 0.89
-"""
-
     @Test
     fun `Blackjack MC Prediction`() {
         val (prob, PI) = Blackjack.make()
         val algo = MonteCarlo(prob, PI)
-        algo.max_iteration = 500000
+        algo.episodes = 500000
         val V = algo.prediction()
         printBlackjack(prob, PI, V)
     }
@@ -160,7 +137,7 @@ class TestProblems {
     fun `Blackjack MC Optimal`() {
         val (prob, policy1) = Blackjack.make()
         val algo = MonteCarlo(prob, policy1)
-        algo.max_iteration = 1000000
+        algo.episodes = 1000000
         val (PI, V, _) = algo.`Optimal Exploring Starts`()
         printBlackjack(prob, PI, V)
     }
@@ -169,7 +146,7 @@ class TestProblems {
     fun `Blackjack Optimal On-policy first-visit MC control`() {
         val (prob, policy1) = Blackjack.make()
         val algo = MonteCarlo(prob, policy1)
-        algo.max_iteration = 1000000
+        algo.episodes = 1000000
         val (PI, V, _) = algo.`On-policy first-visit MC control`()
         printBlackjack(prob, PI, V)
     }
@@ -178,8 +155,17 @@ class TestProblems {
     fun `Blackjack TD Prediction`() {
         val (prob, PI) = Blackjack.make()
         val algo = TemporalDifference(prob, PI)
-        algo.max_iteration = 500000
+        algo.episodes = 500000
         val V = algo.prediction()
+        printBlackjack(prob, PI, V)
+    }
+
+    @Test
+    fun `Blackjack TD Sarsa`() {
+        val (prob, policy) = Blackjack.make()
+        val algo = TemporalDifference(prob, policy)
+        algo.episodes = 20000000
+        val (PI, V, _) = algo.sarsa()
         printBlackjack(prob, PI, V)
     }
 
@@ -188,7 +174,7 @@ class TestProblems {
     fun `RandomWalk TD Prediction`() {
         val (prob, PI) = RandomWalk.make()
         val algo = TemporalDifference(prob, PI)
-        algo.max_iteration = 500000
+        algo.episodes = 1000000
         val V = algo.prediction()
         prob.apply {
             for (s in states) {
@@ -201,7 +187,7 @@ class TestProblems {
     fun `RandomWalk MC Prediction`() {
         val (prob, PI) = RandomWalk.make()
         val algo = MonteCarlo(prob, PI)
-        algo.max_iteration = 500000
+        algo.episodes = 500000
         val V = algo.prediction()
         prob.apply {
             for (s in states) {
