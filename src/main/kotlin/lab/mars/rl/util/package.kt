@@ -12,12 +12,19 @@ import java.util.concurrent.ThreadLocalRandom
  */
 const val theta = 1e-6
 
-inline fun Rand()= ThreadLocalRandom.current()
+inline fun Rand() = ThreadLocalRandom.current()
 inline fun <T> sigma(set: Iterable<T>, evaluate: T.() -> Double): Double {
     var sum = 0.0
     set.forEach {
         sum += it.evaluate()
     }
+    return sum
+}
+
+inline fun sigma(from: Int, to: Int, evaluate: (Int) -> Double): Double {
+    var sum = 0.0
+    for (a in from..to)
+        sum += evaluate(a)
     return sum
 }
 

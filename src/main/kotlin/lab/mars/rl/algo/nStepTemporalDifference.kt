@@ -3,6 +3,9 @@ package lab.mars.rl.algo
 import lab.mars.rl.model.*
 import lab.mars.rl.util.*
 import lab.mars.rl.util.buf.DefaultBuf
+import org.apache.commons.math3.util.FastMath
+import org.apache.commons.math3.util.FastMath.min
+import org.apache.commons.math3.util.FastMath.pow
 
 /**
  * <p>
@@ -11,7 +14,7 @@ import lab.mars.rl.util.buf.DefaultBuf
  *
  * @author wumo
  */
-class TemporalDifference(val mdp: MDP, private var policy: NonDeterminedPolicy = emptyNSet()) {
+class nStepTemporalDifference(val mdp: MDP, val n: Int, private var policy: NonDeterminedPolicy = emptyNSet()) {
     val gamma = mdp.gamma
     val started = mdp.started
     val states = mdp.states
@@ -21,15 +24,37 @@ class TemporalDifference(val mdp: MDP, private var policy: NonDeterminedPolicy =
 
     fun prediction(): StateValueFunction {
         val V = mdp.VFunc { 0.0 }
+        val R = DefaultBuf.new<Double>(n)
+        val S = DefaultBuf.new<State>(n)
         for (episode in 1..episodes) {
             println("$episode/$episodes")
+            var T = Int.MAX_VALUE
+            var t = 0
             var s = started.rand()
-            while (s.isNotTerminal()) {
-                val a = s.actions.rand(policy(s))
-                val possible = a.sample()
-                V[s] += alpha * (possible.reward + gamma * V[possible.next] - V[s])
-                s = possible.next
-            }
+            R.clear();R.append(0.0)
+            S.clear();S.append(s)
+
+            do {
+                if (t >= n) {//最多存储n个
+                    R.removeFirst(1)
+                    S.removeFirst(1)
+                }
+                if (t < T) {
+                    val a = s.actions.rand(policy(s))
+                    val possible = a.sample()
+                    R.append(possible.reward)
+                    S.append(possible.next)
+                    s = possible.next
+                    if (s.isTerminal()) T = t + 1
+                }
+                val _t = t - n + 1
+                if (_t >= 0) {
+                    var G = sigma(_t + 1, min(_t + n, T)) { pow(gamma, it - _t - 1) * R[it - _t] }
+                    if (_t + n < T) G += pow(gamma, n) * V[S[n]]
+                    V[S[0]] += alpha * (G - V[S[0]])
+                }
+                t++
+            } while (_t < T - 1)
         }
         return V
     }
