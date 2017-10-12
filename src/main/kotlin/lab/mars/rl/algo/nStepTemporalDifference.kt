@@ -3,7 +3,6 @@ package lab.mars.rl.algo
 import lab.mars.rl.model.*
 import lab.mars.rl.util.*
 import lab.mars.rl.util.buf.DefaultBuf
-import org.apache.commons.math3.util.FastMath
 import org.apache.commons.math3.util.FastMath.min
 import org.apache.commons.math3.util.FastMath.pow
 

@@ -318,7 +318,7 @@ class TestProblems {
         val prob = WindyGridworld.make()
         val algo = nStepTemporalDifference(prob, 10)
         algo.alpha = 0.1
-        algo.episodes = 100000
+        algo.episodes = 10000
         val (PI, V, _) = algo.sarsa()
         var s = prob.started[0]
         var sum = 0.0
@@ -375,6 +375,25 @@ class TestProblems {
     fun `Cliff Walking TD Expected Sarsa`() {
         val prob = CliffWalking.make()
         val algo = TemporalDifference(prob)
+        algo.alpha = 0.5
+        val (PI, V, _) = algo.expectedSarsa()
+        var s = prob.started[0]
+        var sum = 0.0
+        print(s)
+        while (s.isNotTerminal()) {
+            val a = argmax(s.actions) { PI[s, this] }
+            val possible = a.sample()
+            s = possible.next
+            sum += possible.reward
+            print("${WindyGridworld.desc_move[a[0]]}$s")
+        }
+        println("\nreturn=$sum")//optimal=-12
+    }
+
+    @Test
+    fun `Cliff Walking n-TD sarsa`() {
+        val prob = CliffWalking.make()
+        val algo = nStepTemporalDifference(prob, 10)
         algo.alpha = 0.5
         val (PI, V, _) = algo.expectedSarsa()
         var s = prob.started[0]
