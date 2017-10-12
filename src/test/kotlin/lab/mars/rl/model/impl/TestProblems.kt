@@ -167,6 +167,15 @@ class TestProblems {
     }
 
     @Test
+    fun `Blackjack n-TD Sarsa`() {
+        val (prob, policy) = Blackjack.make()
+        val algo = nStepTemporalDifference(prob, 1024, policy)
+        algo.episodes = 1000000
+        val (PI, V, _) = algo.sarsa()
+        printBlackjack(prob, PI, V)
+    }
+
+    @Test
     fun `Blackjack TD Sarsa`() {
         val (prob, policy) = Blackjack.make()
         val algo = TemporalDifference(prob, policy)
@@ -303,6 +312,26 @@ class TestProblems {
         println("\nreturn=$sum")//optimal=-6
     }
 
+
+    @Test
+    fun `WindyGridworld n-TD sarsa`() {
+        val prob = WindyGridworld.make()
+        val algo = nStepTemporalDifference(prob, 10)
+        algo.alpha = 0.1
+        algo.episodes = 100000
+        val (PI, V, _) = algo.sarsa()
+        var s = prob.started[0]
+        var sum = 0.0
+        print(s)
+        while (s.isNotTerminal()) {
+            val a = argmax(s.actions) { PI[s, this] }
+            val possible = a.sample()
+            s = possible.next
+            sum += possible.reward
+            print("${WindyGridworld.desc_move[a[0]]}$s")
+        }
+        println("\nreturn=$sum")//optimal=-14
+    }
 
     @Test
     fun `Cliff Walking TD sarsa`() {

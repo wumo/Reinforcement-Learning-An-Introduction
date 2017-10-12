@@ -62,26 +62,47 @@ class nStepTemporalDifference(val mdp: MDP, val n: Int, private var policy: NonD
     fun sarsa(): OptimalSolution {
         val policy = mdp.QFunc { 0.0 }
         val Q = mdp.QFunc { 0.0 }
+        val R = DefaultBuf.new<Double>(n)
+        val S = DefaultBuf.new<State>(n)
+        val A = DefaultBuf.new<Action>(n)
 
         for (episode in 1..episodes) {
             println("$episode/$episodes")
+            var T = Int.MAX_VALUE
+            var t = 0
             var s = started.rand()
             updatePolicy(s, Q, policy)
             var a = s.actions.rand(policy(s))
-            while (true) {
-                val possible = a.sample()
-                val s_next = possible.next
-                if (s_next.isNotTerminal()) {
-                    updatePolicy(s_next, Q, policy)
-                    val a_next = s_next.actions.rand(policy(s_next))
-                    Q[s, a] += alpha * (possible.reward + gamma * Q[s_next, a_next] - Q[s, a])
-                    s = s_next
-                    a = a_next
-                } else {
-                    Q[s, a] += alpha * (possible.reward + gamma * 0.0 - Q[s, a])//Q[terminalState,*]=0.0
-                    break
+            R.clear();R.append(0.0)
+            S.clear();S.append(s)
+            A.clear();A.append(a)
+            do {
+                if (t >= n) {//最多存储n个
+                    R.removeFirst(1)
+                    S.removeFirst(1)
+                    A.removeFirst(1)
                 }
-            }
+                if (t < T) {
+                    val possible = a.sample()
+                    R.append(possible.reward)
+                    S.append(possible.next)
+                    s = possible.next
+                    if (s.isTerminal()) T = t + 1
+                    else {
+                        updatePolicy(s, Q, policy)
+                        a = s.actions.rand(policy(s))
+                        A.append(a)
+                    }
+                }
+                val _t = t - n + 1
+                if (_t >= 0) {
+                    var G = sigma(_t + 1, min(_t + n, T)) { pow(gamma, it - _t - 1) * R[it - _t] }
+                    if (_t + n < T) G += pow(gamma, n) * Q[S[n], A[n]]
+                    Q[S[0], A[0]] += alpha * (G - Q[S[0], A[0]])
+                    updatePolicy(states[S[0]],Q,policy)
+                }
+                t++
+            } while (_t < T - 1)
         }
         val V = mdp.VFunc { 0.0 }
         val result = Triple(policy, V, Q)
