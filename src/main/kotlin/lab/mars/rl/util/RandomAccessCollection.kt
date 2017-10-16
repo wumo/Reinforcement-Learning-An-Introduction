@@ -83,8 +83,8 @@ interface RandomAccessCollection<E : Any> : Iterable<E> {
     /**
      * 如果集合不为空，则执行[block]
      */
-    fun ifAny(block: RandomAccessCollection<E>.() -> Unit) {
-        for (element in this) return block(this)
+    fun ifAny(block: RandomAccessCollection<E>.(RandomAccessCollection<E>) -> Unit) {
+        for (element in this) return block(this, this)
     }
 
     fun isEmpty(): Boolean {

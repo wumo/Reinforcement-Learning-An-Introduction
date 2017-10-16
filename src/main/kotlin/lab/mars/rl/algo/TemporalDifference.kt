@@ -2,7 +2,7 @@ package lab.mars.rl.algo
 
 import lab.mars.rl.model.*
 import lab.mars.rl.util.*
-import lab.mars.rl.util.buf.DefaultBuf
+import org.slf4j.LoggerFactory
 
 /**
  * <p>
@@ -12,6 +12,10 @@ import lab.mars.rl.util.buf.DefaultBuf
  * @author wumo
  */
 class TemporalDifference(val mdp: MDP, private var policy: NonDeterminedPolicy = emptyNSet()) {
+    companion object {
+        val log = LoggerFactory.getLogger(this::class.java)!!
+    }
+
     val gamma = mdp.gamma
     val started = mdp.started
     val states = mdp.states
@@ -22,7 +26,7 @@ class TemporalDifference(val mdp: MDP, private var policy: NonDeterminedPolicy =
     fun prediction(): StateValueFunction {
         val V = mdp.VFunc { 0.0 }
         for (episode in 1..episodes) {
-            println("$episode/$episodes")
+            log.debug { "$episode/$episodes" }
             var s = started.rand()
             while (s.isNotTerminal()) {
                 val a = s.actions.rand(policy(s))
@@ -39,15 +43,15 @@ class TemporalDifference(val mdp: MDP, private var policy: NonDeterminedPolicy =
         val Q = mdp.QFunc { 0.0 }
 
         for (episode in 1..episodes) {
-            println("$episode/$episodes")
+            log.debug { "$episode/$episodes" }
             var s = started.rand()
-            updatePolicy(s, Q, policy)
+            `e-greedy`(s, Q, policy)
             var a = s.actions.rand(policy(s))
             while (true) {
                 val possible = a.sample()
                 val s_next = possible.next
                 if (s_next.isNotTerminal()) {
-                    updatePolicy(s_next, Q, policy)
+                    `e-greedy`(s_next, Q, policy)
                     val a_next = s_next.actions.rand(policy(s_next))
                     Q[s, a] += alpha * (possible.reward + gamma * Q[s_next, a_next] - Q[s, a])
                     s = s_next
@@ -64,10 +68,8 @@ class TemporalDifference(val mdp: MDP, private var policy: NonDeterminedPolicy =
         return result
     }
 
-    private fun updatePolicy(s: State, Q: ActionValueFunction, policy: NonDeterminedPolicy) {
-        val `a*` = argmax(s.actions) {
-            Q[s, this]
-        }
+    private fun `e-greedy`(s: State, Q: ActionValueFunction, policy: NonDeterminedPolicy) {
+        val `a*` = argmax(s.actions) { Q[s, it] }
         val size = s.actions.size
         for (a in s.actions) {
             policy[s, a] = when {
@@ -82,15 +84,15 @@ class TemporalDifference(val mdp: MDP, private var policy: NonDeterminedPolicy =
         val Q = mdp.QFunc { 0.0 }
 
         for (episode in 1..episodes) {
-            println("$episode/$episodes")
+            log.debug { "$episode/$episodes" }
             var s = started.rand()
             while (true) {
-                updatePolicy(s, Q, policy)
+                `e-greedy`(s, Q, policy)
                 val a = s.actions.rand(policy(s))
                 val possible = a.sample()
                 val s_next = possible.next
                 if (s_next.isNotTerminal()) {
-                    Q[s, a] += alpha * (possible.reward + gamma * max(s_next.actions) { Q[s_next, this] } - Q[s, a])
+                    Q[s, a] += alpha * (possible.reward + gamma * max(s_next.actions) { Q[s_next, it] } - Q[s, a])
                     s = s_next
                 } else {
                     Q[s, a] += alpha * (possible.reward + gamma * 0.0 - Q[s, a])//Q[terminalState,*]=0.0
@@ -109,15 +111,15 @@ class TemporalDifference(val mdp: MDP, private var policy: NonDeterminedPolicy =
         val Q = mdp.QFunc { 0.0 }
 
         for (episode in 1..episodes) {
-            println("$episode/$episodes")
+            log.debug { "$episode/$episodes" }
             var s = started.rand()
             while (true) {
-                updatePolicy(s, Q, policy)
+                `e-greedy`(s, Q, policy)
                 val a = s.actions.rand(policy(s))
                 val possible = a.sample()
                 val s_next = possible.next
                 if (s_next.isNotTerminal()) {
-                    Q[s, a] += alpha * (possible.reward + gamma * sigma(s_next.actions) { policy[s_next, this] * Q[s_next, this] } - Q[s, a])
+                    Q[s, a] += alpha * (possible.reward + gamma * sigma(s_next.actions) { policy[s_next, it] * Q[s_next, it] } - Q[s, a])
                     s = s_next
                 } else {
                     Q[s, a] += alpha * (possible.reward + gamma * 0.0 - Q[s, a])//Q[terminalState,*]=0.0
@@ -137,10 +139,10 @@ class TemporalDifference(val mdp: MDP, private var policy: NonDeterminedPolicy =
         var Q2 = mdp.QFunc { 0.0 }
 
         for (episode in 1..episodes) {
-            println("$episode/$episodes")
+            log.debug { "$episode/$episodes" }
             var s = started.rand()
             while (true) {
-                updatePolicy(s, Q1, Q2, policy)
+                `e-greedy`(s, Q1, Q2, policy)
                 val a = s.actions.rand(policy(s))
                 val possible = a.sample()
                 val s_next = possible.next
@@ -150,7 +152,7 @@ class TemporalDifference(val mdp: MDP, private var policy: NonDeterminedPolicy =
                     Q2 = tmp
                 }
                 if (s_next.isNotTerminal()) {
-                    Q1[s, a] += alpha * (possible.reward + gamma * Q2[s_next, argmax(s_next.actions) { Q1[s_next, this] }] - Q1[s, a])
+                    Q1[s, a] += alpha * (possible.reward + gamma * Q2[s_next, argmax(s_next.actions) { Q1[s_next, it] }] - Q1[s, a])
                     s = s_next
                 } else {
                     Q1[s, a] += alpha * (possible.reward + gamma * 0.0 - Q1[s, a])//Q[terminalState,*]=0.0
@@ -164,10 +166,8 @@ class TemporalDifference(val mdp: MDP, private var policy: NonDeterminedPolicy =
         return result
     }
 
-    private fun updatePolicy(s: State, Q1: ActionValueFunction, Q2: ActionValueFunction, policy: NonDeterminedPolicy) {
-        val `a*` = argmax(s.actions) {
-            Q1[s, this] + Q2[s, this]
-        }
+    private fun `e-greedy`(s: State, Q1: ActionValueFunction, Q2: ActionValueFunction, policy: NonDeterminedPolicy) {
+        val `a*` = argmax(s.actions) { Q1[s, it] + Q2[s, it] }
         val size = s.actions.size
         for (a in s.actions) {
             policy[s, a] = when {

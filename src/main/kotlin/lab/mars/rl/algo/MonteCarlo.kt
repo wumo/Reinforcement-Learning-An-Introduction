@@ -2,9 +2,10 @@ package lab.mars.rl.algo
 
 import lab.mars.rl.model.*
 import lab.mars.rl.util.argmax
-import lab.mars.rl.util.buf.DefaultBuf
+import lab.mars.rl.util.buf.newBuf
+import lab.mars.rl.util.debug
 import lab.mars.rl.util.emptyNSet
-import java.util.*
+import org.slf4j.LoggerFactory
 
 /**
  * <p>
@@ -14,10 +15,13 @@ import java.util.*
  * @author wumo
  */
 class MonteCarlo(val mdp: MDP, private var policy: NonDeterminedPolicy = emptyNSet()) {
+    companion object {
+        val log = LoggerFactory.getLogger(this::class.java)!!
+    }
+
     val started = mdp.started
     val states = mdp.states
     var episodes: Int = 10000
-    private val rand = Random(System.nanoTime())
 
     fun prediction(): StateValueFunction {
         val V = mdp.VFunc { 0.0 }
@@ -25,7 +29,7 @@ class MonteCarlo(val mdp: MDP, private var policy: NonDeterminedPolicy = emptyNS
         val count = mdp.VFunc { 0 }
 
         for (episode in 1..episodes) {
-            println("$episode/$episodes")
+            log.debug { "$episode/$episodes" }
             var s = started.rand()
             var accumulate = 0.0
             while (s.isNotTerminal()) {
@@ -61,10 +65,10 @@ class MonteCarlo(val mdp: MDP, private var policy: NonDeterminedPolicy = emptyNS
         val Q = mdp.QFunc { 0.0 }
         val tmpQ = mdp.QFunc { Double.NaN }
         val count = mdp.QFunc { 0 }
-        val tmpS = DefaultBuf.new<State>(states.size)
+        val tmpS = newBuf<State>(states.size)
 
         for (episode in 1..episodes) {
-            println("$episode/$episodes")
+            log.debug { "$episode/$episodes" }
             var s = started.rand()
             var a = s.actions.rand()//Exploring Starts
 
@@ -92,11 +96,11 @@ class MonteCarlo(val mdp: MDP, private var policy: NonDeterminedPolicy = emptyNS
             }
             for (s in tmpS) {
                 val a_greedy = argmax(s.actions) {
-                    val n = count[s, this]
+                    val n = count[s, it]
                     if (n > 0)
-                        Q[s, this] / n
+                        Q[s, it] / n
                     else
-                        Q[s, this]
+                        Q[s, it]
                 }
                 for (a in s.actions)
                     policy[s, a] = if (a === a_greedy) 1.0 else 0.0
@@ -127,10 +131,10 @@ class MonteCarlo(val mdp: MDP, private var policy: NonDeterminedPolicy = emptyNS
         val Q = mdp.QFunc { 0.0 }
         val tmpQ = mdp.QFunc { Double.NaN }
         val count = mdp.QFunc { 0 }
-        val tmpS = DefaultBuf.new<State>(states.size)
+        val tmpS = newBuf<State>(states.size)
 
         for (episode in 1..episodes) {
-            println("$episode/$episodes")
+            log.debug { "$episode/$episodes" }
             var s = started.rand()
             var accumulate = 0.0
             while (s.isNotTerminal()) {
@@ -156,11 +160,11 @@ class MonteCarlo(val mdp: MDP, private var policy: NonDeterminedPolicy = emptyNS
             }
             for (s in tmpS) {
                 val `a*` = argmax(s.actions) {
-                    val n = count[s, this]
+                    val n = count[s, it]
                     if (n > 0)
-                        Q[s, this] / n
+                        Q[s, it] / n
                     else
-                        Q[s, this]
+                        Q[s, it]
                 }
                 val size = s.actions.size
                 for (a in s.actions) {

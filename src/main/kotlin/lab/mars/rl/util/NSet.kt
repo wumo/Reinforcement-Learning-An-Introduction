@@ -115,8 +115,8 @@ class NSet<E : Any>(private val dim: IntArray, private val stride: IntArray, pri
         }
     }
 
-    override fun ifAny(block: RandomAccessCollection<E>.() -> Unit) {
-        if (!root.isEmpty()) block(this)
+    override fun ifAny(block: RandomAccessCollection<E>.(RandomAccessCollection<E>) -> Unit) {
+        if (!root.isEmpty()) block(this, this)
     }
 
     override fun isEmpty() = root.isEmpty()

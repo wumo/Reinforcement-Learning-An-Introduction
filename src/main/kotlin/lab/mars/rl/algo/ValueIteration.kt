@@ -4,10 +4,12 @@ import lab.mars.rl.model.MDP
 import lab.mars.rl.model.StateValueFunction
 import lab.mars.rl.model.null_action
 import lab.mars.rl.util.argmax
+import lab.mars.rl.util.debug
 import lab.mars.rl.util.max
 import lab.mars.rl.util.sigma
 import org.apache.commons.math3.util.FastMath.abs
 import org.apache.commons.math3.util.FastMath.max
+import org.slf4j.LoggerFactory
 
 /**
  * <p>
@@ -17,6 +19,10 @@ import org.apache.commons.math3.util.FastMath.max
  * @author wumo
  */
 class ValueIteration(private val mdp: MDP) {
+    companion object {
+        val log = LoggerFactory.getLogger(this::class.java)!!
+    }
+
     val states = mdp.states
     val gamma = mdp.gamma
     fun iteration(): StateValueFunction {
@@ -28,11 +34,11 @@ class ValueIteration(private val mdp: MDP) {
             for (s in states) {
                 s.actions.ifAny {
                     val v = V[s]
-                    V[s] = max(this) { sigma(possibles) { probability * (reward + gamma * V[next]) } }
+                    V[s] = max(it) { sigma(possibles) { probability * (reward + gamma * V[next]) } }
                     delta = max(delta, abs(v - V[s]))
                 }
             }
-            println("delta=$delta")
+            log.debug { "delta=$delta" }
         } while (delta >= theta)
         //policy generation
         for (s in states)

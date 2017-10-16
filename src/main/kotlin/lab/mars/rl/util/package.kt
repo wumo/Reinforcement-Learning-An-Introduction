@@ -13,10 +13,10 @@ import java.util.concurrent.ThreadLocalRandom
 const val theta = 1e-6
 
 inline fun Rand() = ThreadLocalRandom.current()
-inline fun <T> sigma(set: Iterable<T>, evaluate: T.() -> Double): Double {
+inline fun <T> sigma(set: Iterable<T>, evaluate: T.(T) -> Double): Double {
     var sum = 0.0
     set.forEach {
-        sum += it.evaluate()
+        sum += it.evaluate(it)
     }
     return sum
 }
@@ -28,24 +28,26 @@ inline fun sigma(from: Int, to: Int, evaluate: (Int) -> Double): Double {
     return sum
 }
 
-inline fun <T> max(set: Iterable<T>, evaluate: T.() -> Double): Double {
+inline fun <T> max(set: Iterable<T>, evaluate: T.(T) -> Double): Double {
     val iterator = set.iterator()
-    var max = evaluate(iterator.next())
+    var tmp = iterator.next()
+    var max = evaluate(tmp, tmp)
     while (iterator.hasNext()) {
-        val p = evaluate(iterator.next())
+        tmp = iterator.next()
+        val p = evaluate(tmp, tmp)
         if (p > max)
             max = p
     }
     return max
 }
 
-inline fun <T> argmax(set: Iterable<T>, evaluate: T.() -> Double): T {
+inline fun <T> argmax(set: Iterable<T>, evaluate: T.(T) -> Double): T {
     val iterator = set.iterator()
     var max_a: T = iterator.next()
-    var max = evaluate(max_a)
+    var max = evaluate(max_a,max_a)
     while (iterator.hasNext()) {
         val tmp = iterator.next()
-        val p = evaluate(tmp)
+        val p = evaluate(tmp,tmp)
         if (p > max) {
             max = p
             max_a = tmp

@@ -160,7 +160,7 @@ class TestProblems {
     @Test
     fun `Blackjack n-TD Prediction`() {
         val (prob, PI) = Blackjack.make()
-        val algo = nStepTemporalDifference(prob, 8, PI)
+        val algo = nStepTemporalDifference(prob, 102400, PI)
         algo.episodes = 500000
         val V = algo.prediction()
         printBlackjack(prob, PI, V)
@@ -169,7 +169,7 @@ class TestProblems {
     @Test
     fun `Blackjack n-TD Sarsa`() {
         val (prob, policy) = Blackjack.make()
-        val algo = nStepTemporalDifference(prob, 1024, policy)
+        val algo = nStepTemporalDifference(prob, 102400, policy)
         algo.episodes = 1000000
         val (PI, V, _) = algo.sarsa()
         printBlackjack(prob, PI, V)
@@ -243,7 +243,7 @@ class TestProblems {
         var sum = 0.0
         print(s)
         while (s.isNotTerminal()) {
-            val a = argmax(s.actions) { PI[s, this] }
+            val a = argmax(s.actions) { PI[s, it] }
             val possible = a.sample()
             s = possible.next
             sum += possible.reward
@@ -263,7 +263,7 @@ class TestProblems {
         var sum = 0.0
         print(s)
         while (s.isNotTerminal()) {
-            val a = argmax(s.actions) { PI[s, this] }
+            val a = argmax(s.actions) { PI[s, it] }
             val possible = a.sample()
             s = possible.next
             sum += possible.reward
@@ -283,7 +283,7 @@ class TestProblems {
         var sum = 0.0
         print(s)
         while (s.isNotTerminal()) {
-            val a = argmax(s.actions) { PI[s, this] }
+            val a = argmax(s.actions) { PI[s, it] }
             val possible = a.sample()
             s = possible.next
             sum += possible.reward
@@ -303,7 +303,7 @@ class TestProblems {
         var sum = 0.0
         print(s)
         while (s.isNotTerminal()) {
-            val a = argmax(s.actions) { PI[s, this] }
+            val a = argmax(s.actions) { PI[s, it] }
             val possible = a.sample()
             s = possible.next
             sum += possible.reward
@@ -324,7 +324,7 @@ class TestProblems {
         var sum = 0.0
         print(s)
         while (s.isNotTerminal()) {
-            val a = argmax(s.actions) { PI[s, this] }
+            val a = argmax(s.actions) { PI[s, it] }
             val possible = a.sample()
             s = possible.next
             sum += possible.reward
@@ -343,7 +343,7 @@ class TestProblems {
         var sum = 0.0
         print(s)
         while (s.isNotTerminal()) {
-            val a = argmax(s.actions) { PI[s, this] }
+            val a = argmax(s.actions) { PI[s, it] }
             val possible = a.sample()
             s = possible.next
             sum += possible.reward
@@ -362,7 +362,7 @@ class TestProblems {
         var sum = 0.0
         print(s)
         while (s.isNotTerminal()) {
-            val a = argmax(s.actions) { PI[s, this] }
+            val a = argmax(s.actions) { PI[s, it] }
             val possible = a.sample()
             s = possible.next
             sum += possible.reward
@@ -381,7 +381,7 @@ class TestProblems {
         var sum = 0.0
         print(s)
         while (s.isNotTerminal()) {
-            val a = argmax(s.actions) { PI[s, this] }
+            val a = argmax(s.actions) { PI[s, it] }
             val possible = a.sample()
             s = possible.next
             sum += possible.reward
@@ -400,7 +400,7 @@ class TestProblems {
         var sum = 0.0
         print(s)
         while (s.isNotTerminal()) {
-            val a = argmax(s.actions) { PI[s, this] }
+            val a = argmax(s.actions) { PI[s, it] }
             val possible = a.sample()
             s = possible.next
             sum += possible.reward
@@ -432,7 +432,7 @@ class TestProblems {
         for (a in 9 downTo 0) {
             for (b in 0 until 10) {
                 val s = prob.states[1, 1, b, a]
-                print("${color(argmax(s.actions) { PI[s, this] }[0])}  ${reset()}")
+                print("${color(argmax(s.actions) { PI[s, it] }[0])}  ${reset()}")
             }
             println()
         }
@@ -440,7 +440,7 @@ class TestProblems {
         for (a in 9 downTo 0) {
             for (b in 0 until 10) {
                 val s = prob.states[1, 0, b, a]
-                print("${color(argmax(s.actions) { PI[s, this] }[0])}  ${reset()}")
+                print("${color(argmax(s.actions) { PI[s, it] }[0])}  ${reset()}")
             }
             println()
         }

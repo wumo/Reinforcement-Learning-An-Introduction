@@ -13,6 +13,14 @@ import lab.mars.rl.util.dimension.NULL_obj
  */
 inline fun <reified T : Any> Array<T>.buf(start: Int = 0, end: Int = this.lastIndex) = DefaultBuf.reuse<T>(this as Array<Any>, start, end)
 
+inline fun <T : Any> newBuf(cap: Int = 8, size: Int = 0) = DefaultBuf.new<T>(cap, size)
+inline fun <T : Any> zeroBuf(num: Int) = DefaultBuf.zero<T>(num)
+inline fun <T : Any> bufOf(vararg s: T) = DefaultBuf<T>(s as Array<Any>, 0, s.size)
+inline fun <T : Any> reuseBuf(array: Array<Any>,
+                              start: Int = 0,
+                              end: Int = array.lastIndex,
+                              cap: Int = array.size) = DefaultBuf.reuse<T>(array, start, end, cap)
+
 open class DefaultBuf<T : Any>(private var ring: Array<Any>, private var offset: Int, size: Int, cap: Int = size) :
         MutableBuf<T> {
     companion object {

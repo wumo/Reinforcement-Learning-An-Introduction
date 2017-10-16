@@ -2,9 +2,12 @@ package lab.mars.rl.algo
 
 import lab.mars.rl.model.*
 import lab.mars.rl.util.*
-import lab.mars.rl.util.buf.DefaultBuf
+import lab.mars.rl.util.buf.newBuf
 import org.apache.commons.math3.util.FastMath.min
 import org.apache.commons.math3.util.FastMath.pow
+import org.slf4j.LoggerFactory
+
+const val MAX_N = 1024
 
 /**
  * <p>
@@ -14,6 +17,10 @@ import org.apache.commons.math3.util.FastMath.pow
  * @author wumo
  */
 class nStepTemporalDifference(val mdp: MDP, val n: Int, private var policy: NonDeterminedPolicy = emptyNSet()) {
+    companion object {
+        val log = LoggerFactory.getLogger(this::class.java)!!
+    }
+
     val gamma = mdp.gamma
     val started = mdp.started
     val states = mdp.states
@@ -22,11 +29,12 @@ class nStepTemporalDifference(val mdp: MDP, val n: Int, private var policy: NonD
     var epsilon = 0.1
 
     fun prediction(): StateValueFunction {
+        var n = n
         val V = mdp.VFunc { 0.0 }
-        val R = DefaultBuf.new<Double>(n)
-        val S = DefaultBuf.new<State>(n)
+        val R = newBuf<Double>(min(n, MAX_N))
+        val S = newBuf<State>(min(n, MAX_N))
         for (episode in 1..episodes) {
-            println("$episode/$episodes")
+            log.debug { "$episode/$episodes" }
             var T = Int.MAX_VALUE
             var t = 0
             var s = started.rand()
@@ -44,9 +52,14 @@ class nStepTemporalDifference(val mdp: MDP, val n: Int, private var policy: NonD
                     R.append(possible.reward)
                     S.append(possible.next)
                     s = possible.next
-                    if (s.isTerminal()) T = t + 1
+                    if (s.isTerminal()) {
+                        T = t + 1
+                        val _t = t - n + 1
+                        if (_t < 0) n = T //n is too large, normalize it
+                    }
                 }
                 val _t = t - n + 1
+
                 if (_t >= 0) {
                     var G = sigma(_t + 1, min(_t + n, T)) { pow(gamma, it - _t - 1) * R[it - _t] }
                     if (_t + n < T) G += pow(gamma, n) * V[S[n]]
@@ -54,19 +67,21 @@ class nStepTemporalDifference(val mdp: MDP, val n: Int, private var policy: NonD
                 }
                 t++
             } while (_t < T - 1)
+            log.debug { "n=$n,T=$T" }
         }
         return V
     }
 
     fun sarsa(): OptimalSolution {
+        var n = n
         val policy = mdp.QFunc { 0.0 }
         val Q = mdp.QFunc { 0.0 }
-        val R = DefaultBuf.new<Double>(n)
-        val S = DefaultBuf.new<State>(n)
-        val A = DefaultBuf.new<Action>(n)
+        val R = newBuf<Double>(min(n, MAX_N))
+        val S = newBuf<State>(min(n, MAX_N))
+        val A = newBuf<Action>(min(n, MAX_N))
 
         for (episode in 1..episodes) {
-            println("$episode/$episodes")
+            log.debug { "$episode/$episodes" }
             var T = Int.MAX_VALUE
             var t = 0
             var s = started.rand()
@@ -86,8 +101,11 @@ class nStepTemporalDifference(val mdp: MDP, val n: Int, private var policy: NonD
                     R.append(possible.reward)
                     S.append(possible.next)
                     s = possible.next
-                    if (s.isTerminal()) T = t + 1
-                    else {
+                    if (s.isTerminal()) {
+                        T = t + 1
+                        val _t = t - n + 1
+                        if (_t < 0) n = T //n is too large, normalize it
+                    } else {
                         updatePolicy(s, Q, policy)
                         a = s.actions.rand(policy(s))
                         A.append(a)
@@ -98,10 +116,11 @@ class nStepTemporalDifference(val mdp: MDP, val n: Int, private var policy: NonD
                     var G = sigma(_t + 1, min(_t + n, T)) { pow(gamma, it - _t - 1) * R[it - _t] }
                     if (_t + n < T) G += pow(gamma, n) * Q[S[n], A[n]]
                     Q[S[0], A[0]] += alpha * (G - Q[S[0], A[0]])
-                    updatePolicy(states[S[0]],Q,policy)
+                    updatePolicy(states[S[0]], Q, policy)
                 }
                 t++
             } while (_t < T - 1)
+            log.debug { "n=$n,T=$T" }
         }
         val V = mdp.VFunc { 0.0 }
         val result = Triple(policy, V, Q)
@@ -110,9 +129,7 @@ class nStepTemporalDifference(val mdp: MDP, val n: Int, private var policy: NonD
     }
 
     private fun updatePolicy(s: State, Q: ActionValueFunction, policy: NonDeterminedPolicy) {
-        val `a*` = argmax(s.actions) {
-            Q[s, this]
-        }
+        val `a*` = argmax(s.actions) { Q[s, it] }
         val size = s.actions.size
         for (a in s.actions) {
             policy[s, a] = when {
@@ -123,102 +140,15 @@ class nStepTemporalDifference(val mdp: MDP, val n: Int, private var policy: NonD
     }
 
     fun QLearning(): OptimalSolution {
-        val policy = mdp.QFunc { 0.0 }
-        val Q = mdp.QFunc { 0.0 }
-
-        for (episode in 1..episodes) {
-            println("$episode/$episodes")
-            var s = started.rand()
-            while (true) {
-                updatePolicy(s, Q, policy)
-                val a = s.actions.rand(policy(s))
-                val possible = a.sample()
-                val s_next = possible.next
-                if (s_next.isNotTerminal()) {
-                    Q[s, a] += alpha * (possible.reward + gamma * max(s_next.actions) { Q[s_next, this] } - Q[s, a])
-                    s = s_next
-                } else {
-                    Q[s, a] += alpha * (possible.reward + gamma * 0.0 - Q[s, a])//Q[terminalState,*]=0.0
-                    break
-                }
-            }
-        }
-        val V = mdp.VFunc { 0.0 }
-        val result = Triple(policy, V, Q)
-        V_from_Q_ND(states, result)
-        return result
+        TODO()
     }
 
     fun expectedSarsa(): OptimalSolution {
-        val policy = mdp.QFunc { 0.0 }
-        val Q = mdp.QFunc { 0.0 }
-
-        for (episode in 1..episodes) {
-            println("$episode/$episodes")
-            var s = started.rand()
-            while (true) {
-                updatePolicy(s, Q, policy)
-                val a = s.actions.rand(policy(s))
-                val possible = a.sample()
-                val s_next = possible.next
-                if (s_next.isNotTerminal()) {
-                    Q[s, a] += alpha * (possible.reward + gamma * sigma(s_next.actions) { policy[s_next, this] * Q[s_next, this] } - Q[s, a])
-                    s = s_next
-                } else {
-                    Q[s, a] += alpha * (possible.reward + gamma * 0.0 - Q[s, a])//Q[terminalState,*]=0.0
-                    break
-                }
-            }
-        }
-        val V = mdp.VFunc { 0.0 }
-        val result = Triple(policy, V, Q)
-        V_from_Q_ND(states, result)
-        return result
+        TODO()
     }
 
     fun DoubleQLearning(): OptimalSolution {
-        val policy = mdp.QFunc { 0.0 }
-        var Q1 = mdp.QFunc { 0.0 }
-        var Q2 = mdp.QFunc { 0.0 }
-
-        for (episode in 1..episodes) {
-            println("$episode/$episodes")
-            var s = started.rand()
-            while (true) {
-                updatePolicy(s, Q1, Q2, policy)
-                val a = s.actions.rand(policy(s))
-                val possible = a.sample()
-                val s_next = possible.next
-                if (Rand().nextBoolean()) {
-                    val tmp = Q1
-                    Q1 = Q2
-                    Q2 = tmp
-                }
-                if (s_next.isNotTerminal()) {
-                    Q1[s, a] += alpha * (possible.reward + gamma * Q2[s_next, argmax(s_next.actions) { Q1[s_next, this] }] - Q1[s, a])
-                    s = s_next
-                } else {
-                    Q1[s, a] += alpha * (possible.reward + gamma * 0.0 - Q1[s, a])//Q[terminalState,*]=0.0
-                    break
-                }
-            }
-        }
-        val V = mdp.VFunc { 0.0 }
-        val result = Triple(policy, V, Q1)
-        V_from_Q_ND(states, result)
-        return result
+        TODO()
     }
 
-    private fun updatePolicy(s: State, Q1: ActionValueFunction, Q2: ActionValueFunction, policy: NonDeterminedPolicy) {
-        val `a*` = argmax(s.actions) {
-            Q1[s, this] + Q2[s, this]
-        }
-        val size = s.actions.size
-        for (a in s.actions) {
-            policy[s, a] = when {
-                a === `a*` -> 1 - epsilon + epsilon / size
-                else -> epsilon / size
-            }
-        }
-    }
 }
