@@ -21,6 +21,8 @@ interface Buf<T : Any> : Iterable<T> {
         get() = size
     val lastIndex: Int
         get() = size - 1
+    val last: T
+        get() = get(lastIndex)
 
     /**
      * 获取指定维度[idx]上的数值

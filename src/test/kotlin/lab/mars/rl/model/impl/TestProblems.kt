@@ -229,6 +229,16 @@ class TestProblems {
     }
 
     @Test
+    fun `Blackjack n-TD treebackup`() {
+        val (prob, policy) = Blackjack.make()
+        val algo = nStepTemporalDifference(prob, 4, policy)
+        algo.alpha = 0.1
+        algo.episodes = 1000000
+        val (PI, V, _) = algo.treebackup()
+        printBlackjack(prob, PI, V)
+    }
+
+    @Test
     fun `Blackjack TD Sarsa`() {
         val (prob, policy) = Blackjack.make()
         val algo = TemporalDifference(prob, policy)
