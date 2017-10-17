@@ -18,6 +18,8 @@ interface RandomAccessCollection<E : Any> : Iterable<E> {
      */
     fun <T : Any> copycat(element_maker: (IntBuf) -> T): RandomAccessCollection<T>
 
+    fun copy() = copycat { get(it) }
+
     fun indices(): Iterator<IntBuf>
 
     fun withIndices(): Iterator<tuple2<out IntBuf, E>>
