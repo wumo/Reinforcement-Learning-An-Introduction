@@ -119,7 +119,7 @@ class TemporalDifference(val mdp: MDP, private var policy: NonDeterminedPolicy =
                 val possible = a.sample()
                 val s_next = possible.next
                 if (s_next.isNotTerminal()) {
-                    Q[s, a] += alpha * (possible.reward + gamma * sigma(s_next.actions) { policy[s_next, it] * Q[s_next, it] } - Q[s, a])
+                    Q[s, a] += alpha * (possible.reward + gamma * Sigma(s_next.actions) { policy[s_next, it] * Q[s_next, it] } - Q[s, a])
                     s = s_next
                 } else {
                     Q[s, a] += alpha * (possible.reward + gamma * 0.0 - Q[s, a])//Q[terminalState,*]=0.0

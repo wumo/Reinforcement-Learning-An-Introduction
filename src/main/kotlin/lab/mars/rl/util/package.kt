@@ -1,3 +1,5 @@
+@file:Suppress("NOTHING_TO_INLINE")
+
 package lab.mars.rl.util
 
 import lab.mars.rl.model.*
@@ -13,7 +15,15 @@ import java.util.concurrent.ThreadLocalRandom
 const val theta = 1e-6
 
 inline fun Rand() = ThreadLocalRandom.current()
-inline fun <T> sigma(set: Iterable<T>, evaluate: T.(T) -> Double): Double {
+
+inline fun Pi(from: Int, to: Int, evaluate: (Int) -> Double): Double {
+    var sum = 0.0
+    for (a in from..to)
+        sum += evaluate(a)
+    return sum
+}
+
+inline fun <T> Sigma(set: Iterable<T>, evaluate: T.(T) -> Double): Double {
     var sum = 0.0
     set.forEach {
         sum += it.evaluate(it)
@@ -21,7 +31,7 @@ inline fun <T> sigma(set: Iterable<T>, evaluate: T.(T) -> Double): Double {
     return sum
 }
 
-inline fun sigma(from: Int, to: Int, evaluate: (Int) -> Double): Double {
+inline fun Sigma(from: Int, to: Int, evaluate: (Int) -> Double): Double {
     var sum = 0.0
     for (a in from..to)
         sum += evaluate(a)
@@ -44,10 +54,10 @@ inline fun <T> max(set: Iterable<T>, evaluate: T.(T) -> Double): Double {
 inline fun <T> argmax(set: Iterable<T>, evaluate: T.(T) -> Double): T {
     val iterator = set.iterator()
     var max_a: T = iterator.next()
-    var max = evaluate(max_a,max_a)
+    var max = evaluate(max_a, max_a)
     while (iterator.hasNext()) {
         val tmp = iterator.next()
-        val p = evaluate(tmp,tmp)
+        val p = evaluate(tmp, tmp)
         if (p > max) {
             max = p
             max_a = tmp

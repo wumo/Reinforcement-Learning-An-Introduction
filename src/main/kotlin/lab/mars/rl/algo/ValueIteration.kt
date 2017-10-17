@@ -6,7 +6,7 @@ import lab.mars.rl.model.null_action
 import lab.mars.rl.util.argmax
 import lab.mars.rl.util.debug
 import lab.mars.rl.util.max
-import lab.mars.rl.util.sigma
+import lab.mars.rl.util.Sigma
 import org.apache.commons.math3.util.FastMath.abs
 import org.apache.commons.math3.util.FastMath.max
 import org.slf4j.LoggerFactory
@@ -34,7 +34,7 @@ class ValueIteration(private val mdp: MDP) {
             for (s in states) {
                 s.actions.ifAny {
                     val v = V[s]
-                    V[s] = max(it) { sigma(possibles) { probability * (reward + gamma * V[next]) } }
+                    V[s] = max(it) { Sigma(possibles) { probability * (reward + gamma * V[next]) } }
                     delta = max(delta, abs(v - V[s]))
                 }
             }
@@ -43,7 +43,7 @@ class ValueIteration(private val mdp: MDP) {
         //policy generation
         for (s in states)
             s.actions.ifAny {
-                PI[s] = argmax(s.actions) { sigma(possibles) { probability * (reward + gamma * V[next]) } }
+                PI[s] = argmax(s.actions) { Sigma(possibles) { probability * (reward + gamma * V[next]) } }
             }
         return V
     }

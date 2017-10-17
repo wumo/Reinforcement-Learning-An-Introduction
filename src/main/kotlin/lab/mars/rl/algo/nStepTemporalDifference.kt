@@ -61,7 +61,7 @@ class nStepTemporalDifference(val mdp: MDP, val n: Int, private var policy: NonD
                 val _t = t - n + 1
 
                 if (_t >= 0) {
-                    var G = sigma(_t + 1, min(_t + n, T)) { pow(gamma, it - _t - 1) * R[it - _t] }
+                    var G = Sigma(1, min(n, T - _t)) { pow(gamma, it - 1) * R[it] }
                     if (_t + n < T) G += pow(gamma, n) * V[S[n]]
                     V[S[0]] += alpha * (G - V[S[0]])
                 }
@@ -73,7 +73,6 @@ class nStepTemporalDifference(val mdp: MDP, val n: Int, private var policy: NonD
     }
 
     fun sarsa(): OptimalSolution {
-        var n = n
         val policy = mdp.QFunc { 0.0 }
         val Q = mdp.QFunc { 0.0 }
         val R = newBuf<Double>(min(n, MAX_N))
@@ -81,6 +80,7 @@ class nStepTemporalDifference(val mdp: MDP, val n: Int, private var policy: NonD
         val A = newBuf<Action>(min(n, MAX_N))
 
         for (episode in 1..episodes) {
+            var n = n
             log.debug { "$episode/$episodes" }
             var T = Int.MAX_VALUE
             var t = 0
@@ -113,7 +113,7 @@ class nStepTemporalDifference(val mdp: MDP, val n: Int, private var policy: NonD
                 }
                 val _t = t - n + 1
                 if (_t >= 0) {
-                    var G = sigma(_t + 1, min(_t + n, T)) { pow(gamma, it - _t - 1) * R[it - _t] }
+                    var G = Sigma(1, min(n, T - _t)) { pow(gamma, it - 1) * R[it] }
                     if (_t + n < T) G += pow(gamma, n) * Q[S[n], A[n]]
                     Q[S[0], A[0]] += alpha * (G - Q[S[0], A[0]])
                     updatePolicy(states[S[0]], Q, policy)
@@ -149,6 +149,71 @@ class nStepTemporalDifference(val mdp: MDP, val n: Int, private var policy: NonD
 
     fun DoubleQLearning(): OptimalSolution {
         TODO()
+    }
+
+    fun `off-policy sarsa`(): OptimalSolution {
+        val b = mdp.QFunc { 1.0 }
+        for (s in states) {
+            if (s.isTerminal()) continue
+            val prob = 1.0 / s.actions.size
+            for (a in s.actions)
+                b[s, a] = prob
+        }
+        val pi = b.copy()
+
+        val Q = mdp.QFunc { 0.0 }
+        val R = newBuf<Double>(min(n, MAX_N))
+        val S = newBuf<State>(min(n, MAX_N))
+        val A = newBuf<Action>(min(n, MAX_N))
+
+        for (episode in 1..episodes) {
+            var n = n
+            log.debug { "$episode/$episodes" }
+            var T = Int.MAX_VALUE
+            var t = 0
+            var s = started.rand()
+            updatePolicy(s, Q, pi)
+            var a = s.actions.rand(b(s))
+            R.clear();R.append(0.0)
+            S.clear();S.append(s)
+            A.clear();A.append(a)
+            do {
+                if (t >= n) {//最多存储n个
+                    R.removeFirst(1)
+                    S.removeFirst(1)
+                    A.removeFirst(1)
+                }
+                if (t < T) {
+                    val possible = a.sample()
+                    R.append(possible.reward)
+                    S.append(possible.next)
+                    s = possible.next
+                    if (s.isTerminal()) {
+                        T = t + 1
+                        val _t = t - n + 1
+                        if (_t < 0) n = T //n is too large, normalize it
+                    } else {
+                        updatePolicy(s, Q, pi)
+                        a = s.actions.rand(b(s))
+                        A.append(a)
+                    }
+                }
+                val _t = t - n + 1
+                if (_t >= 0) {
+                    val p = Pi(1, min(n - 1, T - 1 - _t)) { pi[S[it], A[it]] / b[S[it], A[it]] }
+                    var G = Sigma(1, min(n, T - _t)) { pow(gamma, it - 1) * R[it] }
+                    if (_t + n < T) G += pow(gamma, n) * Q[S[n], A[n]]
+                    Q[S[0], A[0]] += alpha * p * (G - Q[S[0], A[0]])
+                    updatePolicy(states[S[0]], Q, pi)
+                }
+                t++
+            } while (_t < T - 1)
+            log.debug { "n=$n,T=$T" }
+        }
+        val V = mdp.VFunc { 0.0 }
+        val result = Triple(pi, V, Q)
+        V_from_Q_ND(states, result)
+        return result
     }
 
 }

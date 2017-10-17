@@ -1,8 +1,7 @@
 package lab.mars.rl.algo
 
 import lab.mars.rl.model.*
-import lab.mars.rl.util.sigma
-import java.util.concurrent.ThreadLocalRandom
+import lab.mars.rl.util.Sigma
 
 /**
  * <p>
@@ -36,5 +35,5 @@ fun Q_from_V(gamma: Double, states: StateSet, pvq: Triple<DeterminedPolicy, Stat
     val (_, V, Q) = pvq
     for (s in states)
         for (a in s.actions)
-            Q[s, a] = sigma(a.possibles) { probability * (reward + gamma * V[next]) }
+            Q[s, a] = Sigma(a.possibles) { probability * (reward + gamma * V[next]) }
 }

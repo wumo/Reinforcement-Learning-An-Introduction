@@ -5,7 +5,6 @@ import lab.mars.rl.util.argmax
 import lab.mars.rl.util.buf.newBuf
 import lab.mars.rl.util.debug
 import lab.mars.rl.util.emptyNSet
-import org.apache.commons.math3.util.FastMath
 import org.slf4j.LoggerFactory
 
 /**
@@ -28,7 +27,7 @@ class MonteCarlo(val mdp: MDP, private var policy: NonDeterminedPolicy = emptyNS
 
     fun prediction(): StateValueFunction {
         val V = mdp.VFunc { 0.0 }
-        val tmpV = mdp.VFunc { Double.NaN }
+        val preReturn = mdp.VFunc { Double.NaN }
         val count = mdp.VFunc { 0 }
 
         for (episode in 1..episodes) {
@@ -38,12 +37,12 @@ class MonteCarlo(val mdp: MDP, private var policy: NonDeterminedPolicy = emptyNS
             while (s.isNotTerminal()) {
                 val a = s.actions.rand(policy(s))
                 val possible = a.sample()
-                if (tmpV[s].isNaN())
-                    tmpV[s] = accumulate
+                if (preReturn[s].isNaN())
+                    preReturn[s] = accumulate
                 accumulate += possible.reward
                 s = possible.next
             }
-            tmpV.set { idx, value ->
+            preReturn.set { idx, value ->
                 if (!value.isNaN()) {
                     V[idx] += accumulate - value
                     count[idx] += 1

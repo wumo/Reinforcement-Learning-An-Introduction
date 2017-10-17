@@ -3,7 +3,7 @@ package lab.mars.rl.algo
 import lab.mars.rl.model.*
 import lab.mars.rl.util.argmax
 import lab.mars.rl.util.debug
-import lab.mars.rl.util.sigma
+import lab.mars.rl.util.Sigma
 import org.apache.commons.math3.util.FastMath.abs
 import org.apache.commons.math3.util.FastMath.max
 import org.slf4j.LoggerFactory
@@ -38,7 +38,7 @@ class PolicyIteration(mdp: MDP) {
                 for (s in states)
                     s.actions.ifAny {
                         val v = V[s]
-                        V[s] = sigma(PI[s].possibles) { probability * (reward + gamma * V[next]) }
+                        V[s] = Sigma(PI[s].possibles) { probability * (reward + gamma * V[next]) }
                         delta = max(delta, abs(v - V[s]))
                     }
                 log.debug { "delta=$delta" }
@@ -49,7 +49,7 @@ class PolicyIteration(mdp: MDP) {
             for (s in states)
                 s.actions.ifAny {
                     val old_action = PI[s]
-                    PI[s] = argmax(s.actions) { sigma(possibles) { probability * (reward + gamma * V[next]) } }
+                    PI[s] = argmax(s.actions) { Sigma(possibles) { probability * (reward + gamma * V[next]) } }
                     if (old_action !== PI[s]) policy_stable = false
                 }
         } while (!policy_stable)
@@ -70,7 +70,7 @@ class PolicyIteration(mdp: MDP) {
                 for (s in states) {
                     for (a in s.actions) {
                         val q = Q[s, a]
-                        Q[s, a] = sigma(a.possibles) { probability * (reward + gamma * if (next.actions.any()) Q[next, PI[next]] else 0.0) }
+                        Q[s, a] = Sigma(a.possibles) { probability * (reward + gamma * if (next.actions.any()) Q[next, PI[next]] else 0.0) }
                         delta = max(delta, abs(q - Q[s, a]))
                     }
                 }
