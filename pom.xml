@@ -20,7 +20,7 @@
         <guava.version>22.0</guava.version>
         <commons.math.version>3.6.1</commons.math.version>
         <sim-core.version>1.1.2</sim-core.version>
-        <junit.version>4.11</junit.version>
+        <junit.version>4.12</junit.version>
         <slf4jVersion>1.7.7</slf4jVersion>
         <logbackVersion>1.1.2</logbackVersion>
         <jmh.version>1.18</jmh.version>
@@ -30,7 +30,7 @@
         <maven.compiler.source>1.9</maven.compiler.source>
         <maven.compiler.target>1.9</maven.compiler.target>
         <maven.assembly.plugin.version>3.0.0</maven.assembly.plugin.version>
-        <maven.compiler.plugin.version>3.6.1</maven.compiler.plugin.version>
+        <maven.compiler.plugin.version>3.7.0</maven.compiler.plugin.version>
         <maven.source.plugin.version>3.0.1</maven.source.plugin.version>
         <kotlin.version>1.1.51</kotlin.version>
         <!--<nd4j.version>0.9.1</nd4j.version>-->
