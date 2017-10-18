@@ -5,6 +5,7 @@ import lab.mars.rl.model.MDP
 import lab.mars.rl.model.NonDeterminedPolicy
 import lab.mars.rl.model.StateValueFunction
 import lab.mars.rl.problem.*
+import lab.mars.rl.util.Rand
 import lab.mars.rl.util.argmax
 import org.junit.Assert
 import org.junit.Test
@@ -227,8 +228,17 @@ class TestProblems {
             fun `Blackjack TD Sarsa`() {
                 val (prob, policy) = Blackjack.make()
                 val algo = TemporalDifference(prob, policy)
-                algo.episodes = 10000
+                algo.episodes = 1000000
                 val (PI, V, _) = algo.sarsa()
+                printBlackjack(prob, PI, V)
+            }
+
+            @Test
+            fun `Blackjack TD average Sarsa`() {
+                val (prob, policy) = Blackjack.make()
+                val algo = TemporalDifference(prob, policy)
+                algo.episodes = 1000000
+                val (PI, V, _) = algo.sarsa(average_alpha(prob))
                 printBlackjack(prob, PI, V)
             }
 
@@ -238,6 +248,51 @@ class TestProblems {
                 val algo = TemporalDifference(prob, policy)
                 algo.episodes = 100000
                 val (PI, V, _) = algo.QLearning()
+                printBlackjack(prob, PI, V)
+            }
+
+            @Test
+            fun `Blackjack TD average QLearning`() {
+                val (prob, policy) = Blackjack.make()
+                val algo = TemporalDifference(prob, policy)
+                algo.episodes = 1000000
+                val (PI, V, _) = algo.QLearning(average_alpha(prob))
+                printBlackjack(prob, PI, V)
+            }
+
+            @Test
+            fun `Blackjack TD expectedSarsa`() {
+                val (prob, policy) = Blackjack.make()
+                val algo = TemporalDifference(prob, policy)
+                algo.episodes = 1000000
+                val (PI, V, _) = algo.expectedSarsa()
+                printBlackjack(prob, PI, V)
+            }
+
+            @Test
+            fun `Blackjack TD average expectedSarsa`() {
+                val (prob, policy) = Blackjack.make()
+                val algo = TemporalDifference(prob, policy)
+                algo.episodes = 1000000
+                val (PI, V, _) = algo.expectedSarsa(average_alpha(prob))
+                printBlackjack(prob, PI, V)
+            }
+
+            @Test
+            fun `Blackjack TD Double QLearning`() {
+                val (prob, policy) = Blackjack.make()
+                val algo = TemporalDifference(prob, policy)
+                algo.episodes = 1000000
+                val (PI, V, _) = algo.DoubleQLearning()
+                printBlackjack(prob, PI, V)
+            }
+
+            @Test
+            fun `Blackjack TD average Double QLearning`() {
+                val (prob, policy) = Blackjack.make()
+                val algo = TemporalDifference(prob, policy)
+                algo.episodes = 1000000
+                val (PI, V, _) = algo.DoubleQLearning(average_alpha(prob))
                 printBlackjack(prob, PI, V)
             }
         }
@@ -442,6 +497,15 @@ class TestProblems {
             }
 
             @Test
+            fun `Blackjack n-TD average Sarsa`() {
+                val (prob, policy) = Blackjack.make()
+                val algo = nStepTemporalDifference(prob, Int.MAX_VALUE, policy)
+                algo.episodes = 1000000
+                val (PI, V, _) = algo.sarsa(average_alpha(prob))
+                printBlackjack(prob, PI, V)
+            }
+
+            @Test
             fun `Blackjack n-TD off-policy Sarsa`() {
                 val (prob, policy) = Blackjack.make()
                 val algo = nStepTemporalDifference(prob, Int.MAX_VALUE, policy)
@@ -452,12 +516,70 @@ class TestProblems {
             }
 
             @Test
+            fun `Blackjack n-TD average off-policy Sarsa`() {
+                val (prob, policy) = Blackjack.make()
+                val algo = nStepTemporalDifference(prob, Int.MAX_VALUE, policy)
+                algo.episodes = 1000000
+                val (PI, V, _) = algo.`off-policy sarsa`(average_alpha(prob))
+                printBlackjack(prob, PI, V)
+            }
+
+            @Test
             fun `Blackjack n-TD treebackup`() {
                 val (prob, policy) = Blackjack.make()
                 val algo = nStepTemporalDifference(prob, 4, policy)
                 algo.alpha = 0.1
                 algo.episodes = 1000000
                 val (PI, V, _) = algo.treebackup()
+                printBlackjack(prob, PI, V)
+            }
+
+            @Test
+            fun `Blackjack n-TD average treebackup`() {
+                val (prob, policy) = Blackjack.make()
+                val algo = nStepTemporalDifference(prob, Int.MAX_VALUE, policy)
+                algo.episodes = 1000000
+                val (PI, V, _) = algo.treebackup(average_alpha(prob))
+                printBlackjack(prob, PI, V)
+            }
+
+            @Test
+            fun `Blackjack n-TD Q sigma=0`() {
+                val (prob, policy) = Blackjack.make()
+                val algo = nStepTemporalDifference(prob, Int.MAX_VALUE, policy)
+                algo.sig = { 0 }//相当于treebackup
+                algo.episodes = 1000000
+                val (PI, V, _) = algo.`off-policy Q sigma`(average_alpha(prob))
+                printBlackjack(prob, PI, V)
+            }
+
+            @Test
+            fun `Blackjack n-TD Q sigma=1`() {
+                val (prob, policy) = Blackjack.make()
+                val algo = nStepTemporalDifference(prob, Int.MAX_VALUE, policy)
+                algo.sig = { 1 }//相当于off-policy sarsa?但结果似乎不像
+                algo.episodes = 1000000
+                val (PI, V, _) = algo.`off-policy Q sigma`(average_alpha(prob))
+                printBlackjack(prob, PI, V)
+            }
+
+            @Test
+            fun `Blackjack n-TD Q sigma=%2`() {
+                val (prob, policy) = Blackjack.make()
+                val algo = nStepTemporalDifference(prob, Int.MAX_VALUE, policy)
+                algo.sig = { it % 2 }
+                algo.episodes = 1000000
+                val (PI, V, _) = algo.`off-policy Q sigma`(average_alpha(prob))
+                printBlackjack(prob, PI, V)
+            }
+
+            @Test
+            fun `Blackjack n-TD Q sigma=random`() {
+                val (prob, policy) = Blackjack.make()
+                val algo = nStepTemporalDifference(prob, Int.MAX_VALUE, policy)
+                algo.sig = { Rand().nextInt(2) }
+                algo.episodes = 1000000
+                val (PI, V, _) = algo.`off-policy Q sigma`(average_alpha(prob))
                 printBlackjack(prob, PI, V)
             }
         }

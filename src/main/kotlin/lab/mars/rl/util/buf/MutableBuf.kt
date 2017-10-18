@@ -37,7 +37,7 @@ interface MutableBuf<T : Any> : Buf<T> {
     fun remove(start: Int, end: Int)
 
     fun remove(index: Int) = remove(index, index)
-    fun removeFirst(num: Int) {
+    fun removeFirst(num: Int = 1) {
         if (num == 0) return
         remove(0, num - 1)
     }

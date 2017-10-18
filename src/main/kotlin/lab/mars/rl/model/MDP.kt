@@ -48,6 +48,20 @@ class MDP(
     fun <T : Any> QFunc(element_maker: (Index) -> T): RandomAccessCollection<T> {
         return state_action_function(element_maker) as RandomAccessCollection<T>
     }
+
+    /**
+     * equiprobable random policy
+     */
+    fun equiprobablePolicy(): RandomAccessCollection<Double> {
+        val policy = QFunc { 0.0 }
+        for (s in states) {
+            if (s.isTerminal()) continue
+            val prob = 1.0 / s.actions.size
+            for (a in s.actions)
+                policy[s, a] = prob
+        }
+        return policy
+    }
 }
 
 class State(val index: IntBuf) : Index {

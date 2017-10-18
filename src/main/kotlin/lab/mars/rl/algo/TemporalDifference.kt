@@ -38,7 +38,7 @@ class TemporalDifference(val mdp: MDP, private var policy: NonDeterminedPolicy =
         return V
     }
 
-    fun sarsa(): OptimalSolution {
+    fun sarsa(alpha: (State, Action) -> Double = { _, _ -> this.alpha }): OptimalSolution {
         val policy = mdp.QFunc { 0.0 }
         val Q = mdp.QFunc { 0.0 }
 
@@ -53,11 +53,11 @@ class TemporalDifference(val mdp: MDP, private var policy: NonDeterminedPolicy =
                 if (s_next.isNotTerminal()) {
                     `e-greedy`(s_next, Q, policy)
                     val a_next = s_next.actions.rand(policy(s_next))
-                    Q[s, a] += alpha * (possible.reward + gamma * Q[s_next, a_next] - Q[s, a])
+                    Q[s, a] += alpha(s,a)  * (possible.reward + gamma * Q[s_next, a_next] - Q[s, a])
                     s = s_next
                     a = a_next
                 } else {
-                    Q[s, a] += alpha * (possible.reward + gamma * 0.0 - Q[s, a])//Q[terminalState,*]=0.0
+                    Q[s, a] += alpha(s,a)  * (possible.reward + gamma * 0.0 - Q[s, a])//Q[terminalState,*]=0.0
                     break
                 }
             }
@@ -79,7 +79,7 @@ class TemporalDifference(val mdp: MDP, private var policy: NonDeterminedPolicy =
         }
     }
 
-    fun QLearning(): OptimalSolution {
+    fun QLearning(alpha: (State, Action) -> Double = { _, _ -> this.alpha }): OptimalSolution {
         val policy = mdp.QFunc { 0.0 }
         val Q = mdp.QFunc { 0.0 }
 
@@ -92,10 +92,10 @@ class TemporalDifference(val mdp: MDP, private var policy: NonDeterminedPolicy =
                 val possible = a.sample()
                 val s_next = possible.next
                 if (s_next.isNotTerminal()) {
-                    Q[s, a] += alpha * (possible.reward + gamma * max(s_next.actions) { Q[s_next, it] } - Q[s, a])
+                    Q[s, a] += alpha(s, a)  * (possible.reward + gamma * max(s_next.actions) { Q[s_next, it] } - Q[s, a])
                     s = s_next
                 } else {
-                    Q[s, a] += alpha * (possible.reward + gamma * 0.0 - Q[s, a])//Q[terminalState,*]=0.0
+                    Q[s, a] += alpha(s, a)  * (possible.reward + gamma * 0.0 - Q[s, a])//Q[terminalState,*]=0.0
                     break
                 }
             }
@@ -106,7 +106,7 @@ class TemporalDifference(val mdp: MDP, private var policy: NonDeterminedPolicy =
         return result
     }
 
-    fun expectedSarsa(): OptimalSolution {
+    fun expectedSarsa(alpha: (State, Action) -> Double = { _, _ -> this.alpha }): OptimalSolution {
         val policy = mdp.QFunc { 0.0 }
         val Q = mdp.QFunc { 0.0 }
 
@@ -119,10 +119,10 @@ class TemporalDifference(val mdp: MDP, private var policy: NonDeterminedPolicy =
                 val possible = a.sample()
                 val s_next = possible.next
                 if (s_next.isNotTerminal()) {
-                    Q[s, a] += alpha * (possible.reward + gamma * Sigma(s_next.actions) { policy[s_next, it] * Q[s_next, it] } - Q[s, a])
+                    Q[s, a] += alpha(s, a)  * (possible.reward + gamma * Sigma(s_next.actions) { policy[s_next, it] * Q[s_next, it] } - Q[s, a])
                     s = s_next
                 } else {
-                    Q[s, a] += alpha * (possible.reward + gamma * 0.0 - Q[s, a])//Q[terminalState,*]=0.0
+                    Q[s, a] += alpha(s, a)  * (possible.reward + gamma * 0.0 - Q[s, a])//Q[terminalState,*]=0.0
                     break
                 }
             }
@@ -133,7 +133,7 @@ class TemporalDifference(val mdp: MDP, private var policy: NonDeterminedPolicy =
         return result
     }
 
-    fun DoubleQLearning(): OptimalSolution {
+    fun DoubleQLearning(alpha: (State, Action) -> Double = { _, _ -> this.alpha }): OptimalSolution {
         val policy = mdp.QFunc { 0.0 }
         var Q1 = mdp.QFunc { 0.0 }
         var Q2 = mdp.QFunc { 0.0 }
@@ -152,10 +152,10 @@ class TemporalDifference(val mdp: MDP, private var policy: NonDeterminedPolicy =
                     Q2 = tmp
                 }
                 if (s_next.isNotTerminal()) {
-                    Q1[s, a] += alpha * (possible.reward + gamma * Q2[s_next, argmax(s_next.actions) { Q1[s_next, it] }] - Q1[s, a])
+                    Q1[s, a] += alpha(s,a)  * (possible.reward + gamma * Q2[s_next, argmax(s_next.actions) { Q1[s_next, it] }] - Q1[s, a])
                     s = s_next
                 } else {
-                    Q1[s, a] += alpha * (possible.reward + gamma * 0.0 - Q1[s, a])//Q[terminalState,*]=0.0
+                    Q1[s, a] += alpha(s,a)  * (possible.reward + gamma * 0.0 - Q1[s, a])//Q[terminalState,*]=0.0
                     break
                 }
             }

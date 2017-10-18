@@ -17,10 +17,10 @@ const val theta = 1e-6
 inline fun Rand() = ThreadLocalRandom.current()
 
 inline fun Pi(from: Int, to: Int, evaluate: (Int) -> Double): Double {
-    var sum = 0.0
+    var multi = 1.0
     for (a in from..to)
-        sum += evaluate(a)
-    return sum
+        multi *= evaluate(a)
+    return multi
 }
 
 inline fun <T> Sigma(set: Iterable<T>, evaluate: T.(T) -> Double): Double {

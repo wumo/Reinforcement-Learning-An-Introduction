@@ -123,13 +123,7 @@ class MonteCarlo(val mdp: MDP, private var policy: NonDeterminedPolicy = emptyNS
     }
 
     fun `On-policy first-visit MC control`(): OptimalSolution {
-        val policy = mdp.QFunc { 0.0 }
-        for (s in states) {
-            if (s.isTerminal()) continue
-            val prob = 1.0 / s.actions.size
-            for (a in s.actions)
-                policy[s, a] = prob
-        }
+        val policy = mdp.equiprobablePolicy()
         val Q = mdp.QFunc { 0.0 }
         val tmpQ = mdp.QFunc { Double.NaN }
         val count = mdp.QFunc { 0 }

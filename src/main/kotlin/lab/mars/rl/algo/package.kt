@@ -37,3 +37,11 @@ fun Q_from_V(gamma: Double, states: StateSet, pvq: Triple<DeterminedPolicy, Stat
         for (a in s.actions)
             Q[s, a] = Sigma(a.possibles) { probability * (reward + gamma * V[next]) }
 }
+
+fun average_alpha(mdp: MDP): (State, Action) -> Double {
+    val N = mdp.QFunc { 0 }
+    return { s, a ->
+        N[s, a]++
+        1.0 / N[s, a]
+    }
+}
