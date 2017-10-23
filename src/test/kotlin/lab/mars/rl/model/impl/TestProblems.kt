@@ -3,6 +3,7 @@ package lab.mars.rl.model.impl
 import lab.mars.rl.algo.PolicyIteration
 import lab.mars.rl.algo.ValueIteration
 import lab.mars.rl.algo.average_alpha
+import lab.mars.rl.algo.dyna.RandomSampleOneStepTabularQLearning
 import lab.mars.rl.algo.mc.*
 import lab.mars.rl.algo.ntd.*
 import lab.mars.rl.algo.td.*
@@ -650,6 +651,19 @@ class TestProblems {
         }
     }
 
+    class `Dyna` {
+        class `Blackjack problem` {
+
+            @Test
+            fun `Blackjack TD Sarsa`() {
+                val (prob, _) = Blackjack.make()
+                val algo = RandomSampleOneStepTabularQLearning(prob)
+                algo.episodes = 1000000
+                val (PI, V, _) = algo.optimal(average_alpha(prob))
+                printBlackjack(prob, PI, V)
+            }
+        }
+    }
 }
 
 private fun printBlackjack(prob: MDP, PI: NonDeterminedPolicy, V: StateValueFunction) {
