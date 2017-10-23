@@ -1,6 +1,9 @@
 package lab.mars.rl.model.impl
 
 import lab.mars.rl.algo.*
+import lab.mars.rl.algo.mc.*
+import lab.mars.rl.algo.ntd.*
+import lab.mars.rl.algo.td.*
 import lab.mars.rl.model.MDP
 import lab.mars.rl.model.NonDeterminedPolicy
 import lab.mars.rl.model.StateValueFunction
