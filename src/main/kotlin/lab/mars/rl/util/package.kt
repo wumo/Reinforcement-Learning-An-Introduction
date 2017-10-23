@@ -2,7 +2,6 @@
 
 package lab.mars.rl.util
 
-import lab.mars.rl.model.*
 import java.util.concurrent.ThreadLocalRandom
 
 /**
@@ -16,6 +15,11 @@ const val theta = 1e-6
 
 inline fun Rand() = ThreadLocalRandom.current()
 
+data class tuple2<A, B>(var first: A, var second: B) {
+    override fun toString(): String {
+        return "$first=$second"
+    }
+}
 inline fun Pi(from: Int, to: Int, evaluate: (Int) -> Double): Double {
     var multi = 1.0
     for (a in from..to)

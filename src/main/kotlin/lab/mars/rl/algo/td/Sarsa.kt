@@ -1,6 +1,7 @@
 package lab.mars.rl.algo.td
 
 import lab.mars.rl.algo.V_from_Q_ND
+import lab.mars.rl.algo.`e-greedy`
 import lab.mars.rl.algo.td.TemporalDifference.Companion.log
 import lab.mars.rl.model.Action
 import lab.mars.rl.model.OptimalSolution
@@ -15,13 +16,13 @@ fun TemporalDifference.sarsa(_alpha: (State, Action) -> Double = { _, _ -> alpha
     for (episode in 1..episodes) {
         log.debug { "$episode/$episodes" }
         var s = started.rand()
-        `e-greedy`(s, Q, policy)
+        `e-greedy`(s, Q, policy, epsilon)
         var a = s.actions.rand(policy(s))
         while (true) {
             val possible = a.sample()
             val s_next = possible.next
             if (s_next.isNotTerminal()) {
-                `e-greedy`(s_next, Q, policy)
+                `e-greedy`(s_next, Q, policy, epsilon)
                 val a_next = s_next.actions.rand(policy(s_next))
                 Q[s, a] += _alpha(s, a) * (possible.reward + gamma * Q[s_next, a_next] - Q[s, a])
                 s = s_next

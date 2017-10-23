@@ -1,6 +1,7 @@
 package lab.mars.rl.algo.ntd
 
 import lab.mars.rl.algo.V_from_Q_ND
+import lab.mars.rl.algo.`e-greedy`
 import lab.mars.rl.algo.ntd.NStepTemporalDifference.Companion.log
 import lab.mars.rl.model.Action
 import lab.mars.rl.model.OptimalSolution
@@ -70,7 +71,7 @@ fun NStepTemporalDifference.treebackup(alpha: (State, Action) -> Double = { _, _
                     if (k < end) e *= gamma * _Pi[k + 1]
                 }
                 Q[_S[0], _A[0]] += alpha(_S[0], _A[0]) * (G - Q[_S[0], _A[0]])
-                updatePolicy(states[_S[0]], Q, pi)
+                `e-greedy`(states[_S[0]], Q, pi, epsilon)
             }
             t++
         } while (_t < T - 1)

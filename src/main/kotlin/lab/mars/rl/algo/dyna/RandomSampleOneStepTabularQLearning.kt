@@ -1,8 +1,11 @@
 package lab.mars.rl.algo.dyna
 
 import lab.mars.rl.algo.V_from_Q_ND
-import lab.mars.rl.model.*
-import lab.mars.rl.util.argmax
+import lab.mars.rl.algo.`e-greedy`
+import lab.mars.rl.model.Action
+import lab.mars.rl.model.MDP
+import lab.mars.rl.model.OptimalSolution
+import lab.mars.rl.model.State
 import lab.mars.rl.util.debug
 import lab.mars.rl.util.max
 import org.slf4j.LoggerFactory
@@ -35,23 +38,12 @@ class RandomSampleOneStepTabularQLearning(val mdp: MDP) {
         val policy = mdp.QFunc { 0.0 }
         for (s in states) {
             if (s.isTerminal()) continue
-            `e-greedy`(s, Q, policy)
+            `e-greedy`(s, Q, policy, epsilon)
         }
         val V = mdp.VFunc { 0.0 }
         val result = Triple(policy, V, Q)
         V_from_Q_ND(states, result)
         return result
-    }
-
-    fun `e-greedy`(s: State, Q: ActionValueFunction, policy: NonDeterminedPolicy) {
-        val `a*` = argmax(s.actions) { Q[s, it] }
-        val size = s.actions.size
-        for (a in s.actions) {
-            policy[s, a] = when {
-                a === `a*` -> 1 - epsilon + epsilon / size
-                else -> epsilon / size
-            }
-        }
     }
 }
 

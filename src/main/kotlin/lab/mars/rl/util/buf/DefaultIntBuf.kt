@@ -195,4 +195,20 @@ open class DefaultIntBuf(private var ring: IntArray, private var offset: Int, si
         return sb.toString()
     }
 
+    override fun equals(other: Any?): Boolean {
+        if (this === other) return true
+        if (other !is Index) return false
+        if (size != other.size) return false
+        for (a in 0..lastIndex)
+            if (get(a) != other[a]) return false
+        return true
+    }
+
+    override fun hashCode(): Int {
+        if (isEmpty) return 0
+        var result = get(0)
+        for (a in 1..lastIndex)
+            result = 31 * result + get(a)
+        return result
+    }
 }

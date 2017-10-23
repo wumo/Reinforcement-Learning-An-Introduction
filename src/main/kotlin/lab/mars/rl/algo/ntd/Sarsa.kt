@@ -1,6 +1,7 @@
 package lab.mars.rl.algo.ntd
 
 import lab.mars.rl.algo.V_from_Q_ND
+import lab.mars.rl.algo.`e-greedy`
 import lab.mars.rl.algo.ntd.NStepTemporalDifference.Companion.log
 import lab.mars.rl.model.Action
 import lab.mars.rl.model.OptimalSolution
@@ -24,7 +25,7 @@ fun NStepTemporalDifference.sarsa(alpha: (State, Action) -> Double = { _, _ -> t
         var T = Int.MAX_VALUE
         var t = 0
         var s = started.rand()
-        updatePolicy(s, Q, policy)
+        `e-greedy`(s, Q, policy, epsilon)
         var a = s.actions.rand(policy(s))
         _R.clear();_R.append(0.0)
         _S.clear();_S.append(s)
@@ -45,7 +46,7 @@ fun NStepTemporalDifference.sarsa(alpha: (State, Action) -> Double = { _, _ -> t
                     val _t = t - n + 1
                     if (_t < 0) n = T //n is too large, normalize it
                 } else {
-                    updatePolicy(s, Q, policy)
+                    `e-greedy`(s, Q, policy, epsilon)
                     a = s.actions.rand(policy(s))
                     _A.append(a)
                 }
@@ -55,7 +56,7 @@ fun NStepTemporalDifference.sarsa(alpha: (State, Action) -> Double = { _, _ -> t
                 var G = Sigma(1, min(n, T - _t)) { pow(gamma, it - 1) * _R[it] }
                 if (_t + n < T) G += pow(gamma, n) * Q[_S[n], _A[n]]
                 Q[_S[0], _A[0]] += alpha(_S[0], _A[0]) * (G - Q[_S[0], _A[0]])
-                updatePolicy(states[_S[0]], Q, policy)
+                `e-greedy`(states[_S[0]], Q, policy, epsilon)
             }
             t++
         } while (_t < T - 1)

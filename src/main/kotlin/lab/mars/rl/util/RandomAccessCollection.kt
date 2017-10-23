@@ -4,15 +4,8 @@ package lab.mars.rl.util
 
 import lab.mars.rl.util.buf.DefaultIntBuf
 import lab.mars.rl.util.buf.IntBuf
-import java.util.concurrent.ThreadLocalRandom
 
 interface RandomAccessCollection<E : Any> : Iterable<E> {
-    data class tuple2<A, B>(var first: A, var second: B) {
-        override fun toString(): String {
-            return "$first=$second"
-        }
-    }
-
     /**
      * 构造一个与此集合相同形状的[RandomAccessCollection]（维度、树深度都相同）
      */

@@ -1,6 +1,7 @@
 package lab.mars.rl.algo.ntd
 
 import lab.mars.rl.algo.V_from_Q_ND
+import lab.mars.rl.algo.`e-greedy`
 import lab.mars.rl.algo.ntd.NStepTemporalDifference.Companion.log
 import lab.mars.rl.model.Action
 import lab.mars.rl.model.OptimalSolution
@@ -59,7 +60,7 @@ fun NStepTemporalDifference.`off-policy sarsa`(alpha: (State, Action) -> Double 
                 var G = Sigma(1, min(n, T - _t)) { pow(gamma, it - 1) * _R[it] }
                 if (_t + n < T) G += pow(gamma, n) * Q[_S[n], _A[n]]
                 Q[_S[0], _A[0]] += alpha(_S[0], _A[0]) * p * (G - Q[_S[0], _A[0]])
-                updatePolicy(states[_S[0]], Q, pi)
+                `e-greedy`(states[_S[0]], Q, pi, epsilon)
             }
             t++
         } while (_t < T - 1)

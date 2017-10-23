@@ -2,6 +2,7 @@ package lab.mars.rl.algo
 
 import lab.mars.rl.model.*
 import lab.mars.rl.util.Sigma
+import lab.mars.rl.util.argmax
 
 /**
  * <p>
@@ -43,5 +44,16 @@ fun average_alpha(mdp: MDP): (State, Action) -> Double {
     return { s, a ->
         N[s, a]++
         1.0 / N[s, a]
+    }
+}
+
+fun `e-greedy`(s: State, Q: ActionValueFunction, policy: NonDeterminedPolicy, epsilon: Double) {
+    val `a*` = argmax(s.actions) { Q[s, it] }
+    val size = s.actions.size
+    for (a in s.actions) {
+        policy[s, a] = when {
+            a === `a*` -> 1 - epsilon + epsilon / size
+            else -> epsilon / size
+        }
     }
 }

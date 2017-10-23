@@ -2,7 +2,6 @@
 
 package lab.mars.rl.util
 
-import lab.mars.rl.util.RandomAccessCollection.tuple2
 import lab.mars.rl.util.buf.*
 import java.util.*
 
