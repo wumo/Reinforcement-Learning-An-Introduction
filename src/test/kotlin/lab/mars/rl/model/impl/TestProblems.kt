@@ -1,6 +1,8 @@
 package lab.mars.rl.model.impl
 
-import lab.mars.rl.algo.*
+import lab.mars.rl.algo.PolicyIteration
+import lab.mars.rl.algo.ValueIteration
+import lab.mars.rl.algo.average_alpha
 import lab.mars.rl.algo.mc.*
 import lab.mars.rl.algo.ntd.*
 import lab.mars.rl.algo.td.*
@@ -69,6 +71,7 @@ class TestProblems {
         }
     }
 
+    @Suppress("UNUSED_VARIABLE")
     class `Car Rental` {
         val `Car Rental Result` = arrayOf(
                 "554.95", "561.56", "567.59", "573.19", "578.54", "583.63", "588.50", "593.15", "597.57", "601.78", "605.83", "609.70", "613.40", "616.91", "620.25", "623.49", "626.55", "629.41", "632.20", "634.75", "636.99",
@@ -322,7 +325,7 @@ class TestProblems {
                 val algo = TemporalDifference(prob)
                 algo.alpha = 0.5
                 algo.episodes = 1000
-                val (PI, V, _) = algo.sarsa()
+                val (PI, _, _) = algo.sarsa()
                 var s = prob.started[0]
                 var sum = 0.0
                 print(s)
@@ -342,7 +345,7 @@ class TestProblems {
                 val algo = TemporalDifference(prob)
                 algo.alpha = 0.5
                 algo.episodes = 1000
-                val (PI, V, _) = algo.sarsa()
+                val (PI, _, _) = algo.sarsa()
                 var s = prob.started[0]
                 var sum = 0.0
                 print(s)
@@ -362,7 +365,7 @@ class TestProblems {
                 val algo = TemporalDifference(prob)
                 algo.alpha = 0.5
                 algo.episodes = 1000
-                val (PI, V, _) = algo.QLearning()
+                val (PI, _, _) = algo.QLearning()
                 var s = prob.started[0]
                 var sum = 0.0
                 print(s)
@@ -382,7 +385,7 @@ class TestProblems {
                 val algo = TemporalDifference(prob)
                 algo.alpha = 0.5
                 algo.episodes = 500000
-                val (PI, V, _) = algo.QLearning()
+                val (PI, _, _) = algo.QLearning()
                 var s = prob.started[0]
                 var sum = 0.0
                 print(s)
@@ -403,7 +406,7 @@ class TestProblems {
                 val prob = CliffWalking.make()
                 val algo = TemporalDifference(prob)
                 algo.alpha = 0.5
-                val (PI, V, _) = algo.sarsa()
+                val (PI, _, _) = algo.sarsa()
                 var s = prob.started[0]
                 var sum = 0.0
                 print(s)
@@ -422,7 +425,7 @@ class TestProblems {
                 val prob = CliffWalking.make()
                 val algo = TemporalDifference(prob)
                 algo.alpha = 0.5
-                val (PI, V, _) = algo.QLearning()
+                val (PI, _, _) = algo.QLearning()
                 var s = prob.started[0]
                 var sum = 0.0
                 print(s)
@@ -441,7 +444,7 @@ class TestProblems {
                 val prob = CliffWalking.make()
                 val algo = TemporalDifference(prob)
                 algo.alpha = 0.5
-                val (PI, V, _) = algo.expectedSarsa()
+                val (PI, _, _) = algo.expectedSarsa()
                 var s = prob.started[0]
                 var sum = 0.0
                 print(s)
@@ -461,7 +464,7 @@ class TestProblems {
             fun `Maximization Bias Q-Learning`() {
                 val prob = MaximizationBias.make()
                 val algo = TemporalDifference(prob)
-                val (PI, V, _) = algo.QLearning()
+                val (PI, _, _) = algo.QLearning()
                 val A = prob.started[0]
                 println(PI(A))
             }
@@ -470,7 +473,7 @@ class TestProblems {
             fun `Maximization Bias Double Q-Learning`() {
                 val prob = MaximizationBias.make()
                 val algo = TemporalDifference(prob)
-                val (PI, V, _) = algo.DoubleQLearning()
+                val (PI, _, _) = algo.DoubleQLearning()
                 val A = prob.started[0]
                 println(PI(A))
             }
@@ -483,7 +486,7 @@ class TestProblems {
             @Test
             fun `Blackjack n-TD Prediction`() {
                 val (prob, PI) = Blackjack.make()
-                val algo = nStepTemporalDifference(prob, 102400, PI)
+                val algo = NStepTemporalDifference(prob, 102400, PI)
                 algo.episodes = 500000
                 val V = algo.prediction()
                 printBlackjack(prob, PI, V)
@@ -492,7 +495,7 @@ class TestProblems {
             @Test
             fun `Blackjack n-TD Sarsa`() {
                 val (prob, policy) = Blackjack.make()
-                val algo = nStepTemporalDifference(prob, Int.MAX_VALUE, policy)
+                val algo = NStepTemporalDifference(prob, Int.MAX_VALUE, policy)
                 algo.alpha = 0.1
                 algo.episodes = 1000000
                 val (PI, V, _) = algo.sarsa()
@@ -502,7 +505,7 @@ class TestProblems {
             @Test
             fun `Blackjack n-TD average Sarsa`() {
                 val (prob, policy) = Blackjack.make()
-                val algo = nStepTemporalDifference(prob, Int.MAX_VALUE, policy)
+                val algo = NStepTemporalDifference(prob, Int.MAX_VALUE, policy)
                 algo.episodes = 1000000
                 val (PI, V, _) = algo.sarsa(average_alpha(prob))
                 printBlackjack(prob, PI, V)
@@ -511,7 +514,7 @@ class TestProblems {
             @Test
             fun `Blackjack n-TD off-policy Sarsa`() {
                 val (prob, policy) = Blackjack.make()
-                val algo = nStepTemporalDifference(prob, Int.MAX_VALUE, policy)
+                val algo = NStepTemporalDifference(prob, Int.MAX_VALUE, policy)
                 algo.alpha = 0.1
                 algo.episodes = 1000000
                 val (PI, V, _) = algo.`off-policy sarsa`()
@@ -521,7 +524,7 @@ class TestProblems {
             @Test
             fun `Blackjack n-TD average off-policy Sarsa`() {
                 val (prob, policy) = Blackjack.make()
-                val algo = nStepTemporalDifference(prob, Int.MAX_VALUE, policy)
+                val algo = NStepTemporalDifference(prob, Int.MAX_VALUE, policy)
                 algo.episodes = 1000000
                 val (PI, V, _) = algo.`off-policy sarsa`(average_alpha(prob))
                 printBlackjack(prob, PI, V)
@@ -530,7 +533,7 @@ class TestProblems {
             @Test
             fun `Blackjack n-TD treebackup`() {
                 val (prob, policy) = Blackjack.make()
-                val algo = nStepTemporalDifference(prob, 4, policy)
+                val algo = NStepTemporalDifference(prob, 4, policy)
                 algo.alpha = 0.1
                 algo.episodes = 1000000
                 val (PI, V, _) = algo.treebackup()
@@ -540,7 +543,7 @@ class TestProblems {
             @Test
             fun `Blackjack n-TD average treebackup`() {
                 val (prob, policy) = Blackjack.make()
-                val algo = nStepTemporalDifference(prob, Int.MAX_VALUE, policy)
+                val algo = NStepTemporalDifference(prob, Int.MAX_VALUE, policy)
                 algo.episodes = 1000000
                 val (PI, V, _) = algo.treebackup(average_alpha(prob))
                 printBlackjack(prob, PI, V)
@@ -549,7 +552,7 @@ class TestProblems {
             @Test
             fun `Blackjack n-TD Q sigma=0`() {
                 val (prob, policy) = Blackjack.make()
-                val algo = nStepTemporalDifference(prob, Int.MAX_VALUE, policy)
+                val algo = NStepTemporalDifference(prob, Int.MAX_VALUE, policy)
                 algo.sig = { 0 }//相当于treebackup
                 algo.episodes = 1000000
                 val (PI, V, _) = algo.`off-policy Q sigma`(average_alpha(prob))
@@ -559,7 +562,7 @@ class TestProblems {
             @Test
             fun `Blackjack n-TD Q sigma=1`() {
                 val (prob, policy) = Blackjack.make()
-                val algo = nStepTemporalDifference(prob, Int.MAX_VALUE, policy)
+                val algo = NStepTemporalDifference(prob, Int.MAX_VALUE, policy)
                 algo.sig = { 1 }//相当于off-policy sarsa?但结果似乎不像
                 algo.episodes = 1000000
                 val (PI, V, _) = algo.`off-policy Q sigma`(average_alpha(prob))
@@ -569,7 +572,7 @@ class TestProblems {
             @Test
             fun `Blackjack n-TD Q sigma=%2`() {
                 val (prob, policy) = Blackjack.make()
-                val algo = nStepTemporalDifference(prob, Int.MAX_VALUE, policy)
+                val algo = NStepTemporalDifference(prob, Int.MAX_VALUE, policy)
                 algo.sig = { it % 2 }
                 algo.episodes = 1000000
                 val (PI, V, _) = algo.`off-policy Q sigma`(average_alpha(prob))
@@ -579,7 +582,7 @@ class TestProblems {
             @Test
             fun `Blackjack n-TD Q sigma=random`() {
                 val (prob, policy) = Blackjack.make()
-                val algo = nStepTemporalDifference(prob, Int.MAX_VALUE, policy)
+                val algo = NStepTemporalDifference(prob, Int.MAX_VALUE, policy)
                 algo.sig = { Rand().nextInt(2) }
                 algo.episodes = 1000000
                 val (PI, V, _) = algo.`off-policy Q sigma`(average_alpha(prob))
@@ -591,7 +594,7 @@ class TestProblems {
             @Test
             fun `RandomWalk n-TD Prediction`() {
                 val (prob, PI) = RandomWalk.make()
-                val algo = nStepTemporalDifference(prob, 8, PI)
+                val algo = NStepTemporalDifference(prob, 8, PI)
                 algo.episodes = 1000
                 val V = algo.prediction()
                 prob.apply {
@@ -607,10 +610,10 @@ class TestProblems {
             @Test
             fun `WindyGridworld n-TD sarsa`() {
                 val prob = WindyGridworld.make()
-                val algo = nStepTemporalDifference(prob, 10)
+                val algo = NStepTemporalDifference(prob, 10)
                 algo.alpha = 0.1
                 algo.episodes = 10000
-                val (PI, V, _) = algo.sarsa()
+                val (PI, _, _) = algo.sarsa()
                 var s = prob.started[0]
                 var sum = 0.0
                 print(s)
@@ -627,30 +630,11 @@ class TestProblems {
 
         class `Cliff walking problem` {
             @Test
-            fun `Cliff Walking n-TD sarsa`() {
-                val prob = CliffWalking.make()
-                val algo = nStepTemporalDifference(prob, 10)
-                algo.alpha = 0.5
-                val (PI, V, _) = algo.expectedSarsa()
-                var s = prob.started[0]
-                var sum = 0.0
-                print(s)
-                while (s.isNotTerminal()) {
-                    val a = argmax(s.actions) { PI[s, it] }
-                    val possible = a.sample()
-                    s = possible.next
-                    sum += possible.reward
-                    print("${WindyGridworld.desc_move[a[0]]}$s")
-                }
-                println("\nreturn=$sum")//optimal=-12
-            }
-
-            @Test
             fun `Cliff Walking n-TD off-policy sarsa`() {
                 val prob = CliffWalking.make()
-                val algo = nStepTemporalDifference(prob, 10)
+                val algo = NStepTemporalDifference(prob, 10)
                 algo.alpha = 0.5
-                val (PI, V, _) = algo.`off-policy sarsa`()
+                val (PI, _, _) = algo.`off-policy sarsa`()
                 var s = prob.started[0]
                 var sum = 0.0
                 print(s)

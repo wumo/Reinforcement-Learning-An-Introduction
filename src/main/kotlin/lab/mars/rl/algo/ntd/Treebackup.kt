@@ -1,7 +1,7 @@
 package lab.mars.rl.algo.ntd
 
 import lab.mars.rl.algo.V_from_Q_ND
-import lab.mars.rl.algo.ntd.nStepTemporalDifference.Companion.log
+import lab.mars.rl.algo.ntd.NStepTemporalDifference.Companion.log
 import lab.mars.rl.model.Action
 import lab.mars.rl.model.OptimalSolution
 import lab.mars.rl.model.State
@@ -10,7 +10,7 @@ import lab.mars.rl.util.buf.newBuf
 import lab.mars.rl.util.debug
 import org.apache.commons.math3.util.FastMath.min
 
-fun nStepTemporalDifference.treebackup(alpha: (State, Action) -> Double = { _, _ -> this.alpha }): OptimalSolution {
+fun NStepTemporalDifference.treebackup(alpha: (State, Action) -> Double = { _, _ -> this.alpha }): OptimalSolution {
     val pi = mdp.equiprobablePolicy()
     val Q = mdp.QFunc { 0.0 }
 

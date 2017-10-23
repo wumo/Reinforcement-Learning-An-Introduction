@@ -10,6 +10,7 @@ import lab.mars.rl.util.nsetOf
 import org.junit.Assert
 import org.junit.Test
 
+@Suppress("UNUSED_VARIABLE", "NAME_SHADOWING", "VARIABLE_WITH_REDUNDANT_INITIALIZER")
 /**
  * <p>
  * Created on 2017-09-01.
