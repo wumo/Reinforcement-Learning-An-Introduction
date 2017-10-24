@@ -3,19 +3,18 @@
 package lab.mars.rl.util
 
 import lab.mars.rl.util.buf.DefaultIntBuf
-import lab.mars.rl.util.buf.IntBuf
 
 interface RandomAccessCollection<E : Any> : Iterable<E> {
     /**
      * 构造一个与此集合相同形状的[RandomAccessCollection]（维度、树深度都相同）
      */
-    fun <T : Any> copycat(element_maker: (IntBuf) -> T): RandomAccessCollection<T>
+    fun <T : Any> copycat(element_maker: (Index) -> T): RandomAccessCollection<T>
 
     fun copy() = copycat { get(it) }
 
-    fun indices(): Iterator<IntBuf>
+    fun indices(): Iterator<Index>
 
-    fun withIndices(): Iterator<tuple2<out IntBuf, E>>
+    fun withIndices(): Iterator<tuple2<out Index, E>>
 
     operator fun get(dim: Index): E
     operator fun get(vararg dim: Int): E = get(DefaultIntBuf.reuse(dim))
@@ -71,7 +70,7 @@ interface RandomAccessCollection<E : Any> : Iterable<E> {
     operator fun set(vararg dim: Int, s: E) = set(DefaultIntBuf.reuse(dim), s)
     operator fun set(vararg dim: Index, s: E) = set(MultiIndex(dim as Array<Index>), s)
 
-    fun set(element_maker: (IntBuf, E) -> E) {
+    fun set(element_maker: (Index, E) -> E) {
         withIndices().forEach { (idx, value) -> set(idx, element_maker(idx, value)) }
     }
 
@@ -110,7 +109,7 @@ interface ExtendableRAC<E : Any> : RandomAccessCollection<E> {
     operator fun set(vararg subset_dim: Int, s: RandomAccessCollection<E>) = set(DefaultIntBuf.reuse(subset_dim), s)
     operator fun set(vararg subset_dim: Index, s: RandomAccessCollection<E>) = set(MultiIndex(subset_dim as Array<Index>), s)
 
-    fun <T : Any> raw_set(element_maker: (IntBuf, E) -> T) {
+    fun <T : Any> raw_set(element_maker: (Index, E) -> T) {
         withIndices().forEach { (idx, value) ->
             val tmp = element_maker(idx, value)
             (tmp as? RandomAccessCollection<E>)?.apply {

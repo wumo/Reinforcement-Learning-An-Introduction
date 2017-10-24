@@ -153,7 +153,7 @@ open class DefaultIntBuf(private var ring: IntArray, private var offset: Int, si
         _size += num
     }
 
-    override fun prepend(another: IntBuf) {
+    override fun prepend(another: Index) {
         val num = another.size
         ensure(_size + num)
         for (a in 0 until num)
@@ -175,7 +175,7 @@ open class DefaultIntBuf(private var ring: IntArray, private var offset: Int, si
         _size += num
     }
 
-    override fun append(another: IntBuf) {
+    override fun append(another: Index) {
         val num = another.size
         ensure(_size + num)
         for (a in 0 until num)

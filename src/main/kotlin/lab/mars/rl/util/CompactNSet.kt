@@ -52,7 +52,7 @@ constructor(internal val data: MutableBuf<Any>, val rootOffset: Int = 0, val sub
         fun copy() = Cell(subtrees, value)
     }
 
-    override fun <T : Any> copycat(element_maker: (IntBuf) -> T)
+    override fun <T : Any> copycat(element_maker: (Index) -> T)
             : RandomAccessCollection<T> {
         val new_data = DefaultBuf.new<Any>(data.cap)
         for (a in 0..data.lastIndex)
@@ -130,7 +130,7 @@ constructor(internal val data: MutableBuf<Any>, val rootOffset: Int = 0, val sub
     override fun set(dim: Index, s: E) =
             operation(dim.iterator()) { offset, _ -> _set(offset, s) }
 
-    override fun set(element_maker: (IntBuf, E) -> E) {
+    override fun set(element_maker: (Index, E) -> E) {
         dfs(rootOffset, subLevel) { slot, offset ->
             _set(offset, element_maker(slot, _get(offset)))
         }

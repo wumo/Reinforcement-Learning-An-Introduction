@@ -20,6 +20,12 @@ data class tuple2<A, B>(var first: A, var second: B) {
         return "$first=$second"
     }
 }
+
+data class tuple4<A, B, C, D>(var _1: A, var _2: B, var _3: C, var _4: D) {
+    override fun toString(): String {
+        return "($_1,$_2,$_3,$_3)"
+    }
+}
 inline fun Pi(from: Int, to: Int, evaluate: (Int) -> Double): Double {
     var multi = 1.0
     for (a in from..to)

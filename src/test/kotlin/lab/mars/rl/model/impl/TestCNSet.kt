@@ -272,7 +272,7 @@ class TestCNSet {
         val valueLIst = arrayListOf<Int>()
         i = 0
         for (index in set.indices()) {
-            slotList.add(index.copy())
+            slotList.add((index as IntBuf).copy())
             valueLIst.add(i++)
         }
         val expected = PlainSet(slotList.toTypedArray(),

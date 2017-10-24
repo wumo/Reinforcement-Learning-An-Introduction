@@ -1,22 +1,25 @@
 package lab.mars.rl.algo.dyna
 
-import lab.mars.rl.model.*
+import lab.mars.rl.model.Action
+import lab.mars.rl.model.ActionValueFunction
+import lab.mars.rl.model.State
 import lab.mars.rl.util.*
 import org.slf4j.LoggerFactory
 
 interface Environment {
     fun current(): State
-    fun actions(s: State): ActionSet
     fun act(a: Action): tuple2<Double, State>
 }
 
-class DynaQ(val environment: Environment) {
+@Suppress("NAME_SHADOWING")
+class DynaQ(val environment: Environment, val Q: ActionValueFunction, val Model: RandomAccessCollection<tuple4<State, Action, Double, State>>) {
     companion object {
         val log = LoggerFactory.getLogger(this::class.java)!!
     }
 
-    val Q = hashMapOf<tuple2<State, Action>, Double>()
-    val Model = hashMapOf<tuple2<State, Action>, tuple2<Double, State>>()
+    val current = environment::current
+    val act = environment::act
+
     val gamma = 0.9
     var episodes = 10000
     var epsilon = 0.1
@@ -24,23 +27,17 @@ class DynaQ(val environment: Environment) {
     var n = 10
 
     fun start(_alpha: (State, Action) -> Double = { _, _ -> alpha }) {
-        val tmp = tuple2(null_state, null_action)
-        val tmp2 = tuple2(null_state, null_action)
         for (episode in 1..episodes) {
             log.debug { "$episode/$episodes" }
-            val s = environment.current()
-            tmp.first = s
-            val a: Action = if (Rand().nextDouble() < epsilon) environment.actions(s).rand()
-            else argmax(environment.actions(s)) { tmp.second = it;Q[tmp] ?: 0.0 }
-            val possible = environment.act(a)
-            tmp2.first = possible.second
-            Q[tmp] = Q[tmp] ?: 0.0 +
-                     _alpha(s, a) * (possible.first + gamma * max(environment.actions(possible.second))
-                     { tmp2.second = it;Q[tmp2] ?: 0.0 } - (Q[tmp] ?: 0.0))
-            Model[tmp] = possible
+            val s = current()
+            val a = if (Rand().nextDouble() < epsilon) s.actions.rand()
+            else argmax(s.actions) { Q[s, it] }
+            val (reward, s_next) = act(a)
+            Q[s, a] += _alpha(s, a) * (reward + gamma * max(s_next.actions) { Q[s_next, it] } - Q[s, a])
+            Model[s, a] = tuple4(s, a, reward, s_next)
             repeat(n) {
-//                val chosen=Model.entries.rand()
-
+                val (s, a, reward, s_next) = Model.rand()
+                Q[s, a] += _alpha(s, a) * (reward + gamma * max(s_next.actions) { Q[s_next, it] } - Q[s, a])
             }
         }
     }

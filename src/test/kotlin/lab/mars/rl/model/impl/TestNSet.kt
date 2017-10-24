@@ -76,7 +76,7 @@ class TestNSet {
         val r2 = mutableListOf<IntArray>()
         val set = 0(3, 2 x 10 x 10).NSet { r1.add(it.toIntArray());0 }
         for (index in set.indices()) {
-            r2.add(index.toIntArray())
+            r2.add((index as IntBuf).toIntArray())
         }
         r1.forEach { println(it.asList()) }
         Assert.assertArrayEquals(r1.toTypedArray(), r2.toTypedArray())
@@ -103,7 +103,7 @@ class TestNSet {
         val set = nsetFrom(dim) { r1.add(it.toIntArray());0 }
         for (index in set.indices()) {
             println(index)
-            r2.add(index.toIntArray())
+            r2.add((index as IntBuf).toIntArray())
         }
         var i = 0
         val size = r1.size

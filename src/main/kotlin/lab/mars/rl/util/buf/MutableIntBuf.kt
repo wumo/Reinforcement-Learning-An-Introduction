@@ -1,5 +1,7 @@
 package lab.mars.rl.util.buf
 
+import lab.mars.rl.util.Index
+
 /**
  * <p>
  * Created on 2017-09-28.
@@ -18,11 +20,11 @@ interface MutableIntBuf : IntBuf {
 
     fun prepend(s: Int)
     fun prepend(num: Int, s: Int)
-    fun prepend(another: IntBuf)
+    fun prepend(another: Index)
 
     fun append(s: Int)
     fun append(num: Int, s: Int)
-    fun append(another: IntBuf)
+    fun append(another: Index)
 
     fun remove(range: IntRange) {
         remove(range.start, range.endInclusive)

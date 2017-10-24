@@ -56,7 +56,7 @@ inline fun <E : Any> emptyNSet(): NSet<E> = emptyNSet as NSet<E>
  */
 class NSet<E : Any>(private val dim: IntArray, private val stride: IntArray, private val root: Array<Any>) :
         ExtendableRAC<E> {
-    override fun <T : Any> copycat(element_maker: (IntBuf) -> T): RandomAccessCollection<T> {
+    override fun <T : Any> copycat(element_maker: (Index) -> T): RandomAccessCollection<T> {
         val index = DefaultIntBuf.zero(dim.size)
         return NSet(dim, stride, Array(root.size) {
             copycat(root[it], index, element_maker)
@@ -76,7 +76,7 @@ class NSet<E : Any>(private val dim: IntArray, private val stride: IntArray, pri
                 else -> element_maker(index)
             }
 
-    override fun <T : Any> raw_set(element_maker: (IntBuf, E) -> T) {
+    override fun <T : Any> raw_set(element_maker: (Index, E) -> T) {
         val index = DefaultIntBuf.new()
         reset(this, index, element_maker)
     }
@@ -147,7 +147,7 @@ class NSet<E : Any>(private val dim: IntArray, private val stride: IntArray, pri
 
     override fun iterator() = GeneralIterator<E>().apply { traverser = Traverser(this, {}, {}, {}, { it }) }
 
-    override fun indices() = GeneralIterator<IntBuf>().apply {
+    override fun indices() = GeneralIterator<Index>().apply {
         val index = DefaultIntBuf.zero(this.set.dim.size).apply { this[lastIndex] = -1 }
         traverser = Traverser(this,
                               forward = {
@@ -161,7 +161,7 @@ class NSet<E : Any>(private val dim: IntArray, private val stride: IntArray, pri
                               visitor = { index })
     }
 
-    override fun withIndices(): Iterator<tuple2<out IntBuf, E>> = GeneralIterator<tuple2<out IntBuf, E>>().apply {
+    override fun withIndices(): Iterator<tuple2<out Index, E>> = GeneralIterator<tuple2<out IntBuf, E>>().apply {
         val index = DefaultIntBuf.zero(this.set.dim.size).apply { this[lastIndex] = -1 }
         var tuple2: tuple2<out IntBuf, E>? = null
         traverser = Traverser(this,
