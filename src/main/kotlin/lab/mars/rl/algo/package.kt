@@ -3,6 +3,7 @@ package lab.mars.rl.algo
 import lab.mars.rl.model.*
 import lab.mars.rl.util.Sigma
 import lab.mars.rl.util.argmax
+import lab.mars.rl.util.argmax_tie_random
 
 /**
  * <p>
@@ -49,6 +50,17 @@ fun average_alpha(mdp: MDP): (State, Action) -> Double {
 
 fun `e-greedy`(s: State, Q: ActionValueFunction, policy: NonDeterminedPolicy, epsilon: Double) {
     val `a*` = argmax(s.actions) { Q[s, it] }
+    val size = s.actions.size
+    for (a in s.actions) {
+        policy[s, a] = when {
+            a === `a*` -> 1 - epsilon + epsilon / size
+            else -> epsilon / size
+        }
+    }
+}
+
+fun `e-greedy tie random`(s: State, Q: ActionValueFunction, policy: NonDeterminedPolicy, epsilon: Double) {
+    val `a*` = argmax_tie_random(s.actions) { Q[s, it] }
     val size = s.actions.size
     for (a in s.actions) {
         policy[s, a] = when {

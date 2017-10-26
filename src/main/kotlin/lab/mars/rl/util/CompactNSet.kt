@@ -176,7 +176,7 @@ constructor(internal val data: MutableBuf<Any>, val rootOffset: Int = 0, val sub
     override fun withIndices(): Iterator<tuple2<out IntBuf, E>> {
         var idxElement: tuple2<out IntBuf, E>? = null
         return Itr { slot, e ->
-            idxElement?.apply { second = e }
+            idxElement?.apply { _2 = e }
             ?: tuple2(slot, e).apply { idxElement = this }
         }
     }
@@ -197,10 +197,10 @@ constructor(internal val data: MutableBuf<Any>, val rootOffset: Int = 0, val sub
                 deepDown(subLevel)
             else while (true) {
                 val toVisit = stack.peek()
-                if (toVisit.second < toVisit.first.lastIndex) {
-                    toVisit.second++
+                if (toVisit._2 < toVisit._1.lastIndex) {
+                    toVisit._2++
                     slot[slot.lastIndex]++
-                    offset = toVisit.first.offset2nd + toVisit.second - 1
+                    offset = toVisit._1.offset2nd + toVisit._2 - 1
                     deepDown()
                     break
                 } else {//finish visited this SubTree

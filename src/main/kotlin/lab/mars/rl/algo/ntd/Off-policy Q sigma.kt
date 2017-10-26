@@ -51,12 +51,11 @@ fun NStepTemporalDifference.`off-policy Q sigma`(alpha: (State, Action) -> Doubl
                 _A.removeFirst()
             }
             if (t < T) {
-                val possible = a.sample()
-                _S.append(possible.next)
-                s = possible.next
-                val r = possible.reward
+                val (s_next, reward, _) = a.sample()
+                _S.append(s_next)
+                s = s_next
                 if (s.isTerminal()) {
-                    _delta.append(r - _Q.last)
+                    _delta.append(reward - _Q.last)
                     T = t + 1
                     val _t = t - n + 1
                     if (_t < 0) n = T //n is too large, normalize it
@@ -64,7 +63,7 @@ fun NStepTemporalDifference.`off-policy Q sigma`(alpha: (State, Action) -> Doubl
                     a = s.actions.rand(b(s));_A.append(a)
                     val sig = sig(t + 1)
                     _sig.append(sig)
-                    _delta.append(r + gamma * sig * Q[s, a] + gamma * (1 - sig) * Sigma(s.actions) { pi[s, it] * Q[s, it] } - _Q.last)
+                    _delta.append(reward + gamma * sig * Q[s, a] + gamma * (1 - sig) * Sigma(s.actions) { pi[s, it] * Q[s, it] } - _Q.last)
                     _Q.append(Q[s, a])
                     _Pi.append(pi[s, a])
                     _P.append(pi[s, a] / b[s, a])

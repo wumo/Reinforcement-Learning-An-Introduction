@@ -26,14 +26,10 @@ class RandomSampleOneStepTabularQLearning(val mdp: MDP) {
         val Q = mdp.QFunc { 0.0 }
         for (episode in 1..episodes) {
             log.debug { "$episode/$episodes" }
-            var s = started.rand()
-            var a = s.actions.rand()//Exploring Starts
-            val possible = a.sample()
-            val s_next = possible.next
-            if (s_next.isNotTerminal())
-                Q[s, a] += _alpha(s, a) * (possible.reward + gamma * max(s_next.actions) { Q[s_next, it] } - Q[s, a])
-            else
-                Q[s, a] += _alpha(s, a) * (possible.reward + gamma * 0.0 - Q[s, a])//Q[terminalState,*]=0.0
+            val s = started.rand()
+            val a = s.actions.rand()//Exploring Starts
+            val (s_next, reward, _) = a.sample()
+            Q[s, a] += _alpha(s, a) * (reward + gamma * max(s_next.actions, 0.0) { Q[s_next, it] } - Q[s, a])
         }
         val policy = mdp.QFunc { 0.0 }
         for (s in states) {

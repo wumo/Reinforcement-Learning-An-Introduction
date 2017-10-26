@@ -17,18 +17,12 @@ fun TemporalDifference.QLearning(_alpha: (State, Action) -> Double = { _, _ -> a
     for (episode in 1..episodes) {
         log.debug { "$episode/$episodes" }
         var s = started.rand()
-        while (true) {
+        while (s.isNotTerminal()) {
             `e-greedy`(s, Q, policy,epsilon)
             val a = s.actions.rand(policy(s))
-            val possible = a.sample()
-            val s_next = possible.next
-            if (s_next.isNotTerminal()) {
-                Q[s, a] += _alpha(s, a) * (possible.reward + gamma * max(s_next.actions) { Q[s_next, it] } - Q[s, a])
-                s = s_next
-            } else {
-                Q[s, a] += _alpha(s, a) * (possible.reward + gamma * 0.0 - Q[s, a])//Q[terminalState,*]=0.0
-                break
-            }
+            val (s_next, reward, _) = a.sample()
+            Q[s, a] += _alpha(s, a) * (reward + gamma * max(s_next.actions, 0.0) { Q[s_next, it] } - Q[s, a])
+            s = s_next
         }
     }
     val V = mdp.VFunc { 0.0 }

@@ -19,16 +19,15 @@ fun TemporalDifference.sarsa(_alpha: (State, Action) -> Double = { _, _ -> alpha
         `e-greedy`(s, Q, policy, epsilon)
         var a = s.actions.rand(policy(s))
         while (true) {
-            val possible = a.sample()
-            val s_next = possible.next
+            val (s_next, reward, _) = a.sample()
             if (s_next.isNotTerminal()) {
                 `e-greedy`(s_next, Q, policy, epsilon)
                 val a_next = s_next.actions.rand(policy(s_next))
-                Q[s, a] += _alpha(s, a) * (possible.reward + gamma * Q[s_next, a_next] - Q[s, a])
+                Q[s, a] += _alpha(s, a) * (reward + gamma * Q[s_next, a_next] - Q[s, a])
                 s = s_next
                 a = a_next
             } else {
-                Q[s, a] += _alpha(s, a) * (possible.reward + gamma * 0.0 - Q[s, a])//Q[terminalState,*]=0.0
+                Q[s, a] += _alpha(s, a) * (reward + gamma * 0.0 - Q[s, a])//Q[terminalState,*]=0.0
                 break
             }
         }

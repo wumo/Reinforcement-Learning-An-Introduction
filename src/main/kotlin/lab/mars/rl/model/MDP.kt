@@ -91,7 +91,11 @@ class Action(val index: IntBuf) : Index {
     override fun toString() = index.toString()
 }
 
-class Possible(var next: State, var reward: Double, var probability: Double)
+class Possible(var next: State, var reward: Double, var probability: Double) {
+    operator fun component1() = next
+    operator fun component2() = reward
+    operator fun component3() = probability
+}
 
 val null_index = DefaultIntBuf.of(-1)
 val null_state = State(null_index)

@@ -30,10 +30,10 @@ fun NStepTemporalDifference.prediction(): StateValueFunction {
             }
             if (t < T) {
                 val a = s.actions.rand(initial_policy(s))
-                val possible = a.sample()
-                _R.append(possible.reward)
-                _S.append(possible.next)
-                s = possible.next
+                val (s_next, reward, _) = a.sample()
+                _R.append(reward)
+                _S.append(s_next)
+                s = s_next
                 if (s.isTerminal()) {
                     T = t + 1
                     val _t = t - n + 1

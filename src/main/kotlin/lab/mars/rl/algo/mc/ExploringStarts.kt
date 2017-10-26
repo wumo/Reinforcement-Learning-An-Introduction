@@ -28,11 +28,11 @@ fun MonteCarlo.`Optimal Exploring Starts`(): OptimalSolution {
 
         var accumulate = 0.0
         do {
-            val possible = a.sample()
+            val (s_next, reward, _) = a.sample()
             if (tmpQ[s, a].isNaN())
                 tmpQ[s, a] = accumulate
-            accumulate += possible.reward
-            s = possible.next
+            accumulate += reward
+            s = s_next
         } while (s.isNotTerminal().apply { if (this) a = s.actions.rand(policy(s)) })
 
         tmpS.clear()

@@ -35,10 +35,10 @@ fun MonteCarlo.`Off-policy MC Optimal`(): OptimalSolution {
         while (s.isNotTerminal()) {
             val a = s.actions.rand(b(s))
             A.append(a)
-            val possible = a.sample()
-            S.append(possible.next)
-            R.append(possible.reward)
-            s = possible.next
+            val (s_next, reward, _) = a.sample()
+            S.append(s_next)
+            R.append(reward)
+            s = s_next
             T++
         }
         var G = 0.0

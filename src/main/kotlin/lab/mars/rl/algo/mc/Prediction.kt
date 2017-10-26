@@ -15,11 +15,11 @@ fun MonteCarlo.prediction(): StateValueFunction {
         var accumulate = 0.0
         while (s.isNotTerminal()) {
             val a = s.actions.rand(policy(s))
-            val possible = a.sample()
+            val (s_next, reward, _) = a.sample()
             if (preReturn[s].isNaN())
                 preReturn[s] = accumulate
-            accumulate += possible.reward
-            s = possible.next
+            accumulate += reward
+            s = s_next
         }
         preReturn.set { idx, value ->
             if (!value.isNaN()) {

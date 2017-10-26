@@ -176,7 +176,7 @@ class NSet<E : Any>(private val dim: IntArray, private val stride: IntArray, pri
                               visitor = {
                                   val tmp = tuple2 ?: tuple2(index, it)
                                   tuple2 = tmp
-                                  tmp.second = it
+                                  tmp._2 = it
                                   tmp
                               })
     }

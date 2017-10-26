@@ -121,8 +121,25 @@ class MultiIndex(internal val indices: Array<Index>) : Index {
     override fun get(idx: Int): Int {
         var _dim = idx
         for (index in indices)
-            if (_dim < index.size) return index[idx]
+            if (_dim < index.size) return index[_dim]
             else _dim -= index.size
         throw IndexOutOfBoundsException()
+    }
+
+    override fun equals(other: Any?): Boolean {
+        if (this === other) return true
+        if (other !is Index) return false
+        if (size != other.size) return false
+        for (a in 0..lastIndex)
+            if (get(a) != other[a]) return false
+        return true
+    }
+
+    override fun hashCode(): Int {
+        if (isEmpty) return 0
+        var result = get(0)
+        for (a in 1..lastIndex)
+            result = 31 * result + get(a)
+        return result
     }
 }

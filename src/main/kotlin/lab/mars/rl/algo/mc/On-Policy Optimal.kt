@@ -23,11 +23,11 @@ fun MonteCarlo.`On-policy first-visit MC control`(): OptimalSolution {
         var accumulate = 0.0
         while (s.isNotTerminal()) {
             val a = s.actions.rand(policy(s))
-            val possible = a.sample()
+            val (s_next, reward, _) = a.sample()
             if (tmpQ[s, a].isNaN())
                 tmpQ[s, a] = accumulate
-            accumulate += possible.reward
-            s = possible.next
+            accumulate += reward
+            s = s_next
         }
         tmpS.clear()
         for (s in states) {

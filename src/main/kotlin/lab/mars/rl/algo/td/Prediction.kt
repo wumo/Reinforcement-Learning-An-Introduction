@@ -11,9 +11,9 @@ fun TemporalDifference.prediction(): StateValueFunction {
         var s = started.rand()
         while (s.isNotTerminal()) {
             val a = s.actions.rand(initial_policy(s))
-            val possible = a.sample()
-            V[s] += alpha * (possible.reward + gamma * V[possible.next] - V[s])
-            s = possible.next
+            val (s_next, reward, _) = a.sample()
+            V[s] += alpha * (reward + gamma * V[s_next] - V[s])
+            s = s_next
         }
     }
     return V

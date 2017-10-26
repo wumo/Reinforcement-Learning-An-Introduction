@@ -44,17 +44,16 @@ fun NStepTemporalDifference.treebackup(alpha: (State, Action) -> Double = { _, _
                 _A.removeFirst()
             }
             if (t < T) {
-                val possible = a.sample()
-                _S.append(possible.next)
-                s = possible.next
-                val r = possible.reward
+                val (s_next, reward, _) = a.sample()
+                _S.append(s_next)
+                s = s_next
                 if (s.isTerminal()) {
-                    _delta.append(r - _Q.last)
+                    _delta.append(reward - _Q.last)
                     T = t + 1
                     val _t = t - n + 1
                     if (_t < 0) n = T //n is too large, normalize it
                 } else {
-                    _delta.append(r + gamma * Sigma(s.actions) { pi[s, it] * Q[s, it] } - _Q.last)
+                    _delta.append(reward + gamma * Sigma(s.actions) { pi[s, it] * Q[s, it] } - _Q.last)
                     a = s.actions.rand()
                     _A.append(a)
                     _Q.append(Q[s, a])

@@ -19,18 +19,17 @@ fun TemporalDifference.DoubleQLearning(_alpha: (State, Action) -> Double = { _, 
         while (true) {
             `e-greedy`(s, Q1, Q2, policy)
             val a = s.actions.rand(policy(s))
-            val possible = a.sample()
-            val s_next = possible.next
+            val (s_next, reward, _) = a.sample()
             if (Rand().nextBoolean()) {
                 val tmp = Q1
                 Q1 = Q2
                 Q2 = tmp
             }
             if (s_next.isNotTerminal()) {
-                Q1[s, a] += _alpha(s, a) * (possible.reward + gamma * Q2[s_next, argmax(s_next.actions) { Q1[s_next, it] }] - Q1[s, a])
+                Q1[s, a] += _alpha(s, a) * (reward + gamma * Q2[s_next, argmax(s_next.actions) { Q1[s_next, it] }] - Q1[s, a])
                 s = s_next
             } else {
-                Q1[s, a] += _alpha(s, a) * (possible.reward + gamma * 0.0 - Q1[s, a])//Q[terminalState,*]=0.0
+                Q1[s, a] += _alpha(s, a) * (reward + gamma * 0.0 - Q1[s, a])//Q[terminalState,*]=0.0
                 break
             }
         }
