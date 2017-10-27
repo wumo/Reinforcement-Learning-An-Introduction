@@ -1,6 +1,6 @@
 # Reinforcement Learning: An Introduction
 
-[Kotlin](https://kotlinlang.org/) implementation of algorithms, examples, and exercises from the [Sutton and Barto: Reinforcement Learning 2nd](http://incompleteideas.net/sutton/book/bookdraft2017june19.pdf)
+[Kotlin](https://kotlinlang.org/) implementation of algorithms, examples, and exercises from the [Sutton and Barto: Reinforcement Learning (2nd Edition)](http://incompleteideas.net/sutton/book/bookdraft2017june19.pdf)
 
 Inspired by [ShangtongZhang/reinforcement-learning-an-introduction](https://github.com/ShangtongZhang/reinforcement-learning-an-introduction)
 and [idsc-frazzoli/subare](https://github.com/idsc-frazzoli/subare)
