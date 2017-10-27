@@ -50,7 +50,7 @@ Implemented problems:
 * [Dyna Maze](src/main/kotlin/lab/mars/rl/problem/DynaMaze.kt) (p.178)
 
 --------------------------------------------------------------------------------
-Build with [Maven](https://maven.apache.org/) 
+Built with [Maven](https://maven.apache.org/) 
 
 Running [Testcases](src/test/kotlin/lab/mars/rl/model/impl)
 
