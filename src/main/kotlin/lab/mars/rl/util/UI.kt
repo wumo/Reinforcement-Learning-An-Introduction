@@ -18,8 +18,8 @@ class UI : Application() {
     companion object {
         var after: () -> Unit = {}
         var render: (ActionValueFunction, State) -> Unit = { _, _ -> }
-        var width = 300.0
-        var height = 250.0
+        var width = 450.0
+        var height = 300.0
         var grid_x = 9
         var grix_y = 6
     }

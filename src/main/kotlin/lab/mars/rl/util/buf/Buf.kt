@@ -1,5 +1,7 @@
 package lab.mars.rl.util.buf
 
+import lab.mars.rl.util.Rand
+
 /**
  * <p>
  * Created on 2017-09-28.
@@ -48,4 +50,6 @@ interface Buf<T : Any> : Iterable<T> {
 
         override fun next() = get(a++)
     }
+
+    fun rand() = get(Rand().nextInt(size))
 }
