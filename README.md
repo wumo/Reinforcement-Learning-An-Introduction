@@ -39,15 +39,15 @@ Dyna:
 * Prioritized Sweeping (from p.178)
 
 Implemented problems:
-* Grid world (p.84)
-* Jack's Car Rental and exercise 4.4 (p.89)
-* Gambler's Problem (p.92)
-* Blackjack (p.103)
-* Random Walk (p.135)
-* Windy Gridworld and King's Moves (p.140)
-* Cliff Walking (p.142)
-* Maximization Bias Example (p.145)
-* Dyna Maze (p.178)
+* [Grid world](src/main/kotlin/lab/mars/rl/problem/GridWorld.kt) (p.84)
+* [Jack's Car Rental and exercise 4.4](src/main/kotlin/lab/mars/rl/problem/CarRental.kt) (p.89)
+* [Gambler's Problem](src/main/kotlin/lab/mars/rl/problem/Gambler.kt) (p.92)
+* [Blackjack](src/main/kotlin/lab/mars/rl/problem/Blackjack.kt) (p.103)
+* [Random Walk](src/main/kotlin/lab/mars/rl/problem/RandomWalk.kt) (p.135)
+* [Windy Gridworld and King's Moves](src/main/kotlin/lab/mars/rl/problem/WindyGridworld.kt) (p.140)
+* [Cliff Walking](src/main/kotlin/lab/mars/rl/problem/CliffWalking.kt) (p.142)
+* [Maximization Bias Example](src/main/kotlin/lab/mars/rl/problem/MaximizationBias.kt) (p.145)
+* [Dyna Maze](src/main/kotlin/lab/mars/rl/problem/DynaMaze.kt) (p.178)
 
 
 
