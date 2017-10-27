@@ -8,6 +8,7 @@ import lab.mars.rl.model.OptimalSolution
 import lab.mars.rl.model.State
 import lab.mars.rl.util.debug
 import lab.mars.rl.util.max
+import lab.mars.rl.util.tuple3
 import org.slf4j.LoggerFactory
 
 class RandomSampleOneStepTabularQLearning(val mdp: MDP) {
@@ -37,7 +38,7 @@ class RandomSampleOneStepTabularQLearning(val mdp: MDP) {
             `e-greedy`(s, Q, policy, epsilon)
         }
         val V = mdp.VFunc { 0.0 }
-        val result = Triple(policy, V, Q)
+        val result = tuple3(policy, V, Q)
         V_from_Q_ND(states, result)
         return result
     }

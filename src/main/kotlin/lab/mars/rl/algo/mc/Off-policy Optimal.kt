@@ -8,6 +8,7 @@ import lab.mars.rl.model.State
 import lab.mars.rl.util.argmax
 import lab.mars.rl.util.buf.newBuf
 import lab.mars.rl.util.debug
+import lab.mars.rl.util.tuple3
 
 fun MonteCarlo.`Off-policy MC Optimal`(): OptimalSolution {
     val Q = mdp.QFunc { 0.0 }
@@ -62,7 +63,7 @@ fun MonteCarlo.`Off-policy MC Optimal`(): OptimalSolution {
         }
     }
     val V = mdp.VFunc { 0.0 }
-    val result = Triple(pi, V, Q)
+    val result = tuple3(pi, V, Q)
     V_from_Q_ND(states, result)
     return result
 }

@@ -4,6 +4,7 @@ import lab.mars.rl.model.*
 import lab.mars.rl.util.argmax
 import lab.mars.rl.util.debug
 import lab.mars.rl.util.Sigma
+import lab.mars.rl.util.tuple3
 import org.apache.commons.math3.util.FastMath.abs
 import org.apache.commons.math3.util.FastMath.max
 import org.slf4j.LoggerFactory
@@ -26,7 +27,7 @@ class PolicyIteration(mdp: MDP) {
     private val PI = mdp.VFunc { null_action }
     private val Q = mdp.QFunc { 0.0 }
 
-    fun v_iteration(): Triple<DeterminedPolicy, StateValueFunction, ActionValueFunction> {
+    fun v_iteration(): tuple3<DeterminedPolicy, StateValueFunction, ActionValueFunction> {
         //Initialization
         for (s in states)
             PI[s] = s.actions.firstOrNull() ?: null_action
@@ -53,12 +54,12 @@ class PolicyIteration(mdp: MDP) {
                     if (old_action !== PI[s]) policy_stable = false
                 }
         } while (!policy_stable)
-        val result = Triple(PI, V, Q)
+        val result = tuple3(PI, V, Q)
         Q_from_V(gamma, states, result)
         return result
     }
 
-    fun q_iteration(): Triple<DeterminedPolicy, StateValueFunction, ActionValueFunction> {
+    fun q_iteration(): tuple3<DeterminedPolicy, StateValueFunction, ActionValueFunction> {
         //Initialization
         for (s in states)
             PI[s] = s.actions.firstOrNull() ?: null_action
@@ -86,7 +87,7 @@ class PolicyIteration(mdp: MDP) {
                     if (old_action !== PI[s]) policy_stable = false
                 }
         } while (!policy_stable)
-        val result = Triple(PI, V, Q)
+        val result = tuple3(PI, V, Q)
         V_from_Q(states, result)
         return result
     }

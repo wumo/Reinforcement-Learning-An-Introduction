@@ -7,6 +7,7 @@ import lab.mars.rl.util.RandomAccessCollection
 import lab.mars.rl.util.buf.DefaultIntBuf
 import lab.mars.rl.util.buf.IntBuf
 import lab.mars.rl.util.emptyNSet
+import lab.mars.rl.util.tuple3
 
 /**
  * <p>
@@ -21,7 +22,7 @@ typealias StateValueFunction = RandomAccessCollection<Double>
 typealias ActionValueFunction = RandomAccessCollection<Double>
 typealias DeterminedPolicy = RandomAccessCollection<Action>
 typealias NonDeterminedPolicy = RandomAccessCollection<Double>
-typealias OptimalSolution = Triple<NonDeterminedPolicy, StateValueFunction, ActionValueFunction>
+typealias OptimalSolution = tuple3<NonDeterminedPolicy, StateValueFunction, ActionValueFunction>
 /**
  *
  * @property states 状态集

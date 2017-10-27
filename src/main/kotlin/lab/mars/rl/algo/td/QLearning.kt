@@ -8,6 +8,7 @@ import lab.mars.rl.model.OptimalSolution
 import lab.mars.rl.model.State
 import lab.mars.rl.util.debug
 import lab.mars.rl.util.max
+import lab.mars.rl.util.tuple3
 
 
 fun TemporalDifference.QLearning(_alpha: (State, Action) -> Double = { _, _ -> alpha }): OptimalSolution {
@@ -26,7 +27,7 @@ fun TemporalDifference.QLearning(_alpha: (State, Action) -> Double = { _, _ -> a
         }
     }
     val V = mdp.VFunc { 0.0 }
-    val result = Triple(policy, V, Q)
+    val result = tuple3(policy, V, Q)
     V_from_Q_ND(states, result)
     return result
 }

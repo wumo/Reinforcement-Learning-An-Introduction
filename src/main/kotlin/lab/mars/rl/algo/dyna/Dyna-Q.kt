@@ -7,6 +7,7 @@ import lab.mars.rl.util.buf.DefaultBuf
 import lab.mars.rl.util.debug
 import lab.mars.rl.util.max
 import lab.mars.rl.util.tuple2
+import lab.mars.rl.util.tuple3
 import org.slf4j.LoggerFactory
 
 @Suppress("NAME_SHADOWING")
@@ -32,7 +33,7 @@ class DynaQ(val mdp: MDP) {
         val cachedSA = DefaultBuf.new<tuple2<State, Action>>(Q.size)
         val Model = mdp.QFunc { null_tuple2 }
         val V = mdp.VFunc { 0.0 }
-        val result = Triple(policy, V, Q)
+        val result = tuple3(policy, V, Q)
         for (episode in 1..episodes) {
             log.debug { "$episode/$episodes" }
             var count = 0

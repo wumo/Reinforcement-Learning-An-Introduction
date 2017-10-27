@@ -36,7 +36,7 @@ class `Dyna-Q+`(val mdp: MDP) {
         val cachedSA = DefaultBuf.new<tuple2<State, Action>>(Q.size)
         val Model = mdp.QFunc { null_tuple3 }
         val V = mdp.VFunc { 0.0 }
-        val result = Triple(policy, V, Q)
+        val result = tuple3(policy, V, Q)
         var time = 0
         for (episode in 1..episodes) {
             log.debug { "$episode/$episodes" }

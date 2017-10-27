@@ -4,6 +4,7 @@ import lab.mars.rl.model.*
 import lab.mars.rl.util.Sigma
 import lab.mars.rl.util.argmax
 import lab.mars.rl.util.argmax_tie_random
+import lab.mars.rl.util.tuple3
 
 /**
  * <p>
@@ -14,7 +15,7 @@ import lab.mars.rl.util.argmax_tie_random
  */
 const val theta = 1e-6
 
-fun V_from_Q(states: StateSet, pvq: Triple<DeterminedPolicy, StateValueFunction, ActionValueFunction>) {
+fun V_from_Q(states: StateSet, pvq: tuple3<DeterminedPolicy, StateValueFunction, ActionValueFunction>) {
     val (PI, V, Q) = pvq
     for (s in states)
         s.actions.ifAny {
@@ -22,7 +23,7 @@ fun V_from_Q(states: StateSet, pvq: Triple<DeterminedPolicy, StateValueFunction,
         }
 }
 
-fun V_from_Q_ND(states: StateSet, pvq: Triple<NonDeterminedPolicy, StateValueFunction, ActionValueFunction>) {
+fun V_from_Q_ND(states: StateSet, pvq: tuple3<NonDeterminedPolicy, StateValueFunction, ActionValueFunction>) {
     val (PI, V, Q) = pvq
     for (s in states)
         s.actions.ifAny {
@@ -33,7 +34,7 @@ fun V_from_Q_ND(states: StateSet, pvq: Triple<NonDeterminedPolicy, StateValueFun
         }
 }
 
-fun Q_from_V(gamma: Double, states: StateSet, pvq: Triple<DeterminedPolicy, StateValueFunction, ActionValueFunction>) {
+fun Q_from_V(gamma: Double, states: StateSet, pvq: tuple3<DeterminedPolicy, StateValueFunction, ActionValueFunction>) {
     val (_, V, Q) = pvq
     for (s in states)
         for (a in s.actions)

@@ -9,6 +9,7 @@ import lab.mars.rl.model.State
 import lab.mars.rl.util.Sigma
 import lab.mars.rl.util.buf.newBuf
 import lab.mars.rl.util.debug
+import lab.mars.rl.util.tuple3
 import org.apache.commons.math3.util.FastMath.min
 import org.apache.commons.math3.util.FastMath.pow
 
@@ -63,7 +64,7 @@ fun NStepTemporalDifference.sarsa(alpha: (State, Action) -> Double = { _, _ -> t
         log.debug { "n=$n,T=$T" }
     }
     val V = mdp.VFunc { 0.0 }
-    val result = Triple(policy, V, Q)
+    val result = tuple3(policy, V, Q)
     V_from_Q_ND(states, result)
     return result
 }
