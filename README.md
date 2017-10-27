@@ -1,6 +1,6 @@
 # Reinforcement Learning: An Introduction
 
-Kotlin implementation of algorithms, examples, and exercises from the [Sutton and Barto: Reinforcement Learning 2nd](http://incompleteideas.net/sutton/book/bookdraft2017june19.pdf)
+[Kotlin](https://kotlinlang.org/) implementation of algorithms, examples, and exercises from the [Sutton and Barto: Reinforcement Learning (2nd Edition)](http://incompleteideas.net/sutton/book/bookdraft2017june19.pdf)
 
 Inspired by [ShangtongZhang/reinforcement-learning-an-introduction](https://github.com/ShangtongZhang/reinforcement-learning-an-introduction)
 and [idsc-frazzoli/subare](https://github.com/idsc-frazzoli/subare)
@@ -49,5 +49,5 @@ Implemented problems:
 * [Maximization Bias Example](src/main/kotlin/lab/mars/rl/problem/MaximizationBias.kt) (p.145)
 * [Dyna Maze](src/main/kotlin/lab/mars/rl/problem/DynaMaze.kt) (p.178)
 
-
+Running [Testcases](src/test/kotlin/lab/mars/rl/model/impl)
 
