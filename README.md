@@ -7,7 +7,7 @@ and [idsc-frazzoli/subare](https://github.com/idsc-frazzoli/subare)
 
 Implemented algorithms:
 
-* Policy Iteration (p.89)
+* Policy Iteration (p.89)[kotlin](src/main/kotlin/lab/mars/rl/algo/PolicyIteration.kt)
 * Value Iteration (Action-Value Iteration) (p.92)
 
 MC:
