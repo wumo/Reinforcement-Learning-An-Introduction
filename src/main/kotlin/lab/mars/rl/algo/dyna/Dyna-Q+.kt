@@ -1,14 +1,13 @@
 package lab.mars.rl.algo.dyna
 
 import lab.mars.rl.algo.V_from_Q_ND
-import lab.mars.rl.algo.`e-greedy tie random`
 import lab.mars.rl.algo.`e-greedy`
 import lab.mars.rl.model.*
 import lab.mars.rl.util.buf.DefaultBuf
 import lab.mars.rl.util.debug
 import lab.mars.rl.util.max
-import lab.mars.rl.util.tuple2
-import lab.mars.rl.util.tuple3
+import lab.mars.rl.util.tuples.tuple2
+import lab.mars.rl.util.tuples.tuple3
 import org.apache.commons.math3.util.FastMath.sqrt
 import org.slf4j.LoggerFactory
 
@@ -65,8 +64,8 @@ class `Dyna-Q+`(val mdp: MDP) {
                     Q[s, a] += _alpha(s, a) * (reward + gamma * max(s_next.actions, 0.0) { Q[s_next, it] } - Q[s, a])
                 }
                 s = s_next
-                episodeListener(V)
             }
+            episodeListener(V)
             log.debug { "steps=$time" }
         }
         return result

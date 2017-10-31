@@ -8,7 +8,7 @@ import lab.mars.rl.model.State
 import lab.mars.rl.util.argmax
 import lab.mars.rl.util.buf.newBuf
 import lab.mars.rl.util.debug
-import lab.mars.rl.util.tuple3
+import lab.mars.rl.util.tuples.tuple3
 
 fun MonteCarlo.`Off-policy MC Optimal`(): OptimalSolution {
     val Q = mdp.QFunc { 0.0 }

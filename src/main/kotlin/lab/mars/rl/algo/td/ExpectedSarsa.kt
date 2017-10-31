@@ -8,7 +8,7 @@ import lab.mars.rl.model.OptimalSolution
 import lab.mars.rl.model.State
 import lab.mars.rl.util.Sigma
 import lab.mars.rl.util.debug
-import lab.mars.rl.util.tuple3
+import lab.mars.rl.util.tuples.tuple3
 
 fun TemporalDifference.expectedSarsa(_alpha: (State, Action) -> Double = { _, _ -> alpha }): OptimalSolution {
     val policy = mdp.QFunc { 0.0 }

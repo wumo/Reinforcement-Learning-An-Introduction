@@ -4,7 +4,7 @@ import lab.mars.rl.model.*
 import lab.mars.rl.util.Sigma
 import lab.mars.rl.util.argmax
 import lab.mars.rl.util.argmax_tie_random
-import lab.mars.rl.util.tuple3
+import lab.mars.rl.util.tuples.tuple3
 
 /**
  * <p>

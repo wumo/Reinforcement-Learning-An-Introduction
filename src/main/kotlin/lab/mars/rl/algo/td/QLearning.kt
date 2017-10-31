@@ -8,7 +8,7 @@ import lab.mars.rl.model.OptimalSolution
 import lab.mars.rl.model.State
 import lab.mars.rl.util.debug
 import lab.mars.rl.util.max
-import lab.mars.rl.util.tuple3
+import lab.mars.rl.util.tuples.tuple3
 
 
 fun TemporalDifference.QLearning(_alpha: (State, Action) -> Double = { _, _ -> alpha }): OptimalSolution {

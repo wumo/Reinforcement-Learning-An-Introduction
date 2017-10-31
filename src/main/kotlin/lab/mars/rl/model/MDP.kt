@@ -7,7 +7,7 @@ import lab.mars.rl.util.RandomAccessCollection
 import lab.mars.rl.util.buf.DefaultIntBuf
 import lab.mars.rl.util.buf.IntBuf
 import lab.mars.rl.util.emptyNSet
-import lab.mars.rl.util.tuple3
+import lab.mars.rl.util.tuples.tuple3
 
 /**
  * <p>

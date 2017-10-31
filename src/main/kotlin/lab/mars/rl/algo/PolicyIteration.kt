@@ -4,7 +4,7 @@ import lab.mars.rl.model.*
 import lab.mars.rl.util.argmax
 import lab.mars.rl.util.debug
 import lab.mars.rl.util.Sigma
-import lab.mars.rl.util.tuple3
+import lab.mars.rl.util.tuples.tuple3
 import org.apache.commons.math3.util.FastMath.abs
 import org.apache.commons.math3.util.FastMath.max
 import org.slf4j.LoggerFactory

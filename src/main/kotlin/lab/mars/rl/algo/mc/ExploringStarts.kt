@@ -9,7 +9,7 @@ import lab.mars.rl.model.State
 import lab.mars.rl.util.argmax
 import lab.mars.rl.util.buf.newBuf
 import lab.mars.rl.util.debug
-import lab.mars.rl.util.tuple3
+import lab.mars.rl.util.tuples.tuple3
 
 fun MonteCarlo.`Optimal Exploring Starts`(): OptimalSolution {
     if (policy.isEmpty()) {

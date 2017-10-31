@@ -1,6 +1,7 @@
 package lab.mars.rl.util
 
 import lab.mars.rl.util.buf.DefaultBuf
+import lab.mars.rl.util.tuples.tuple2
 
 class HashMapRAC<E : Any>() : RandomAccessCollection<E> {
     private val raw = hashMapOf<Index, E>()

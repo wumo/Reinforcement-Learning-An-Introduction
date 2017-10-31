@@ -9,7 +9,7 @@ import lab.mars.rl.model.State
 import lab.mars.rl.util.Sigma
 import lab.mars.rl.util.buf.newBuf
 import lab.mars.rl.util.debug
-import lab.mars.rl.util.tuple3
+import lab.mars.rl.util.tuples.tuple3
 import org.apache.commons.math3.util.FastMath.min
 
 fun NStepTemporalDifference.treebackup(alpha: (State, Action) -> Double = { _, _ -> this.alpha }): OptimalSolution {

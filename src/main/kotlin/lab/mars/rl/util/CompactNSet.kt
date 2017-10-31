@@ -3,6 +3,7 @@
 package lab.mars.rl.util
 
 import lab.mars.rl.util.buf.*
+import lab.mars.rl.util.tuples.tuple2
 import java.util.*
 
 /**
@@ -264,8 +265,8 @@ constructor(internal val data: MutableBuf<Any>, val rootOffset: Int = 0, val sub
 
     override fun toString(): String {
         val sb = StringBuilder()
-        for (withIndex in withIndices()) {
-            sb.append(withIndex).append("\n")
+        for ((idx,value) in withIndices()) {
+            sb.append("$idx=$value").append("\n")
         }
         return sb.toString()
     }

@@ -3,6 +3,7 @@
 package lab.mars.rl.util
 
 import lab.mars.rl.util.buf.DefaultIntBuf
+import lab.mars.rl.util.tuples.tuple2
 
 interface RandomAccessCollection<E : Any> : Iterable<E> {
     /**
@@ -93,13 +94,6 @@ interface RandomAccessCollection<E : Any> : Iterable<E> {
                 count++
             return count
         }
-
-//    override fun toString(): String {
-//        val sb = StringBuilder()
-//        for (withIndex in withIndices())
-//            sb.append(withIndex).append("\n")
-//        return sb.toString()
-//    }
 }
 
 inline fun <T : Any> RandomAccessCollection<T>.isNotEmpty() = !isEmpty()
