@@ -36,7 +36,7 @@ Dyna:
 * [Random-sample one-step tabular Q-planning](src/main/kotlin/lab/mars/rl/algo/dyna/RandomSampleOneStepTabularQLearning.kt) (p.175)
 * [Tabular Dyna-Q](src/main/kotlin/lab/mars/rl/algo/dyna/Dyna-Q.kt) (p.178)
 * [Tabular Dyna-Q+](src/main/kotlin/lab/mars/rl/algo/dyna/Dyna-Q+.kt) (p.182)
-* Prioritized Sweeping (from p.178)
+* [Prioritized Sweeping](src/main/kotlin/lab/mars/rl/algo/dyna/PrioritizedSweeping.kt) (from p.178)
 
 Implemented problems:
 * [Grid world](src/main/kotlin/lab/mars/rl/problem/GridWorld.kt) (p.84)
