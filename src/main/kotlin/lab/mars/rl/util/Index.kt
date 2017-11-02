@@ -2,41 +2,23 @@
 
 package lab.mars.rl.util
 
-val emptyIndex = object : Index {
-    override val size: Int
-        get() = 0
-
-    override fun get(idx: Int): Int {
-        throw  NoSuchElementException()
-    }
-
-}
-
-interface Index : Iterable<Int> {
+abstract class Index : Iterable<Int> {
     val isEmpty: Boolean
         get() = size == 0
     val isNotEmpty: Boolean
         get() = !isEmpty
-    val size: Int
+    abstract val size: Int
     val lastIndex: Int
         get() = size - 1
 
     /**
      * 获取指定维度[idx]上的数值
      */
-    operator fun get(idx: Int): Int
+    abstract operator fun get(idx: Int): Int
 
-    fun forEach(start: Int = 0, end: Int = lastIndex, block: (Int, Int) -> Unit) {
+    open fun forEach(start: Int = 0, end: Int = lastIndex, block: (Int, Int) -> Unit) {
         for (i in start..end)
             block(i, get(i))
-    }
-
-    fun equals(other: Index): Boolean {
-        if (this === other) return true
-        if (size != other.size) return false
-        for (i in 0..lastIndex)
-            if (get(i) != other[i]) return false
-        return true
     }
 
     override fun iterator() = object : Iterator<Int> {
@@ -45,9 +27,38 @@ interface Index : Iterable<Int> {
 
         override fun next() = get(a++)
     }
+
+    override fun toString(): String {
+        val sb = StringBuilder()
+        sb.append("[")
+        if (isNotEmpty) {
+            for (idx in 0 until lastIndex)
+                sb.append(get(idx)).append(", ")
+            sb.append(get(lastIndex))
+        }
+        sb.append("]")
+        return sb.toString()
+    }
+
+    override fun equals(other: Any?): Boolean {
+        if (this === other) return true
+        if (other !is Index) return false
+        if (size != other.size) return false
+        for (a in 0..lastIndex)
+            if (get(a) != other[a]) return false
+        return true
+    }
+
+    override fun hashCode(): Int {
+        if (isEmpty) return 0
+        var result = get(0)
+        for (a in 1..lastIndex)
+            result = 31 * result + get(a)
+        return result
+    }
 }
 
-class MultiIndex(internal val indices: Array<Index>) : Index {
+class MultiIndex(internal val indices: Array<Index>) : Index() {
     override fun forEach(start: Int, end: Int, block: (Int, Int) -> Unit) {
         var start_index = -1
         var start_index_offset = 0
@@ -124,22 +135,5 @@ class MultiIndex(internal val indices: Array<Index>) : Index {
             if (_dim < index.size) return index[_dim]
             else _dim -= index.size
         throw IndexOutOfBoundsException()
-    }
-
-    override fun equals(other: Any?): Boolean {
-        if (this === other) return true
-        if (other !is Index) return false
-        if (size != other.size) return false
-        for (a in 0..lastIndex)
-            if (get(a) != other[a]) return false
-        return true
-    }
-
-    override fun hashCode(): Int {
-        if (isEmpty) return 0
-        var result = get(0)
-        for (a in 1..lastIndex)
-            result = 31 * result + get(a)
-        return result
     }
 }

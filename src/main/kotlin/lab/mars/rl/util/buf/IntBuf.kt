@@ -9,10 +9,10 @@ import lab.mars.rl.util.Index
  *
  * @author wumo
  */
-interface IntBuf : Index {
+abstract class IntBuf : Index() {
     /** [end]>=[start] */
-    operator fun get(start: Int, end: Int): IntBuf
+    abstract operator fun get(start: Int, end: Int): IntBuf
 
-    fun toIntArray(): IntArray
-    fun copy(): IntBuf
+    abstract fun toIntArray(): IntArray
+    abstract fun copy(): IntBuf
 }

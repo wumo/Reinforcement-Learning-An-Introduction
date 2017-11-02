@@ -65,7 +65,7 @@ class MDP(
     }
 }
 
-class State(val index: IntBuf) : Index {
+class State(val index: IntBuf) : Index() {
     inline override val size: Int
         get() = index.size
 
@@ -73,13 +73,11 @@ class State(val index: IntBuf) : Index {
 
     var actions: RandomAccessCollection<Action> = emptyNSet as RandomAccessCollection<Action>
 
-    override fun toString() = index.toString()
-
     inline fun isTerminal() = actions.isEmpty()
     inline fun isNotTerminal() = !actions.isEmpty()
 }
 
-class Action(val index: IntBuf) : Index {
+class Action(val index: IntBuf) : Index() {
     inline override val size: Int
         get() = index.size
 
@@ -88,8 +86,6 @@ class Action(val index: IntBuf) : Index {
     var possibles: RandomAccessCollection<Possible> = emptyNSet as RandomAccessCollection<Possible>
 
     lateinit var sample: () -> Possible
-
-    override fun toString() = index.toString()
 }
 
 class Possible(var next: State, var reward: Double, var probability: Double) {

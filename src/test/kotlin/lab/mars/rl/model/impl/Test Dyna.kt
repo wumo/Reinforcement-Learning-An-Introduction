@@ -6,8 +6,12 @@ import lab.mars.rl.algo.dyna.DynaQ
 import lab.mars.rl.algo.dyna.PrioritizedSweeping
 import lab.mars.rl.algo.dyna.RandomSampleOneStepTabularQLearning
 import lab.mars.rl.algo.dyna.`Dyna-Q+`
+import lab.mars.rl.algo.td.QLearning
+import lab.mars.rl.algo.td.TemporalDifference
 import lab.mars.rl.problem.Blackjack
+import lab.mars.rl.problem.CliffWalking
 import lab.mars.rl.problem.DynaMaze
+import lab.mars.rl.problem.WindyGridworld
 import lab.mars.rl.util.UI
 import lab.mars.rl.util.argmax
 import org.junit.Test
@@ -103,7 +107,7 @@ class `Dyna` {
         fun `Dyna Q Prioritized Sweeping UI`() {
             val prob = DynaMaze.make()
             val algo = PrioritizedSweeping(prob)
-            algo.episodes = 1000
+            algo.episodes = 10000
             algo.n = 10
             val latch = CountDownLatch(1)
 
@@ -147,6 +151,48 @@ class `Dyna` {
                 print("${DynaMaze.desc_move[a[0]]}$s")
             }
             println("\nsteps=$count")//optimal=12
+        }
+    }
+    class  `Windy Gridworld`{
+        @Test
+        fun `WindyGridworld Prioritized Sweeping`() {
+            val prob = WindyGridworld.make()
+            val algo = PrioritizedSweeping(prob)
+            algo.alpha = 0.5
+            algo.episodes = 1000
+            val (PI, _, _) = algo.optimal()
+            var s = prob.started[0]
+            var sum = 0.0
+            print(s)
+            while (s.isNotTerminal()) {
+                val a = argmax(s.actions) { PI[s, it] }
+                val possible = a.sample()
+                s = possible.next
+                sum += possible.reward
+                print("${WindyGridworld.desc_move[a[0]]}$s")
+            }
+            println("\nreturn=$sum")//optimal=-14
+        }
+    }
+    class `Cliff Walking`{
+        @Test
+        fun `Cliff Walking TD Q Learning`() {
+            val prob = CliffWalking.make()
+            val algo =PrioritizedSweeping(prob)
+            algo.alpha = 0.5
+            algo.episodes=1000
+            val (PI, _, _) = algo.optimal()
+            var s = prob.started[0]
+            var sum = 0.0
+            print(s)
+            while (s.isNotTerminal()) {
+                val a = argmax(s.actions) { PI[s, it] }
+                val possible = a.sample()
+                s = possible.next
+                sum += possible.reward
+                print("${WindyGridworld.desc_move[a[0]]}$s")
+            }
+            println("\nreturn=$sum")//optimal=-12
         }
     }
 }

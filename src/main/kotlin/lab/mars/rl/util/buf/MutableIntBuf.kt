@@ -9,29 +9,29 @@ import lab.mars.rl.util.Index
  *
  * @author wumo
  */
-interface MutableIntBuf : IntBuf {
-    val cap: Int
-    operator fun set(idx: Int, s: Int)
+abstract class MutableIntBuf : IntBuf() {
+    abstract val cap: Int
+    abstract operator fun set(idx: Int, s: Int)
 
     /** [end]>=[start] */
-    operator fun set(start: Int, end: Int, s: Int)
+    abstract operator fun set(start: Int, end: Int, s: Int)
 
-    fun ensure(minCap: Int)
+    abstract fun ensure(minCap: Int)
 
-    fun prepend(s: Int)
-    fun prepend(num: Int, s: Int)
-    fun prepend(another: Index)
+    abstract fun prepend(s: Int)
+    abstract fun prepend(num: Int, s: Int)
+    abstract fun prepend(another: Index)
 
-    fun append(s: Int)
-    fun append(num: Int, s: Int)
-    fun append(another: Index)
+    abstract fun append(s: Int)
+    abstract fun append(num: Int, s: Int)
+    abstract fun append(another: Index)
 
     fun remove(range: IntRange) {
         remove(range.start, range.endInclusive)
     }
 
     /** [end]>=[start] */
-    fun remove(start: Int, end: Int)
+    abstract fun remove(start: Int, end: Int)
 
     fun remove(index: Int) = remove(index, index)
     fun removeFirst(num: Int) {
@@ -48,5 +48,5 @@ interface MutableIntBuf : IntBuf {
         removeLast(size)
     }
 
-    fun reuseBacked(): IntBuf
+    abstract fun reuseBacked(): IntBuf
 }

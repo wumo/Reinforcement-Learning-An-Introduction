@@ -14,7 +14,7 @@ import lab.mars.rl.util.Index
 fun IntArray.buf(start: Int, end: Int): DefaultIntBuf = DefaultIntBuf.reuse(this, start, end)
 
 open class DefaultIntBuf(private var ring: IntArray, private var offset: Int, size: Int, cap: Int = size) :
-        MutableIntBuf {
+        MutableIntBuf() {
     companion object {
         val MAX_ARRAY_SIZE = Integer.MAX_VALUE - 8
         /**
@@ -181,34 +181,5 @@ open class DefaultIntBuf(private var ring: IntArray, private var offset: Int, si
         for (a in 0 until num)
             ring[index(_size + a)] = another[a]
         _size += num
-    }
-
-    override fun toString(): String {
-        val sb = StringBuilder()
-        sb.append("[")
-        if (isNotEmpty) {
-            for (idx in 0 until lastIndex)
-                sb.append(ring[index(idx)]).append(", ")
-            sb.append(ring[index(lastIndex)])
-        }
-        sb.append("]")
-        return sb.toString()
-    }
-
-    override fun equals(other: Any?): Boolean {
-        if (this === other) return true
-        if (other !is Index) return false
-        if (size != other.size) return false
-        for (a in 0..lastIndex)
-            if (get(a) != other[a]) return false
-        return true
-    }
-
-    override fun hashCode(): Int {
-        if (isEmpty) return 0
-        var result = get(0)
-        for (a in 1..lastIndex)
-            result = 31 * result + get(a)
-        return result
     }
 }

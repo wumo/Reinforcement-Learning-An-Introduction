@@ -34,7 +34,11 @@ class PrioritizedSweeping(val mdp: MDP) {
         val policy = mdp.QFunc { 0.0 }
         val Q = mdp.QFunc { 0.0 }
         val PQueue = PriorityQueue(Q.size, Comparator<tuple3<Double, State, Action>> { o1, o2 ->
-            o2._1.compareTo(o1._1)
+            var result = o2._1.compareTo(o1._1)
+            if (result == 0) {
+
+            }
+            result
         })
         val Model = mdp.QFunc { null_tuple2 }
         val predecessor = mdp.VFunc { hashSetOf<tuple2<State, Action>>() }
@@ -59,8 +63,11 @@ class PrioritizedSweeping(val mdp: MDP) {
                     val (_, s, a) = PQueue.poll()
                     val (s_next,reward)=Model[s,a]
                     Q[s, a] += _alpha(s, a) * reward + gamma * max(s_next.actions, 0.0) { Q[s_next, it] } - Q[s, a]
+                    V_from_Q_ND(states, result)
+                    stepListener(V, s)
                     for ((s_pre, a_pre) in predecessor[s]) {
-                        val (_, reward) = Model[s_pre, a_pre]
+                        val (s_next, reward) = Model[s_pre, a_pre]
+                        assert(s_next === s)
                         val P = abs( reward + gamma * max(s.actions, 0.0) { Q[s, it] } - Q[s_pre, a_pre])
                         if (P > theta) PQueue.add(tuple3(P, s_pre, a_pre))
                     }
