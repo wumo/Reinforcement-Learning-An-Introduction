@@ -6,7 +6,7 @@ import lab.mars.rl.algo.td.TemporalDifference.Companion.log
 import lab.mars.rl.model.Action
 import lab.mars.rl.model.OptimalSolution
 import lab.mars.rl.model.State
-import lab.mars.rl.util.Sigma
+import lab.mars.rl.util.sum
 import lab.mars.rl.util.debug
 import lab.mars.rl.util.tuples.tuple3
 
@@ -21,7 +21,7 @@ fun TemporalDifference.expectedSarsa(_alpha: (State, Action) -> Double = { _, _ 
             `e-greedy`(s, Q, policy,epsilon)
             val a = s.actions.rand(policy(s))
             val (s_next, reward, _) = a.sample()
-            Q[s, a] += _alpha(s, a) * (reward + gamma * Sigma(s_next.actions) { policy[s_next, it] * Q[s_next, it] } - Q[s, a])
+            Q[s, a] += _alpha(s, a) * (reward + gamma * sum(s_next.actions) { policy[s_next, it] * Q[s_next, it] } - Q[s, a])
             s = s_next
         }
     }

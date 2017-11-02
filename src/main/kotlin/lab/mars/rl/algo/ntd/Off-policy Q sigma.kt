@@ -6,7 +6,7 @@ import lab.mars.rl.algo.ntd.NStepTemporalDifference.Companion.log
 import lab.mars.rl.model.Action
 import lab.mars.rl.model.OptimalSolution
 import lab.mars.rl.model.State
-import lab.mars.rl.util.Sigma
+import lab.mars.rl.util.sum
 import lab.mars.rl.util.buf.newBuf
 import lab.mars.rl.util.debug
 import lab.mars.rl.util.tuples.tuple3
@@ -64,7 +64,7 @@ fun NStepTemporalDifference.`off-policy Q sigma`(alpha: (State, Action) -> Doubl
                     a = s.actions.rand(b(s));_A.append(a)
                     val sig = sig(t + 1)
                     _sig.append(sig)
-                    _delta.append(reward + gamma * sig * Q[s, a] + gamma * (1 - sig) * Sigma(s.actions) { pi[s, it] * Q[s, it] } - _Q.last)
+                    _delta.append(reward + gamma * sig * Q[s, a] + gamma * (1 - sig) * sum(s.actions) { pi[s, it] * Q[s, it] } - _Q.last)
                     _Q.append(Q[s, a])
                     _Pi.append(pi[s, a])
                     _P.append(pi[s, a] / b[s, a])

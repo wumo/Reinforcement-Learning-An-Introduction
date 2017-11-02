@@ -1,7 +1,7 @@
 package lab.mars.rl.algo
 
 import lab.mars.rl.model.*
-import lab.mars.rl.util.Sigma
+import lab.mars.rl.util.sum
 import lab.mars.rl.util.argmax
 import lab.mars.rl.util.argmax_tie_random
 import lab.mars.rl.util.tuples.tuple3
@@ -38,7 +38,7 @@ fun Q_from_V(gamma: Double, states: StateSet, pvq: tuple3<DeterminedPolicy, Stat
     val (_, V, Q) = pvq
     for (s in states)
         for (a in s.actions)
-            Q[s, a] = Sigma(a.possibles) { probability * (reward + gamma * V[next]) }
+            Q[s, a] = sum(a.possibles) { probability * (reward + gamma * V[next]) }
 }
 
 fun average_alpha(mdp: MDP): (State, Action) -> Double {

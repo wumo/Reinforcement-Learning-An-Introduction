@@ -6,7 +6,7 @@ import lab.mars.rl.algo.ntd.NStepTemporalDifference.Companion.log
 import lab.mars.rl.model.Action
 import lab.mars.rl.model.OptimalSolution
 import lab.mars.rl.model.State
-import lab.mars.rl.util.Sigma
+import lab.mars.rl.util.sum
 import lab.mars.rl.util.buf.newBuf
 import lab.mars.rl.util.debug
 import lab.mars.rl.util.tuples.tuple3
@@ -54,7 +54,7 @@ fun NStepTemporalDifference.treebackup(alpha: (State, Action) -> Double = { _, _
                     val _t = t - n + 1
                     if (_t < 0) n = T //n is too large, normalize it
                 } else {
-                    _delta.append(reward + gamma * Sigma(s.actions) { pi[s, it] * Q[s, it] } - _Q.last)
+                    _delta.append(reward + gamma * sum(s.actions) { pi[s, it] * Q[s, it] } - _Q.last)
                     a = s.actions.rand()
                     _A.append(a)
                     _Q.append(Q[s, a])

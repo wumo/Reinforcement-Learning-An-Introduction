@@ -6,8 +6,8 @@ import lab.mars.rl.algo.ntd.NStepTemporalDifference.Companion.log
 import lab.mars.rl.model.Action
 import lab.mars.rl.model.OptimalSolution
 import lab.mars.rl.model.State
-import lab.mars.rl.util.Pi
-import lab.mars.rl.util.Sigma
+import lab.mars.rl.util.product
+import lab.mars.rl.util.sum
 import lab.mars.rl.util.buf.newBuf
 import lab.mars.rl.util.debug
 import lab.mars.rl.util.tuples.tuple3
@@ -57,8 +57,8 @@ fun NStepTemporalDifference.`off-policy sarsa`(alpha: (State, Action) -> Double 
             }
             val _t = t - n + 1
             if (_t >= 0) {
-                val p = Pi(1, min(n - 1, T - 1 - _t)) { pi[_S[it], _A[it]] / b[_S[it], _A[it]] }
-                var G = Sigma(1, min(n, T - _t)) { pow(gamma, it - 1) * _R[it] }
+                val p = product(1, min(n - 1, T - 1 - _t)) { pi[_S[it], _A[it]] / b[_S[it], _A[it]] }
+                var G = sum(1, min(n, T - _t)) { pow(gamma, it - 1) * _R[it] }
                 if (_t + n < T) G += pow(gamma, n) * Q[_S[n], _A[n]]
                 Q[_S[0], _A[0]] += alpha(_S[0], _A[0]) * p * (G - Q[_S[0], _A[0]])
                 `e-greedy`(states[_S[0]], Q, pi, epsilon)

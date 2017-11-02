@@ -4,16 +4,7 @@ package lab.mars.rl.util
 
 import java.util.concurrent.ThreadLocalRandom
 
-/**
- * <p>
- * Created on 2017-09-06.
- * </p>
- *
- * @author wumo
- */
-const val theta = 1e-6
-
-inline fun Rand() = ThreadLocalRandom.current()
+inline fun Rand() = ThreadLocalRandom.current()!!
 
 inline fun repeat(times: Int, condition: (Int) -> Boolean, action: (Int) -> Unit) {
     for (index in 0 until times) {
@@ -22,14 +13,14 @@ inline fun repeat(times: Int, condition: (Int) -> Boolean, action: (Int) -> Unit
     }
 }
 
-inline fun Pi(from: Int, to: Int, evaluate: (Int) -> Double): Double {
+inline fun product(from: Int, to: Int, evaluate: (Int) -> Double): Double {
     var multi = 1.0
     for (a in from..to)
         multi *= evaluate(a)
     return multi
 }
 
-inline fun <T> Sigma(set: Iterable<T>, evaluate: T.(T) -> Double): Double {
+inline fun <T> sum(set: Iterable<T>, evaluate: T.(T) -> Double): Double {
     var sum = 0.0
     set.forEach {
         sum += it.evaluate(it)
@@ -37,7 +28,7 @@ inline fun <T> Sigma(set: Iterable<T>, evaluate: T.(T) -> Double): Double {
     return sum
 }
 
-inline fun Sigma(from: Int, to: Int, evaluate: (Int) -> Double): Double {
+inline fun sum(from: Int, to: Int, evaluate: (Int) -> Double): Double {
     var sum = 0.0
     for (a in from..to)
         sum += evaluate(a)
