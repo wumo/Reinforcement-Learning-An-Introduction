@@ -47,7 +47,7 @@ class `Dyna` {
         fun `Dyna Q UI`() {
             val prob = DynaMaze.make()
             val algo = DynaQ(prob)
-            algo.episodes = 1000
+            algo.episodes = 10000
             algo.n = 10
             val latch = CountDownLatch(1)
 
@@ -107,7 +107,7 @@ class `Dyna` {
         fun `Dyna Q Prioritized Sweeping UI`() {
             val prob = DynaMaze.make()
             val algo = PrioritizedSweeping(prob)
-            algo.episodes = 10000
+            algo.episodes = 1000
             algo.n = 10
             val latch = CountDownLatch(1)
 
