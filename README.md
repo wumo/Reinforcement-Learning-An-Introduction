@@ -5,13 +5,12 @@
 Inspired by [ShangtongZhang/reinforcement-learning-an-introduction](https://github.com/ShangtongZhang/reinforcement-learning-an-introduction)
 and [idsc-frazzoli/subare](https://github.com/idsc-frazzoli/subare)
 
-Implemented algorithms:
-
+## Implemented algorithms:
+Model-based:
 * [Policy Iteration (Action-Value Iteration)](src/main/kotlin/lab/mars/rl/algo/PolicyIteration.kt) (p.89)
 * [Value Iteration](src/main/kotlin/lab/mars/rl/algo/ValueIteration.kt)  (p.92)
 
 MC:
-
 * [First-visit MC prediction](src/main/kotlin/lab/mars/rl/algo/mc/Prediction.kt) (p.102)
 * [Monte Carlo Exploring Starts](src/main/kotlin/lab/mars/rl/algo/mc/ExploringStarts.kt) (p.109)
 * [On-Policy first-visit MC control](src/main/kotlin/lab/mars/rl/algo/mc/On-Policy%20Optimal.kt) (p.111)
@@ -38,7 +37,7 @@ Dyna:
 * [Tabular Dyna-Q+](src/main/kotlin/lab/mars/rl/algo/dyna/Dyna-Q+.kt) (p.182)
 * [Prioritized Sweeping](src/main/kotlin/lab/mars/rl/algo/dyna/PrioritizedSweeping.kt) (from p.178)
 
-Implemented problems:
+## Implemented problems:
 * [Grid world](src/main/kotlin/lab/mars/rl/problem/GridWorld.kt) (p.84)
 * [Jack's Car Rental and exercise 4.4](src/main/kotlin/lab/mars/rl/problem/CarRental.kt) (p.89)
 * [Gambler's Problem](src/main/kotlin/lab/mars/rl/problem/Gambler.kt) (p.92)
@@ -49,7 +48,7 @@ Implemented problems:
 * [Maximization Bias Example](src/main/kotlin/lab/mars/rl/problem/MaximizationBias.kt) (p.145)
 * [Dyna Maze](src/main/kotlin/lab/mars/rl/problem/DynaMaze.kt) (p.178)
 
---------------------------------------------------------------------------------
+## Running
 Built with [Maven](https://maven.apache.org/) 
 
 Running [Testcases](src/test/kotlin/lab/mars/rl/model/impl)
