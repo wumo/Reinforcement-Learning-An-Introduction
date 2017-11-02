@@ -1,5 +1,8 @@
-package lab.mars.rl.algo
+package lab.mars.rl.algo.dp
 
+import lab.mars.rl.algo.Q_from_V
+import lab.mars.rl.algo.V_from_Q
+import lab.mars.rl.algo.theta
 import lab.mars.rl.model.*
 import lab.mars.rl.util.argmax
 import lab.mars.rl.util.debug

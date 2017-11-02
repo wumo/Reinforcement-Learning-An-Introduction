@@ -1,12 +1,9 @@
 package lab.mars.rl.model.impl
 
-import lab.mars.rl.algo.PolicyIteration
 import lab.mars.rl.model.MDP
 import lab.mars.rl.model.NonDeterminedPolicy
 import lab.mars.rl.model.StateValueFunction
-import lab.mars.rl.problem.GridWorld
 import lab.mars.rl.util.argmax
-import org.junit.Test
 
 /**
  * <p>

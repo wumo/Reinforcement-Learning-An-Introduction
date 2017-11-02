@@ -7,8 +7,8 @@ and [idsc-frazzoli/subare](https://github.com/idsc-frazzoli/subare)
 
 ## Implemented algorithms:
 Model-based:
-* [Policy Iteration (Action-Value Iteration)](src/main/kotlin/lab/mars/rl/algo/PolicyIteration.kt) (p.89)
-* [Value Iteration](src/main/kotlin/lab/mars/rl/algo/ValueIteration.kt)  (p.92)
+* [Policy Iteration (Action-Value Iteration)](src/main/kotlin/lab/mars/rl/algo/dp/PolicyIteration.kt) (p.89)
+* [Value Iteration](src/main/kotlin/lab/mars/rl/algo/dp/ValueIteration.kt)  (p.92)
 
 MC:
 * [First-visit MC prediction](src/main/kotlin/lab/mars/rl/algo/mc/Prediction.kt) (p.102)

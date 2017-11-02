@@ -38,6 +38,8 @@ class MDP(
     var started = states
     /**
      * 创建由[State]索引的state function
+     *
+     * create state function indexed by [State]
      */
     fun <T : Any> VFunc(element_maker: (Index) -> T): RandomAccessCollection<T> {
         return state_function(element_maker) as RandomAccessCollection<T>
@@ -45,6 +47,8 @@ class MDP(
 
     /**
      * 创建由[State]和[Action]索引的state action function
+     *
+     * create state action function indexed by [State] and [Action]
      */
     fun <T : Any> QFunc(element_maker: (Index) -> T): RandomAccessCollection<T> {
         return state_action_function(element_maker) as RandomAccessCollection<T>

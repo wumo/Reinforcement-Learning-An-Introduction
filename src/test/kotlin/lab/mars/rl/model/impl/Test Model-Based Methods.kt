@@ -1,7 +1,7 @@
 package lab.mars.rl.model.impl
 
-import lab.mars.rl.algo.PolicyIteration
-import lab.mars.rl.algo.ValueIteration
+import lab.mars.rl.algo.dp.PolicyIteration
+import lab.mars.rl.algo.dp.ValueIteration
 import lab.mars.rl.problem.CarRental
 import org.junit.Assert
 import org.junit.Test
