@@ -42,7 +42,7 @@ object DynaMaze {
     }
 
     fun make(): MDP {
-        val mdp = CNSetMDP(gamma = 0.95, // 因为我们使用的是确定策略，但是GridWorld问题中存在确定策略的无限循环，此时便不是episode mdp，gamma必须小于1
+        val mdp = CNSetMDP(gamma = 0.95,
                            state_dim = 9 x 6,
                            action_dim = 4)
         return mdp.apply {
