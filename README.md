@@ -10,14 +10,14 @@ Model-based (Dynamic Programming):
 * [Policy Iteration (Action-Value Iteration)](src/main/kotlin/lab/mars/rl/algo/dp/PolicyIteration.kt) (p.89)
 * [Value Iteration](src/main/kotlin/lab/mars/rl/algo/dp/ValueIteration.kt)  (p.92)
 
-Monte Carlo:
+Monte Carlo (episode backup):
 * [First-visit MC prediction](src/main/kotlin/lab/mars/rl/algo/mc/Prediction.kt) (p.102)
 * [Monte Carlo Exploring Starts](src/main/kotlin/lab/mars/rl/algo/mc/ExploringStarts.kt) (p.109)
 * [On-Policy first-visit MC control](src/main/kotlin/lab/mars/rl/algo/mc/On-Policy%20Optimal.kt) (p.111)
 * [Off-policy MC prediction](src/main/kotlin/lab/mars/rl/algo/mc/Off-Policy%20Prediction.kt) (p.120)
 * [Off-policy MC control](src/main/kotlin/lab/mars/rl/algo/mc/Off-policy%20Optimal.kt) (p.121)
 
-Temporal Difference:
+Temporal Difference (one-step backup):
 * [Tabular TD(0)](src/main/kotlin/lab/mars/rl/algo/td/Prediction.kt) (p.130)
 * [Sarsa](src/main/kotlin/lab/mars/rl/algo/td/Sarsa.kt) (p.140)
 * [Q-learning](src/main/kotlin/lab/mars/rl/algo/td/QLearning.kt) (p.142)
