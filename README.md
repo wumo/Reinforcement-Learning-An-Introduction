@@ -51,5 +51,5 @@ Dyna (Integrate Planning, Acting, and Learning):
 ## Running
 Built with [Maven](https://maven.apache.org/) 
 
-Running [Testcases](src/test/kotlin/lab/mars/rl/model/impl)
+Try [Testcases](src/test/kotlin/lab/mars/rl/model/impl)
 
