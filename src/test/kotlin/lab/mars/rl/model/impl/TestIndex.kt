@@ -2,9 +2,9 @@
 
 package lab.mars.rl.model.impl
 
-import lab.mars.rl.util.buf.DefaultIntBuf
 import lab.mars.rl.util.Index
 import lab.mars.rl.util.MultiIndex
+import lab.mars.rl.util.buf.DefaultIntBuf
 import org.junit.Assert
 import org.junit.Test
 
@@ -23,7 +23,7 @@ class TestIndex {
                               DefaultIntBuf.of(4, 5, 6, 7))
         val _idx = MultiIndex(indices as Array<Index>)
         val expected = IntArray(8) { it }
-        _idx.forEach(0,0) { idx, value ->
+        _idx.forEach(0, 0) { idx, value ->
             Assert.assertEquals(expected[idx], value)
         }
         _idx.forEach(4, 7) { idx, value ->

@@ -1,4 +1,4 @@
-package lab.mars.rl.util
+package lab.mars.rl.util.ui
 
 import javafx.application.Application
 import javafx.application.Platform
@@ -32,7 +32,7 @@ class UI : Application() {
         root.children.add(canvas)
         primaryStage.scene = Scene(root)
         primaryStage.show()
-        UI.render = this::render
+        render = this::render
         after()
     }
 

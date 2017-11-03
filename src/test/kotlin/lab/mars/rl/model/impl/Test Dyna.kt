@@ -6,14 +6,12 @@ import lab.mars.rl.algo.dyna.DynaQ
 import lab.mars.rl.algo.dyna.PrioritizedSweeping
 import lab.mars.rl.algo.dyna.RandomSampleOneStepTabularQLearning
 import lab.mars.rl.algo.dyna.`Dyna-Q+`
-import lab.mars.rl.algo.td.QLearning
-import lab.mars.rl.algo.td.TemporalDifference
 import lab.mars.rl.problem.Blackjack
 import lab.mars.rl.problem.CliffWalking
 import lab.mars.rl.problem.DynaMaze
 import lab.mars.rl.problem.WindyGridworld
-import lab.mars.rl.util.UI
 import lab.mars.rl.util.argmax
+import lab.mars.rl.util.ui.UI
 import org.junit.Test
 import java.util.concurrent.CountDownLatch
 import kotlin.concurrent.thread
@@ -153,7 +151,8 @@ class `Dyna` {
             println("\nsteps=$count")//optimal=12
         }
     }
-    class  `Windy Gridworld`{
+
+    class `Windy Gridworld` {
         @Test
         fun `WindyGridworld Prioritized Sweeping`() {
             val prob = WindyGridworld.make()
@@ -174,13 +173,14 @@ class `Dyna` {
             println("\nreturn=$sum")//optimal=-14
         }
     }
-    class `Cliff Walking`{
+
+    class `Cliff Walking` {
         @Test
         fun `Cliff Walking TD Q Learning`() {
             val prob = CliffWalking.make()
-            val algo =PrioritizedSweeping(prob)
+            val algo = PrioritizedSweeping(prob)
             algo.alpha = 0.5
-            algo.episodes=1000
+            algo.episodes = 1000
             val (PI, _, _) = algo.optimal()
             var s = prob.started[0]
             var sum = 0.0

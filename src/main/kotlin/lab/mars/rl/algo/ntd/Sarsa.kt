@@ -6,9 +6,9 @@ import lab.mars.rl.algo.ntd.NStepTemporalDifference.Companion.log
 import lab.mars.rl.model.Action
 import lab.mars.rl.model.OptimalSolution
 import lab.mars.rl.model.State
-import lab.mars.rl.util.sum
 import lab.mars.rl.util.buf.newBuf
 import lab.mars.rl.util.debug
+import lab.mars.rl.util.sum
 import lab.mars.rl.util.tuples.tuple3
 import org.apache.commons.math3.util.FastMath.min
 import org.apache.commons.math3.util.FastMath.pow

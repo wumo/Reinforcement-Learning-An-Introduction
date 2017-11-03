@@ -1,4 +1,4 @@
 package lab.mars.rl.util
 
-class IndexOutOfDimensionException :Exception(){
+class IndexOutOfDimensionException : Exception() {
 }

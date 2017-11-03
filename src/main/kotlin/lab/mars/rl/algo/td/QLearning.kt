@@ -19,7 +19,7 @@ fun TemporalDifference.QLearning(_alpha: (State, Action) -> Double = { _, _ -> a
         log.debug { "$episode/$episodes" }
         var s = started.rand()
         while (s.isNotTerminal()) {
-            `e-greedy`(s, Q, policy,epsilon)
+            `e-greedy`(s, Q, policy, epsilon)
             val a = s.actions.rand(policy(s))
             val (s_next, reward, _) = a.sample()
             Q[s, a] += _alpha(s, a) * (reward + gamma * max(s_next.actions, 0.0) { Q[s_next, it] } - Q[s, a])

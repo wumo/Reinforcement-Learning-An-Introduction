@@ -265,7 +265,7 @@ constructor(internal val data: MutableBuf<Any>, val rootOffset: Int = 0, val sub
 
     override fun toString(): String {
         val sb = StringBuilder()
-        for ((idx,value) in withIndices()) {
+        for ((idx, value) in withIndices()) {
             sb.append("$idx=$value").append("\n")
         }
         return sb.toString()

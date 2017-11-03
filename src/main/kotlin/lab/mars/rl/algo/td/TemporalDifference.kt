@@ -1,8 +1,8 @@
 package lab.mars.rl.algo.td
 
-import lab.mars.rl.algo.V_from_Q_ND
-import lab.mars.rl.model.*
-import lab.mars.rl.util.*
+import lab.mars.rl.model.MDP
+import lab.mars.rl.model.NonDeterminedPolicy
+import lab.mars.rl.util.emptyNSet
 import org.slf4j.LoggerFactory
 
 /**

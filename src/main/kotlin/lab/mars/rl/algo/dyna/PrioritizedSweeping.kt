@@ -3,7 +3,6 @@ package lab.mars.rl.algo.dyna
 import lab.mars.rl.algo.V_from_Q_ND
 import lab.mars.rl.algo.`e-greedy tie random`
 import lab.mars.rl.model.*
-import lab.mars.rl.util.Rand
 import lab.mars.rl.util.debug
 import lab.mars.rl.util.max
 import lab.mars.rl.util.repeat
@@ -58,12 +57,12 @@ class PrioritizedSweeping(val mdp: MDP) {
                 if (P > theta) PQueue.add(tuple3(P, s, a))
                 repeat(n, { PQueue.isNotEmpty() }) {
                     val (_, s, a) = PQueue.poll()
-                    val (s_next,reward)=Model[s,a]
+                    val (s_next, reward) = Model[s, a]
                     Q[s, a] += _alpha(s, a) * (reward + gamma * max(s_next.actions, 0.0) { Q[s_next, it] } - Q[s, a])
                     for ((s_pre, a_pre) in predecessor[s]) {
                         val (s_next, reward) = Model[s_pre, a_pre]
                         assert(s_next === s)
-                        val P = abs( reward + gamma * max(s.actions, 0.0) { Q[s, it] } - Q[s_pre, a_pre])
+                        val P = abs(reward + gamma * max(s.actions, 0.0) { Q[s, it] } - Q[s_pre, a_pre])
                         if (P > theta) PQueue.add(tuple3(P, s_pre, a_pre))
                     }
                 }
