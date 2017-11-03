@@ -6,32 +6,32 @@ Inspired by [ShangtongZhang/reinforcement-learning-an-introduction (Python)](htt
 and [idsc-frazzoli/subare (Java 8)](https://github.com/idsc-frazzoli/subare)
 
 ## Implemented algorithms:
-Model-based:
+Model-based (Dynamic Programming):
 * [Policy Iteration (Action-Value Iteration)](src/main/kotlin/lab/mars/rl/algo/dp/PolicyIteration.kt) (p.89)
 * [Value Iteration](src/main/kotlin/lab/mars/rl/algo/dp/ValueIteration.kt)  (p.92)
 
-MC:
+Monte Carlo:
 * [First-visit MC prediction](src/main/kotlin/lab/mars/rl/algo/mc/Prediction.kt) (p.102)
 * [Monte Carlo Exploring Starts](src/main/kotlin/lab/mars/rl/algo/mc/ExploringStarts.kt) (p.109)
 * [On-Policy first-visit MC control](src/main/kotlin/lab/mars/rl/algo/mc/On-Policy%20Optimal.kt) (p.111)
 * [Off-policy MC prediction](src/main/kotlin/lab/mars/rl/algo/mc/Off-Policy%20Prediction.kt) (p.120)
 * [Off-policy MC control](src/main/kotlin/lab/mars/rl/algo/mc/Off-policy%20Optimal.kt) (p.121)
 
-TD:
+Temporal Difference:
 * [Tabular TD(0)](src/main/kotlin/lab/mars/rl/algo/td/Prediction.kt) (p.130)
 * [Sarsa](src/main/kotlin/lab/mars/rl/algo/td/Sarsa.kt) (p.140)
 * [Q-learning](src/main/kotlin/lab/mars/rl/algo/td/QLearning.kt) (p.142)
 * [Expected Sarsa](src/main/kotlin/lab/mars/rl/algo/td/ExpectedSarsa.kt) (p.144)
 * [Double Q-Learning](src/main/kotlin/lab/mars/rl/algo/td/DoubleQLearning.kt) (p.147)
 
-n-step TD:
+n-step Temporal Difference (unify MC and TD):
 * [n-step TD prediction](src/main/kotlin/lab/mars/rl/algo/ntd/Prediction.kt) (p.156)
 * [n-step Sarsa](src/main/kotlin/lab/mars/rl/algo/ntd/Sarsa.kt) (p.159)
 * [Off-policy n-step Sarsa](src/main/kotlin/lab/mars/rl/algo/ntd/Off-policy%20Sarsa.kt) (p.161)
 * [n-step Tree Backup](src/main/kotlin/lab/mars/rl/algo/ntd/Treebackup.kt) (p.165)
 * [Off-policy n-step Q(σ)](src/main/kotlin/lab/mars/rl/algo/ntd/Off-policy%20Q%20sigma.kt) (p.169)
 
-Dyna:
+Dyna (Integrate Planning, Acting, and Learning):
 * [Random-sample one-step tabular Q-planning](src/main/kotlin/lab/mars/rl/algo/dyna/RandomSampleOneStepTabularQLearning.kt) (p.175)
 * [Tabular Dyna-Q](src/main/kotlin/lab/mars/rl/algo/dyna/Dyna-Q.kt) (p.178)
 * [Tabular Dyna-Q+](src/main/kotlin/lab/mars/rl/algo/dyna/Dyna-Q+.kt) (p.182)
