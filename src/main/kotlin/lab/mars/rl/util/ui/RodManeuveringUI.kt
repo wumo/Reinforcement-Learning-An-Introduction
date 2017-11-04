@@ -1,7 +1,7 @@
 package lab.mars.rl.util.ui
 
 import javafx.application.Application
-import javafx.application.Platform
+import javafx.application.Platform.runLater
 import javafx.scene.Group
 import javafx.scene.Scene
 import javafx.scene.canvas.Canvas
@@ -10,18 +10,24 @@ import javafx.stage.Stage
 import lab.mars.rl.model.ActionValueFunction
 import lab.mars.rl.model.State
 import lab.mars.rl.model.StateValueFunction
+import lab.mars.rl.problem.RodManeuvering
+import lab.mars.rl.problem.RodManeuvering.currentStatus
+import lab.mars.rl.problem.RodManeuvering.rodEdges
+import lab.mars.rl.problem.RodManeuvering.rotate
+import lab.mars.rl.problem.RodManeuvering.unit_x
+import lab.mars.rl.problem.RodManeuvering.unit_y
 import java.util.concurrent.CyclicBarrier
 
-class UI : Application() {
+class RodManeuveringUI : Application() {
     lateinit var canvas: Canvas
 
     companion object {
         var after: () -> Unit = {}
         var render: (ActionValueFunction, State) -> Unit = { _, _ -> }
-        var width = 450.0
-        var height = 300.0
-        var grid_x = 9
-        var grix_y = 6
+        var width = 400.0
+        var height = 400.0
+        var grid_x = 20.0
+        var grid_y = 20.0
     }
 
     override fun start(ps: Stage?) {
@@ -29,6 +35,7 @@ class UI : Application() {
         primaryStage.title = "Drawing Operations Test"
         val root = Group()
         canvas = Canvas(width, height)
+        drawMap()
         root.children.add(canvas)
         primaryStage.scene = Scene(root)
         primaryStage.show()
@@ -36,37 +43,55 @@ class UI : Application() {
         after()
     }
 
+    fun drawMap() {
+        val gc = canvas.graphicsContext2D
+        gc.stroke = Color.BLACK
+        for (o in RodManeuvering.obstacles) {
+            o.v.apply {
+                val xPoints = DoubleArray(size) { this[it].x }
+                val yPoints = DoubleArray(size) { this[it].y }
+                gc.strokePolygon(xPoints,
+                                 yPoints, size)
+            }
+        }
+    }
+
     val barrier = CyclicBarrier(2)
     var max = 1.0
     var min = 0.0
+    var pr=true
     fun render(V: StateValueFunction, s: State) {
         barrier.reset()
-        Platform.runLater {
+        runLater {
+            val (x, y, rotation) = currentStatus(s)
             val gc = canvas.graphicsContext2D
             gc.clearRect(0.0, 0.0, width, height)
             gc.stroke = Color.BLACK
-            val u_x = width / grid_x
-            val u_y = height / grix_y
             for ((dim, value) in V.withIndices()) {
                 max = maxOf(max, value)
                 min = minOf(min, value)
                 val nx = dim[0]
                 val ny = dim[1]
                 gc.fill = Color.BLUE.interpolate(Color.RED, if (max == min) 0.5 else (value - min) / (max - min))
-                val x = u_x * nx
-                val y = u_y * ny
-                gc.fillRect(x, y, u_x, u_y)
+                val x = unit_x * nx
+                val y = unit_y * ny
+                gc.fillRect(x, y, unit_x, unit_y)
             }
             gc.fill = Color.GREEN
-            gc.fillRect(s[0] * u_x, s[1] * u_y, u_x, u_y)
+            for (edge in rodEdges) {
+                val p1 = edge._1.rotate(rotation).add(x, y)
+                val p2 = edge._2.rotate(rotation).add(x, y)
+                gc.strokeLine(p1.x, p1.y, p2.x, p2.y)
+            }
             for ((dim, value) in V.withIndices()) {
                 max = maxOf(max, value)
                 val nx = dim[0]
                 val ny = dim[1]
-                val x = u_x * nx
-                val y = u_y * ny
-                gc.strokeRect(x, y, u_x, u_y)
+                val x = unit_x * nx
+                val y = unit_y * ny
+                gc.strokeRect(x, y, unit_x, unit_y)
             }
+            drawMap()
             barrier.await()
         }
         barrier.await()

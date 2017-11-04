@@ -76,3 +76,9 @@ fun CNSetMDP(gamma: Double, state_dim: Any, action_dim: (IntBuf) -> Any): MDP {
             state_function = { element_maker -> states.copycat(element_maker) },
             state_action_function = { element_maker -> cnsetFrom(s_a_dim, element_maker) })
 }
+
+inline fun mdpOf(gamma: Double, state_dim: Any, action_dim: Any)
+        = CNSetMDP(gamma, state_dim, action_dim)
+
+inline fun mdpOf(gamma: Double, state_dim: Any, noinline action_dim: (IntBuf) -> Any)
+        = CNSetMDP(gamma, state_dim, action_dim)

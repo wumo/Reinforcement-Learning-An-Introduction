@@ -6,12 +6,10 @@ import lab.mars.rl.algo.dyna.DynaQ
 import lab.mars.rl.algo.dyna.PrioritizedSweeping
 import lab.mars.rl.algo.dyna.RandomSampleOneStepTabularQLearning
 import lab.mars.rl.algo.dyna.`Dyna-Q+`
-import lab.mars.rl.problem.Blackjack
-import lab.mars.rl.problem.CliffWalking
-import lab.mars.rl.problem.DynaMaze
-import lab.mars.rl.problem.WindyGridworld
+import lab.mars.rl.problem.*
 import lab.mars.rl.util.argmax
-import lab.mars.rl.util.ui.UI
+import lab.mars.rl.util.ui.GridWorldUI
+import lab.mars.rl.util.ui.RodManeuveringUI
 import org.junit.Test
 import java.util.concurrent.CountDownLatch
 import kotlin.concurrent.thread
@@ -52,7 +50,7 @@ class `Dyna` {
             thread {
                 latch.await()
                 algo.stepListener = { V, s ->
-                    UI.render(V, s)
+                    GridWorldUI.render(V, s)
                 }
                 val (PI, _, _) = algo.optimal()
                 var s = prob.started[0]
@@ -67,8 +65,8 @@ class `Dyna` {
                 }
                 println("\nsteps=$count")//optimal=14
             }
-            UI.after = { latch.countDown() }
-            Application.launch(UI::class.java)
+            GridWorldUI.after = { latch.countDown() }
+            Application.launch(GridWorldUI::class.java)
         }
 
         @Test
@@ -82,7 +80,7 @@ class `Dyna` {
             thread {
                 latch.await()
                 algo.stepListener = { V, s ->
-                    UI.render(V, s)
+                    GridWorldUI.render(V, s)
                 }
                 val (PI, _, _) = algo.optimal()
                 var s = prob.started[0]
@@ -97,8 +95,8 @@ class `Dyna` {
                 }
                 println("\nsteps=$count")//optimal=14
             }
-            UI.after = { latch.countDown() }
-            Application.launch(UI::class.java)
+            GridWorldUI.after = { latch.countDown() }
+            Application.launch(GridWorldUI::class.java)
         }
 
         @Test
@@ -112,7 +110,7 @@ class `Dyna` {
             thread {
                 latch.await()
                 algo.stepListener = { V, s ->
-                    UI.render(V, s)
+                    GridWorldUI.render(V, s)
                 }
                 val (PI, _, _) = algo.optimal()
                 var s = prob.started[0]
@@ -127,8 +125,8 @@ class `Dyna` {
                 }
                 println("\nsteps=$count")//optimal=14
             }
-            UI.after = { latch.countDown() }
-            Application.launch(UI::class.java)
+            GridWorldUI.after = { latch.countDown() }
+            Application.launch(GridWorldUI::class.java)
         }
 
         @Test
@@ -193,6 +191,38 @@ class `Dyna` {
                 print("${WindyGridworld.desc_move[a[0]]}$s")
             }
             println("\nreturn=$sum")//optimal=-12
+        }
+    }
+
+    class `Rod maneuvering` {
+        @Test
+        fun `draw map`() {
+            val prob = RodManeuvering.make()
+            val algo = PrioritizedSweeping(prob)
+            algo.episodes = 1000
+            algo.n = 10
+            val latch = CountDownLatch(1)
+
+            thread {
+                latch.await()
+                algo.stepListener = { V, s ->
+                    RodManeuveringUI.render(V, s)
+                }
+                val (PI, _, _) = algo.optimal()
+//                var s = prob.started[0]
+//                var count = 0
+//                print(s)
+//                while (s.isNotTerminal()) {
+//                    val a = argmax(s.actions) { PI[s, it] }
+//                    val possible = a.sample()
+//                    s = possible.next
+//                    count++
+//                    print("${DynaMaze.desc_move[a[0]]}$s")
+//                }
+//                println("\nsteps=$count")//optimal=14
+            }
+            RodManeuveringUI.after = { latch.countDown() }
+            Application.launch(RodManeuveringUI::class.java)
         }
     }
 }
