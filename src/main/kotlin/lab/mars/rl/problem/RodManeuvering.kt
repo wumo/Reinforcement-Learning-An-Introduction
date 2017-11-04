@@ -122,10 +122,6 @@ object RodManeuvering {
     fun Point2D.rotate(angleRad: Double)
             = Point2D(x * cos(angleRad) - y * sin(angleRad), x * sin(angleRad) + y * cos(angleRad))
 
-    fun distance(s1: State, s2: State): Double {
-        return (abs(s1[0] - s2[0]) + abs(s1[1] - s2[1]) + abs(s1[2] - s2[2])).toDouble()
-    }
-
     fun make(): MDP {
         val mdp = mdpOf(gamma = 0.95, state_dim = resolution x resolution x rotation_resolution, action_dim = 6)
         return mdp.apply {
