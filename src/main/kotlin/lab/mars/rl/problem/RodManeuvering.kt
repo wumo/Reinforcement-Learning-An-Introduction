@@ -103,9 +103,6 @@ object RodManeuvering {
             append(Obstacle(Point2D(400.0, -10.0), Point2D(410.0, -10.0), Point2D(410.0, 410.0), Point2D(400.0, 410.0)))
             append(Obstacle(Point2D(-10.0, 400.0), Point2D(410.0, 400.0), Point2D(410.0, 410.0), Point2D(-10.0, 410.0)))
         }
-        println(obstacles[0].constains(116.0, 258.0))
-        println(obstacles[0].constains(82.0, 273.0))
-        println(obstacles[0].constains(72.0, 231.0))
     }
 
     fun intersect(x: Double, y: Double, rotation: Double): Boolean {
