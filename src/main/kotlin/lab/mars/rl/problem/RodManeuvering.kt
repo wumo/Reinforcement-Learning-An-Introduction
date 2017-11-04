@@ -14,7 +14,7 @@ import org.apache.commons.math3.util.FastMath.*
 
 object RodManeuvering {
     class Obstacle(vararg val v: Point2D) {
-        fun constains(x: Double, y: Double): Boolean {
+        fun contains(x: Double, y: Double): Boolean {
             for (n in 0..v.lastIndex) {
                 val a = v[n]
                 val b = v[(n + 1) % v.size]
@@ -107,7 +107,7 @@ object RodManeuvering {
 
     fun intersect(x: Double, y: Double, rotation: Double): Boolean {
         for (obstacle in obstacles) {
-            if (obstacle.constains(x, y))
+            if (obstacle.contains(x, y))
                 return true
             for (edge in rodEdges) {
                 val p1 = edge._1.rotate(rotation).add(x, y)
