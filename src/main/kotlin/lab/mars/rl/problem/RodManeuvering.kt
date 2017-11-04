@@ -154,28 +154,28 @@ object RodManeuvering {
                         }
                     }
 
-                    this[0].assign(s[0], s[1], s[2] - 1)
-                    this[1].assign(s[0], s[1], s[2] + 1)
+                    this[0].assign(s[0], s[1], s[2] - 1)//turn clockwise
+                    this[1].assign(s[0], s[1], s[2] + 1)//turn counter-clockwise
 
                     var nextPos = Point2D(x, y).add(Point2D(0.0, unit_y).rotate(rotation))
                     var nx = floor(nextPos.x / unit_x).toInt()
                     var ny = floor(nextPos.y / unit_y).toInt()
-                    this[2].assign(nx, ny, s[2])
+                    this[2].assign(nx, ny, s[2])//move forward along the long axis
 
                     nextPos = Point2D(x, y).add(Point2D(0.0, -unit_y).rotate(rotation))
                     nx = floor(nextPos.x / unit_x).toInt()
                     ny = floor(nextPos.y / unit_y).toInt()
-                    this[3].assign(nx, ny, s[2])
+                    this[3].assign(nx, ny, s[2])//move backward along the long axis
 
                     nextPos = Point2D(x, y).add(Point2D(unit_x, 0.0).rotate(rotation))
                     nx = floor(nextPos.x / unit_x).toInt()
                     ny = floor(nextPos.y / unit_y).toInt()
-                    this[4].assign(nx, ny, s[2])
+                    this[4].assign(nx, ny, s[2])//move forward perpendicular to the long axis
 
                     nextPos = Point2D(x, y).add(Point2D(-unit_x, 0.0).rotate(rotation))
                     nx = floor(nextPos.x / unit_x).toInt()
                     ny = floor(nextPos.y / unit_y).toInt()
-                    this[5].assign(nx, ny, s[2])
+                    this[5].assign(nx, ny, s[2])//move backward perpendicular to the long axis
                 }
             }
             started = states(3, 13, 0)

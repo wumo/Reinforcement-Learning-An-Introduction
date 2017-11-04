@@ -83,14 +83,7 @@ class RodManeuveringUI : Application() {
                 val p2 = edge._2.rotate(rotation).add(x, y)
                 gc.strokeLine(p1.x, p1.y, p2.x, p2.y)
             }
-            for ((dim, value) in V.withIndices()) {
-                max = maxOf(max, value)
-                val nx = dim[0]
-                val ny = dim[1]
-                val x = unit_x * nx
-                val y = unit_y * ny
-                gc.strokeRect(x, y, unit_x, unit_y)
-            }
+
             drawMap()
             barrier.await()
         }
