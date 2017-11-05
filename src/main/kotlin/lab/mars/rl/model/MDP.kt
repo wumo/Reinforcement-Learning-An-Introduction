@@ -3,6 +3,7 @@
 package lab.mars.rl.model
 
 import lab.mars.rl.util.Index
+import lab.mars.rl.util.Rand
 import lab.mars.rl.util.RandomAccessCollection
 import lab.mars.rl.util.buf.DefaultIntBuf
 import lab.mars.rl.util.buf.IntBuf
@@ -89,7 +90,17 @@ class Action(val index: IntBuf) : Index() {
 
     var possibles: RandomAccessCollection<Possible> = emptyNSet as RandomAccessCollection<Possible>
 
-    lateinit var sample: () -> Possible
+    var sample: () -> Possible = outer@ {
+        if (possibles.isEmpty()) throw NoSuchElementException()
+        val p = Rand().nextDouble()
+        var acc = 0.0
+        for (possible in possibles) {
+            acc += possible.probability
+            if (p <= acc)
+                return@outer possible
+        }
+        throw IllegalArgumentException("random=$p, but accumulation=$acc")
+    }
 }
 
 class Possible(var next: State, var reward: Double, var probability: Double) {

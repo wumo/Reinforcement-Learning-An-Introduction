@@ -31,7 +31,7 @@ class TestCNSet {
               ╱  ╲
             3          4
          */
-        val data = arrayOf(Cell(arrayOf(SubTree(2, 4, 4), SubTree(3, 1, 3)).buf(), 1), 2, Cell(arrayOf(SubTree(2, 3, 3)).buf(), 3), 4, 5)
+        val data = arrayOf(Cell(arrayOf(SubTree(2, 1, 4), SubTree(3, 2, 4)).buf(), 1), 5,2, Cell(arrayOf(SubTree(2, 4, 4)).buf(), 3), 4)
         val set = CompactNSet<Int>(data.buf())
         val slots = arrayOf(
                 DefaultIntBuf.of(0, 0),
@@ -58,6 +58,21 @@ class TestCNSet {
     }
 
     @Test
+    fun `test cnsetOf 1`() {
+        val set = cnsetOf(1)
+        val expected = PlainSet(
+                slots = arrayOf(
+                        DefaultIntBuf.of(0)
+                ),
+                values = arrayOf(
+                        1
+                )
+        )
+
+        assertEquals(expected, set)
+    }
+
+    @Test
     fun `test cnsetOf`() {
         val set = cnsetOf(1, 2, 3)
         val expected = PlainSet(
@@ -78,6 +93,7 @@ class TestCNSet {
     fun `make using GeneralDimension 3`() {
         var i = 0
         val set = cnsetFrom(3) { i++ }
+        Assert.assertEquals(3, set.size)
         val expected = PlainSet(
                 slots = arrayOf(
                         DefaultIntBuf.of(0),
@@ -131,6 +147,53 @@ class TestCNSet {
         val expected = PlainSet(
                 slotList.toTypedArray(),
                 valuesList.toTypedArray()
+        )
+
+        assertEquals(expected, set)
+    }
+
+    @Test
+    fun `make using GeneralDimension 2 x 3 x 3`() {
+        var i = 0
+        val set = cnsetFrom(2 x 3 x 3) { i++ }
+        i = 0
+        val slotList = arrayListOf<IntBuf>()
+        val valuesList = arrayListOf<Int>()
+        for (a in 0 until 2)
+            for (b in 0 until 3)
+                for (c in 0 until 3) {
+                    slotList.add(DefaultIntBuf.of(a, b, c))
+                    valuesList.add(i++)
+                }
+
+        val expected = PlainSet(
+                slotList.toTypedArray(),
+                valuesList.toTypedArray()
+        )
+
+        assertEquals(expected, set)
+        val set2=set(0)
+        println(set2.size)
+    }
+
+    @Test
+    fun `make using GeneralDimension 0(3, 2 x 2)`() {
+        var i = 0
+        val set = cnsetFrom(0(3, 2 x 2)) { i++ }
+        print(set)
+        val expected = PlainSet(
+                slots = arrayOf(
+                        DefaultIntBuf.of(0, 0),
+                        DefaultIntBuf.of(0, 1),
+                        DefaultIntBuf.of(0, 2),
+                        DefaultIntBuf.of(1, 0, 0),
+                        DefaultIntBuf.of(1, 0, 1),
+                        DefaultIntBuf.of(1, 1, 0),
+                        DefaultIntBuf.of(1, 1, 1)
+                ),
+                values = arrayOf(
+                        0, 1, 2, 3, 4, 5, 6
+                )
         )
 
         assertEquals(expected, set)
@@ -283,28 +346,31 @@ class TestCNSet {
     private fun <T : Any> assertEquals(expected: PlainSet<T>, set: CompactNSet<T>, testCopycat: Boolean = true) {
         println(set)
         expected.apply {
+            Assert.assertEquals("set size is wrong!", values.size, set.size)
             //test getter
             for (i in 0..slots.lastIndex)
-                Assert.assertEquals(values[i], set[slots[i]])
+                Assert.assertEquals("set getter is wrong!", values[i], set[slots[i]])
             //test setter
             for (i in 0..slots.lastIndex)
                 set[slots[i]] = randomValues[i]
             for (i in 0..slots.lastIndex)
-                Assert.assertEquals(randomValues[i], set[slots[i]])
+                Assert.assertEquals("set setter is wrong!", randomValues[i], set[slots[i]])
             //test indices
             var i = 0
             for (index in set.indices())
-                Assert.assertTrue(slots[i++].equals(index))
+                Assert.assertEquals("set index is wrong!", slots[i++], index)
             //test withIndices
             i = 0
             for ((idx, value) in set.withIndices()) {
-                Assert.assertTrue(slots[i].equals(idx))
-                Assert.assertEquals(randomValues[i], value)
+                Assert.assertEquals("set.withIndices index is wrong!", slots[i], idx)
+                Assert.assertEquals("set.withIndices value  is wrong!", randomValues[i], value)
                 i++
             }
+            val hashValues = hashSetOf<T>()
+            hashValues.addAll(values)
             //test iterator
             for (value in set) {
-
+                Assert.assertTrue(hashValues.contains(value))
             }
             //test dfs
 

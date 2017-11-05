@@ -19,7 +19,8 @@ import java.util.*
  */
 fun <T : Any> cnsetOf(vararg elements: T): CompactNSet<T> {
     val set = CompactNSet<T>(Array<Any>(elements.size) { elements[it] }.buf(0, 0))
-    set.expand(0, elements.size)
+    val subtree=set.expand(0, elements.size)
+    subtree.offsetEnd = set.data.writePtr - 1
     set.size
     return set
 }
