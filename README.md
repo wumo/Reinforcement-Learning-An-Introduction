@@ -48,6 +48,7 @@ Dyna (Integrate Planning, Acting, and Learning):
 * [Maximization Bias Example](src/main/kotlin/lab/mars/rl/problem/MaximizationBias.kt) (p.145)
 * [Dyna Maze](src/main/kotlin/lab/mars/rl/problem/DynaMaze.kt) (p.178)
 * [Rod Maneuvering](src/main/kotlin/lab/mars/rl/problem/RodManeuvering.kt) (p.185)
+
 ## Running
 Built with [Maven](https://maven.apache.org/) 
 
