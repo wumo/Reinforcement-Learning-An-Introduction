@@ -3,6 +3,7 @@ package lab.mars.rl.problem
 import lab.mars.rl.model.MDP
 import lab.mars.rl.model.Possible
 import lab.mars.rl.model.impl.CNSetMDP
+import lab.mars.rl.util.cnsetOf
 import lab.mars.rl.util.dimension.x
 import lab.mars.rl.util.emptyNSet
 
@@ -33,32 +34,26 @@ object CliffWalking {
             for (s in states) {
                 if (s.isTerminal()) continue
                 for (a in s.actions) {
-                    a.sample = {
-                        val m = move[a[0]]
-                        val _x = (s[0] + m[0]).coerceIn(0, world_width - 1)
-                        val _y = (s[1] + +m[1]).coerceIn(0, world_height - 1)
-                        val next = states[_x, _y]
-                        Possible(next, if (next === goal) 0.0 else -1.0, 1.0)
-                    }
+                    val m = move[a[0]]
+                    val _x = (s[0] + m[0]).coerceIn(0, world_width - 1)
+                    val _y = (s[1] + +m[1]).coerceIn(0, world_height - 1)
+                    val next = states[_x, _y]
+                    a.possibles = cnsetOf(Possible(next, if (next === goal) 0.0 else -1.0, 1.0))
                 }
             }
-            startedState.actions[3].sample = {
-                Possible(startedState, -100.0, 1.0)
-            }
+            startedState.actions[3].possibles = cnsetOf(Possible(startedState, -100.0, 1.0))
             for (x in 1 until world_width - 1) {
                 val s = states[x, 1]
                 for (a in s.actions) {
-                    a.sample = {
-                        val m = move[a[0]]
-                        var _x = s[0] + m[0]
-                        var _y = s[1] + +m[1]
-                        if (_y == 0) {
-                            _x = 0
-                            _y = 0
-                        }
-                        val next = states[_x, _y]
-                        Possible(next, if (next === startedState) -100.0 else -1.0, 1.0)
+                    val m = move[a[0]]
+                    var _x = s[0] + m[0]
+                    var _y = s[1] + +m[1]
+                    if (_y == 0) {
+                        _x = 0
+                        _y = 0
                     }
+                    val next = states[_x, _y]
+                    a.possibles = cnsetOf(Possible(next, if (next === startedState) -100.0 else -1.0, 1.0))
                 }
             }
 

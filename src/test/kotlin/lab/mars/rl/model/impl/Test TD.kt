@@ -171,7 +171,7 @@ class `TD` {
             val prob = WindyGridworld.make(true)
             val algo = TemporalDifference(prob)
             algo.alpha = 0.5
-            algo.episodes = 500000
+            algo.episodes = 1000
             val (PI, _, _) = algo.QLearning()
             var s = prob.started[0]
             var sum = 0.0
@@ -251,6 +251,7 @@ class `TD` {
         fun `Maximization Bias Q-Learning`() {
             val prob = MaximizationBias.make()
             val algo = TemporalDifference(prob)
+            algo.episodes=10
             val (PI, _, _) = algo.QLearning()
             val A = prob.started[0]
             println(PI(A))
@@ -260,6 +261,7 @@ class `TD` {
         fun `Maximization Bias Double Q-Learning`() {
             val prob = MaximizationBias.make()
             val algo = TemporalDifference(prob)
+            algo.episodes=10
             val (PI, _, _) = algo.DoubleQLearning()
             val A = prob.started[0]
             println(PI(A))

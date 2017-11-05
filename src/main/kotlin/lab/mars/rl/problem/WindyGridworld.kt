@@ -3,6 +3,7 @@ package lab.mars.rl.problem
 import lab.mars.rl.model.MDP
 import lab.mars.rl.model.Possible
 import lab.mars.rl.model.impl.CNSetMDP
+import lab.mars.rl.util.cnsetOf
 import lab.mars.rl.util.dimension.x
 import lab.mars.rl.util.emptyNSet
 
@@ -39,13 +40,11 @@ object WindyGridworld {
             for (s in states) {
                 if (s.isTerminal()) continue
                 for (a in s.actions) {
-                    a.sample = {
-                        val m = (if (KingMove) kingMove else move)[a[0]]
-                        val x = (s[0] + m[0]).coerceIn(0, world_width - 1)
-                        val y = (s[1] + wind[s[0]] + m[1]).coerceIn(0, world_height - 1)
-                        val next = states[x, y]
-                        Possible(next, if (next === goal) 0.0 else -1.0, 1.0)
-                    }
+                    val m = (if (KingMove) kingMove else move)[a[0]]
+                    val x = (s[0] + m[0]).coerceIn(0, world_width - 1)
+                    val y = (s[1] + wind[s[0]] + m[1]).coerceIn(0, world_height - 1)
+                    val next = states[x, y]
+                    a.possibles = cnsetOf(Possible(next, if (next === goal) 0.0 else -1.0, 1.0))
                 }
             }
         }

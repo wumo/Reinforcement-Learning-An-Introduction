@@ -209,17 +209,17 @@ class `Dyna` {
                     RodManeuveringUI.render(V, s)
                 }
                 val (PI, _, _) = algo.optimal()
-//                var s = prob.started[0]
-//                var count = 0
-//                print(s)
-//                while (s.isNotTerminal()) {
-//                    val a = argmax(s.actions) { PI[s, it] }
-//                    val possible = a.sample()
-//                    s = possible.next
-//                    count++
-//                    print("${DynaMaze.desc_move[a[0]]}$s")
-//                }
-//                println("\nsteps=$count")//optimal=14
+                var s = prob.started[0]
+                var count = 0
+                print(s)
+                while (s.isNotTerminal()) {
+                    val a = argmax(s.actions) { PI[s, it] }
+                    val possible = a.sample()
+                    s = possible.next
+                    count++
+                    print("$a$s")
+                }
+                println("\nsteps=$count")//optimal=14
             }
             RodManeuveringUI.after = { latch.countDown() }
             Application.launch(RodManeuveringUI::class.java)

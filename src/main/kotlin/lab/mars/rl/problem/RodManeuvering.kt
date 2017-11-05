@@ -7,6 +7,7 @@ import lab.mars.rl.model.Possible
 import lab.mars.rl.model.State
 import lab.mars.rl.model.impl.mdpOf
 import lab.mars.rl.util.buf.DefaultBuf
+import lab.mars.rl.util.cnsetOf
 import lab.mars.rl.util.dimension.x
 import lab.mars.rl.util.emptyNSet
 import lab.mars.rl.util.tuples.tuple2
@@ -147,11 +148,9 @@ object RodManeuvering {
                                 s_next = s
                         } else
                             s_next = s
-                        sample = if (s_next === goal) {
-                            { Possible(s_next, 1.0, 1.0) }
-                        } else {
-                            { Possible(s_next, 0.0, 1.0) }
-                        }
+                        possibles = cnsetOf(
+                                if (s_next === goal) Possible(s_next, 1.0, 1.0)
+                                else Possible(s_next, 0.0, 1.0))
                     }
 
                     this[0].assign(s[0], s[1], s[2] - 1)//turn clockwise

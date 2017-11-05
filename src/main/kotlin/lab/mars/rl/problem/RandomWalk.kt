@@ -4,8 +4,8 @@ import lab.mars.rl.model.MDP
 import lab.mars.rl.model.NonDeterminedPolicy
 import lab.mars.rl.model.Possible
 import lab.mars.rl.model.impl.CNSetMDP
+import lab.mars.rl.util.cnsetOf
 import lab.mars.rl.util.emptyNSet
-import java.util.concurrent.ThreadLocalRandom
 
 /**
  * <p>
@@ -23,12 +23,8 @@ object RandomWalk {
             started = states(3)
             for (a in 1..5) {
                 states[a].actions.apply {
-                    this[0].sample = {
-                        if (ThreadLocalRandom.current().nextBoolean())
-                            Possible(states[a - 1], 0.0, 1.0)
-                        else
-                            Possible(states[a + 1], if (a == 5) 1.0 else 0.0, 1.0)
-                    }
+                    this[0].possibles = cnsetOf(Possible(states[a - 1], 0.0, 0.5),
+                                                Possible(states[a + 1], if (a == 5) 1.0 else 0.0, 0.5))
                 }
             }
         }

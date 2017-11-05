@@ -2,9 +2,12 @@ package lab.mars.rl.model.impl
 
 import lab.mars.rl.algo.dp.PolicyIteration
 import lab.mars.rl.algo.dp.ValueIteration
-import lab.mars.rl.algo.dyna.DynaQ
+import lab.mars.rl.algo.td.TemporalDifference
+import lab.mars.rl.algo.td.sarsa
 import lab.mars.rl.problem.CarRental
 import lab.mars.rl.problem.DynaMaze
+import lab.mars.rl.problem.RodManeuvering
+import lab.mars.rl.problem.WindyGridworld
 import lab.mars.rl.util.argmax
 import org.junit.Assert
 import org.junit.Test
@@ -81,9 +84,9 @@ class `Test DP` {
         }
     }
 
-    class `Dyna Maze`{
+    class `Dyna Maze` {
         @Test
-        fun `Dyna Q`() {
+        fun `Policy Iteration Value`() {
             val prob = DynaMaze.make()
             val algo = PolicyIteration(prob)
             val (PI, _, _) = algo.v_iteration()
@@ -98,6 +101,26 @@ class `Test DP` {
                 print("${DynaMaze.desc_move[a[0]]}$s")
             }
             println("\nsteps=$count")//optimal=12
+        }
+    }
+
+    class `Rod maneuvering` {
+        @Test
+        fun `Policy Iteration Value`() {
+            val prob = RodManeuvering.make()
+            val algo = PolicyIteration(prob)
+            val (PI, _, _) = algo.v_iteration()
+            var s = prob.started[0]
+            var count = 0
+            print(s)
+            while (s.isNotTerminal()) {
+                val a = PI[s]
+                val possible = a.sample()
+                s = possible.next
+                count++
+                print("$a$s")
+            }
+            println("\nsteps=$count")//optimal=14
         }
     }
 }
