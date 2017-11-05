@@ -244,6 +244,25 @@ class `TD` {
             }
             println("\nreturn=$sum")//optimal=-12
         }
+
+        @Test
+        fun `Cliff Walking TD DoubleQLearning`() {
+            val prob = CliffWalking.make()
+            val algo = TemporalDifference(prob)
+            algo.alpha = 0.5
+            val (PI, _, _) = algo.DoubleQLearning()
+            var s = prob.started[0]
+            var sum = 0.0
+            print(s)
+            while (s.isNotTerminal()) {
+                val a = argmax(s.actions) { PI[s, it] }
+                val possible = a.sample()
+                s = possible.next
+                sum += possible.reward
+                print("${WindyGridworld.desc_move[a[0]]}$s")
+            }
+            println("\nreturn=$sum")//optimal=-12
+        }
     }
 
     class `Maximization Bias` {

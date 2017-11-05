@@ -142,8 +142,8 @@ class `n-step TD` {
             val prob = WindyGridworld.make()
             val algo = NStepTemporalDifference(prob, 10)
             algo.alpha = 0.1
-            algo.episodes = 10000
-            val (PI, _, _) = algo.sarsa()
+            algo.episodes = 1000000
+            val (PI, _, _) = algo.sarsa(average_alpha(prob))
             var s = prob.started[0]
             var sum = 0.0
             print(s)
