@@ -219,7 +219,7 @@ class `Dyna` {
                     count++
                     print("$a$s")
                 }
-                println("\nsteps=$count")//optimal=14
+                println("\nsteps=$count")//optimal=39
             }
             RodManeuveringUI.after = { latch.countDown() }
             Application.launch(RodManeuveringUI::class.java)
