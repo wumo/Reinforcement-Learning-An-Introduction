@@ -39,16 +39,16 @@ Dyna (Integrate Planning, Acting, and Learning):
 * [Prioritized Sweeping Stochastic Environment](src/main/kotlin/lab/mars/rl/algo/dyna/PrioritizedSweepingStochasticEnv.kt) (from p.141)
 
 ## Implemented problems:
-* [Grid world](src/main/kotlin/lab/mars/rl/problem/GridWorld.kt) (p.84)
-* [Jack's Car Rental and exercise 4.4](src/main/kotlin/lab/mars/rl/problem/CarRental.kt) (p.89)
-* [Gambler's Problem](src/main/kotlin/lab/mars/rl/problem/Gambler.kt) (p.92)
-* [Blackjack](src/main/kotlin/lab/mars/rl/problem/Blackjack.kt) (p.103)
-* [Random Walk](src/main/kotlin/lab/mars/rl/problem/RandomWalk.kt) (p.135)
-* [Windy Gridworld and King's Moves](src/main/kotlin/lab/mars/rl/problem/WindyGridworld.kt) (p.140)
-* [Cliff Walking](src/main/kotlin/lab/mars/rl/problem/CliffWalking.kt) (p.142)
-* [Maximization Bias Example](src/main/kotlin/lab/mars/rl/problem/MaximizationBias.kt) (p.145)
-* [Dyna Maze](src/main/kotlin/lab/mars/rl/problem/DynaMaze.kt) (p.178)
-* [Rod Maneuvering](src/main/kotlin/lab/mars/rl/problem/RodManeuvering.kt) (p.185)
+* [Grid world](src/main/kotlin/lab/mars/rl/problem/GridWorld.kt) (p.61)
+* [Jack's Car Rental and exercise 4.4](src/main/kotlin/lab/mars/rl/problem/CarRental.kt) (p.65)
+* [Gambler's Problem](src/main/kotlin/lab/mars/rl/problem/Gambler.kt) (p.68)
+* [Blackjack](src/main/kotlin/lab/mars/rl/problem/Blackjack.kt) (p.76)
+* [Random Walk](src/main/kotlin/lab/mars/rl/problem/RandomWalk.kt) (p.102)
+* [Windy Gridworld and King's Moves](src/main/kotlin/lab/mars/rl/problem/WindyGridworld.kt) (p.106)
+* [Cliff Walking](src/main/kotlin/lab/mars/rl/problem/CliffWalking.kt) (p.108)
+* [Maximization Bias Example](src/main/kotlin/lab/mars/rl/problem/MaximizationBias.kt) (p.110)
+* [Dyna Maze](src/main/kotlin/lab/mars/rl/problem/DynaMaze.kt) (p.136)
+* [Rod Maneuvering](src/main/kotlin/lab/mars/rl/problem/RodManeuvering.kt) (p.141)
 
 ## Running
 Built with [Maven](https://maven.apache.org/) 
