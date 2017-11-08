@@ -36,12 +36,12 @@ class DynaQ(val mdp: MDP) {
         val result = tuple3(policy, V, Q)
         for (episode in 1..episodes) {
             log.debug { "$episode/$episodes" }
-            var count = 0
+            var step = 0
             var s = started.rand()
             while (s.isNotTerminal()) {
                 V_from_Q_ND(states, result)
                 stepListener(V, s)
-                count++
+                step++
                 `e-greedy tie random`(s, Q, policy, epsilon)
                 val a = s.actions.rand(policy(s))
                 val (s_next, reward, _) = a.sample()
@@ -58,7 +58,7 @@ class DynaQ(val mdp: MDP) {
 
             }
             episodeListener(V)
-            log.debug { "steps=$count" }
+            log.debug { "steps=$step" }
         }
         return result
     }
