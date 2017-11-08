@@ -13,10 +13,11 @@ inline fun repeat(times: Int, condition: (Int) -> Boolean, action: (Int) -> Unit
     }
 }
 
-inline fun product(from: Int, to: Int, evaluate: (Int) -> Double): Double {
+inline fun <T> product(set: Iterable<T>, evaluate: T.(T) -> Double): Double {
     var multi = 1.0
-    for (a in from..to)
-        multi *= evaluate(a)
+    set.forEach {
+        multi *= it.evaluate(it)
+    }
     return multi
 }
 
@@ -25,13 +26,6 @@ inline fun <T> sum(set: Iterable<T>, evaluate: T.(T) -> Double): Double {
     set.forEach {
         sum += it.evaluate(it)
     }
-    return sum
-}
-
-inline fun sum(from: Int, to: Int, evaluate: (Int) -> Double): Double {
-    var sum = 0.0
-    for (a in from..to)
-        sum += evaluate(a)
     return sum
 }
 

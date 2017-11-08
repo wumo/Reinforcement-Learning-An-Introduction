@@ -22,7 +22,7 @@ class PrioritizedSweeping(val mdp: MDP) {
     val gamma = mdp.gamma
     val started = mdp.started
     val states = mdp.states
-    var stepListener: (ActionValueFunction, State) -> Unit = { _, _ -> }
+    var stepListener: (StateValueFunction, State) -> Unit = { _, _ -> }
     var episodeListener: (StateValueFunction) -> Unit = {}
 
     var episodes = 10000

@@ -57,8 +57,8 @@ fun NStepTemporalDifference.`off-policy sarsa`(alpha: (State, Action) -> Double 
             }
             val _t = t - n + 1
             if (_t >= 0) {
-                val p = product(1, min(n - 1, T - 1 - _t)) { pi[_S[it], _A[it]] / b[_S[it], _A[it]] }
-                var G = sum(1, min(n, T - _t)) { pow(gamma, it - 1) * _R[it] }
+                val p = product(1.. min(n - 1, T - 1 - _t)) { pi[_S[it], _A[it]] / b[_S[it], _A[it]] }
+                var G = sum(1.. min(n, T - _t)) { pow(gamma, it - 1) * _R[it] }
                 if (_t + n < T) G += pow(gamma, n) * Q[_S[n], _A[n]]
                 Q[_S[0], _A[0]] += alpha(_S[0], _A[0]) * p * (G - Q[_S[0], _A[0]])
                 `e-greedy`(states[_S[0]], Q, pi, epsilon)

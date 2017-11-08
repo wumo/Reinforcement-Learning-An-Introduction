@@ -43,7 +43,7 @@ fun NStepTemporalDifference.prediction(): StateValueFunction {
             val _t = t - n + 1
 
             if (_t >= 0) {
-                var G = sum(1, min(n, T - _t)) { pow(gamma, it - 1) * _R[it] }
+                var G = sum(1..min(n, T - _t)) { pow(gamma, it - 1) * _R[it] }
                 if (_t + n < T) G += pow(gamma, n) * V[_S[n]]
                 V[_S[0]] += alpha * (G - V[_S[0]])
             }
