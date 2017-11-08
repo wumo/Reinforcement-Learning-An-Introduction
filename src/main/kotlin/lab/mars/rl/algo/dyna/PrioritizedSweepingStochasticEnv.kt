@@ -53,7 +53,7 @@ class PrioritizedSweepingStochasticEnv(val mdp: MDP) {
                 `e-greedy tie random`(s, Q, policy, epsilon)
                 val a = s.actions.rand(policy(s))
                 val (s_next, reward, _) = a.sample()
-                Model[s, a].compute(tuple2(s_next, reward)) { k, v -> (v ?: 0) + 1 }
+                Model[s, a].compute(tuple2(s_next, reward)) { _, v -> (v ?: 0) + 1 }
                 N[s, a]++
                 predecessor[s_next] += tuple2(s, a)
                 val P = abs(reward + gamma * max(s_next.actions, 0.0) { Q[s_next, it] } - Q[s, a])
