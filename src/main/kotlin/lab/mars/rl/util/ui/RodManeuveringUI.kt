@@ -57,7 +57,7 @@ class RodManeuveringUI : Application() {
     val barrier = CyclicBarrier(2)
     var max = 1.0
     var min = 0.0
-    var pr=true
+    var pr = true
     fun render(V: StateValueFunction, s: State) {
         barrier.reset()
         runLater {
@@ -65,11 +65,13 @@ class RodManeuveringUI : Application() {
             val gc = canvas.graphicsContext2D
             gc.clearRect(0.0, 0.0, width, height)
             gc.stroke = Color.BLACK
-            for ((dim, value) in V.withIndices()) {
+            for ((dim, value) in V.withIndices()) {//wrong visual effects because it's 3-dimension ( x, y, rotation)
                 max = maxOf(max, value)
                 min = minOf(min, value)
+                val nx = dim[0]
+                val ny = dim[1]
                 gc.fill = Color.BLUE.interpolate(Color.RED, if (max == min) 0.5 else (value - min) / (max - min))
-                gc.fillRect(x, y, unit_x, unit_y)
+                gc.fillRect(nx * unit_x, ny * unit_y, unit_x, unit_y)
             }
             gc.fill = Color.GREEN
             for (edge in rodEdges) {

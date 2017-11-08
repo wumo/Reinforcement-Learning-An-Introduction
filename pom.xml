@@ -17,14 +17,10 @@
     </developers>
 
     <properties>
-        <guava.version>22.0</guava.version>
         <commons.math.version>3.6.1</commons.math.version>
         <junit.version>4.12</junit.version>
         <slf4jVersion>1.7.7</slf4jVersion>
         <logbackVersion>1.1.2</logbackVersion>
-        <jmh.version>1.18</jmh.version>
-        <simple-java-mail.version>4.2.2</simple-java-mail.version>
-        <commons.io.version>2.5</commons.io.version>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
         <maven.compiler.source>1.9</maven.compiler.source>
         <maven.compiler.target>1.9</maven.compiler.target>
@@ -39,11 +35,6 @@
             <groupId>org.apache.commons</groupId>
             <artifactId>commons-math3</artifactId>
             <version>${commons.math.version}</version>
-        </dependency>
-        <dependency>
-            <groupId>org.jetbrains</groupId>
-            <artifactId>annotations</artifactId>
-            <version>15.0</version>
         </dependency>
         <dependency>
             <groupId>org.slf4j</groupId>
