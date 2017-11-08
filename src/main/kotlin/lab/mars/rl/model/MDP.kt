@@ -19,6 +19,7 @@ import lab.mars.rl.util.tuples.tuple3
  */
 typealias StateSet = RandomAccessCollection<State>
 typealias ActionSet = RandomAccessCollection<Action>
+typealias PossibleSet = RandomAccessCollection<Possible>
 typealias StateValueFunction = RandomAccessCollection<Double>
 typealias ActionValueFunction = RandomAccessCollection<Double>
 typealias DeterminedPolicy = RandomAccessCollection<Action>
@@ -58,7 +59,7 @@ class MDP(
     /**
      * equiprobable random policy
      */
-    fun equiprobablePolicy(): RandomAccessCollection<Double> {
+    fun equiprobablePolicy(): NonDeterminedPolicy {
         val policy = QFunc { 0.0 }
         for (s in states) {
             if (s.isTerminal()) continue
@@ -76,7 +77,7 @@ class State(val index: IntBuf) : Index() {
 
     inline override operator fun get(idx: Int) = index[idx]
 
-    var actions: RandomAccessCollection<Action> = emptyNSet as RandomAccessCollection<Action>
+    var actions: ActionSet = emptyNSet as ActionSet
 
     inline fun isTerminal() = actions.isEmpty()
     inline fun isNotTerminal() = !actions.isEmpty()
@@ -88,7 +89,7 @@ class Action(val index: IntBuf) : Index() {
 
     inline override operator fun get(idx: Int) = index[idx]
 
-    var possibles: RandomAccessCollection<Possible> = emptyNSet as RandomAccessCollection<Possible>
+    var possibles: PossibleSet = emptyNSet as PossibleSet
 
     var sample: () -> Possible = outer@ {
         if (possibles.isEmpty()) throw NoSuchElementException()
