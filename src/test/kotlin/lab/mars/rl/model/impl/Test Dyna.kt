@@ -42,6 +42,16 @@ class `Dyna` {
             val (PI, V, _) = algo.optimal(average_alpha(prob))
             printBlackjack(prob, PI, V)
         }
+
+        @Test
+        fun `Blackjack Dyna-Q on-policy`() {
+            val (prob, _) = Blackjack.make()
+            val algo = `Dyna-Q-OnPolicy`(prob)
+            algo.episodes = 1000000
+            algo.n = 10
+            val (PI, V, _) = algo.optimal(average_alpha(prob))
+            printBlackjack(prob, PI, V)
+        }
     }
 
     class `Dyna Maze` {
@@ -167,6 +177,36 @@ class `Dyna` {
         }
 
         @Test
+        fun `Dyna Q Example On-Policy Trajectory Sampling UI`() {
+            val prob = DynaMaze.make()
+            val algo = `Dyna-Q-OnPolicy`(prob)
+            algo.episodes = 1000
+            algo.n = 20
+            val latch = CountDownLatch(1)
+
+            thread {
+                latch.await()
+                algo.stepListener = { V, s ->
+                    GridWorldUI.render(V, s)
+                }
+                val (PI, _, _) = algo.optimal()
+                var s = prob.started[0]
+                var count = 0
+                print(s)
+                while (s.isNotTerminal()) {
+                    val a = argmax(s.actions) { PI[s, it] }
+                    val possible = a.sample()
+                    s = possible.next
+                    count++
+                    print("${DynaMaze.desc_move[a[0]]}$s")
+                }
+                println("\nsteps=$count")//optimal=14
+            }
+            GridWorldUI.after = { latch.countDown() }
+            Application.launch(GridWorldUI::class.java)
+        }
+
+        @Test
         fun `Dyna Q`() {
             val prob = DynaMaze.make()
             val algo = DynaQ(prob)
@@ -233,11 +273,41 @@ class `Dyna` {
 
     class `Rod maneuvering` {
         @Test
-        fun `draw map`() {
+        fun `PrioritizedSweeping`() {
             val prob = RodManeuvering.make()
             val algo = PrioritizedSweeping(prob)
             algo.episodes = 1000
             algo.n = 10
+            val latch = CountDownLatch(1)
+
+            thread {
+                latch.await()
+                algo.stepListener = { V, s ->
+                    RodManeuveringUI.render(V, s)
+                }
+                val (PI, _, _) = algo.optimal()
+                var s = prob.started[0]
+                var count = 0
+                print(s)
+                while (s.isNotTerminal()) {
+                    val a = argmax(s.actions) { PI[s, it] }
+                    val possible = a.sample()
+                    s = possible.next
+                    count++
+                    print("$a$s")
+                }
+                println("\nsteps=$count")//optimal=39
+            }
+            RodManeuveringUI.after = { latch.countDown() }
+            Application.launch(RodManeuveringUI::class.java)
+        }
+
+        @Test
+        fun `Example On-Policy Trajectory Sampling`() {
+            val prob = RodManeuvering.make()
+            val algo = `Dyna-Q-OnPolicy`(prob)
+            algo.episodes = 1000
+            algo.n = 20
             val latch = CountDownLatch(1)
 
             thread {
