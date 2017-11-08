@@ -114,4 +114,4 @@ val null_index = DefaultIntBuf.of(-1)
 val null_state = State(null_index)
 val null_action = Action(null_index)
 val null_possible = Possible(null_state, 0.0, 0.0)
-
+val emptyPossibleSet=emptyNSet as PossibleSet
