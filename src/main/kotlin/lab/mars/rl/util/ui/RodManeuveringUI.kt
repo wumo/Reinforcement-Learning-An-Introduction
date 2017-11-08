@@ -12,10 +12,12 @@ import lab.mars.rl.model.State
 import lab.mars.rl.model.StateValueFunction
 import lab.mars.rl.problem.RodManeuvering
 import lab.mars.rl.problem.RodManeuvering.currentStatus
+import lab.mars.rl.problem.RodManeuvering.height
 import lab.mars.rl.problem.RodManeuvering.rodEdges
 import lab.mars.rl.problem.RodManeuvering.rotate
 import lab.mars.rl.problem.RodManeuvering.unit_x
 import lab.mars.rl.problem.RodManeuvering.unit_y
+import lab.mars.rl.problem.RodManeuvering.width
 import java.util.concurrent.CyclicBarrier
 
 class RodManeuveringUI : Application() {
@@ -24,10 +26,6 @@ class RodManeuveringUI : Application() {
     companion object {
         var after: () -> Unit = {}
         var render: (ActionValueFunction, State) -> Unit = { _, _ -> }
-        var width = 400.0
-        var height = 400.0
-        var grid_x = 20.0
-        var grid_y = 20.0
     }
 
     override fun start(ps: Stage?) {
