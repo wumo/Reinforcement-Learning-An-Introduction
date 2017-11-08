@@ -68,11 +68,7 @@ class RodManeuveringUI : Application() {
             for ((dim, value) in V.withIndices()) {
                 max = maxOf(max, value)
                 min = minOf(min, value)
-                val nx = dim[0]
-                val ny = dim[1]
                 gc.fill = Color.BLUE.interpolate(Color.RED, if (max == min) 0.5 else (value - min) / (max - min))
-                val _x = unit_x * nx
-                val _y = unit_y * ny
                 gc.fillRect(x, y, unit_x, unit_y)
             }
             gc.fill = Color.GREEN
