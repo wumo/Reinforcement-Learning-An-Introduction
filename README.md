@@ -35,8 +35,11 @@ Dyna (Integrate Planning, Acting, and Learning):
 * [Random-sample one-step tabular Q-planning](src/main/kotlin/lab/mars/rl/algo/dyna/RandomSampleOneStepTabularQLearning.kt) (p.133)
 * [Tabular Dyna-Q](src/main/kotlin/lab/mars/rl/algo/dyna/Dyna-Q.kt) (p.135)
 * [Tabular Dyna-Q+](src/main/kotlin/lab/mars/rl/algo/dyna/Dyna-Q+.kt) (p.138)
-* [Prioritized Sweeping](src/main/kotlin/lab/mars/rl/algo/dyna/PrioritizedSweeping.kt) (from p.140)
-* [Prioritized Sweeping Stochastic Environment](src/main/kotlin/lab/mars/rl/algo/dyna/PrioritizedSweepingStochasticEnv.kt) (from p.141)
+* [Prioritized Sweeping](src/main/kotlin/lab/mars/rl/algo/dyna/PrioritizedSweeping.kt) (p.140)
+* [Prioritized Sweeping Stochastic Environment](src/main/kotlin/lab/mars/rl/algo/dyna/PrioritizedSweepingStochasticEnv.kt) (p.141)
+
+On-policy Prediction with Approximation
+* [Gradient Monte Carlo algorithm](src/main/kotlin/lab/mars/rl/algo/approximation/%60Gradient%20Monte%20Carlo%20algorithm%60.kt) (p.165)
 
 ## Implemented problems:
 * [Grid world](src/main/kotlin/lab/mars/rl/problem/GridWorld.kt) (p.61)
@@ -49,6 +52,7 @@ Dyna (Integrate Planning, Acting, and Learning):
 * [Maximization Bias Example](src/main/kotlin/lab/mars/rl/problem/MaximizationBias.kt) (p.110)
 * [Dyna Maze](src/main/kotlin/lab/mars/rl/problem/DynaMaze.kt) (p.136)
 * [Rod Maneuvering](src/main/kotlin/lab/mars/rl/problem/RodManeuvering.kt) (p.141)
+* [1000-state Random Walk](src/main/kotlin/lab/mars/rl/problem/1000-state%20RandomWalk.kt) (p.166)
 
 ## Running
 Built with [Maven](https://maven.apache.org/) 
