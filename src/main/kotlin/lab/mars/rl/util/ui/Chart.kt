@@ -17,7 +17,7 @@ class ChartView : View() {
                         data(k, v)
                 }
             }
-           createSymbols=false
+            createSymbols = false
         }
     }
 }
