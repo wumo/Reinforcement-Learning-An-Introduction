@@ -21,6 +21,8 @@ inline fun <T : Any> reuseBuf(array: Array<Any>,
                               end: Int = array.lastIndex,
                               cap: Int = array.size) = DefaultBuf.reuse<T>(array, start, end, cap)
 
+inline fun <reified T : Any> newBuf(size: Int, noinline init: (Int) -> T) = Array(size, init).buf()
+
 open class DefaultBuf<T : Any>(private var ring: Array<Any>, private var offset: Int, size: Int, cap: Int = size) :
         MutableBuf<T> {
     companion object {

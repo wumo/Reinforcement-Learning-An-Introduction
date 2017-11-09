@@ -105,6 +105,21 @@ class `TD` {
         }
     }
 
+    class `1000-state Random walk problem` {
+        @Test
+        fun `RandomWalk TD Prediction`() {
+            val (prob, PI) = `1000-state RandomWalk`.make()
+            val algo = TemporalDifference(prob, PI)
+            algo.episodes = 10000
+            val V = algo.prediction()
+            prob.apply {
+                for (s in states) {
+                    println("${V[s].format(2)} ")
+                }
+            }
+        }
+    }
+
     class `Windy Grid world problem` {
         @Test
         fun `WindyGridworld TD sarsa`() {
@@ -270,7 +285,7 @@ class `TD` {
         fun `Maximization Bias Q-Learning`() {
             val prob = MaximizationBias.make()
             val algo = TemporalDifference(prob)
-            algo.episodes=10
+            algo.episodes = 10
             val (PI, _, _) = algo.QLearning()
             val A = prob.started[0]
             println(PI(A))
@@ -280,7 +295,7 @@ class `TD` {
         fun `Maximization Bias Double Q-Learning`() {
             val prob = MaximizationBias.make()
             val algo = TemporalDifference(prob)
-            algo.episodes=10
+            algo.episodes = 10
             val (PI, _, _) = algo.DoubleQLearning()
             val A = prob.started[0]
             println(PI(A))

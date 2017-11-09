@@ -17,6 +17,7 @@
     </developers>
 
     <properties>
+        <tornadofx.version>1.7.12</tornadofx.version>
         <commons.math.version>3.6.1</commons.math.version>
         <junit.version>4.12</junit.version>
         <slf4jVersion>1.7.7</slf4jVersion>
@@ -31,6 +32,11 @@
     </properties>
 
     <dependencies>
+        <dependency>
+            <groupId>no.tornado</groupId>
+            <artifactId>tornadofx</artifactId>
+            <version>${tornadofx.version}</version>
+        </dependency>
         <dependency>
             <groupId>org.apache.commons</groupId>
             <artifactId>commons-math3</artifactId>
