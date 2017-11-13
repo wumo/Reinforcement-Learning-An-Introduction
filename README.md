@@ -39,8 +39,8 @@ Dyna (Integrate Planning, Acting, and Learning):
 * [Prioritized Sweeping Stochastic Environment](src/main/kotlin/lab/mars/rl/algo/dyna/PrioritizedSweepingStochasticEnv.kt) (p.141)
 
 On-policy Prediction with Approximation
-* [Gradient Monte Carlo algorithm](src/main/kotlin/lab/mars/rl/algo/approximation/Gradient%20Monte%20Carlo%20algorithm.kt) (p.165)
-* [Semi-gradient TD(0)](src/main/kotlin/lab/mars/rl/algo/approximation/Semi-gradient%20TD(0).kt) (p.166)
+* [Gradient Monte Carlo algorithm](src/main/kotlin/lab/mars/rl/algo/func_approx/Gradient%20Monte%20Carlo%20algorithm.kt) (p.165)
+* [Semi-gradient TD(0)](src/main/kotlin/lab/mars/rl/algo/func_approx/Semi-gradient%20TD(0).kt) (p.166)
 
 ## Implemented problems:
 * [Grid world](src/main/kotlin/lab/mars/rl/problem/GridWorld.kt) (p.61)
