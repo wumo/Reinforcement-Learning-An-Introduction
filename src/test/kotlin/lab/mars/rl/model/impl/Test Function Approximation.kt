@@ -113,7 +113,6 @@ class `Test Function Approximation` {
 
         @Test
         fun `Gradient Monte Carlo with Fourier basis vs polynomials`() {
-
             val (prob, PI) = make()
             val algo = TemporalDifference(prob, PI)
             algo.episodes = 100000
@@ -178,22 +177,6 @@ class `Test Function Approximation` {
                 }
                 ChartView.lines += Pair("fourier order=$order", line)
             }
-
-//            //fourier
-//            algo2.alpha = 5e-5
-//            for (order in orders) {
-//                println("fourier order=$order")
-//                val func = LinearFunc(SimpleFourier(order + 1, 1.0 / num_states))
-//                algo2.`Gradient Monte Carlo algorithm`(func)
-//                prob.apply {
-//                    val line = hashMapOf<Number, Number>()
-//                    for (s in states) {
-//                        println("${func[s].format(2)} ")
-//                        line.put(s[0], func[s])
-//                    }
-//                    ChartView.lines += line
-//                }
-//            }
 
             Application.launch(Chart::class.java)
         }
