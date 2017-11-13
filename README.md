@@ -40,6 +40,7 @@ Dyna (Integrate Planning, Acting, and Learning):
 
 On-policy Prediction with Approximation
 * [Gradient Monte Carlo algorithm](src/main/kotlin/lab/mars/rl/algo/approximation/%60Gradient%20Monte%20Carlo%20algorithm%60.kt) (p.165)
+* [Semi-gradient TD(0)](src/main/kotlin/lab/mars/rl/algo/approximation/Semi-gradient%20TD(0).kt) (p.166)
 
 ## Implemented problems:
 * [Grid world](src/main/kotlin/lab/mars/rl/problem/GridWorld.kt) (p.61)
