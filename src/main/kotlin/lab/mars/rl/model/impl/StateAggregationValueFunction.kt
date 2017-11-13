@@ -13,10 +13,10 @@ class StateAggregationValueFunction(numStates: Int, numOfGroups: Int) : ValueFun
         return w[groupIdx]
     }
 
-    override fun update(s: State, target: Double, alpha: Double) {
+    override fun update(s: State, delta: Double) {
         if (s.isTerminal()) return
         val groupIdx = s[0] / groupSize
-        w[groupIdx] += alpha * (target - w[groupIdx])
+        w[groupIdx] += delta
     }
 
 }

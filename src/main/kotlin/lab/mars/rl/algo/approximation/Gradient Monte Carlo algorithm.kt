@@ -19,9 +19,9 @@ class `Gradient Monte Carlo algorithm`(val mdp: MDP, var policy: NonDeterminedPo
     val states = mdp.states
     var episodes = 10000
     var epsilon = 0.1
-    var alpha = 2e-5
+    var alpha = 0.1
 
-    fun prediction(vFunc: ValueFunction) {
+    fun prediction(v: ValueFunction) {
         val _S = newBuf<State>()
         val _R = newBuf<Double>()
 
@@ -45,7 +45,7 @@ class `Gradient Monte Carlo algorithm`(val mdp: MDP, var policy: NonDeterminedPo
             for (t in 0 until T) {
                 pre += _R[t]
                 val Gt = accum - pre
-                vFunc.update(_S[t], Gt, alpha)
+                v.update(_S[t], alpha * (Gt - v[_S[t]]))
             }
         }
     }
