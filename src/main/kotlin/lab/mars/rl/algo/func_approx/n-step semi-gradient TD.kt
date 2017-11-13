@@ -50,5 +50,6 @@ fun FunctionApprox.`n-step semi-gradient TD`(n: Int, v: ValueFunction) {
             t++
         } while (_t < T - 1)
         log.debug { "n=$n,T=$T" }
+        episodeListener(episode)
     }
 }

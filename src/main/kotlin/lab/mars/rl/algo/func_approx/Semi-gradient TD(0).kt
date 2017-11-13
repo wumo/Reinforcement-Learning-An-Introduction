@@ -14,5 +14,6 @@ fun FunctionApprox.`Semi-gradient TD(0)`(v: ValueFunction) {
             v.update(s, alpha * (reward + gamma * v[s_next] - v[s]))
             s = s_next
         }
+        episodeListener(episode)
     }
 }
