@@ -16,9 +16,7 @@ class `Gradient Monte Carlo algorithm`(val mdp: MDP, var policy: NonDeterminedPo
 
     val gamma = mdp.gamma
     val started = mdp.started
-    val states = mdp.states
     var episodes = 10000
-    var epsilon = 0.1
     var alpha = 0.1
 
     fun prediction(v: ValueFunction) {
