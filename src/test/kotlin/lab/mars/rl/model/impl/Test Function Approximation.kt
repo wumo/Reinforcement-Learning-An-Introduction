@@ -156,6 +156,7 @@ class `Test Function Approximation` {
                 ChartView.lines += Pair("polynomial order=$order", line)
             }
 
+            algo2.alpha = 5e-5
             for (order in orders) {
                 for (i in 1..run) {
                     remains--
