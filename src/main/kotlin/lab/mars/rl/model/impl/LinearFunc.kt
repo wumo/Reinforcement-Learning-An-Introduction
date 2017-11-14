@@ -6,6 +6,7 @@ import org.apache.commons.math3.util.FastMath.*
 
 interface featureFunc {
     operator fun invoke(s: State): DoubleArray
+    fun alpha(alpha: Double, s: State): Double = alpha
     val featureNum: Int
 }
 
@@ -28,14 +29,16 @@ class SimpleFourier(override val featureNum: Int, val scale: Double) : featureFu
     }
 }
 
-class LinearFunc(val x: featureFunc) : ValueFunction {
+class LinearFunc(val x: featureFunc, val alpha: Double) : ValueFunction {
     val w = DoubleArray(x.featureNum) { 0.0 }
 
     override fun get(s: State) = w * x(s)
 
+
     override fun update(s: State, delta: Double) {
-        val x = x(s)
+        val _x = x(s)
+        val alpha = x.alpha(alpha, s)
         for (i in 0..w.lastIndex)
-            w[i] += delta * x[i]
+            w[i] += alpha * delta * _x[i]
     }
 }

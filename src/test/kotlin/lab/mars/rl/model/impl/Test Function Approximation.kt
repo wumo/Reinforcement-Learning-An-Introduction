@@ -166,8 +166,7 @@ class `Test Function Approximation` {
                                     val algo = FunctionApprox(prob, PI)
                                     algo.episodes = episodes
                                     val _errors = DoubleArray(episodes) { 0.0 }
-                                    val func = LinearFunc(func_maker[func_id](order))
-                                    algo.alpha = alphas[func_id]
+                                    val func = LinearFunc(func_maker[func_id](order), alphas[func_id])
                                     algo.episodeListener = { episode ->
                                         _errors[episode - 1] += RMS(func)
                                     }
@@ -202,7 +201,7 @@ class `Test Function Approximation` {
 
     @Test
     fun `Coarse Coding`() {
-        val alpha = 1e-3
+        val alpha = 0.2
         val numOfSamples = listOf(10, 40, 160, 2560, 10240)
         val featureWidths = listOf(0.2, .4, 1.0)
         for (numOfSample in numOfSamples) {
@@ -212,10 +211,10 @@ class `Test Function Approximation` {
                 val func = LinearFunc(SimpleCoarseCoding(featureWidth,
                                                          domain,
                                                          2.0 / maxResolution,
-                                                         50))
+                                                         50), alpha)
                 repeat(numOfSample) {
                     val (s, y) = sample()
-                    func.update(s, alpha * (y - func[s]))
+                    func.update(s, y - func[s])
                 }
                 for (i in 0 until maxResolution) {
                     val s = State(DefaultIntBuf.of(i))
