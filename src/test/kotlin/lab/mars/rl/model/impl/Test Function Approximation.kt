@@ -1,6 +1,12 @@
+@file:Suppress("NAME_SHADOWING")
+
 package lab.mars.rl.model.impl
 
+import ch.qos.logback.classic.Level
 import javafx.application.Application
+import kotlinx.coroutines.experimental.channels.Channel
+import kotlinx.coroutines.experimental.launch
+import kotlinx.coroutines.experimental.runBlocking
 import lab.mars.rl.algo.func_approx.FunctionApprox
 import lab.mars.rl.algo.func_approx.`Gradient Monte Carlo algorithm`
 import lab.mars.rl.algo.func_approx.`Semi-gradient TD(0)`
@@ -113,6 +119,8 @@ class `Test Function Approximation` {
 
         @Test
         fun `Gradient Monte Carlo with Fourier basis vs polynomials`() {
+            logLevel(Level.ERROR)
+            
             val (prob, PI) = make()
             val algo = TemporalDifference(prob, PI)
             algo.episodes = 100000
@@ -126,59 +134,52 @@ class `Test Function Approximation` {
                 return sqrt(result)
             }
 
+            val episodes = 5000
+            val runs = 5
+            val description = listOf("polynomial", "fourier")
+            val alphas = listOf(1e-4, 5e-5)
+            val func_maker = listOf({ order: Int -> SimplePolynomial(order + 1, 1.0 / num_states) },
+                                    { order: Int -> SimpleFourier(order + 1, 1.0 / num_states) })
             val orders = intArrayOf(5, 10, 20)
-            val algo2 = FunctionApprox(prob, PI)
-            algo2.episodes = 5000
-            val errors = DoubleArray(algo2.episodes) { 0.0 }
-            val run = 100
-            //polynomials
-            algo2.alpha = 1e-4
-            var remains = run * orders.size * 2
-            for (order in orders) {
-                for (i in 1..run) {
-                    remains--
-                    println("run: $i polynomial order=$order")
-                    val last = System.currentTimeMillis()
-                    val func = LinearFunc(SimplePolynomial(order + 1, 1.0 / num_states))
-                    algo2.episodeListener = { episode ->
-                        errors[episode - 1] += RMS(func)
+            val outerChan = Channel<Boolean>(orders.size * alphas.size)
+            runBlocking {
+                for (func_id in 0..1)
+                    for (order in orders) {
+                        launch {
+                            val runChan = Channel<DoubleArray>(runs)
+                            for (run in 1..runs)
+                                launch {
+                                    val algo = FunctionApprox(prob, PI)
+                                    algo.episodes = episodes
+                                    val _errors = DoubleArray(episodes) { 0.0 }
+                                    val func = LinearFunc(func_maker[func_id](order))
+                                    algo.alpha = alphas[func_id]
+                                    algo.episodeListener = { episode ->
+                                        _errors[episode - 1] += RMS(func)
+                                    }
+                                    algo.`Gradient Monte Carlo algorithm`(func)
+                                    runChan.send(_errors)
+                                }
+                            val errors = DoubleArray(episodes) { 0.0 }
+                            repeat(runs) {
+                                val _errors = runChan.receive()
+                                _errors.forEachIndexed { episode, e ->
+                                    errors[episode] += e
+                                }
+                            }
+                            val line = hashMapOf<Number, Number>()
+                            for (episode in 1..episodes) {
+                                line.put(episode, errors[episode - 1] / runs)
+                            }
+                            ChartView.lines += Pair("${description[func_id]} order=$order", line)
+                            println("finish ${description[func_id]} order=$order")
+                            outerChan.send(true)
+                        }
                     }
-                    algo2.`Gradient Monte Carlo algorithm`(func)
-                    val d = (System.currentTimeMillis() - last) / 1000.0
-                    println("${d.format(2)}s, ETA: ${(d * remains / 60).format(2)}min")
+                repeat(orders.size * 2) {
+                    outerChan.receive()
                 }
-
-                val line = hashMapOf<Number, Number>()
-                for (episode in 1..algo2.episodes) {
-                    line.put(episode, errors[episode - 1] / run)
-                    errors[episode - 1] = 0.0
-                }
-                ChartView.lines += Pair("polynomial order=$order", line)
             }
-
-            algo2.alpha = 5e-5
-            for (order in orders) {
-                for (i in 1..run) {
-                    remains--
-                    println("run: $i fourier order=$order")
-                    val last = System.currentTimeMillis()
-                    val func = LinearFunc(SimpleFourier(order + 1, 1.0 / num_states))
-                    algo2.episodeListener = { episode ->
-                        errors[episode - 1] += RMS(func)
-                    }
-                    algo2.`Gradient Monte Carlo algorithm`(func)
-                    val d = (System.currentTimeMillis() - last) / 1000.0
-                    println("${d.format(2)}s, ETA: ${(d * remains / 60).format(2)}min")
-                }
-
-                val line = hashMapOf<Number, Number>()
-                for (episode in 1..algo2.episodes) {
-                    line.put(episode, errors[episode - 1] / run)
-                    errors[episode - 1] = 0.0
-                }
-                ChartView.lines += Pair("fourier order=$order", line)
-            }
-
             Application.launch(Chart::class.java)
         }
     }

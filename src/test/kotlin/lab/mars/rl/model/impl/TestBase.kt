@@ -1,9 +1,13 @@
 package lab.mars.rl.model.impl
 
+import ch.qos.logback.classic.Level
+import ch.qos.logback.classic.LoggerContext
 import lab.mars.rl.model.MDP
 import lab.mars.rl.model.NonDeterminedPolicy
 import lab.mars.rl.model.StateValueFunction
 import lab.mars.rl.util.argmax
+import org.slf4j.Logger
+import org.slf4j.LoggerFactory
 
 /**
  * <p>
@@ -48,6 +52,12 @@ fun color(idx: Int): String {
 
 fun reset() = ANSI_RESET
 fun Double.format(digits: Int) = String.format("%.${digits}f", this)
+
+fun logLevel(level: Level) {
+    val loggerContext: LoggerContext = LoggerFactory.getILoggerFactory() as LoggerContext
+    val rootLogger = loggerContext.getLogger(Logger.ROOT_LOGGER_NAME)
+    rootLogger.level = level
+}
 
 fun printBlackjack(prob: MDP, PI: NonDeterminedPolicy, V: StateValueFunction) {
     println("---------------------Usable Ace--------------------------")
