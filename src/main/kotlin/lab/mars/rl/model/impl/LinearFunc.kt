@@ -34,7 +34,6 @@ class LinearFunc(val x: featureFunc, val alpha: Double) : ValueFunction {
 
     override fun get(s: State) = w * x(s)
 
-
     override fun update(s: State, delta: Double) {
         val _x = x(s)
         val alpha = x.alpha(alpha, s)
