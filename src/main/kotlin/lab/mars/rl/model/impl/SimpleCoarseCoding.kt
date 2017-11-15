@@ -1,6 +1,7 @@
 package lab.mars.rl.model.impl
 
 import lab.mars.rl.model.State
+import lab.mars.rl.util.matrix.Matrix
 
 val ClosedRange<Double>.size: Double
     get() = endInclusive - start
@@ -17,7 +18,7 @@ class SimpleCoarseCoding(featureWidth: Double, domain: ClosedRange<Double>, val 
         }
     }
 
-    override fun invoke(s: State) = DoubleArray(featureNum) {
+    override fun invoke(s: State) = Matrix.column(featureNum) {
         if (features[it].contains(s[0].toDouble() * scale)) 1.0 //quantize the interval
         else 0.0
     }
