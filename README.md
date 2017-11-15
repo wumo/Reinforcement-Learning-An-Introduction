@@ -44,6 +44,9 @@ On-policy Prediction with Function Approximation
 * [n-step semi-gradient TD](src/main/kotlin/lab/mars/rl/algo/func_approx/n-step%20semi-gradient%20TD.kt) (p.171)
 * [Least-Squares TD](src/main/kotlin/lab/mars/rl/algo/func_approx/LSTD.kt) (p.186)
 
+Eligibility Traces
+* [Semi-gradient TD(λ) prediction](src/main/kotlin/lab/mars/rl/algo/eligibility_trace/Semi-gradient%20TD(λ).kt) (p.240)
+
 ## Implemented problems:
 * [Grid world](src/main/kotlin/lab/mars/rl/problem/GridWorld.kt) (p.61)
 * [Jack's Car Rental and exercise 4.4](src/main/kotlin/lab/mars/rl/problem/CarRental.kt) (p.65)
