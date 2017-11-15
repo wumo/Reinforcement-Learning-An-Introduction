@@ -45,15 +45,15 @@ fun MonteCarlo.`Off-policy MC prediction`(): StateValueFunction {
         for (t in T - 1 downTo 0) {
             val s_t = S[t]
             val a_t = A[t]
-            G = gamma * G + R[t + 1]
+            G = `γ` * G + R[t + 1]
             C[s_t, a_t] += W
             Q[s_t, a_t] += W / C[s_t, a_t] * (G - Q[s_t, a_t])
-            W = W * policy[s_t, a_t] / b[s_t, a_t]
+            W = W * `π`[s_t, a_t] / b[s_t, a_t]
             if (W == 0.0) break
         }
     }
     val V = mdp.VFunc { 0.0 }
-    val result = tuple3(policy, V, Q)
+    val result = tuple3(`π`, V, Q)
     V_from_Q_ND(states, result)
     return V
 }

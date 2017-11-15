@@ -1,7 +1,7 @@
 package lab.mars.rl.algo.dyna
 
 import lab.mars.rl.algo.V_from_Q_ND
-import lab.mars.rl.algo.`e-greedy tie random`
+import lab.mars.rl.algo.`ε-greedy tie random`
 import lab.mars.rl.model.*
 import lab.mars.rl.util.Rand
 import lab.mars.rl.util.debug
@@ -18,22 +18,22 @@ class `Dyna-Q-OnPolicy`(val mdp: MDP) {
         val log = LoggerFactory.getLogger(this::class.java)!!
     }
 
-    val gamma = mdp.gamma
+    val `γ` = mdp.`γ`
     val started = mdp.started
     val states = mdp.states
     var stepListener: (ActionValueFunction, State) -> Unit = { _, _ -> }
     var episodeListener: (StateValueFunction) -> Unit = {}
 
     var episodes = 10000
-    var alpha = 0.1
-    var epsilon = 0.1
+    var `α` = 0.1
+    var `ε` = 0.1
     var n = 10
 
-    fun optimal(_alpha: (State, Action) -> Double = { _, _ -> alpha }): OptimalSolution {
-        val policy = mdp.QFunc { 0.0 }
+    fun optimal(_alpha: (State, Action) -> Double = { _, _ -> `α` }): OptimalSolution {
+        val `π` = mdp.QFunc { 0.0 }
         val Q = mdp.QFunc { 0.0 }
         val V = mdp.VFunc { 0.0 }
-        val result = tuple3(policy, V, Q)
+        val result = tuple3(`π`, V, Q)
 
         val startedStates = hashMapOf<State, Int>()
         val Model = mdp.QFunc { hashMapOf<tuple2<State, Double>, Int>() }
@@ -49,21 +49,21 @@ class `Dyna-Q-OnPolicy`(val mdp: MDP) {
                 V_from_Q_ND(states, result)
                 stepListener(V, s)
                 step++
-                `e-greedy tie random`(s, Q, policy, epsilon)
-                val a = s.actions.rand(policy(s))
+                `ε-greedy tie random`(s, Q, `π`, `ε`)
+                val a = s.actions.rand(`π`(s))
                 val (s_next, reward, _) = a.sample()
                 Model[s, a].compute(tuple2(s_next, reward)) { _, v -> (v ?: 0) + 1 }
                 N[s, a]++
-                Q[s, a] += _alpha(s, a) * (reward + gamma * max(s_next.actions, 0.0) { Q[s_next, it] } - Q[s, a])
+                Q[s, a] += _alpha(s, a) * (reward + `γ` * max(s_next.actions, 0.0) { Q[s_next, it] } - Q[s, a])
 
                 var _s = startedStates.rand(episode)
                 repeat(n, { _s.isNotTerminal() }) {
-                    `e-greedy tie random`(_s, Q, policy, epsilon)//using on-policy to distribute computation
-                    val a = _s.actions.rand(policy(_s))
+                    `ε-greedy tie random`(_s, Q, `π`, `ε`)//using on-policy to distribute computation
+                    val a = _s.actions.rand(`π`(_s))
                     if (Model[_s, a].isEmpty()) return@repeat
                     stat++
                     val (s_next, reward) = Model[_s, a].rand(N[_s, a])
-                    Q[_s, a] += _alpha(_s, a) * (reward + gamma * max(s_next.actions, 0.0) { Q[s_next, it] } - Q[_s, a])
+                    Q[_s, a] += _alpha(_s, a) * (reward + `γ` * max(s_next.actions, 0.0) { Q[s_next, it] } - Q[_s, a])
                     _s = s_next
                 }
                 s = s_next

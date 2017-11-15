@@ -28,12 +28,12 @@ typealias OptimalSolution = tuple3<NonDeterminedPolicy, StateValueFunction, Acti
 /**
  *
  * @property states 状态集
- * @property gamma 衰减因子
+ * @property γ 衰减因子
  * @property state_function 状态V函数的构造器（不同的[states]实现对应着不同的[state_function]）
  * @property state_action_function 状态动作Q函数的构造器（不同的[states]和[Action]实现实现对应着不同的[state_action_function]）
  */
 class MDP(
-        val gamma: Double,
+        val `γ`: Double,
         val states: StateSet,
         private val state_function: ((Index) -> Any) -> RandomAccessCollection<Any>,
         private val state_action_function: ((Index) -> Any) -> RandomAccessCollection<Any>) {
@@ -43,18 +43,16 @@ class MDP(
      *
      * create state function indexed by [State]
      */
-    fun <T : Any> VFunc(element_maker: (Index) -> T): RandomAccessCollection<T> {
-        return state_function(element_maker) as RandomAccessCollection<T>
-    }
+    fun <T : Any> VFunc(element_maker: (Index) -> T) =
+            state_function(element_maker) as RandomAccessCollection<T>
 
     /**
      * 创建由[State]和[Action]索引的state action function
      *
      * create state action function indexed by [State] and [Action]
      */
-    fun <T : Any> QFunc(element_maker: (Index) -> T): RandomAccessCollection<T> {
-        return state_action_function(element_maker) as RandomAccessCollection<T>
-    }
+    fun <T : Any> QFunc(element_maker: (Index) -> T) =
+            state_action_function(element_maker) as RandomAccessCollection<T>
 
     /**
      * equiprobable random policy
@@ -114,4 +112,4 @@ val null_index = DefaultIntBuf.of(-1)
 val null_state = State(null_index)
 val null_action = Action(null_index)
 val null_possible = Possible(null_state, 0.0, 0.0)
-val emptyPossibleSet=emptyNSet as PossibleSet
+val emptyPossibleSet = emptyNSet as PossibleSet

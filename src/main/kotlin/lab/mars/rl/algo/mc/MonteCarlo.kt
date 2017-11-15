@@ -12,14 +12,14 @@ import org.slf4j.LoggerFactory
  *
  * @author wumo
  */
-class MonteCarlo(val mdp: MDP, var policy: NonDeterminedPolicy = emptyNSet()) {
+class MonteCarlo(val mdp: MDP, var `π`: NonDeterminedPolicy = emptyNSet()) {
     companion object {
         val log = LoggerFactory.getLogger(this::class.java)!!
     }
 
-    val gamma = mdp.gamma
     val started = mdp.started
     val states = mdp.states
     var episodes = 10000
-    var epsilon = 0.1
+    val `γ` = mdp.`γ`
+    var `ε` = 0.1
 }

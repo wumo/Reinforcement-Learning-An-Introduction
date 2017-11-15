@@ -232,7 +232,7 @@ class `Dyna` {
         fun `WindyGridworld Prioritized Sweeping`() {
             val prob = WindyGridworld.make()
             val algo = PrioritizedSweeping(prob)
-            algo.alpha = 0.5
+            algo.`α` = 0.5
             algo.episodes = 1000
             val (PI, _, _) = algo.optimal()
             var s = prob.started[0]
@@ -254,7 +254,7 @@ class `Dyna` {
         fun `Cliff Walking TD Q Learning`() {
             val prob = CliffWalking.make()
             val algo = PrioritizedSweeping(prob)
-            algo.alpha = 0.5
+            algo.`α` = 0.5
             algo.episodes = 1000
             val (PI, _, _) = algo.optimal()
             var s = prob.started[0]

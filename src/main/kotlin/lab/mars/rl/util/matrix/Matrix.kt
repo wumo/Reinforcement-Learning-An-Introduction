@@ -25,12 +25,29 @@ class Matrix(val rows: Int, val cols: Int = rows) {
                 m[a, 0] = value[a]
             return m
         }
+
+        fun column(d: Int, init: (Int) -> Double): Matrix {
+            val m = column(d)
+            for (a in 0 until m.rows)
+                m[a, 0] = init(a)
+            return m
+        }
     }
 
     val raw = DoubleArray(rows * cols) { 0.0 }
+    operator fun get(a: Int) = raw[a]
     operator fun get(a: Int, b: Int) = raw[a * cols + b]
     operator fun set(a: Int, b: Int, value: Double) {
         raw[a * cols + b] = value
+    }
+
+    operator fun set(a: Int, value: Double) {
+        raw[a] = value
+    }
+
+    infix fun `=`(m: Matrix) {
+        require(rows == m.cols && cols == m.rows)
+        System.arraycopy(m.raw, 0, raw, 0, raw.size)
     }
 
     operator fun times(scalar: Double): Matrix {
@@ -100,5 +117,10 @@ class Matrix(val rows: Int, val cols: Int = rows) {
         require(rows == m.rows && cols == m.cols)
         for (i in 0..raw.lastIndex)
             raw[i] += m.raw[i]
+    }
+
+    fun asScalar(): Double {
+        require(rows == 1 && cols == 1)
+        return raw[0]
     }
 }

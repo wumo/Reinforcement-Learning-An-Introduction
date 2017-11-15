@@ -1,13 +1,13 @@
 package lab.mars.rl.algo.dp
 
-import lab.mars.rl.algo.theta
+import lab.mars.rl.algo.`θ`
 import lab.mars.rl.model.MDP
 import lab.mars.rl.model.StateValueFunction
 import lab.mars.rl.model.null_action
 import lab.mars.rl.util.argmax
 import lab.mars.rl.util.debug
 import lab.mars.rl.util.max
-import lab.mars.rl.util.sum
+import lab.mars.rl.util.`Σ`
 import org.apache.commons.math3.util.FastMath.abs
 import org.apache.commons.math3.util.FastMath.max
 import org.slf4j.LoggerFactory
@@ -25,7 +25,7 @@ class ValueIteration(private val mdp: MDP) {
     }
 
     val states = mdp.states
-    val gamma = mdp.gamma
+    val `γ` = mdp.`γ`
     fun iteration(): StateValueFunction {
         val V = mdp.VFunc { 0.0 }
         val PI = mdp.VFunc { null_action }
@@ -35,16 +35,16 @@ class ValueIteration(private val mdp: MDP) {
             for (s in states) {
                 s.actions.ifAny {
                     val v = V[s]
-                    V[s] = max(it) { sum(possibles) { probability * (reward + gamma * V[next]) } }
+                    V[s] = max(it) { `Σ`(possibles) { probability * (reward + `γ` * V[next]) } }
                     delta = max(delta, abs(v - V[s]))
                 }
             }
             log.debug { "delta=$delta" }
-        } while (delta >= theta)
+        } while (delta >= `θ`)
         //policy generation
         for (s in states)
             s.actions.ifAny {
-                PI[s] = argmax(s.actions) { sum(possibles) { probability * (reward + gamma * V[next]) } }
+                PI[s] = argmax(s.actions) { `Σ`(possibles) { probability * (reward + `γ` * V[next]) } }
             }
         return V
     }

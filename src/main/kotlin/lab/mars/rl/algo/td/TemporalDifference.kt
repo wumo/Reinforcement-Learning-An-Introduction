@@ -17,10 +17,10 @@ class TemporalDifference(val mdp: MDP, var initial_policy: NonDeterminedPolicy =
         val log = LoggerFactory.getLogger(this::class.java)!!
     }
 
-    val gamma = mdp.gamma
     val started = mdp.started
     val states = mdp.states
     var episodes = 10000
-    var alpha = 0.1
-    var epsilon = 0.1
+    val `γ` = mdp.`γ`
+    var `α` = 0.1
+    var `ε` = 0.1
 }

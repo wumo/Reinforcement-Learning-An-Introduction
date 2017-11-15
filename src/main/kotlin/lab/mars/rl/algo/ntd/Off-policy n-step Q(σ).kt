@@ -1,27 +1,27 @@
 package lab.mars.rl.algo.ntd
 
 import lab.mars.rl.algo.V_from_Q_ND
-import lab.mars.rl.algo.`e-greedy`
+import lab.mars.rl.algo.`ε-greedy`
 import lab.mars.rl.algo.ntd.NStepTemporalDifference.Companion.log
 import lab.mars.rl.model.Action
 import lab.mars.rl.model.OptimalSolution
 import lab.mars.rl.model.State
 import lab.mars.rl.util.buf.newBuf
 import lab.mars.rl.util.debug
-import lab.mars.rl.util.sum
 import lab.mars.rl.util.tuples.tuple3
+import lab.mars.rl.util.Σ
 import org.apache.commons.math3.util.FastMath.min
 
-fun NStepTemporalDifference.`off-policy Q sigma`(alpha: (State, Action) -> Double = { _, _ -> this.alpha }): OptimalSolution {
+fun NStepTemporalDifference.`off-policy n-step Q(σ)`(alpha: (State, Action) -> Double = { _, _ -> this.`α` }): OptimalSolution {
     val b = mdp.equiprobablePolicy()
-    val pi = mdp.equiprobablePolicy()
+    val `π` = mdp.equiprobablePolicy()
     val Q = mdp.QFunc { 0.0 }
 
     val _Q = newBuf<Double>(min(n, MAX_N))
-    val _Pi = newBuf<Double>(min(n, MAX_N))
-    val _P = newBuf<Double>(min(n, MAX_N))
-    val _sig = newBuf<Int>(min(n, MAX_N))
-    val _delta = newBuf<Double>(min(n, MAX_N))
+    val `_π` = newBuf<Double>(min(n, MAX_N))
+    val `ρ` = newBuf<Double>(min(n, MAX_N))
+    val `_σ` = newBuf<Int>(min(n, MAX_N))
+    val `δ` = newBuf<Double>(min(n, MAX_N))
     val _S = newBuf<State>(min(n, MAX_N))
     val _A = newBuf<Action>(min(n, MAX_N))
 
@@ -34,20 +34,20 @@ fun NStepTemporalDifference.`off-policy Q sigma`(alpha: (State, Action) -> Doubl
         var a = s.actions.rand(b(s))
 
         _Q.clear(); _Q.append(0.0)
-        _Pi.clear(); _Pi.append(pi[s, a])
-        _P.clear();_P.append(pi[s, a] / b[s, a])
-        _sig.clear(); _sig.append(sig(0))
-        _delta.clear()
+        `_π`.clear(); `_π`.append(`π`[s, a])
+        `ρ`.clear();`ρ`.append(`π`[s, a] / b[s, a])
+        `_σ`.clear(); `_σ`.append(`σ`(0))
+        `δ`.clear()
         _S.clear();_S.append(s)
         _A.clear();_A.append(a)
 
         do {
             if (t >= n) {//最多存储n个
                 _Q.removeFirst()
-                _Pi.removeFirst()
-                _P.removeFirst()
-                _sig.removeFirst()
-                _delta.removeFirst()
+                `_π`.removeFirst()
+                `ρ`.removeFirst()
+                `_σ`.removeFirst()
+                `δ`.removeFirst()
                 _S.removeFirst()
                 _A.removeFirst()
             }
@@ -56,40 +56,40 @@ fun NStepTemporalDifference.`off-policy Q sigma`(alpha: (State, Action) -> Doubl
                 _S.append(s_next)
                 s = s_next
                 if (s.isTerminal()) {
-                    _delta.append(reward - _Q.last)
+                    `δ`.append(reward - _Q.last)
                     T = t + 1
                     val _t = t - n + 1
                     if (_t < 0) n = T //n is too large, normalize it
                 } else {
                     a = s.actions.rand(b(s));_A.append(a)
-                    val sig = sig(t + 1)
-                    _sig.append(sig)
-                    _delta.append(reward + gamma * sig * Q[s, a] + gamma * (1 - sig) * sum(s.actions) { pi[s, it] * Q[s, it] } - _Q.last)
+                    val `tmp_σ` = `σ`(t + 1)
+                    `_σ`.append(`tmp_σ`)
+                    `δ`.append(reward + `γ` * `tmp_σ` * Q[s, a] + `γ` * (1 - `tmp_σ`) * `Σ`(s.actions) { `π`[s, it] * Q[s, it] } - _Q.last)
                     _Q.append(Q[s, a])
-                    _Pi.append(pi[s, a])
-                    _P.append(pi[s, a] / b[s, a])
+                    `_π`.append(`π`[s, a])
+                    `ρ`.append(`π`[s, a] / b[s, a])
                 }
             }
-            val _t = t - n + 1
-            if (_t >= 0) {
-                var p = 1.0
-                var e = 1.0
+            val `τ` = t - n + 1
+            if (`τ` >= 0) {
+                var `_ρ` = 1.0
+                var Z = 1.0
                 var G = _Q[0]
-                val end = min(n - 1, T - 1 - _t)
+                val end = min(n - 1, T - 1 - `τ`)
                 for (k in 0..end) {
-                    G += e * _delta[k]
-                    if (k < end) e *= gamma * ((1 - _sig[k + 1]) * _Pi[k + 1] + _sig[k + 1])
-                    p *= 1 - _sig[k] + _sig[k] * _P[k]
+                    G += Z * `δ`[k]
+                    if (k < end) Z *= `γ` * ((1 - `_σ`[k + 1]) * `_π`[k + 1] + `_σ`[k + 1])
+                    `_ρ` *= 1 - `_σ`[k] + `_σ`[k] * `ρ`[k]
                 }
-                Q[_S[0], _A[0]] += alpha(_S[0], _A[0]) * p * (G - Q[_S[0], _A[0]])
-                `e-greedy`(states[_S[0]], Q, pi, epsilon)
+                Q[_S[0], _A[0]] += alpha(_S[0], _A[0]) * `_ρ` * (G - Q[_S[0], _A[0]])
+                `ε-greedy`(states[_S[0]], Q, `π`, `ε`)
             }
             t++
-        } while (_t < T - 1)
+        } while (`τ` < T - 1)
         log.debug { "n=$n,T=$T" }
     }
     val V = mdp.VFunc { 0.0 }
-    val result = tuple3(pi, V, Q)
+    val result = tuple3(`π`, V, Q)
     V_from_Q_ND(states, result)
     return result
 }

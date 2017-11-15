@@ -20,7 +20,7 @@ fun MonteCarlo.`Off-policy MC Optimal`(): OptimalSolution {
         for (a in s.actions)
             b[s, a] = prob
     }
-    val pi = mdp.QFunc { 1.0 }
+    val `π` = mdp.QFunc { 1.0 }
 
     val R = newBuf<Double>()
     val S = newBuf<State>()
@@ -47,13 +47,13 @@ fun MonteCarlo.`Off-policy MC Optimal`(): OptimalSolution {
         for (t in T - 1 downTo 0) {
             val s_t = S[t]
             val a_t = A[t]
-            G = gamma * G + R[t + 1]
+            G = `γ` * G + R[t + 1]
             C[s_t, a_t] += W
             Q[s_t, a_t] += W / C[s_t, a_t] * (G - Q[s_t, a_t])
 
             val `a*` = argmax(s_t.actions) { Q[s_t, it] }
             for (a in s_t.actions) {
-                pi[s_t, a] = when {
+                `π`[s_t, a] = when {
                     a === `a*` -> 1.0
                     else -> 0.0
                 }
@@ -63,7 +63,7 @@ fun MonteCarlo.`Off-policy MC Optimal`(): OptimalSolution {
         }
     }
     val V = mdp.VFunc { 0.0 }
-    val result = tuple3(pi, V, Q)
+    val result = tuple3(`π`, V, Q)
     V_from_Q_ND(states, result)
     return result
 }

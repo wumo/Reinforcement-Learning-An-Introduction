@@ -1,20 +1,20 @@
 package lab.mars.rl.algo.ntd
 
 import lab.mars.rl.algo.V_from_Q_ND
-import lab.mars.rl.algo.`e-greedy`
+import lab.mars.rl.algo.`ε-greedy`
 import lab.mars.rl.algo.ntd.NStepTemporalDifference.Companion.log
 import lab.mars.rl.model.Action
 import lab.mars.rl.model.OptimalSolution
 import lab.mars.rl.model.State
 import lab.mars.rl.util.buf.newBuf
 import lab.mars.rl.util.debug
-import lab.mars.rl.util.sum
 import lab.mars.rl.util.tuples.tuple3
+import lab.mars.rl.util.Σ
 import org.apache.commons.math3.util.FastMath.min
 import org.apache.commons.math3.util.FastMath.pow
 
-fun NStepTemporalDifference.sarsa(alpha: (State, Action) -> Double = { _, _ -> this.alpha }): OptimalSolution {
-    val policy = mdp.QFunc { 0.0 }
+fun NStepTemporalDifference.sarsa(alpha: (State, Action) -> Double = { _, _ -> this.`α` }): OptimalSolution {
+    val `π` = mdp.QFunc { 0.0 }
     val Q = mdp.QFunc { 0.0 }
     val _R = newBuf<Double>(min(n, MAX_N))
     val _S = newBuf<State>(min(n, MAX_N))
@@ -26,8 +26,8 @@ fun NStepTemporalDifference.sarsa(alpha: (State, Action) -> Double = { _, _ -> t
         var T = Int.MAX_VALUE
         var t = 0
         var s = started.rand()
-        `e-greedy`(s, Q, policy, epsilon)
-        var a = s.actions.rand(policy(s))
+        `ε-greedy`(s, Q, `π`, `ε`)
+        var a = s.actions.rand(`π`(s))
         _R.clear();_R.append(0.0)
         _S.clear();_S.append(s)
         _A.clear();_A.append(a)
@@ -47,24 +47,24 @@ fun NStepTemporalDifference.sarsa(alpha: (State, Action) -> Double = { _, _ -> t
                     val _t = t - n + 1
                     if (_t < 0) n = T //n is too large, normalize it
                 } else {
-                    `e-greedy`(s, Q, policy, epsilon)
-                    a = s.actions.rand(policy(s))
+                    `ε-greedy`(s, Q, `π`, `ε`)
+                    a = s.actions.rand(`π`(s))
                     _A.append(a)
                 }
             }
-            val _t = t - n + 1
-            if (_t >= 0) {
-                var G = sum(1..min(n, T - _t)) { pow(gamma, it - 1) * _R[it] }
-                if (_t + n < T) G += pow(gamma, n) * Q[_S[n], _A[n]]
+            val `τ` = t - n + 1
+            if (`τ` >= 0) {
+                var G = `Σ`(1..min(n, T - `τ`)) { pow(`γ`, it - 1) * _R[it] }
+                if (`τ` + n < T) G += pow(`γ`, n) * Q[_S[n], _A[n]]
                 Q[_S[0], _A[0]] += alpha(_S[0], _A[0]) * (G - Q[_S[0], _A[0]])
-                `e-greedy`(states[_S[0]], Q, policy, epsilon)
+                `ε-greedy`(states[_S[0]], Q, `π`, `ε`)
             }
             t++
-        } while (_t < T - 1)
+        } while (`τ` < T - 1)
         log.debug { "n=$n,T=$T" }
     }
     val V = mdp.VFunc { 0.0 }
-    val result = tuple3(policy, V, Q)
+    val result = tuple3(`π`, V, Q)
     V_from_Q_ND(states, result)
     return result
 }

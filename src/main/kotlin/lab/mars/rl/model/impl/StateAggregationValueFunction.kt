@@ -7,7 +7,7 @@ import org.apache.commons.math3.util.FastMath.ceil
 class StateAggregationValueFunction(numStates: Int, numOfGroups: Int) : ValueFunction {
     val w = DoubleArray(numOfGroups) { 0.0 }
     val groupSize = ceil(numStates.toDouble() / numOfGroups).toInt()
-    override fun get(s: State): Double {
+    override fun invoke(s: State): Double {
         if (s.isTerminal()) return 0.0
         val groupIdx = s[0] / groupSize
         return w[groupIdx]

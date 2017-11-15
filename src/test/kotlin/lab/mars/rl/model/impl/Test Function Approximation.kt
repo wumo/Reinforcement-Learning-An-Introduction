@@ -49,14 +49,14 @@ class `Test Function Approximation` {
 
             val algo2 = FunctionApprox(prob, PI)
             algo2.episodes = 100000
-            algo2.alpha = 2e-5
+            algo2.`α` = 2e-5
             val func = StateAggregationValueFunction(num_states + 2, 10)
             algo2.`Gradient Monte Carlo algorithm`(func)
             prob.apply {
                 val line = line("gradient MC")
                 for (s in states) {
-                    println("${func[s].format(2)} ")
-                    line[s[0]] = func[s]
+                    println("${func.invoke(s).format(2)} ")
+                    line[s[0]] = func.invoke(s)
                 }
                 chart += line
             }
@@ -82,14 +82,14 @@ class `Test Function Approximation` {
 
             val algo2 = FunctionApprox(prob, PI)
             algo2.episodes = 100000
-            algo2.alpha = 2e-4
+            algo2.`α` = 2e-4
             val func = StateAggregationValueFunction(num_states + 2, 10)
             algo2.`Semi-gradient TD(0)`(func)
             prob.apply {
                 val line = line("Semi-gradient TD(0)")
                 for (s in states) {
-                    println("${func[s].format(2)} ")
-                    line[s[0]] = func[s]
+                    println("${func.invoke(s).format(2)} ")
+                    line[s[0]] = func.invoke(s)
                 }
                 chart += line
             }
@@ -115,14 +115,14 @@ class `Test Function Approximation` {
 
             val algo2 = FunctionApprox(prob, PI)
             algo2.episodes = 100000
-            algo2.alpha = 2e-4
+            algo2.`α` = 2e-4
             val func = StateAggregationValueFunction(num_states + 2, 10)
             algo2.`n-step semi-gradient TD`(10, func)
             prob.apply {
                 val line = line("n-step semi-gradient TD")
                 for (s in states) {
-                    println("${func[s].format(2)} ")
-                    line[s[0]] = func[s]
+                    println("${func.invoke(s).format(2)} ")
+                    line[s[0]] = func.invoke(s)
                 }
                 chart += line
             }
@@ -142,7 +142,7 @@ class `Test Function Approximation` {
             fun RMS(f: ValueFunction): Double {
                 var result = 0.0
                 for (s in prob.states)
-                    result += pow(V[s] - f[s], 2)
+                    result += pow(V[s] - f.invoke(s), 2)
                 result /= prob.states.size
                 return sqrt(result)
             }
@@ -214,11 +214,11 @@ class `Test Function Approximation` {
                                                          50), alpha)
                 repeat(numOfSample) {
                     val (s, y) = sample()
-                    func.update(s, y - func[s])
+                    func.update(s, y - func.invoke(s))
                 }
                 for (i in 0 until maxResolution) {
                     val s = State(DefaultIntBuf.of(i))
-                    val y = func[s]
+                    val y = func.invoke(s)
                     line[i * 2.0 / maxResolution] = y
                 }
                 chart += line

@@ -5,7 +5,7 @@ import lab.mars.rl.model.State
 import lab.mars.rl.model.StateValueFunction
 import lab.mars.rl.util.buf.newBuf
 import lab.mars.rl.util.debug
-import lab.mars.rl.util.sum
+import lab.mars.rl.util.`Σ`
 import org.apache.commons.math3.util.FastMath.min
 import org.apache.commons.math3.util.FastMath.pow
 
@@ -40,15 +40,15 @@ fun NStepTemporalDifference.prediction(): StateValueFunction {
                     if (_t < 0) n = T //n is too large, normalize it
                 }
             }
-            val _t = t - n + 1
+            val `τ` = t - n + 1
 
-            if (_t >= 0) {
-                var G = sum(1..min(n, T - _t)) { pow(gamma, it - 1) * _R[it] }
-                if (_t + n < T) G += pow(gamma, n) * V[_S[n]]
-                V[_S[0]] += alpha * (G - V[_S[0]])
+            if (`τ` >= 0) {
+                var G = `Σ`(1..min(n, T - `τ`)) { pow(`γ`, it - 1) * _R[it] }
+                if (`τ` + n < T) G += pow(`γ`, n) * V[_S[n]]
+                V[_S[0]] += `α` * (G - V[_S[0]])
             }
             t++
-        } while (_t < T - 1)
+        } while (`τ` < T - 1)
         log.debug { "n=$n,T=$T" }
     }
     return V
