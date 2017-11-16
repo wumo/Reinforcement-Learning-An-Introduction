@@ -26,7 +26,7 @@ class `n-step TD` {
         fun `Blackjack n-TD Sarsa`() {
             val (prob, `π`) = Blackjack.make()
             val algo = NStepTemporalDifference(prob, Int.MAX_VALUE, `π`)
-            algo.`α` = 0.1
+            algo.α = 0.1
             algo.episodes = 1000000
             val (PI, V, _) = algo.sarsa()
             printBlackjack(prob, PI, V)
@@ -45,7 +45,7 @@ class `n-step TD` {
         fun `Blackjack n-TD off-policy Sarsa`() {
             val (prob, policy) = Blackjack.make()
             val algo = NStepTemporalDifference(prob, Int.MAX_VALUE, policy)
-            algo.`α` = 0.1
+            algo.α = 0.1
             algo.episodes = 1000000
             val (PI, V, _) = algo.`off-policy sarsa`()
             printBlackjack(prob, PI, V)
@@ -64,7 +64,7 @@ class `n-step TD` {
         fun `Blackjack n-TD treebackup`() {
             val (prob, policy) = Blackjack.make()
             val algo = NStepTemporalDifference(prob, 4, policy)
-            algo.`α` = 0.1
+            algo.α = 0.1
             algo.episodes = 1000000
             val (PI, V, _) = algo.treebackup()
             printBlackjack(prob, PI, V)
@@ -83,7 +83,7 @@ class `n-step TD` {
         fun `Blackjack n-TD Q(σ) σ=0`() {
             val (prob, policy) = Blackjack.make()
             val algo = NStepTemporalDifference(prob, Int.MAX_VALUE, policy)
-            algo.`σ` = { 0 }//相当于treebackup
+            algo.σ = { 0 }//相当于treebackup
             algo.episodes = 1000000
             val (PI, V, _) = algo.`off-policy n-step Q(σ)`(average_alpha(prob))
             printBlackjack(prob, PI, V)
@@ -93,7 +93,7 @@ class `n-step TD` {
         fun `Blackjack n-TD Q(σ) σ=1`() {
             val (prob, policy) = Blackjack.make()
             val algo = NStepTemporalDifference(prob, Int.MAX_VALUE, policy)
-            algo.`σ` = { 1 }//相当于off-policy sarsa?但结果似乎不像
+            algo.σ = { 1 }//相当于off-policy sarsa?但结果似乎不像
             algo.episodes = 1000000
             val (PI, V, _) = algo.`off-policy n-step Q(σ)`(average_alpha(prob))
             printBlackjack(prob, PI, V)
@@ -103,7 +103,7 @@ class `n-step TD` {
         fun `Blackjack n-TD Q(σ) σ=%2`() {
             val (prob, policy) = Blackjack.make()
             val algo = NStepTemporalDifference(prob, Int.MAX_VALUE, policy)
-            algo.`σ` = { it % 2 }
+            algo.σ = { it % 2 }
             algo.episodes = 1000000
             val (PI, V, _) = algo.`off-policy n-step Q(σ)`(average_alpha(prob))
             printBlackjack(prob, PI, V)
@@ -113,7 +113,7 @@ class `n-step TD` {
         fun `Blackjack n-TD Q(σ) σ=random`() {
             val (prob, policy) = Blackjack.make()
             val algo = NStepTemporalDifference(prob, Int.MAX_VALUE, policy)
-            algo.`σ` = { Rand().nextInt(2) }
+            algo.σ = { Rand().nextInt(2) }
             algo.episodes = 1000000
             val (PI, V, _) = algo.`off-policy n-step Q(σ)`(average_alpha(prob))
             printBlackjack(prob, PI, V)
@@ -141,7 +141,7 @@ class `n-step TD` {
         fun `WindyGridworld n-TD sarsa`() {
             val prob = WindyGridworld.make()
             val algo = NStepTemporalDifference(prob, 10)
-            algo.`α` = 0.1
+            algo.α = 0.1
             algo.episodes = 1000000
             val (PI, _, _) = algo.sarsa(average_alpha(prob))
             var s = prob.started[0]
@@ -163,7 +163,7 @@ class `n-step TD` {
         fun `Cliff Walking n-TD off-policy sarsa`() {
             val prob = CliffWalking.make()
             val algo = NStepTemporalDifference(prob, 10)
-            algo.`α` = 0.5
+            algo.α = 0.5
             val (PI, _, _) = algo.`off-policy sarsa`()
             var s = prob.started[0]
             var sum = 0.0

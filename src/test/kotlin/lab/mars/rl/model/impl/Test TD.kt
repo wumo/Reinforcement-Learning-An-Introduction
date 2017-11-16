@@ -125,7 +125,7 @@ class `TD` {
         fun `WindyGridworld TD sarsa`() {
             val prob = WindyGridworld.make()
             val algo = TemporalDifference(prob)
-            algo.`α` = 0.5
+            algo.α = 0.5
             algo.episodes = 1000
             val (PI, _, _) = algo.sarsa()
             var s = prob.started[0]
@@ -145,7 +145,7 @@ class `TD` {
         fun `WindyGridworld King's Move TD sarsa`() {
             val prob = WindyGridworld.make(true)
             val algo = TemporalDifference(prob)
-            algo.`α` = 0.5
+            algo.α = 0.5
             algo.episodes = 1000
             val (PI, _, _) = algo.sarsa()
             var s = prob.started[0]
@@ -165,7 +165,7 @@ class `TD` {
         fun `WindyGridworld TD QLearning`() {
             val prob = WindyGridworld.make()
             val algo = TemporalDifference(prob)
-            algo.`α` = 0.5
+            algo.α = 0.5
             algo.episodes = 1000
             val (PI, _, _) = algo.QLearning()
             var s = prob.started[0]
@@ -185,7 +185,7 @@ class `TD` {
         fun `WindyGridworld King's Move TD QLearning`() {
             val prob = WindyGridworld.make(true)
             val algo = TemporalDifference(prob)
-            algo.`α` = 0.5
+            algo.α = 0.5
             algo.episodes = 1000
             val (PI, _, _) = algo.QLearning()
             var s = prob.started[0]
@@ -207,7 +207,7 @@ class `TD` {
         fun `Cliff Walking TD sarsa`() {
             val prob = CliffWalking.make()
             val algo = TemporalDifference(prob)
-            algo.`α` = 0.5
+            algo.α = 0.5
             val (PI, _, _) = algo.sarsa()
             var s = prob.started[0]
             var sum = 0.0
@@ -226,7 +226,7 @@ class `TD` {
         fun `Cliff Walking TD Q Learning`() {
             val prob = CliffWalking.make()
             val algo = TemporalDifference(prob)
-            algo.`α` = 0.5
+            algo.α = 0.5
             val (PI, _, _) = algo.QLearning()
             var s = prob.started[0]
             var sum = 0.0
@@ -245,7 +245,7 @@ class `TD` {
         fun `Cliff Walking TD Expected Sarsa`() {
             val prob = CliffWalking.make()
             val algo = TemporalDifference(prob)
-            algo.`α` = 0.5
+            algo.α = 0.5
             val (PI, _, _) = algo.expectedSarsa()
             var s = prob.started[0]
             var sum = 0.0
@@ -264,7 +264,7 @@ class `TD` {
         fun `Cliff Walking TD DoubleQLearning`() {
             val prob = CliffWalking.make()
             val algo = TemporalDifference(prob)
-            algo.`α` = 0.5
+            algo.α = 0.5
             val (PI, _, _) = algo.DoubleQLearning()
             var s = prob.started[0]
             var sum = 0.0

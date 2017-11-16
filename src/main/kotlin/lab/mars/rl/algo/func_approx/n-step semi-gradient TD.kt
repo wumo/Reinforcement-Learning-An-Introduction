@@ -8,7 +8,7 @@ import lab.mars.rl.model.State
 import lab.mars.rl.model.ValueFunction
 import lab.mars.rl.util.buf.newBuf
 import lab.mars.rl.util.debug
-import lab.mars.rl.util.`Σ`
+import lab.mars.rl.util.Σ
 import org.apache.commons.math3.util.FastMath.min
 import org.apache.commons.math3.util.FastMath.pow
 
@@ -21,7 +21,7 @@ fun FunctionApprox.`n-step semi-gradient TD`(n: Int, v: ValueFunction) {
         var T = Int.MAX_VALUE
         var t = 0
         var s = started.rand()
-        var a = s.actions.rand(`π`(s))
+        var a = s.actions.rand(π(s))
         _R.clear();_R.append(0.0)
         _S.clear();_S.append(s)
         do {
@@ -39,16 +39,16 @@ fun FunctionApprox.`n-step semi-gradient TD`(n: Int, v: ValueFunction) {
                     val _t = t - n + 1
                     if (_t < 0) n = T //n is too large, normalize it
                 } else
-                    a = s.actions.rand(`π`(s))
+                    a = s.actions.rand(π(s))
             }
-            val _t = t - n + 1
-            if (_t >= 0) {
-                var G = `Σ`(1..min(n, T - _t)) { pow(`γ`, it - 1) * _R[it] }
-                if (_t + n < T) G += pow(`γ`, n) * v.invoke(_S[n])
-                v.update(_S[0], `α` * (G - v.invoke(_S[0])))
+            val τ = t - n + 1
+            if (τ >= 0) {
+                var G = Σ(1..min(n, T - τ)) { pow(γ, it - 1) * _R[it] }
+                if (τ + n < T) G += pow(γ, n) * v.invoke(_S[n])
+                v.update(_S[0], α * (G - v.invoke(_S[0])))
             }
             t++
-        } while (_t < T - 1)
+        } while (τ < T - 1)
         log.debug { "n=$n,T=$T" }
         episodeListener(episode)
     }

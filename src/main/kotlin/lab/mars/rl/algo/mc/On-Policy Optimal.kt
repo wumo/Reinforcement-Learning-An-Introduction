@@ -12,7 +12,7 @@ import lab.mars.rl.util.debug
 import lab.mars.rl.util.tuples.tuple3
 
 fun MonteCarlo.`On-policy first-visit MC control`(): OptimalSolution {
-    val `π` = mdp.equiprobablePolicy()
+    val π = mdp.equiprobablePolicy()
     val Q = mdp.QFunc { 0.0 }
     val tmpQ = mdp.QFunc { Double.NaN }
     val count = mdp.QFunc { 0 }
@@ -23,7 +23,7 @@ fun MonteCarlo.`On-policy first-visit MC control`(): OptimalSolution {
         var s = started.rand()
         var accumulate = 0.0
         while (s.isNotTerminal()) {
-            val a = s.actions.rand(`π`(s))
+            val a = s.actions.rand(π(s))
             val (s_next, reward, _) = a.sample()
             if (tmpQ[s, a].isNaN())
                 tmpQ[s, a] = accumulate
@@ -53,9 +53,9 @@ fun MonteCarlo.`On-policy first-visit MC control`(): OptimalSolution {
             }
             val size = s.actions.size
             for (a in s.actions) {
-                `π`[s, a] = when {
-                    a === `a*` -> 1 - `ε` + `ε` / size
-                    else -> `ε` / size
+                π[s, a] = when {
+                    a === `a*` -> 1 - ε + ε / size
+                    else -> ε / size
                 }
             }
         }
@@ -69,7 +69,7 @@ fun MonteCarlo.`On-policy first-visit MC control`(): OptimalSolution {
             value
     }
     val V = mdp.VFunc { 0.0 }
-    val result = tuple3(`π`, V, Q)
+    val result = tuple3(π, V, Q)
     V_from_Q_ND(states, result)
     return result
 }

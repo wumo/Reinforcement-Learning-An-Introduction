@@ -8,15 +8,15 @@ import lab.mars.rl.model.OptimalSolution
 import lab.mars.rl.model.State
 import lab.mars.rl.util.buf.newBuf
 import lab.mars.rl.util.debug
-import lab.mars.rl.util.`Π`
-import lab.mars.rl.util.`Σ`
+import lab.mars.rl.util.Π
+import lab.mars.rl.util.Σ
 import lab.mars.rl.util.tuples.tuple3
 import org.apache.commons.math3.util.FastMath.min
 import org.apache.commons.math3.util.FastMath.pow
 
-fun NStepTemporalDifference.`off-policy sarsa`(alpha: (State, Action) -> Double = { _, _ -> this.`α` }): OptimalSolution {
+fun NStepTemporalDifference.`off-policy sarsa`(alpha: (State, Action) -> Double = { _, _ -> this.α }): OptimalSolution {
     val b = mdp.equiprobablePolicy()
-    val `π` = b.copy()
+    val π = b.copy()
 
     val Q = mdp.QFunc { 0.0 }
     val _R = newBuf<Double>(min(n, MAX_N))
@@ -54,20 +54,20 @@ fun NStepTemporalDifference.`off-policy sarsa`(alpha: (State, Action) -> Double 
                     _A.append(a)
                 }
             }
-            val `τ` = t - n + 1
-            if (`τ` >= 0) {
-                val `ρ` = `Π`(1.. min(n - 1, T - 1 - `τ`)) { `π`[_S[it], _A[it]] / b[_S[it], _A[it]] }
-                var G = `Σ`(1.. min(n, T - `τ`)) { pow(`γ`, it - 1) * _R[it] }
-                if (`τ` + n < T) G += pow(`γ`, n) * Q[_S[n], _A[n]]
-                Q[_S[0], _A[0]] += alpha(_S[0], _A[0]) * `ρ` * (G - Q[_S[0], _A[0]])
-                `ε-greedy`(states[_S[0]], Q, `π`, `ε`)
+            val τ = t - n + 1
+            if (τ >= 0) {
+                val ρ = Π(1.. min(n - 1, T - 1 - τ)) { π[_S[it], _A[it]] / b[_S[it], _A[it]] }
+                var G = Σ(1.. min(n, T - τ)) { pow(γ, it - 1) * _R[it] }
+                if (τ + n < T) G += pow(γ, n) * Q[_S[n], _A[n]]
+                Q[_S[0], _A[0]] += alpha(_S[0], _A[0]) * ρ * (G - Q[_S[0], _A[0]])
+                `ε-greedy`(states[_S[0]], Q, π, ε)
             }
             t++
-        } while (`τ` < T - 1)
+        } while (τ < T - 1)
         log.debug { "n=$n,T=$T" }
     }
     val V = mdp.VFunc { 0.0 }
-    val result = tuple3(`π`, V, Q)
+    val result = tuple3(π, V, Q)
     V_from_Q_ND(states, result)
     return result
 }

@@ -12,7 +12,7 @@ import org.slf4j.LoggerFactory
  *
  * @author wumo
  */
-class MonteCarlo(val mdp: MDP, var `π`: NonDeterminedPolicy = emptyNSet()) {
+class MonteCarlo(val mdp: MDP, var π: NonDeterminedPolicy = emptyNSet()) {
     companion object {
         val log = LoggerFactory.getLogger(this::class.java)!!
     }
@@ -20,6 +20,6 @@ class MonteCarlo(val mdp: MDP, var `π`: NonDeterminedPolicy = emptyNSet()) {
     val started = mdp.started
     val states = mdp.states
     var episodes = 10000
-    val `γ` = mdp.`γ`
-    var `ε` = 0.1
+    val γ = mdp.γ
+    var ε = 0.1
 }

@@ -7,21 +7,21 @@ import lab.mars.rl.util.matrix.Matrix
 import lab.mars.rl.util.matrix.plus
 import lab.mars.rl.util.matrix.times
 
-fun FunctionApprox.LSTD(vFunc: LinearFunc, `ε`: Double) {
+fun FunctionApprox.LSTD(vFunc: LinearFunc, ε: Double) {
     val xFeature = vFunc.x
     val d = xFeature.featureNum
-    val A_ = 1 / `ε` * Matrix.identity(d)
+    val A_ = 1 / ε * Matrix.identity(d)
     val b = Matrix.column(d)
     for (episode in 1..episodes) {
         log.debug { "$episode/$episodes" }
         var s = started.rand()
         var x = xFeature(s)
         while (s.isNotTerminal()) {
-            val a = s.actions.rand(`π`(s))
+            val a = s.actions.rand(π(s))
             val (s_next, reward, _) = a.sample()
             val _x = xFeature(s_next)
 
-            val v = A_.T * (x - `γ` * _x)
+            val v = A_.T * (x - γ * _x)
             A_ -= (A_ * x) * v.T / (1.0 + v.T * x)
             b += reward * x
             s = s_next

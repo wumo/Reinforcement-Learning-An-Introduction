@@ -12,7 +12,7 @@ fun TemporalDifference.prediction(): StateValueFunction {
         while (s.isNotTerminal()) {
             val a = s.actions.rand(initial_policy(s))
             val (s_next, reward, _) = a.sample()
-            V[s] += `α` * (reward + `γ` * V[s_next] - V[s])
+            V[s] += α * (reward + γ * V[s_next] - V[s])
             s = s_next
         }
     }

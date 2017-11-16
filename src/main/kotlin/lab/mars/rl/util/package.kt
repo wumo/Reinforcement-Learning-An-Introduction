@@ -13,7 +13,7 @@ inline fun repeat(times: Int, condition: (Int) -> Boolean, action: (Int) -> Unit
     }
 }
 
-inline fun <T> `Π`(set: Iterable<T>, evaluate: T.(T) -> Double): Double {
+inline fun <T> Π(set: Iterable<T>, evaluate: T.(T) -> Double): Double {
     var multi = 1.0
     set.forEach {
         multi *= it.evaluate(it)
@@ -21,7 +21,7 @@ inline fun <T> `Π`(set: Iterable<T>, evaluate: T.(T) -> Double): Double {
     return multi
 }
 
-inline fun <T> `Σ`(set: Iterable<T>, evaluate: T.(T) -> Double): Double {
+inline fun <T> Σ(set: Iterable<T>, evaluate: T.(T) -> Double): Double {
     var sum = 0.0
     set.forEach {
         sum += it.evaluate(it)

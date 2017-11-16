@@ -49,7 +49,7 @@ class `Test Function Approximation` {
 
             val algo2 = FunctionApprox(prob, PI)
             algo2.episodes = 100000
-            algo2.`α` = 2e-5
+            algo2.α = 2e-5
             val func = StateAggregationValueFunction(num_states + 2, 10)
             algo2.`Gradient Monte Carlo algorithm`(func)
             prob.apply {
@@ -82,7 +82,7 @@ class `Test Function Approximation` {
 
             val algo2 = FunctionApprox(prob, PI)
             algo2.episodes = 100000
-            algo2.`α` = 2e-4
+            algo2.α = 2e-4
             val func = StateAggregationValueFunction(num_states + 2, 10)
             algo2.`Semi-gradient TD(0)`(func)
             prob.apply {
@@ -115,7 +115,7 @@ class `Test Function Approximation` {
 
             val algo2 = FunctionApprox(prob, PI)
             algo2.episodes = 100000
-            algo2.`α` = 2e-4
+            algo2.α = 2e-4
             val func = StateAggregationValueFunction(num_states + 2, 10)
             algo2.`n-step semi-gradient TD`(10, func)
             prob.apply {

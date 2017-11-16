@@ -12,10 +12,10 @@ import lab.mars.rl.util.debug
 import lab.mars.rl.util.tuples.tuple3
 
 fun MonteCarlo.`Optimal Exploring Starts`(): OptimalSolution {
-    if (`π`.isEmpty()) {
-        `π` = mdp.QFunc { 0.0 }
+    if (π.isEmpty()) {
+        π = mdp.QFunc { 0.0 }
         for (s in started)
-            `π`[s, s.actions.first()] = 1.0
+            π[s, s.actions.first()] = 1.0
     }
     val Q = mdp.QFunc { 0.0 }
     val tmpQ = mdp.QFunc { Double.NaN }
@@ -34,7 +34,7 @@ fun MonteCarlo.`Optimal Exploring Starts`(): OptimalSolution {
                 tmpQ[s, a] = accumulate
             accumulate += reward
             s = s_next
-        } while (s.isNotTerminal().apply { if (this) a = s.actions.rand(`π`(s)) })
+        } while (s.isNotTerminal().apply { if (this) a = s.actions.rand(π(s)) })
 
         tmpS.clear()
         for (s in states) {
@@ -58,7 +58,7 @@ fun MonteCarlo.`Optimal Exploring Starts`(): OptimalSolution {
                     Q[s, it]
             }
             for (a in s.actions)
-                `π`[s, a] = if (a === a_greedy) 1.0 else 0.0
+                π[s, a] = if (a === a_greedy) 1.0 else 0.0
         }
     }
 
@@ -70,7 +70,7 @@ fun MonteCarlo.`Optimal Exploring Starts`(): OptimalSolution {
             value
     }
     val V = mdp.VFunc { 0.0 }
-    val result = tuple3(`π`, V, Q)
+    val result = tuple3(π, V, Q)
     V_from_Q_ND(states, result)
     return result
 }

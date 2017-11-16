@@ -16,29 +16,29 @@ class RandomSampleOneStepTabularQLearning(val mdp: MDP) {
         val log = LoggerFactory.getLogger(this::class.java)!!
     }
 
-    val `γ` = mdp.`γ`
+    val γ = mdp.γ
     val started = mdp.started
     val states = mdp.states
     var episodes = 10000
-    var `α` = 0.1
-    var `ε` = 0.1
+    var α = 0.1
+    var ε = 0.1
 
-    fun optimal(_alpha: (State, Action) -> Double = { _, _ -> `α` }): OptimalSolution {
+    fun optimal(_alpha: (State, Action) -> Double = { _, _ -> α }): OptimalSolution {
         val Q = mdp.QFunc { 0.0 }
         for (episode in 1..episodes) {
             log.debug { "$episode/$episodes" }
             val s = started.rand()
             val a = s.actions.rand()//Exploring Starts
             val (s_next, reward, _) = a.sample()
-            Q[s, a] += _alpha(s, a) * (reward + `γ` * max(s_next.actions, 0.0) { Q[s_next, it] } - Q[s, a])
+            Q[s, a] += _alpha(s, a) * (reward + γ * max(s_next.actions, 0.0) { Q[s_next, it] } - Q[s, a])
         }
-        val `π` = mdp.QFunc { 0.0 }
+        val π = mdp.QFunc { 0.0 }
         for (s in states) {
             if (s.isTerminal()) continue
-            `ε-greedy`(s, Q, `π`, `ε`)
+            `ε-greedy`(s, Q, π, ε)
         }
         val V = mdp.VFunc { 0.0 }
-        val result = tuple3(`π`, V, Q)
+        val result = tuple3(π, V, Q)
         V_from_Q_ND(states, result)
         return result
     }

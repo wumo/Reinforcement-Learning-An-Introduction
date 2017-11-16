@@ -3,7 +3,7 @@ package lab.mars.rl.algo
 import lab.mars.rl.model.*
 import lab.mars.rl.util.argmax
 import lab.mars.rl.util.argmax_tie_random
-import lab.mars.rl.util.`Σ`
+import lab.mars.rl.util.Σ
 import lab.mars.rl.util.tuples.tuple3
 
 /**
@@ -13,7 +13,7 @@ import lab.mars.rl.util.tuples.tuple3
  *
  * @author wumo
  */
-const val `θ` = 1e-6
+const val θ = 1e-6
 
 fun V_from_Q(states: StateSet, pvq: tuple3<DeterminedPolicy, StateValueFunction, ActionValueFunction>) {
     val (PI, V, Q) = pvq
@@ -38,7 +38,7 @@ fun Q_from_V(gamma: Double, states: StateSet, pvq: tuple3<DeterminedPolicy, Stat
     val (_, V, Q) = pvq
     for (s in states)
         for (a in s.actions)
-            Q[s, a] = `Σ`(a.possibles) { probability * (reward + gamma * V[next]) }
+            Q[s, a] = Σ(a.possibles) { probability * (reward + gamma * V[next]) }
 }
 
 fun average_alpha(mdp: MDP): (State, Action) -> Double {
@@ -60,7 +60,7 @@ fun `ε-greedy`(s: State, Q: ActionValueFunction, policy: NonDeterminedPolicy, `
     }
 }
 
-fun `ε-greedy tie random`(s: State, Q: ActionValueFunction, policy: NonDeterminedPolicy, `ε`: Double) {
+fun `ε-greedy (tie broken randomly)`(s: State, Q: ActionValueFunction, policy: NonDeterminedPolicy, `ε`: Double) {
     val `a*` = argmax_tie_random(s.actions) { Q[s, it] }
     val size = s.actions.size
     for (a in s.actions) {

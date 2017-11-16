@@ -18,7 +18,7 @@ fun FunctionApprox.`Gradient Monte Carlo algorithm`(v: ValueFunction) {
         var T = 0
         var accum = 0.0
         while (s.isNotTerminal()) {
-            val a = s.actions.rand(`π`(s))
+            val a = s.actions.rand(π(s))
             val (s_next, reward, _) = a.sample()
             accum += reward
             _S.append(s_next)
@@ -30,7 +30,7 @@ fun FunctionApprox.`Gradient Monte Carlo algorithm`(v: ValueFunction) {
         for (t in 0 until T) {
             pre += _R[t]
             val Gt = accum - pre
-            v.update(_S[t], `α` * (Gt - v.invoke(_S[t])))
+            v.update(_S[t], α * (Gt - v.invoke(_S[t])))
         }
         episodeListener(episode)
     }

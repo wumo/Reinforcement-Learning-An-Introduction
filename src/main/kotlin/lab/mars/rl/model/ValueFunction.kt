@@ -10,9 +10,9 @@ interface ValueFunction {
 
     /**
      * @param s current state
-     * @param delta `α*[Gt-v(S,w)]`, do not multiply gradient
+     * @param delta `α*[Gt-v(S,w)]`, do not multiply `∇`
      */
     fun update(s: State, delta: Double)
 
-    fun gradient(s: State): Matrix
+    fun `∇`(s: State): Matrix
 }

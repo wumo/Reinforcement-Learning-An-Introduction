@@ -22,8 +22,8 @@ class NStepTemporalDifference(val mdp: MDP, val n: Int, var initial_policy: NonD
     val started = mdp.started
     val states = mdp.states
     var episodes = 10000
-    val `γ` = mdp.`γ`
-    var `α` = 0.1
-    var `ε` = 0.1
-    var `σ`: (Int) -> Int = { 0 }
+    val γ = mdp.γ
+    var α = 0.1
+    var ε = 0.1
+    var σ: (Int) -> Int = { 0 }
 }

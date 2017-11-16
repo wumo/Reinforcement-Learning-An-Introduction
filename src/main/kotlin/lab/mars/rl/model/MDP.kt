@@ -33,7 +33,7 @@ typealias OptimalSolution = tuple3<NonDeterminedPolicy, StateValueFunction, Acti
  * @property state_action_function 状态动作Q函数的构造器（不同的[states]和[Action]实现实现对应着不同的[state_action_function]）
  */
 class MDP(
-        val `γ`: Double,
+        val γ: Double,
         val states: StateSet,
         private val state_function: ((Index) -> Any) -> RandomAccessCollection<Any>,
         private val state_action_function: ((Index) -> Any) -> RandomAccessCollection<Any>) {

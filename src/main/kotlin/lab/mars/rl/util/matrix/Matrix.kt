@@ -3,9 +3,15 @@
 package lab.mars.rl.util.matrix
 
 operator fun Double.times(m: Matrix) = m * this
+
 operator fun Double.plus(m: Matrix): Double {
     require(m.rows == 1 && m.cols == 1)
     return this + m[0, 0]
+}
+
+operator fun Double.minus(m: Matrix): Double {
+    require(m.rows == 1 && m.cols == 1)
+    return this - m[0, 0]
 }
 
 class Matrix(val rows: Int, val cols: Int = rows) {
@@ -111,6 +117,12 @@ class Matrix(val rows: Int, val cols: Int = rows) {
     operator fun divAssign(scalar: Double) {
         for (i in 0..raw.lastIndex)
             raw[i] /= scalar
+    }
+
+    operator fun plus(m: Matrix): Matrix {
+        val result = copy()
+        result += m
+        return result
     }
 
     operator fun plusAssign(m: Matrix) {

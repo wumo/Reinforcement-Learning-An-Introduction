@@ -20,7 +20,7 @@ class TemporalDifference(val mdp: MDP, var initial_policy: NonDeterminedPolicy =
     val started = mdp.started
     val states = mdp.states
     var episodes = 10000
-    val `γ` = mdp.`γ`
-    var `α` = 0.1
-    var `ε` = 0.1
+    val γ = mdp.γ
+    var α = 0.1
+    var ε = 0.1
 }

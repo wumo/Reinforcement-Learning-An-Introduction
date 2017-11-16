@@ -9,9 +9,9 @@ fun FunctionApprox.`Semi-gradient TD(0)`(v: ValueFunction) {
         log.debug { "$episode/$episodes" }
         var s = started.rand()
         while (s.isNotTerminal()) {
-            val a = s.actions.rand(`π`(s))
+            val a = s.actions.rand(π(s))
             val (s_next, reward, _) = a.sample()
-            v.update(s, `α` * (reward + `γ` * v.invoke(s_next) - v.invoke(s)))
+            v.update(s, α * (reward + γ * v.invoke(s_next) - v.invoke(s)))
             s = s_next
         }
         episodeListener(episode)

@@ -32,7 +32,7 @@ class SimpleFourier(override val featureNum: Int, val scale: Double) : featureFu
 }
 
 class LinearFunc(val x: featureFunc, val alpha: Double) : ValueFunction {
-    override fun gradient(s: State): Matrix {
+    override fun `∇`(s: State): Matrix {
         TODO("not implemented")
     }
 
