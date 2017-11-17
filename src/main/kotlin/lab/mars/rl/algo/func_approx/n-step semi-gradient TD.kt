@@ -44,8 +44,8 @@ fun FunctionApprox.`n-step semi-gradient TD`(n: Int, v: ValueFunction) {
             val τ = t - n + 1
             if (τ >= 0) {
                 var G = Σ(1..min(n, T - τ)) { pow(γ, it - 1) * _R[it] }
-                if (τ + n < T) G += pow(γ, n) * v.invoke(_S[n])
-                v.update(_S[0], α * (G - v.invoke(_S[0])))
+                if (τ + n < T) G += pow(γ, n) * v(_S[n])
+                v.update(_S[0], α * (G - v(_S[0])))
             }
             t++
         } while (τ < T - 1)

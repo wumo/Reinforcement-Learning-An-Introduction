@@ -30,7 +30,7 @@ fun FunctionApprox.`Gradient Monte Carlo algorithm`(v: ValueFunction) {
         for (t in 0 until T) {
             pre += _R[t]
             val Gt = accum - pre
-            v.update(_S[t], α * (Gt - v.invoke(_S[t])))
+            v.update(_S[t], α * (Gt - v(_S[t])))
         }
         episodeListener(episode)
     }
