@@ -9,7 +9,7 @@ import lab.mars.rl.util.matrix.times
 
 fun FunctionApprox.LSTD(vFunc: LinearFunc, ε: Double) {
     val xFeature = vFunc.x
-    val d = xFeature.featureNum
+    val d = xFeature.numOfComponents
     val A_ = 1 / ε * Matrix.identity(d)
     val b = Matrix.column(d)
     for (episode in 1..episodes) {

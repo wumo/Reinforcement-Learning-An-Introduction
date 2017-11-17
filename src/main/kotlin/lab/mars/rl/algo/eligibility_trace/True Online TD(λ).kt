@@ -10,7 +10,7 @@ import lab.mars.rl.util.matrix.times
 fun FunctionApprox.`True Online TD(λ)`(vFunc: LinearFunc, λ: Double) {
     val xFeature = vFunc.x
     val w = vFunc.w
-    val d = xFeature.featureNum
+    val d = xFeature.numOfComponents
     var z = Matrix.column(d)
     var Vold = 0.0
     for (episode in 1..episodes) {

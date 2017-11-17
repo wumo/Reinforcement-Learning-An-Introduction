@@ -25,8 +25,7 @@ import lab.mars.rl.util.ui.ChartApp
 import lab.mars.rl.util.ui.ChartView
 import lab.mars.rl.util.ui.chart
 import lab.mars.rl.util.ui.line
-import org.apache.commons.math3.util.FastMath.pow
-import org.apache.commons.math3.util.FastMath.sqrt
+import org.apache.commons.math3.util.FastMath.*
 import org.junit.Test
 
 class `Test Function Approximation` {
@@ -55,8 +54,8 @@ class `Test Function Approximation` {
             prob.apply {
                 val line = line("gradient MC")
                 for (s in states) {
-                    println("${func.invoke(s).format(2)} ")
-                    line[s[0]] = func.invoke(s)
+                    println("${func(s).format(2)} ")
+                    line[s[0]] = func(s)
                 }
                 chart += line
             }
@@ -88,8 +87,8 @@ class `Test Function Approximation` {
             prob.apply {
                 val line = line("Semi-gradient TD(0)")
                 for (s in states) {
-                    println("${func.invoke(s).format(2)} ")
-                    line[s[0]] = func.invoke(s)
+                    println("${func(s).format(2)} ")
+                    line[s[0]] = func(s)
                 }
                 chart += line
             }
@@ -121,8 +120,8 @@ class `Test Function Approximation` {
             prob.apply {
                 val line = line("n-step semi-gradient TD")
                 for (s in states) {
-                    println("${func.invoke(s).format(2)} ")
-                    line[s[0]] = func.invoke(s)
+                    println("${func(s).format(2)} ")
+                    line[s[0]] = func(s)
                 }
                 chart += line
             }
@@ -141,8 +140,10 @@ class `Test Function Approximation` {
 
             fun RMS(f: ValueFunction): Double {
                 var result = 0.0
-                for (s in prob.states)
-                    result += pow(V[s] - f.invoke(s), 2)
+                for (s in prob.states) {
+                    if (s.isTerminal()) continue
+                    result += pow(V[s] - f(s), 2)
+                }
                 result /= prob.states.size
                 return sqrt(result)
             }
@@ -214,17 +215,122 @@ class `Test Function Approximation` {
                                                          50), alpha)
                 repeat(numOfSample) {
                     val (s, y) = sample()
-                    func.update(s, y - func.invoke(s))
+                    func.update(s, y - func(s))
                 }
                 for (i in 0 until maxResolution) {
                     val s = State(DefaultIntBuf.of(i))
-                    val y = func.invoke(s)
+                    val y = func(s)
                     line[i * 2.0 / maxResolution] = y
                 }
                 chart += line
             }
             ChartView.charts += chart
         }
+        Application.launch(ChartApp::class.java)
+    }
+
+    @Test
+    fun `Tile Coding`() {
+        val chart = chart("samples")
+        val (prob, PI) = make()
+        val algo = TemporalDifference(prob, PI)
+        algo.episodes = 100000
+        val V = algo.prediction()
+        prob.apply {
+            val line = line("TD")
+            for (s in states) {
+                println("${V[s].format(2)} ")
+                line[s[0]] = V[s]
+            }
+            chart += line
+        }
+
+        val alpha = 1e-4
+        val numOfTilings = 50
+        val func = LinearFunc(SimpleTileCoding(numOfTilings,
+                                               5,
+                                               ceil(num_states / 5.0).toInt(),
+                                               4.0,
+                                               { s -> (s[0] - 1).toDouble() }), alpha)
+        val algo2 = FunctionApprox(prob, PI)
+        algo2.episodes = 100000
+        algo2.`Gradient Monte Carlo algorithm`(func)
+        prob.apply {
+            val line = line("Tile Coding")
+            for (s in states) {
+                println("${s[0]}=${func(s).format(2)} ")
+                line[s[0]] = func(s)
+            }
+            chart += line
+        }
+        ChartView.charts += chart
+        Application.launch(ChartApp::class.java)
+    }
+
+    @Test
+    fun `Tile Coding RMS`() {
+        logLevel(Level.ERROR)
+
+        val (prob, PI) = make()
+        val algo = TemporalDifference(prob, PI)
+        algo.episodes = 100000
+        val V = algo.prediction()
+
+        fun RMS(f: ValueFunction): Double {
+            var result = 0.0
+            for (s in prob.states)
+                result += pow(V[s] - f(s), 2)
+            result /= prob.states.size
+            return sqrt(result)
+        }
+
+        val chart = chart("RMS")
+        val episodes = 10000
+        val runs = 5
+        val alpha = 1e-4
+        val numOfTilings = intArrayOf(1, 50)
+        val outerChan = Channel<Boolean>(numOfTilings.size)
+        runBlocking {
+            for (numOfTiling in numOfTilings)
+                launch {
+                    val runChan = Channel<DoubleArray>(runs)
+                    for (run in 1..runs)
+                        launch {
+                            val algo = FunctionApprox(prob, PI)
+                            algo.episodes = episodes
+                            val _errors = DoubleArray(episodes) { 0.0 }
+                            val func = LinearFunc(SimpleTileCoding(numOfTiling,
+                                                                   5,
+                                                                   ceil(prob.states.size / 5.0).toInt(),
+                                                                   4.0,
+                                                                   { s -> (s[0] - 1).toDouble() }), alpha)
+                            algo.episodeListener = { episode ->
+                                _errors[episode - 1] += RMS(func)
+                            }
+                            algo.`Gradient Monte Carlo algorithm`(func)
+                            runChan.send(_errors)
+                        }
+                    val errors = DoubleArray(episodes) { 0.0 }
+                    repeat(runs) {
+                        val _errors = runChan.receive()
+                        _errors.forEachIndexed { episode, e ->
+                            errors[episode] += e
+                        }
+                        println("finish Tile coding ($numOfTiling tilings) run: 1")
+                    }
+                    val line = line("Tile coding ($numOfTiling tilings) ")
+                    for (episode in 1..episodes) {
+                        line[episode] = errors[episode - 1] / runs
+                    }
+                    chart += line
+                    println("finish Tile coding ($numOfTiling tilings)")
+                    outerChan.send(true)
+                }
+            repeat(numOfTilings.size) {
+                outerChan.receive()
+            }
+        }
+        ChartView.charts += chart
         Application.launch(ChartApp::class.java)
     }
 }

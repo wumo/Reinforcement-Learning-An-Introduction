@@ -6,10 +6,10 @@ import lab.mars.rl.util.matrix.Matrix
 import lab.mars.rl.util.matrix.times
 import org.apache.commons.math3.util.FastMath.*
 
-interface featureFunc {
+interface Feature {
     operator fun invoke(s: State): Matrix
     fun alpha(alpha: Double, s: State): Double = alpha
-    val featureNum: Int
+    val numOfComponents: Int
 }
 
 operator fun DoubleArray.times(elements: DoubleArray): Double {
@@ -19,24 +19,22 @@ operator fun DoubleArray.times(elements: DoubleArray): Double {
     return result
 }
 
-class SimplePolynomial(override val featureNum: Int, val scale: Double) : featureFunc {
-    override fun invoke(s: State) = Matrix.column(featureNum) {
+class SimplePolynomial(override val numOfComponents: Int, val scale: Double) : Feature {
+    override fun invoke(s: State) = Matrix.column(numOfComponents) {
         pow(s[0].toDouble() * scale, it)
     }
 }
 
-class SimpleFourier(override val featureNum: Int, val scale: Double) : featureFunc {
-    override fun invoke(s: State) = Matrix.column(featureNum) {
+class SimpleFourier(override val numOfComponents: Int, val scale: Double) : Feature {
+    override fun invoke(s: State) = Matrix.column(numOfComponents) {
         cos(it * PI * s[0].toDouble() * scale)
     }
 }
 
-class LinearFunc(val x: featureFunc, val alpha: Double) : ValueFunction {
-    override fun `∇`(s: State): Matrix {
-        TODO("not implemented")
-    }
+class LinearFunc(val x: Feature, val alpha: Double) : ValueFunction {
+    override fun `∇`(s: State) = x(s)
 
-    val w = Matrix.column(x.featureNum)
+    val w = Matrix.column(x.numOfComponents)
 
     override fun invoke(s: State) = (w.T * x(s)).asScalar()
 
