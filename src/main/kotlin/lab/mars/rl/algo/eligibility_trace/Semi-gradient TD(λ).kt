@@ -17,7 +17,7 @@ fun FunctionApprox.`Semi-gradient TD(λ)`(vFunc: LinearFunc, λ: Double) {
         while (s.isNotTerminal()) {
             val a = s.actions.rand(π(s))
             val (s_next, reward, _) = a.sample()
-            z = γ * λ * z + vFunc.`∇`(s)
+            z = γ * λ * z + vFunc.`▽`(s)
             val δ = reward + γ * vFunc(s_next) - vFunc(s)
             vFunc.w += α * δ * z
             s = s_next

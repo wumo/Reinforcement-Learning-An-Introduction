@@ -32,7 +32,7 @@ class SimpleFourier(override val numOfComponents: Int, val scale: Double) : Feat
 }
 
 class LinearFunc(val x: Feature, val alpha: Double) : ValueFunction {
-    override fun `∇`(s: State) = x(s)
+    override fun `▽`(s: State) = x(s)
 
     val w = Matrix.column(x.numOfComponents)
 

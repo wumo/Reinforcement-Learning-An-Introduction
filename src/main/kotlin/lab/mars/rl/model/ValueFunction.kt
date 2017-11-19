@@ -14,5 +14,5 @@ interface ValueFunction {
      */
     fun update(s: State, delta: Double)
 
-    fun `∇`(s: State): Matrix
+    fun `▽`(s: State): Matrix
 }

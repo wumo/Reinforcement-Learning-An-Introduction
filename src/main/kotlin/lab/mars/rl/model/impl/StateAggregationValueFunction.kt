@@ -6,7 +6,7 @@ import lab.mars.rl.util.matrix.Matrix
 import org.apache.commons.math3.util.FastMath.ceil
 
 class StateAggregationValueFunction(numStates: Int, numOfGroups: Int) : ValueFunction {
-    override fun `∇`(s: State): Matrix {
+    override fun `▽`(s: State): Matrix {
         TODO("not implemented")
     }
 

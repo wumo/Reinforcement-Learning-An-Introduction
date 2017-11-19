@@ -1,3 +1,5 @@
+@file:Suppress("NAME_SHADOWING")
+
 package lab.mars.rl.model.impl
 
 import lab.mars.rl.model.State
