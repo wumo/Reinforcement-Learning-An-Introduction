@@ -134,14 +134,4 @@
         </plugins>
     </build>
 
-    <distributionManagement>
-        <snapshotRepository>
-            <id>deployment</id>
-            <url>http://maven.marslab.org/repository/maven-snapshots/</url>
-        </snapshotRepository>
-        <repository>
-            <id>deployment</id>
-            <url>http://maven.marslab.org/repository/maven-releases/</url>
-        </repository>
-    </distributionManagement>
 </project>
