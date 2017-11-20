@@ -1,6 +1,6 @@
 @file:Suppress("NAME_SHADOWING")
 
-package lab.mars.rl.algo.eligibility_trace
+package lab.mars.rl.algo.func_approx
 
 import lab.mars.rl.algo.`ε-greedy`
 import lab.mars.rl.algo.func_approx.FunctionApprox
@@ -17,7 +17,7 @@ import org.apache.commons.math3.util.FastMath.min
 import org.apache.commons.math3.util.FastMath.pow
 import lab.mars.rl.util.matrix.times
 
-fun FunctionApprox.`Episodic semi-gradient n-step Sarsa`(qFunc: ActionValueApproxFunction, n: Int) {
+fun FunctionApprox.`Episodic semi-gradient n-step Sarsa control`(qFunc: ActionValueApproxFunction, n: Int) {
     val _R = newBuf<Double>(min(n, MAX_N))
     val _S = newBuf<State>(min(n, MAX_N))
     val _A = newBuf<Action>(min(n, MAX_N))

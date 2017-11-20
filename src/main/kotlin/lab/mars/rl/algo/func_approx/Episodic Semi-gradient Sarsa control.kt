@@ -1,4 +1,4 @@
-package lab.mars.rl.algo.eligibility_trace
+package lab.mars.rl.algo.func_approx
 
 import lab.mars.rl.algo.`ε-greedy`
 import lab.mars.rl.algo.func_approx.FunctionApprox
