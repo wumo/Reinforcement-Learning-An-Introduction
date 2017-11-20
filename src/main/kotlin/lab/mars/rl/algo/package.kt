@@ -60,6 +60,17 @@ fun `ε-greedy`(s: State, Q: ActionValueFunction, policy: NonDeterminedPolicy, `
     }
 }
 
+fun `ε-greedy`(s: State, Q: ActionValueApproxFunction, policy: NonDeterminedPolicy, `ε`: Double) {
+    val `a*` = argmax(s.actions) { Q(s, it) }
+    val size = s.actions.size
+    for (a in s.actions) {
+        policy[s, a] = when {
+            a === `a*` -> 1 - `ε` + `ε` / size
+            else -> `ε` / size
+        }
+    }
+}
+
 fun `ε-greedy (tie broken randomly)`(s: State, Q: ActionValueFunction, policy: NonDeterminedPolicy, `ε`: Double) {
     val `a*` = argmax_tie_random(s.actions) { Q[s, it] }
     val size = s.actions.size

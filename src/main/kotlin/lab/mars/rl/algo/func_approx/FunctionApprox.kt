@@ -14,6 +14,7 @@ class FunctionApprox(val mdp: MDP, var π: NonDeterminedPolicy = emptyNSet()) {
     var episodes = 10000
     val γ = mdp.γ
     var α = 1.0
-
+    var ε = 0.1
+    
     var episodeListener: (Int) -> Unit = {}
 }
