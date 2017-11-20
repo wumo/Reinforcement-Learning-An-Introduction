@@ -3,6 +3,7 @@ package lab.mars.rl.problem
 import lab.mars.rl.model.MDP
 import lab.mars.rl.model.Possible
 import lab.mars.rl.model.impl.CNSetMDP
+import lab.mars.rl.util.cnsetOf
 import lab.mars.rl.util.dimension.cnsetFrom
 import lab.mars.rl.util.dimension.x
 import lab.mars.rl.util.emptyNSet
@@ -37,7 +38,7 @@ object GridWorld {
                         x = s[0]
                         y = s[1]
                     }
-                    action.possibles = cnsetFrom(1) { Possible(states[x, y], -1.0, 1.0) }
+                    action.possibles = cnsetOf(Possible(states[x, y], -1.0, 1.0))
                 }
             states[0, 0].actions = emptyNSet()
             states[n - 1, n - 1].actions = emptyNSet()
