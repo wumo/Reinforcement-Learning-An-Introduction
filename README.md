@@ -45,8 +45,8 @@ On-policy Prediction with Function Approximation
 * [Least-Squares TD](src/main/kotlin/lab/mars/rl/algo/func_approx/LSTD.kt) (p.186)
 
 Eligibility Traces
-* [Semi-gradient TD(λ) prediction](src/main/kotlin/lab/mars/rl/algo/eligibility_trace/Semi-gradient%20TD(λ).kt) (p.240)
-* [True Online TD(λ) prediction](src/main/kotlin/lab/mars/rl/algo/eligibility_trace/True%20Online%20TD(λ).kt) (p.246)
+* [Semi-gradient TD(λ) prediction](src/main/kotlin/lab/mars/rl/algo/eligibility_trace/Semi-gradient%20TD(λ)%20prediction.kt) (p.240)
+* [True Online TD(λ) prediction](src/main/kotlin/lab/mars/rl/algo/eligibility_trace/True%20Online%20TD(λ)%20prediction.kt) (p.246)
 
 ## Implemented problems:
 * [Grid world](src/main/kotlin/lab/mars/rl/problem/GridWorld.kt) (p.61)
