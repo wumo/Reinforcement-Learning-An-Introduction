@@ -62,6 +62,6 @@ fun FunctionApprox.`Episodic semi-gradient n-step Sarsa control`(qFunc: ActionVa
             }
             t++
         } while (τ < T - 1)
-        NStepTemporalDifference.log.debug { "n=$n,T=$T" }
+        log.debug { "n=$n,T=$T" }
     }
 }
