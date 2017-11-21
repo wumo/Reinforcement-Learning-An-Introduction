@@ -45,8 +45,8 @@ On-policy Prediction with Function Approximation
 * [Least-Squares TD](src/main/kotlin/lab/mars/rl/algo/func_approx/prediction/LSTD.kt) (p.186)
 
 On-policy Control with Function Approximation
-* [Episodic Semi-gradient Sarsa](src/main/kotlin/lab/mars/rl/algo/func_approx/Episodic%20Semi-gradient%20Sarsa%20control.kt) (p.198)
-* [Episodic Semi-gradient n-step Sarsa](src/main/kotlin/lab/mars/rl/algo/func_approx/Episodic%20semi-gradient%20n-step%20Sarsa.kt) (p.200)
+* [Episodic semi-gradient Sarsa](src/main/kotlin/lab/mars/rl/algo/func_approx/Episodic%20Semi-gradient%20Sarsa%20control.kt) (p.198)
+* [Episodic semi-gradient n-step Sarsa](src/main/kotlin/lab/mars/rl/algo/func_approx/Episodic%20semi-gradient%20n-step%20Sarsa.kt) (p.200)
 * [Differential semi-gradient Sarsa](src/main/kotlin/lab/mars/rl/algo/func_approx/Differential%20semi-gradient%20Sarsa.kt) (p.203)
 * [Differential semi-gradient n-step Sarsa](src/main/kotlin/lab/mars/rl/algo/func_approx/Differential%20semi-gradient%20n-step%20Sarsa.kt) (p.206)
 
