@@ -44,7 +44,7 @@ class `Dyna-Q-OnPolicy`(val mdp: MDP) {
             var step = 0
             var stat = 0
             var s = started.rand()
-            startedStates.compute(s) { _, v -> (v ?: 0) + 1 }
+            startedStates.compute(s) { _, v -> (v ?: 0) + 1 }//record the total visits of each state
             while (s.isNotTerminal()) {
                 V_from_Q_ND(states, result)
                 stepListener(V, s)
