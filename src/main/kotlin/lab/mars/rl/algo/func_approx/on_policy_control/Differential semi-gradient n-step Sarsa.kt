@@ -26,7 +26,7 @@ fun FunctionApprox.`Differential semi-gradient n-step Sarsa`(qFunc: ActionValueA
     _R.clear();_R.append(0.0)
     _S.clear();_S.append(s)
     _A.clear();_A.append(a)
-    do {
+    while (true) {
         if (t >= n) {//最多存储n个
             _R.removeFirst()
             _S.removeFirst()
@@ -42,8 +42,8 @@ fun FunctionApprox.`Differential semi-gradient n-step Sarsa`(qFunc: ActionValueA
         if (τ >= 0) {
             val δ = Σ(1..n) { _R[it] - average_reward } + qFunc(_S[n], _A[n]) - qFunc(_S[0], _A[0])
             average_reward += β * δ
-            qFunc.w += α * δ * qFunc.`▽`(s, a)
+            qFunc.w += α * δ * qFunc.`▽`(_S[0], _A[0])
         }
         t++
-    } while (true)
+    }
 }

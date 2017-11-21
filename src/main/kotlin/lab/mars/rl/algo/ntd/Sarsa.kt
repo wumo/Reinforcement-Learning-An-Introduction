@@ -57,7 +57,7 @@ fun NStepTemporalDifference.sarsa(alpha: (State, Action) -> Double = { _, _ -> t
                 var G = Σ(1..min(n, T - τ)) { pow(γ, it - 1) * _R[it] }
                 if (τ + n < T) G += pow(γ, n) * Q[_S[n], _A[n]]
                 Q[_S[0], _A[0]] += alpha(_S[0], _A[0]) * (G - Q[_S[0], _A[0]])
-                `ε-greedy`(states[_S[0]], Q, π, ε)
+                `ε-greedy`(_S[0], Q, π, ε)
             }
             t++
         } while (τ < T - 1)

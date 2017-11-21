@@ -71,7 +71,7 @@ fun NStepTemporalDifference.treebackup(alpha: (State, Action) -> Double = { _, _
                     if (k < end) Z *= γ * _π[k + 1]
                 }
                 Q[_S[0], _A[0]] += alpha(_S[0], _A[0]) * (G - Q[_S[0], _A[0]])
-                `ε-greedy`(states[_S[0]], Q, π, ε)
+                `ε-greedy`(_S[0], Q, π, ε)
             }
             t++
         } while (τ < T - 1)

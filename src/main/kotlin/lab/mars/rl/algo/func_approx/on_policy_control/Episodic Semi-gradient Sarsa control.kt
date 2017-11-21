@@ -7,7 +7,7 @@ import lab.mars.rl.model.ActionValueApproxFunction
 import lab.mars.rl.util.debug
 import lab.mars.rl.util.matrix.times
 
-fun FunctionApprox.`Episodic Semi-gradient Sarsa control`(qFunc: ActionValueApproxFunction) {
+fun FunctionApprox.`Episodic semi-gradient Sarsa control`(qFunc: ActionValueApproxFunction) {
     for (episode in 1..episodes) {
         log.debug { "$episode/$episodes" }
         var s = started.rand()

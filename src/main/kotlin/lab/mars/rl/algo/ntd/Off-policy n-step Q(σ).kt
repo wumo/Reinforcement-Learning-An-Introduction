@@ -82,7 +82,7 @@ fun NStepTemporalDifference.`off-policy n-step Q(σ)`(alpha: (State, Action) -> 
                     _ρ *= 1 - _σ[k] + _σ[k] * ρ[k]
                 }
                 Q[_S[0], _A[0]] += alpha(_S[0], _A[0]) * _ρ * (G - Q[_S[0], _A[0]])
-                `ε-greedy`(states[_S[0]], Q, π, ε)
+                `ε-greedy`(_S[0], Q, π, ε)
             }
             t++
         } while (τ < T - 1)
