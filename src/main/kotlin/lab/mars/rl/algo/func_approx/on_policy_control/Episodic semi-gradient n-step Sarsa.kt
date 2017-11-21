@@ -1,8 +1,9 @@
 @file:Suppress("NAME_SHADOWING")
 
-package lab.mars.rl.algo.func_approx
+package lab.mars.rl.algo.func_approx.on_policy_control
 
 import lab.mars.rl.algo.`ε-greedy`
+import lab.mars.rl.algo.func_approx.FunctionApprox
 import lab.mars.rl.algo.func_approx.FunctionApprox.Companion.log
 import lab.mars.rl.algo.ntd.MAX_N
 import lab.mars.rl.model.Action

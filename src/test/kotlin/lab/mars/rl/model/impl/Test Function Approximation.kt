@@ -8,9 +8,9 @@ import kotlinx.coroutines.experimental.channels.Channel
 import kotlinx.coroutines.experimental.launch
 import kotlinx.coroutines.experimental.runBlocking
 import lab.mars.rl.algo.func_approx.FunctionApprox
-import lab.mars.rl.algo.func_approx.`Gradient Monte Carlo algorithm`
-import lab.mars.rl.algo.func_approx.`Semi-gradient TD(0)`
-import lab.mars.rl.algo.func_approx.`n-step semi-gradient TD`
+import lab.mars.rl.algo.func_approx.prediction.`Gradient Monte Carlo algorithm`
+import lab.mars.rl.algo.func_approx.prediction.`Semi-gradient TD(0)`
+import lab.mars.rl.algo.func_approx.prediction.`n-step semi-gradient TD`
 import lab.mars.rl.algo.td.TemporalDifference
 import lab.mars.rl.algo.td.prediction
 import lab.mars.rl.model.State

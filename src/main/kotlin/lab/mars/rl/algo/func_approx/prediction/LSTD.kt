@@ -1,5 +1,6 @@
-package lab.mars.rl.algo.func_approx
+package lab.mars.rl.algo.func_approx.prediction
 
+import lab.mars.rl.algo.func_approx.FunctionApprox
 import lab.mars.rl.algo.func_approx.FunctionApprox.Companion.log
 import lab.mars.rl.model.impl.LinearFunc
 import lab.mars.rl.util.debug

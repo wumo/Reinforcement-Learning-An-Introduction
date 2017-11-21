@@ -1,6 +1,7 @@
-package lab.mars.rl.algo.func_approx
+package lab.mars.rl.algo.func_approx.on_policy_control
 
 import lab.mars.rl.algo.`ε-greedy`
+import lab.mars.rl.algo.func_approx.FunctionApprox
 import lab.mars.rl.model.ActionValueApproxFunction
 import lab.mars.rl.util.matrix.times
 
