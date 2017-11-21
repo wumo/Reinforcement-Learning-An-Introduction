@@ -39,16 +39,20 @@ Dyna (Integrate Planning, Acting, and Learning):
 * [Prioritized Sweeping Stochastic Environment](src/main/kotlin/lab/mars/rl/algo/dyna/PrioritizedSweepingStochasticEnv.kt) (p.141)
 
 On-policy Prediction with Function Approximation
-* [Gradient Monte Carlo algorithm](src/main/kotlin/lab/mars/rl/algo/func_approx/Gradient%20Monte%20Carlo%20algorithm.kt) (p.165)
-* [Semi-gradient TD(0)](src/main/kotlin/lab/mars/rl/algo/func_approx/Semi-gradient%20TD(0).kt) (p.166)
-* [n-step semi-gradient TD](src/main/kotlin/lab/mars/rl/algo/func_approx/n-step%20semi-gradient%20TD.kt) (p.171)
+* [Gradient Monte Carlo algorithm](src/main/kotlin/lab/mars/rl/algo/func_approx/prediction/Gradient%20Monte%20Carlo%20algorithm.kt) (p.165)
+* [Semi-gradient TD(0)](src/main/kotlin/lab/mars/rl/algo/func_approx/prediction/Semi-gradient%20TD(0).kt) (p.166)
+* [n-step semi-gradient TD](src/main/kotlin/lab/mars/rl/algo/func_approx/prediction/n-step%20semi-gradient%20TD.kt) (p.171)
 * [Least-Squares TD](src/main/kotlin/lab/mars/rl/algo/func_approx/prediction/LSTD.kt) (p.186)
 
 On-policy Control with Function Approximation
-* [Episodic semi-gradient Sarsa](src/main/kotlin/lab/mars/rl/algo/func_approx/Episodic%20Semi-gradient%20Sarsa%20control.kt) (p.198)
-* [Episodic semi-gradient n-step Sarsa](src/main/kotlin/lab/mars/rl/algo/func_approx/Episodic%20semi-gradient%20n-step%20Sarsa.kt) (p.200)
-* [Differential semi-gradient Sarsa](src/main/kotlin/lab/mars/rl/algo/func_approx/Differential%20semi-gradient%20Sarsa.kt) (p.203)
-* [Differential semi-gradient n-step Sarsa](src/main/kotlin/lab/mars/rl/algo/func_approx/Differential%20semi-gradient%20n-step%20Sarsa.kt) (p.206)
+* [Episodic semi-gradient Sarsa](src/main/kotlin/lab/mars/rl/algo/func_approx/on_policy_control/Episodic%20semi-gradient%20n-step%20Sarsa.kt) (p.198)
+* [Episodic semi-gradient n-step Sarsa](src/main/kotlin/lab/mars/rl/algo/func_approx/on_policy_control/Episodic%20semi-gradient%20n-step%20Sarsa.kt) (p.200)
+* [Differential semi-gradient Sarsa](src/main/kotlin/lab/mars/rl/algo/func_approx/on_policy_control/Differential%20semi-gradient%20Sarsa.kt) (p.203)
+* [Differential semi-gradient n-step Sarsa](src/main/kotlin/lab/mars/rl/algo/func_approx/on_policy_control/Differential%20semi-gradient%20n-step%20Sarsa.kt) (p.206)
+* [Semi-gradient off-policy TD(0)](src/main/kotlin/lab/mars/rl/algo/func_approx/off_policy/Semi-gradient%20off-policy%20TD(0).kt) (p.210)
+* [Semi-gradient Expected Sarsa](src/main/kotlin/lab/mars/rl/algo/func_approx/off_policy/Semi-gradient%20Expected%20Sarsa.kt) (p.210)
+* [n-step semi-gradient off-policy Sarsa](src/main/kotlin/lab/mars/rl/algo/func_approx/off_policy/n-step%20semi-gradient%20off-policy%20sarsa.kt) (p.211)
+* [n-step semi-gradient off-policy Q(σ)](src/main/kotlin/lab/mars/rl/algo/func_approx/off_policy/n-step%20semi-gradient%20off-policy%20Q(σ).kt) (p.211)
 
 Eligibility Traces
 * [Semi-gradient TD(λ) prediction](src/main/kotlin/lab/mars/rl/algo/eligibility_trace/Semi-gradient%20TD(λ)%20prediction.kt) (p.240)
