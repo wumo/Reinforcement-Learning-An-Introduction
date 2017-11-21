@@ -3,7 +3,6 @@ package lab.mars.rl.model.impl
 import lab.mars.rl.model.State
 import lab.mars.rl.model.ValueFunction
 import lab.mars.rl.util.matrix.Matrix
-import lab.mars.rl.util.matrix.times
 import org.apache.commons.math3.util.FastMath.*
 
 interface Feature {
@@ -31,15 +30,10 @@ class SimpleFourier(override val numOfComponents: Int, val scale: Double) : Feat
     }
 }
 
-class LinearFunc(val x: Feature, val alpha: Double) : ValueFunction {
+class LinearFunc(val x: Feature) : ValueFunction {
     override fun `▽`(s: State) = x(s)
 
-    val w = Matrix.column(x.numOfComponents)
+    override val w = Matrix.column(x.numOfComponents)
 
     override fun invoke(s: State) = (w.T * x(s)).asScalar()
-
-    override fun update(s: State, delta: Double) {
-        val alpha = x.alpha(alpha, s)
-        w += alpha * delta * x(s)
-    }
 }

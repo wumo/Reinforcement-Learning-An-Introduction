@@ -8,6 +8,7 @@ import lab.mars.rl.model.State
 import lab.mars.rl.model.ValueFunction
 import lab.mars.rl.util.buf.newBuf
 import lab.mars.rl.util.debug
+import lab.mars.rl.util.matrix.times
 import lab.mars.rl.util.Σ
 import org.apache.commons.math3.util.FastMath.min
 import org.apache.commons.math3.util.FastMath.pow
@@ -45,7 +46,7 @@ fun FunctionApprox.`n-step semi-gradient TD`(n: Int, v: ValueFunction) {
             if (τ >= 0) {
                 var G = Σ(1..min(n, T - τ)) { pow(γ, it - 1) * _R[it] }
                 if (τ + n < T) G += pow(γ, n) * v(_S[n])
-                v.update(_S[0], α * (G - v(_S[0])))
+                v.w += α * (G - v(_S[0])) * v.`▽`(_S[0])
             }
             t++
         } while (τ < T - 1)

@@ -27,6 +27,7 @@ import lab.mars.rl.util.ui.chart
 import lab.mars.rl.util.ui.line
 import org.apache.commons.math3.util.FastMath.*
 import org.junit.Test
+import lab.mars.rl.util.matrix.times
 
 class `Test Function Approximation` {
     class `1000-state Random walk problem` {
@@ -166,8 +167,9 @@ class `Test Function Approximation` {
                                 launch {
                                     val algo = FunctionApprox(prob, PI)
                                     algo.episodes = episodes
+                                    algo.α = alphas[func_id]
                                     val _errors = DoubleArray(episodes) { 0.0 }
-                                    val func = LinearFunc(func_maker[func_id](order), alphas[func_id])
+                                    val func = LinearFunc(func_maker[func_id](order))
                                     algo.episodeListener = { episode ->
                                         _errors[episode - 1] += RMS(func)
                                     }
@@ -209,13 +211,14 @@ class `Test Function Approximation` {
             val chart = chart("$numOfSample samples")
             for (featureWidth in featureWidths) {
                 val line = line("feature width: ${featureWidth.format(1)}")
-                val func = LinearFunc(SimpleCoarseCoding(featureWidth,
-                                                         domain,
-                                                         2.0 / maxResolution,
-                                                         50), alpha)
+                val feature = SimpleCoarseCoding(featureWidth,
+                                                 domain,
+                                                 2.0 / maxResolution,
+                                                 50)
+                val func = LinearFunc(feature)
                 repeat(numOfSample) {
                     val (s, y) = sample()
-                    func.update(s, y - func(s))
+                    func.w += feature.alpha(alpha, s) * (y - func(s)) * func.`▽`(s)
                 }
                 for (i in 0 until maxResolution) {
                     val s = State(DefaultIntBuf.of(i))
@@ -247,13 +250,15 @@ class `Test Function Approximation` {
 
         val alpha = 1e-4
         val numOfTilings = 50
-        val func = LinearFunc(SimpleTileCoding(numOfTilings,
-                                               5,
-                                               ceil(num_states / 5.0).toInt(),
-                                               4.0,
-                                               { s -> (s[0] - 1).toDouble() }), alpha)
+        val feature = SimpleTileCoding(numOfTilings,
+                                       5,
+                                       ceil(num_states / 5.0).toInt(),
+                                       4.0,
+                                       { s -> (s[0] - 1).toDouble() })
+        val func = LinearFunc(feature)
         val algo2 = FunctionApprox(prob, PI)
         algo2.episodes = 100000
+        algo2.α = alpha / numOfTilings
         algo2.`Gradient Monte Carlo algorithm`(func)
         prob.apply {
             val line = line("Tile Coding")
@@ -303,7 +308,8 @@ class `Test Function Approximation` {
                                                                    5,
                                                                    ceil(prob.states.size / 5.0).toInt(),
                                                                    4.0,
-                                                                   { s -> (s[0] - 1).toDouble() }), alpha)
+                                                                   { s -> (s[0] - 1).toDouble() }))
+                            algo.α = alpha / numOfTiling
                             algo.episodeListener = { episode ->
                                 _errors[episode - 1] += RMS(func)
                             }

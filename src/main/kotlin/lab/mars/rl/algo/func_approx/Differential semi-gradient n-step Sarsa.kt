@@ -3,19 +3,14 @@
 package lab.mars.rl.algo.func_approx
 
 import lab.mars.rl.algo.`ε-greedy`
-import lab.mars.rl.algo.func_approx.FunctionApprox
-import lab.mars.rl.algo.func_approx.FunctionApprox.Companion.log
 import lab.mars.rl.algo.ntd.MAX_N
-import lab.mars.rl.algo.ntd.NStepTemporalDifference
 import lab.mars.rl.model.Action
 import lab.mars.rl.model.ActionValueApproxFunction
 import lab.mars.rl.model.State
 import lab.mars.rl.util.buf.newBuf
-import lab.mars.rl.util.debug
+import lab.mars.rl.util.matrix.times
 import lab.mars.rl.util.Σ
 import org.apache.commons.math3.util.FastMath.min
-import org.apache.commons.math3.util.FastMath.pow
-import lab.mars.rl.util.matrix.times
 
 fun FunctionApprox.`Differential semi-gradient n-step Sarsa`(qFunc: ActionValueApproxFunction, n: Int, β: Double) {
     var average_reward = 0.0

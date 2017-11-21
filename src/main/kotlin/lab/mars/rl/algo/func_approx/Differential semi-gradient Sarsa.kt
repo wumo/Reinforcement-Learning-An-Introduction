@@ -1,10 +1,7 @@
 package lab.mars.rl.algo.func_approx
 
 import lab.mars.rl.algo.`ε-greedy`
-import lab.mars.rl.algo.func_approx.FunctionApprox
-import lab.mars.rl.algo.func_approx.FunctionApprox.Companion.log
 import lab.mars.rl.model.ActionValueApproxFunction
-import lab.mars.rl.util.debug
 import lab.mars.rl.util.matrix.times
 
 fun FunctionApprox.`Differential semi-gradient Sarsa`(qFunc: ActionValueApproxFunction, β: Double) {

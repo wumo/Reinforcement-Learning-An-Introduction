@@ -5,6 +5,7 @@ import lab.mars.rl.model.State
 import lab.mars.rl.model.ValueFunction
 import lab.mars.rl.util.buf.newBuf
 import lab.mars.rl.util.debug
+import lab.mars.rl.util.matrix.times
 
 fun FunctionApprox.`Gradient Monte Carlo algorithm`(v: ValueFunction) {
     val _S = newBuf<State>()
@@ -30,7 +31,7 @@ fun FunctionApprox.`Gradient Monte Carlo algorithm`(v: ValueFunction) {
         for (t in 0 until T) {
             pre += _R[t]
             val Gt = accum - pre
-            v.update(_S[t], α * (Gt - v(_S[t])))
+            v.w += α * (Gt - v(_S[t])) * v.`▽`(_S[t])
         }
         episodeListener(episode)
     }

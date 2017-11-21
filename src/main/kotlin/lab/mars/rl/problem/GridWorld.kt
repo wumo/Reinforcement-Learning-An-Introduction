@@ -4,7 +4,6 @@ import lab.mars.rl.model.MDP
 import lab.mars.rl.model.Possible
 import lab.mars.rl.model.impl.CNSetMDP
 import lab.mars.rl.util.cnsetOf
-import lab.mars.rl.util.dimension.cnsetFrom
 import lab.mars.rl.util.dimension.x
 import lab.mars.rl.util.emptyNSet
 
