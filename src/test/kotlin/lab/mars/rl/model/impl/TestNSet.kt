@@ -2,11 +2,8 @@ package lab.mars.rl.model.impl
 
 import lab.mars.rl.util.buf.DefaultIntBuf
 import lab.mars.rl.util.buf.IntBuf
-import lab.mars.rl.util.dimension.invoke
-import lab.mars.rl.util.dimension.not
-import lab.mars.rl.util.dimension.nsetFrom
-import lab.mars.rl.util.dimension.x
 import lab.mars.rl.util.collection.nsetOf
+import lab.mars.rl.util.dimension.*
 import org.junit.Assert
 import org.junit.Test
 

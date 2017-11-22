@@ -1,7 +1,7 @@
 package lab.mars.rl.util.tile
 
-import lab.mars.rl.util.buf.Index
 import lab.mars.rl.util.buf.DefaultIntBuf
+import lab.mars.rl.util.buf.Index
 import org.apache.commons.math3.util.FastMath.floor
 
 class IHT(size: Int) {

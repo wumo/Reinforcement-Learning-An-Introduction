@@ -1,8 +1,8 @@
 package lab.mars.rl.util.collection
 
+import lab.mars.rl.util.buf.DefaultBuf
 import lab.mars.rl.util.buf.Index
 import lab.mars.rl.util.math.Rand
-import lab.mars.rl.util.buf.DefaultBuf
 import lab.mars.rl.util.tuples.tuple2
 
 class HashMapRAC<E : Any>() : IndexedCollection<E> {

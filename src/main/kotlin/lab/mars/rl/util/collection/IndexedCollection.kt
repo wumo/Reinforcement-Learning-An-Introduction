@@ -1,4 +1,4 @@
-@file:Suppress("NOTHING_TO_INLINE", "UNCHECKED_CAST")
+@file:Suppress("NOTHING_TO_INLINE", "UNCHECKED_CAST", "PARAMETER_NAME_CHANGED_ON_OVERRIDE")
 
 package lab.mars.rl.util.collection
 

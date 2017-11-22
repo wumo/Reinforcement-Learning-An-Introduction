@@ -1,3 +1,5 @@
+@file:Suppress("UNCHECKED_CAST")
+
 package lab.mars.rl.model.impl.mdp
 
 import lab.mars.rl.model.*
@@ -36,7 +38,7 @@ class IndexedMDP(
     /**
      * equiprobable random policy
      */
-    fun equiprobablePolicy(): NonDeterminedPolicy {
+    fun equiprobablePolicy(): IndexedPolicy {
         val policy = QFunc { 0.0 }
         for (s in states) {
             if (s.isTerminal()) continue
@@ -44,6 +46,5 @@ class IndexedMDP(
             for (a in s.actions)
                 policy[s, a] = prob
         }
-        return policy
-    }
+        return IndexedPolicy(policy)    }
 }

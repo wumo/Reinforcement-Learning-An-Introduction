@@ -1,4 +1,4 @@
-@file:Suppress("OVERRIDE_BY_INLINE", "NOTHING_TO_INLINE")
+@file:Suppress("OVERRIDE_BY_INLINE", "NOTHING_TO_INLINE", "UNCHECKED_CAST")
 
 package lab.mars.rl.model.impl.mdp
 

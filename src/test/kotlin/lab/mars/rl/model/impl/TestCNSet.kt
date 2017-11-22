@@ -1,11 +1,9 @@
 package lab.mars.rl.model.impl
 
+import lab.mars.rl.util.buf.*
 import lab.mars.rl.util.collection.CompactNSet
 import lab.mars.rl.util.collection.CompactNSet.Cell
 import lab.mars.rl.util.collection.CompactNSet.SubTree
-import lab.mars.rl.util.buf.DefaultIntBuf
-import lab.mars.rl.util.buf.IntBuf
-import lab.mars.rl.util.buf.buf
 import lab.mars.rl.util.collection.cnsetOf
 import lab.mars.rl.util.dimension.*
 import org.junit.Assert

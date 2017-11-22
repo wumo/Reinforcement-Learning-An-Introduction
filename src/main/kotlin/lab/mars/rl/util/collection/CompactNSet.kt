@@ -2,7 +2,6 @@
 
 package lab.mars.rl.util.collection
 
-import lab.mars.rl.util.buf.Index
 import lab.mars.rl.util.buf.*
 import lab.mars.rl.util.exception.IndexOutOfDimensionException
 import lab.mars.rl.util.tuples.tuple2

@@ -4,7 +4,8 @@ import lab.mars.rl.algo.V_from_Q
 import lab.mars.rl.algo.`ε-greedy`
 import lab.mars.rl.algo.ntd.NStepTemporalDifference.Companion.log
 import lab.mars.rl.model.OptimalSolution
-import lab.mars.rl.model.impl.mdp.*
+import lab.mars.rl.model.impl.mdp.IndexedAction
+import lab.mars.rl.model.impl.mdp.IndexedState
 import lab.mars.rl.model.isTerminal
 import lab.mars.rl.util.buf.newBuf
 import lab.mars.rl.util.log.debug
@@ -14,7 +15,7 @@ import org.apache.commons.math3.util.FastMath.min
 
 fun NStepTemporalDifference.`off-policy n-step Q(σ)`(alpha: (IndexedState, IndexedAction) -> Double = { _, _ -> this.α }): OptimalSolution {
     val b = indexedMdp.equiprobablePolicy()
-    val π = IndexedPolicy(indexedMdp.equiprobablePolicy())
+    val π =indexedMdp.equiprobablePolicy()
     val Q = indexedMdp.QFunc { 0.0 }
 
     val _Q = newBuf<Double>(min(n, MAX_N))
@@ -31,7 +32,7 @@ fun NStepTemporalDifference.`off-policy n-step Q(σ)`(alpha: (IndexedState, Inde
         var T = Int.MAX_VALUE
         var t = 0
         var s = started.rand()
-        var a = s.actions.rand(b(s))
+        var a =b(s)
 
         _Q.clear(); _Q.append(0.0)
         _π.clear(); _π.append(π[s, a])
@@ -61,7 +62,7 @@ fun NStepTemporalDifference.`off-policy n-step Q(σ)`(alpha: (IndexedState, Inde
                     val _t = t - n + 1
                     if (_t < 0) n = T //n is too large, normalize it
                 } else {
-                    a = s.actions.rand(b(s));_A.append(a)
+                    a =b(s);_A.append(a)
                     val tmp_σ = σ(t + 1)
                     _σ.append(tmp_σ)
                     δ.append(reward + γ * tmp_σ * Q[s, a] + γ * (1 - tmp_σ) * Σ(s.actions) { π[s, it] * Q[s, it] } - _Q.last)

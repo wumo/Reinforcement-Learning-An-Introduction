@@ -1,6 +1,7 @@
 package lab.mars.rl.model.impl.func
 
-import lab.mars.rl.model.*
+import lab.mars.rl.model.State
+import lab.mars.rl.model.ValueFunction
 import lab.mars.rl.model.impl.mdp.IndexedState
 import lab.mars.rl.util.matrix.Matrix
 import org.apache.commons.math3.util.FastMath.*

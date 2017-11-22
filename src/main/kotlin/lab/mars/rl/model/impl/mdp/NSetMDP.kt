@@ -2,10 +2,7 @@
 
 package lab.mars.rl.model.impl.mdp
 
-import lab.mars.rl.algo.`ε-greedy`
-import lab.mars.rl.model.*
 import lab.mars.rl.util.buf.IntBuf
-import lab.mars.rl.util.collection.Gettable
 import lab.mars.rl.util.dimension.*
 
 /**

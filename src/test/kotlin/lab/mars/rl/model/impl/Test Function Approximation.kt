@@ -15,12 +15,12 @@ import lab.mars.rl.model.ValueFunction
 import lab.mars.rl.model.impl.func.*
 import lab.mars.rl.model.impl.mdp.IndexedState
 import lab.mars.rl.model.isTerminal
+import lab.mars.rl.problem.D1DState
 import lab.mars.rl.problem.SquareWave.domain
 import lab.mars.rl.problem.SquareWave.maxResolution
 import lab.mars.rl.problem.SquareWave.sample
 import lab.mars.rl.problem.`1000-state RandomWalk`.make
 import lab.mars.rl.problem.`1000-state RandomWalk`.num_states
-import lab.mars.rl.util.buf.DefaultIntBuf
 import lab.mars.rl.util.matrix.times
 import lab.mars.rl.util.ui.*
 import org.apache.commons.math3.util.FastMath.*
@@ -210,7 +210,7 @@ class `Test Function Approximation` {
                 val line = line("feature width: ${featureWidth.format(1)}")
                 val feature = SimpleCoarseCoding(featureWidth,
                                                  domain,
-                                                 { (it as IndexedState)[0] * 2.0 / maxResolution },
+                                                 { (it as D1DState).x },
                                                  50)
                 val func = LinearFunc(feature)
                 repeat(numOfSample) {
@@ -218,7 +218,7 @@ class `Test Function Approximation` {
                     func.w += feature.alpha(alpha, s) * (y - func(s)) * func.`▽`(s)
                 }
                 for (i in 0 until maxResolution) {
-                    val s = IndexedState(DefaultIntBuf.of(i))
+                    val s = D1DState(i * 2.0 / maxResolution)
                     val y = func(s)
                     line[i * 2.0 / maxResolution] = y
                 }

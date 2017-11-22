@@ -2,7 +2,8 @@ package lab.mars.rl.algo.func_approx.on_policy_control
 
 import lab.mars.rl.algo.func_approx.FunctionApprox
 import lab.mars.rl.model.ActionValueApproxFunction
-import lab.mars.rl.util.matrix.*
+import lab.mars.rl.util.matrix.times
+
 fun FunctionApprox.`Differential semi-gradient Sarsa`(qFunc: ActionValueApproxFunction, β: Double) {
     var average_reward = 0.0
     var s = started.rand()

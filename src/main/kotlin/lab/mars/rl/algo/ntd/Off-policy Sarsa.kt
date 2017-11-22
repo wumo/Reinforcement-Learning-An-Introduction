@@ -4,7 +4,8 @@ import lab.mars.rl.algo.V_from_Q
 import lab.mars.rl.algo.`ε-greedy`
 import lab.mars.rl.algo.ntd.NStepTemporalDifference.Companion.log
 import lab.mars.rl.model.OptimalSolution
-import lab.mars.rl.model.impl.mdp.*
+import lab.mars.rl.model.impl.mdp.IndexedAction
+import lab.mars.rl.model.impl.mdp.IndexedState
 import lab.mars.rl.model.isTerminal
 import lab.mars.rl.util.buf.newBuf
 import lab.mars.rl.util.log.debug
@@ -16,7 +17,7 @@ import org.apache.commons.math3.util.FastMath.pow
 
 fun NStepTemporalDifference.`off-policy sarsa`(alpha: (IndexedState, IndexedAction) -> Double = { _, _ -> this.α }): OptimalSolution {
     val b = indexedMdp.equiprobablePolicy()
-    val π =IndexedPolicy(b.copy())
+    val π = indexedMdp.equiprobablePolicy()
 
     val Q = indexedMdp.QFunc { 0.0 }
     val _R = newBuf<Double>(min(n, MAX_N))
@@ -29,7 +30,7 @@ fun NStepTemporalDifference.`off-policy sarsa`(alpha: (IndexedState, IndexedActi
         var T = Int.MAX_VALUE
         var t = 0
         var s = started.rand()
-        var a = s.actions.rand(b(s))
+        var a = b(s)
         _R.clear();_R.append(0.0)
         _S.clear();_S.append(s)
         _A.clear();_A.append(a)
@@ -50,7 +51,7 @@ fun NStepTemporalDifference.`off-policy sarsa`(alpha: (IndexedState, IndexedActi
                     if (_t < 0) n = T //n is too large, normalize it
                 } else {
 //                        updatePolicy(s, Q, pi)
-                    a = s.actions.rand(b(s))
+                    a = b(s)
                     _A.append(a)
                 }
             }

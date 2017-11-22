@@ -4,7 +4,8 @@ import lab.mars.rl.algo.V_from_Q
 import lab.mars.rl.algo.`ε-greedy`
 import lab.mars.rl.algo.ntd.NStepTemporalDifference.Companion.log
 import lab.mars.rl.model.OptimalSolution
-import lab.mars.rl.model.impl.mdp.*
+import lab.mars.rl.model.impl.mdp.IndexedAction
+import lab.mars.rl.model.impl.mdp.IndexedState
 import lab.mars.rl.model.isTerminal
 import lab.mars.rl.util.buf.newBuf
 import lab.mars.rl.util.log.debug
@@ -13,7 +14,7 @@ import lab.mars.rl.util.tuples.tuple3
 import org.apache.commons.math3.util.FastMath.min
 
 fun NStepTemporalDifference.treebackup(alpha: (IndexedState, IndexedAction) -> Double = { _, _ -> this.α }): OptimalSolution {
-    val π =IndexedPolicy(indexedMdp.equiprobablePolicy())
+    val π =indexedMdp.equiprobablePolicy()
     val Q = indexedMdp.QFunc { 0.0 }
 
     val _Q = newBuf<Double>(min(n, MAX_N))
