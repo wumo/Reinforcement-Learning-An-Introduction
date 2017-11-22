@@ -40,7 +40,7 @@ object Blackjack {
             win.actions = emptyNSet()
             draw.actions = emptyNSet()
             lose.actions = emptyNSet()
-            started = states(1)
+            started = { states(1).rand() }
             for (s in states)
                 for (a in s.actions)
                     when (a[0]) {

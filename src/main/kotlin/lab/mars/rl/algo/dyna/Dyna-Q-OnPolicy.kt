@@ -2,8 +2,8 @@ package lab.mars.rl.algo.dyna
 
 import lab.mars.rl.algo.V_from_Q
 import lab.mars.rl.algo.`ε-greedy (tie broken randomly)`
-import lab.mars.rl.model.*
 import lab.mars.rl.model.impl.mdp.*
+import lab.mars.rl.model.isNotTerminal
 import lab.mars.rl.util.log.debug
 import lab.mars.rl.util.math.Rand
 import lab.mars.rl.util.math.max
@@ -43,7 +43,7 @@ class `Dyna-Q-OnPolicy`(val indexedMdp: IndexedMDP) {
             log.debug { "$episode/$episodes" }
             var step = 0
             var stat = 0
-            var s = started.rand()
+            var s = started()
             startedStates.compute(s) { _, v -> (v ?: 0) + 1 }//record the total visits of each state
             while (s.isNotTerminal()) {
                 V_from_Q(states, result)

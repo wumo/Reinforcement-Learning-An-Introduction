@@ -20,7 +20,7 @@ object MaximizationBias {
         mdp.apply {
             states[0].actions = emptyNSet()
             states[3].actions = emptyNSet()
-            started = states(2)
+            started = {states(2).rand()}
             for (a in states[2].actions)
                 a.sample = {
                     val next = if (a[0] == 0) 1 else 3

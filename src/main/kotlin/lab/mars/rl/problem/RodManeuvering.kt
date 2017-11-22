@@ -174,7 +174,7 @@ object RodManeuvering {
                     this[5].assign(nx, ny, s[2])//move backward perpendicular to the long axis
                 }
             }
-            started = states(3, 13, 0)
+            started = {states(3, 13, 0).rand()}
         }
     }
 

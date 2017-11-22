@@ -5,8 +5,6 @@ package lab.mars.rl.algo.func_approx.on_policy_control
 import lab.mars.rl.algo.func_approx.FunctionApprox
 import lab.mars.rl.algo.ntd.MAX_N
 import lab.mars.rl.model.*
-import lab.mars.rl.model.Action
-import lab.mars.rl.model.State
 import lab.mars.rl.util.buf.newBuf
 import lab.mars.rl.util.math.Σ
 import lab.mars.rl.util.matrix.times
@@ -19,7 +17,7 @@ fun FunctionApprox.`Differential semi-gradient n-step Sarsa`(qFunc: ActionValueA
     val _A = newBuf<Action<State>>(min(n, MAX_N))
 
     var t = 0
-    val s = started.rand()
+    val s = started()
     π.`ε-greedy update`(s, qFunc)
     var a = π(s)
     _R.clear();_R.append(0.0)

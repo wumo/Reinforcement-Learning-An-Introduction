@@ -27,7 +27,7 @@ fun NStepTemporalDifference.`off-policy sarsa`(alpha: (IndexedState, IndexedActi
         var n = n
         var T = Int.MAX_VALUE
         var t = 0
-        var s = started.rand()
+        var s = started()
         var a = b(s)
         _R.clear();_R.append(0.0)
         _S.clear();_S.append(s)

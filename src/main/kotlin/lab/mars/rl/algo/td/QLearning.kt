@@ -15,7 +15,7 @@ fun TemporalDifference.QLearning(_alpha: (IndexedState, IndexedAction) -> Double
 
     for (episode in 1..episodes) {
         log.debug { "$episode/$episodes" }
-        var s = started.rand()
+        var s = started()
         while (s.isNotTerminal()) {
             `ε-greedy`(s, Q, π, ε)
             val a =π(s)

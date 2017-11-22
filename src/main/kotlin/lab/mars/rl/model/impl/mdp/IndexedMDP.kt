@@ -2,7 +2,8 @@
 
 package lab.mars.rl.model.impl.mdp
 
-import lab.mars.rl.model.*
+import lab.mars.rl.model.MDP
+import lab.mars.rl.model.isTerminal
 import lab.mars.rl.util.buf.Index
 import lab.mars.rl.util.collection.IndexedCollection
 
@@ -18,7 +19,7 @@ class IndexedMDP(
         val states: StateSet,
         private val state_function: ((Index) -> Any) -> IndexedCollection<Any>,
         private val state_action_function: ((Index) -> Any) -> IndexedCollection<Any>) : MDP {
-    override var started = states
+    override var started = { states.rand() }
     /**
      * 创建由[IndexedState]索引的state function
      *
@@ -46,5 +47,6 @@ class IndexedMDP(
             for (a in s.actions)
                 policy[s, a] = prob
         }
-        return IndexedPolicy(policy)    }
+        return IndexedPolicy(policy)
+    }
 }

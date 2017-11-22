@@ -24,7 +24,7 @@ fun NStepTemporalDifference.sarsa(alpha: (IndexedState, IndexedAction) -> Double
         var n = n
         var T = Int.MAX_VALUE
         var t = 0
-        var s = started.rand()
+        var s = started()
 
         `ε-greedy`(s, Q, π, ε)
         var a = π(s)

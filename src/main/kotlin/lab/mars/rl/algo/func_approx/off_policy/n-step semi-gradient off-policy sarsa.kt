@@ -24,7 +24,7 @@ fun FunctionApprox.`n-step semi-gradient off-policy sarsa episodic`(n: Int, q: A
         var n = n
         var T = Int.MAX_VALUE
         var t = 0
-        var s = started.rand()
+        var s = started()
         var a = b(s)
         _R.clear();_R.append(0.0)
         _S.clear();_S.append(s)
@@ -71,7 +71,7 @@ fun FunctionApprox.`n-step semi-gradient off-policy sarsa continuing`(n: Int, q:
     val _A = newBuf<Action<State>>(min(n, MAX_N))
 
     var t = 0
-    val s = started.rand()
+    val s = started()
     var a = b(s)
     _R.clear();_R.append(0.0)
     _S.clear();_S.append(s)

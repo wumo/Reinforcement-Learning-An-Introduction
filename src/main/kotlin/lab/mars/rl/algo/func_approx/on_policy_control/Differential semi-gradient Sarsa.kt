@@ -6,7 +6,7 @@ import lab.mars.rl.util.matrix.times
 
 fun FunctionApprox.`Differential semi-gradient Sarsa`(qFunc: ActionValueApproxFunction, β: Double) {
     var average_reward = 0.0
-    var s = started.rand()
+    var s = started()
     π.`ε-greedy update`(s, qFunc)
     var a = π(s)
     while (true) {

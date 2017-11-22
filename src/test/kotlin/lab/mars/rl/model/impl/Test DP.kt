@@ -85,7 +85,7 @@ class `Test DP` {
             val prob = DynaMaze.make()
             val algo = PolicyIteration(prob)
             val (PI, _, _) = algo.v_iteration()
-            var s = prob.started[0]
+            var s = prob.started()
             var count = 0
             print(s)
             while (s.isNotTerminal()) {
@@ -105,7 +105,7 @@ class `Test DP` {
             val prob = RodManeuvering.make()
             val algo = PolicyIteration(prob)
             val (PI, _, _) = algo.v_iteration()
-            var s = prob.started[0]
+            var s = prob.started()
             var count = 0
             print(s)
             while (s.isNotTerminal()) {

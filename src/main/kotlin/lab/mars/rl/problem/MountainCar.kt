@@ -2,10 +2,12 @@ package lab.mars.rl.problem
 
 import lab.mars.rl.model.*
 import lab.mars.rl.model.impl.mdp.DefaultAction
+import lab.mars.rl.model.impl.mdp.DefaultMDP
 import lab.mars.rl.problem.MountainCar.POSITION_MAX
 import lab.mars.rl.problem.MountainCar.POSITION_MIN
 import lab.mars.rl.problem.MountainCar.VELOCITY_MAX
 import lab.mars.rl.problem.MountainCar.VELOCITY_MIN
+import lab.mars.rl.util.Rand
 import org.apache.commons.math3.util.FastMath.cos
 
 class CarState(val position: Double, val velocity: Double) : State {
@@ -28,6 +30,10 @@ object MountainCar {
     val VELOCITY_MIN = -0.07
     val VELOCITY_MAX = 0.07
     fun make(): MDP {
-        TODO()
+        val mdp = DefaultMDP(1.0) {
+            CarState(Rand().nextDouble(-0.6, -0.4), 0.0)
+        }
+
+        return mdp
     }
 }

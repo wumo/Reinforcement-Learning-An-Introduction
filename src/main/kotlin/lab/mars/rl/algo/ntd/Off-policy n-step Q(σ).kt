@@ -29,7 +29,7 @@ fun NStepTemporalDifference.`off-policy n-step Q(σ)`(alpha: (IndexedState, Inde
         var n = n
         var T = Int.MAX_VALUE
         var t = 0
-        var s = started.rand()
+        var s = started()
         var a =b(s)
 
         _Q.clear(); _Q.append(0.0)

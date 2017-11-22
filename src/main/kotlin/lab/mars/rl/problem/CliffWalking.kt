@@ -23,7 +23,7 @@ object CliffWalking {
         return mdp.apply {
             val goal = states[11, 0]
             goal.actions = emptyNSet()
-            started = states(0, 0)
+            started = {states(0, 0).rand()}
             val startedState = states[0, 0]
 
             //cliff

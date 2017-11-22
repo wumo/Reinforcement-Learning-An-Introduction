@@ -42,8 +42,8 @@ object DynaMaze {
 
     fun make(): IndexedMDP {
         val mdp = CNSetMDP(gamma = 0.95,
-                                                      state_dim = 9 x 6,
-                                                      action_dim = 4)
+                           state_dim = 9 x 6,
+                           action_dim = 4)
         return mdp.apply {
             for (s in states)
                 for (action in s.actions) {
@@ -61,7 +61,7 @@ object DynaMaze {
             states[8, 5].actions = emptyNSet()
             for (o in obstacle)
                 states[o].actions = emptyNSet()
-            started = states(0, 3)
+            started = { states(0, 3).rand() }
         }
 
     }

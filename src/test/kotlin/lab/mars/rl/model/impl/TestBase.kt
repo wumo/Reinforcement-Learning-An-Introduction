@@ -2,9 +2,7 @@ package lab.mars.rl.model.impl
 
 import ch.qos.logback.classic.Level
 import ch.qos.logback.classic.LoggerContext
-import lab.mars.rl.model.StateValueFunction
-import lab.mars.rl.model.impl.mdp.IndexedMDP
-import lab.mars.rl.model.impl.mdp.IndexedPolicy
+import lab.mars.rl.model.impl.mdp.*
 import lab.mars.rl.util.math.argmax
 import org.slf4j.Logger
 import org.slf4j.LoggerFactory

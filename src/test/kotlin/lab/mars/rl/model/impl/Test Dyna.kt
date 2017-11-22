@@ -71,7 +71,7 @@ class `Dyna` {
                     GridWorldUI.render(V, s)
                 }
                 val (PI, _, _) = algo.optimal()
-                var s = prob.started[0]
+                var s = prob.started()
                 var count = 0
                 print(s)
                 while (s.isNotTerminal()) {
@@ -101,7 +101,7 @@ class `Dyna` {
                     GridWorldUI.render(V, s)
                 }
                 val (PI, _, _) = algo.optimal()
-                var s = prob.started[0]
+                var s = prob.started()
                 var count = 0
                 print(s)
                 while (s.isNotTerminal()) {
@@ -131,7 +131,7 @@ class `Dyna` {
                     GridWorldUI.render(V, s)
                 }
                 val (PI, _, _) = algo.optimal()
-                var s = prob.started[0]
+                var s = prob.started()
                 var count = 0
                 print(s)
                 while (s.isNotTerminal()) {
@@ -161,7 +161,7 @@ class `Dyna` {
                     GridWorldUI.render(V, s)
                 }
                 val (PI, _, _) = algo.optimal()
-                var s = prob.started[0]
+                var s = prob.started()
                 var count = 0
                 print(s)
                 while (s.isNotTerminal()) {
@@ -191,7 +191,7 @@ class `Dyna` {
                     GridWorldUI.render(V, s)
                 }
                 val (PI, _, _) = algo.optimal()
-                var s = prob.started[0]
+                var s = prob.started()
                 var count = 0
                 print(s)
                 while (s.isNotTerminal()) {
@@ -214,7 +214,7 @@ class `Dyna` {
             algo.episodes = 1000
             algo.n = 0
             val (PI, _, _) = algo.optimal()
-            var s = prob.started[0]
+            var s = prob.started()
             var count = 0
             print(s)
             while (s.isNotTerminal()) {
@@ -236,7 +236,7 @@ class `Dyna` {
             algo.α = 0.5
             algo.episodes = 1000
             val (PI, _, _) = algo.optimal()
-            var s = prob.started[0]
+            var s = prob.started()
             var sum = 0.0
             print(s)
             while (s.isNotTerminal()) {
@@ -258,7 +258,7 @@ class `Dyna` {
             algo.α = 0.5
             algo.episodes = 1000
             val (PI, _, _) = algo.optimal()
-            var s = prob.started[0]
+            var s = prob.started()
             var sum = 0.0
             print(s)
             while (s.isNotTerminal()) {
@@ -287,7 +287,7 @@ class `Dyna` {
                     RodManeuveringUI.render(V, s)
                 }
                 val (PI, _, _) = algo.optimal()
-                var s = prob.started[0]
+                var s = prob.started()
                 var count = 0
                 print(s)
                 while (s.isNotTerminal()) {
@@ -317,7 +317,7 @@ class `Dyna` {
                     RodManeuveringUI.render(V, s)
                 }
                 val (PI, _, _) = algo.optimal()
-                var s = prob.started[0]
+                var s = prob.started()
                 var count = 0
                 print(s)
                 while (s.isNotTerminal()) {

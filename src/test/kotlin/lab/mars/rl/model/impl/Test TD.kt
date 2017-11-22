@@ -129,7 +129,7 @@ class `TD` {
             algo.α = 0.5
             algo.episodes = 1000
             val (PI, _, _) = algo.sarsa()
-            var s = prob.started[0]
+            var s = prob.started()
             var sum = 0.0
             print(s)
             while (s.isNotTerminal()) {
@@ -149,7 +149,7 @@ class `TD` {
             algo.α = 0.5
             algo.episodes = 1000
             val (PI, _, _) = algo.sarsa()
-            var s = prob.started[0]
+            var s = prob.started()
             var sum = 0.0
             print(s)
             while (s.isNotTerminal()) {
@@ -169,7 +169,7 @@ class `TD` {
             algo.α = 0.5
             algo.episodes = 1000
             val (PI, _, _) = algo.QLearning()
-            var s = prob.started[0]
+            var s = prob.started()
             var sum = 0.0
             print(s)
             while (s.isNotTerminal()) {
@@ -189,7 +189,7 @@ class `TD` {
             algo.α = 0.5
             algo.episodes = 1000
             val (PI, _, _) = algo.QLearning()
-            var s = prob.started[0]
+            var s = prob.started()
             var sum = 0.0
             print(s)
             while (s.isNotTerminal()) {
@@ -210,7 +210,7 @@ class `TD` {
             val algo = TemporalDifference(prob)
             algo.α = 0.5
             val (PI, _, _) = algo.sarsa()
-            var s = prob.started[0]
+            var s = prob.started()
             var sum = 0.0
             print(s)
             while (s.isNotTerminal()) {
@@ -229,7 +229,7 @@ class `TD` {
             val algo = TemporalDifference(prob)
             algo.α = 0.5
             val (PI, _, _) = algo.QLearning()
-            var s = prob.started[0]
+            var s = prob.started()
             var sum = 0.0
             print(s)
             while (s.isNotTerminal()) {
@@ -248,7 +248,7 @@ class `TD` {
             val algo = TemporalDifference(prob)
             algo.α = 0.5
             val (PI, _, _) = algo.expectedSarsa()
-            var s = prob.started[0]
+            var s = prob.started()
             var sum = 0.0
             print(s)
             while (s.isNotTerminal()) {
@@ -267,7 +267,7 @@ class `TD` {
             val algo = TemporalDifference(prob)
             algo.α = 0.5
             val (PI, _, _) = algo.DoubleQLearning()
-            var s = prob.started[0]
+            var s = prob.started()
             var sum = 0.0
             print(s)
             while (s.isNotTerminal()) {
@@ -288,7 +288,7 @@ class `TD` {
             val algo = TemporalDifference(prob)
             algo.episodes = 10
             val (PI, _, _) = algo.QLearning()
-            val A = prob.started[0]
+            val A = prob.started()
             println(PI(A))
         }
 
@@ -298,7 +298,7 @@ class `TD` {
             val algo = TemporalDifference(prob)
             algo.episodes = 10
             val (PI, _, _) = algo.DoubleQLearning()
-            val A = prob.started[0]
+            val A = prob.started()
             println(PI(A))
         }
 

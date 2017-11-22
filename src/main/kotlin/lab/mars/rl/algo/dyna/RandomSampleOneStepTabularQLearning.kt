@@ -25,7 +25,7 @@ class RandomSampleOneStepTabularQLearning(val indexedMdp: IndexedMDP) {
         val Q = indexedMdp.QFunc { 0.0 }
         for (episode in 1..episodes) {
             log.debug { "$episode/$episodes" }
-            val s = started.rand()
+            val s = started()
             val a = s.actions.rand()//Exploring Starts
             val (s_next, reward) = a.sample()
             Q[s, a] += _alpha(s, a) * (reward + γ * max(s_next.actions, 0.0) { Q[s_next, it] } - Q[s, a])

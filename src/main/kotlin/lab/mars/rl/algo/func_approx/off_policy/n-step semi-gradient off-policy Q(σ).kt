@@ -26,7 +26,7 @@ fun FunctionApprox.`off-policy n-step Q(σ) episodic`(n: Int, q: ActionValueAppr
         var n = n
         var T = Int.MAX_VALUE
         var t = 0
-        var s = started.rand()
+        var s = started()
         var a = b(s)
 
         _Q.clear(); _Q.append(0.0)
@@ -97,7 +97,7 @@ fun FunctionApprox.`off-policy n-step Q(σ) continuing`(n: Int, q: ActionValueAp
     val _A = newBuf<Action<State>>(min(n, MAX_N))
 
     var t = 0
-    var s = started.rand()
+    var s = started()
     var a = b(s)
 
     _Q.clear(); _Q.append(0.0)

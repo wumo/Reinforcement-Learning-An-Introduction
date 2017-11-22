@@ -10,7 +10,7 @@ import lab.mars.rl.util.matrix.times
 fun FunctionApprox.`Episodic semi-gradient Sarsa control`(qFunc: ActionValueApproxFunction) {
     for (episode in 1..episodes) {
         log.debug { "$episode/$episodes" }
-        var s = started.rand()
+        var s = started()
         π.`ε-greedy update`(s, qFunc)
         var a = π(s)
         while (true) {

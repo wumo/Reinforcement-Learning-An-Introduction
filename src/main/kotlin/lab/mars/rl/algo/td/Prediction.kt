@@ -9,7 +9,7 @@ fun TemporalDifference.prediction(): StateValueFunction {
     val V = indexedMdp.VFunc { 0.0 }
     for (episode in 1..episodes) {
         log.debug { "$episode/$episodes" }
-        var s = started.rand()
+        var s = started()
         while (s.isNotTerminal()) {
             val a = initial_policy(s)
             val (s_next, reward) = a.sample()

@@ -2,8 +2,9 @@ package lab.mars.rl.algo.dyna
 
 import lab.mars.rl.algo.V_from_Q
 import lab.mars.rl.algo.`ε-greedy`
-import lab.mars.rl.model.*
 import lab.mars.rl.model.impl.mdp.*
+import lab.mars.rl.model.isNotTerminal
+import lab.mars.rl.model.null_state
 import lab.mars.rl.util.buf.DefaultBuf
 import lab.mars.rl.util.log.debug
 import lab.mars.rl.util.math.max
@@ -40,7 +41,7 @@ class `Dyna-Q+`(val indexedMdp: IndexedMDP) {
         var time = 0
         for (episode in 1..episodes) {
             log.debug { "$episode/$episodes" }
-            var s = started.rand()
+            var s = started()
             while (s.isNotTerminal()) {
                 V_from_Q(states, result)
                 stepListener(V, s)

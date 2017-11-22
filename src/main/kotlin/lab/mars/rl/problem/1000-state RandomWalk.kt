@@ -20,7 +20,7 @@ object `1000-state RandomWalk` {
             val last = num_states + 1
             states[0].actions = emptyNSet()
             states[last].actions = emptyNSet()
-            started = states(num_states / 2)
+            started = { states(num_states / 2).rand() }
             for (a in 1 until last)
                 states[a].actions[0].sample = {
                     val move = Rand().nextInt(1, step_range + 1) *

@@ -12,7 +12,7 @@ fun MonteCarlo.prediction(): StateValueFunction {
 
     for (episode in 1..episodes) {
         log.debug { "$episode/$episodes" }
-        var s = started.rand()
+        var s = started()
         var accumulate = 0.0
         while (s.isNotTerminal()) {
             val a = π(s)

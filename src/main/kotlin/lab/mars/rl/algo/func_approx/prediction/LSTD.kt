@@ -14,7 +14,7 @@ fun FunctionApprox.LSTD(vFunc: LinearFunc, ε: Double) {
     val b = Matrix.column(d)
     for (episode in 1..episodes) {
         log.debug { "$episode/$episodes" }
-        var s = started.rand()
+        var s = started()
         var x = xFeature(s)
         while (s.isNotTerminal()) {
             val a = π(s)

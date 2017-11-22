@@ -30,12 +30,12 @@ object WindyGridworld {
     val desc_king_move = arrayOf(" ↑", " ↓", "←", "→", "↖", "↗", "↘", "↙")
     fun make(KingMove: Boolean = false): IndexedMDP {
         val mdp = CNSetMDP(gamma = 1.0,
-                                                      state_dim = world_width x world_height,
-                                                      action_dim = if (KingMove) 8 else 4)
+                           state_dim = world_width x world_height,
+                           action_dim = if (KingMove) 8 else 4)
         return mdp.apply {
             val goal = states[7, 3]
             goal.actions = emptyNSet()
-            started = states(0, 3)
+            started = { states(0, 3).rand() }
             for (s in states) {
                 if (s.isTerminal()) continue
                 for (a in s.actions) {

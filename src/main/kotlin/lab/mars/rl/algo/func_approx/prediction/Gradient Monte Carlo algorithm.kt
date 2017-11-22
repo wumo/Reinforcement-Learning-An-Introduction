@@ -3,8 +3,6 @@ package lab.mars.rl.algo.func_approx.prediction
 import lab.mars.rl.algo.func_approx.FunctionApprox
 import lab.mars.rl.algo.func_approx.FunctionApprox.Companion.log
 import lab.mars.rl.model.*
-import lab.mars.rl.model.State
-import lab.mars.rl.model.isNotTerminal
 import lab.mars.rl.util.buf.newBuf
 import lab.mars.rl.util.log.debug
 import lab.mars.rl.util.matrix.times
@@ -16,7 +14,7 @@ fun FunctionApprox.`Gradient Monte Carlo algorithm`(v: ValueFunction) {
     for (episode in 1..episodes) {
         log.debug { "$episode/$episodes" }
         _S.clear(); _R.clear()
-        var s = started.rand()
+        var s = started()
         _S.append(s); _R.append(0.0)
         var T = 0
         var accum = 0.0

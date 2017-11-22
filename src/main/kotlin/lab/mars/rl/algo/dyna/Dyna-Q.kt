@@ -2,8 +2,9 @@ package lab.mars.rl.algo.dyna
 
 import lab.mars.rl.algo.V_from_Q
 import lab.mars.rl.algo.`ε-greedy (tie broken randomly)`
-import lab.mars.rl.model.*
+import lab.mars.rl.model.emptyPossibleSet
 import lab.mars.rl.model.impl.mdp.*
+import lab.mars.rl.model.isNotTerminal
 import lab.mars.rl.util.buf.DefaultBuf
 import lab.mars.rl.util.collection.cnsetOf
 import lab.mars.rl.util.log.debug
@@ -38,7 +39,7 @@ class DynaQ(val indexedMdp: IndexedMDP) {
         for (episode in 1..episodes) {
             log.debug { "$episode/$episodes" }
             var step = 0
-            var s = started.rand()
+            var s = started()
             while (s.isNotTerminal()) {
                 V_from_Q(states, result)
                 stepListener(V, s)

@@ -4,7 +4,8 @@ package lab.mars.rl.model
 
 import lab.mars.rl.model.impl.mdp.*
 import lab.mars.rl.util.buf.DefaultIntBuf
-import lab.mars.rl.util.collection.*
+import lab.mars.rl.util.collection.Gettable
+import lab.mars.rl.util.collection.emptyNSet
 
 /**
  * <p>
@@ -16,7 +17,7 @@ import lab.mars.rl.util.collection.*
 
 interface MDP {
     val γ: Double
-    val started: RandomGettable<State>
+    val started: ()->State
 }
 
 interface Policy {

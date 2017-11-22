@@ -14,7 +14,7 @@ fun FunctionApprox.`True Online TD(λ) prediction`(vFunc: LinearFunc, λ: Double
     var Vold = 0.0
     for (episode in 1..episodes) {
         FunctionApprox.log.debug { "$episode/$episodes" }
-        var s = started.rand()
+        var s = started()
         var x = xFeature(s)
         while (s.isNotTerminal()) {
             val a = π(s)

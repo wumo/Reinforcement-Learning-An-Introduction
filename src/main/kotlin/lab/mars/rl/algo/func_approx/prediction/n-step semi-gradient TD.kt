@@ -6,8 +6,6 @@ import lab.mars.rl.algo.func_approx.FunctionApprox
 import lab.mars.rl.algo.func_approx.FunctionApprox.Companion.log
 import lab.mars.rl.algo.ntd.MAX_N
 import lab.mars.rl.model.*
-import lab.mars.rl.model.State
-import lab.mars.rl.model.isTerminal
 import lab.mars.rl.util.buf.newBuf
 import lab.mars.rl.util.log.debug
 import lab.mars.rl.util.math.Σ
@@ -23,7 +21,7 @@ fun FunctionApprox.`n-step semi-gradient TD`(n: Int, v: ValueFunction) {
         var n = n
         var T = Int.MAX_VALUE
         var t = 0
-        var s = started.rand()
+        var s = started()
         var a = π(s)
         _R.clear();_R.append(0.0)
         _S.clear();_S.append(s)

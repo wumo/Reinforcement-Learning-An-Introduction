@@ -142,7 +142,7 @@ class `n-step TD` {
             algo.α = 0.1
             algo.episodes = 1000000
             val (PI, _, _) = algo.sarsa(average_alpha(prob))
-            var s = prob.started[0]
+            var s = prob.started()
             var sum = 0.0
             print(s)
             while (s.isNotTerminal()) {
@@ -163,7 +163,7 @@ class `n-step TD` {
             val algo = NStepTemporalDifference(prob, 10)
             algo.α = 0.5
             val (PI, _, _) = algo.`off-policy sarsa`()
-            var s = prob.started[0]
+            var s = prob.started()
             var sum = 0.0
             print(s)
             while (s.isNotTerminal()) {

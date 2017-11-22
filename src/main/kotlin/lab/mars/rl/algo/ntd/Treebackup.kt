@@ -26,7 +26,7 @@ fun NStepTemporalDifference.treebackup(alpha: (IndexedState, IndexedAction) -> D
         log.debug { "$episode/$episodes" }
         var T = Int.MAX_VALUE
         var t = 0
-        var s = started.rand()
+        var s = started()
         var a = π(s)
 
         _Q.clear(); _Q.append(0.0)

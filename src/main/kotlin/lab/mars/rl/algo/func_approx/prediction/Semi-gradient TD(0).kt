@@ -10,7 +10,7 @@ import lab.mars.rl.util.matrix.times
 fun FunctionApprox.`Semi-gradient TD(0)`(v: ValueFunction) {
     for (episode in 1..episodes) {
         log.debug { "$episode/$episodes" }
-        var s = started.rand()
+        var s = started()
         while (s.isNotTerminal()) {
             val a = π(s)
             val (s_next, reward) = a.sample()

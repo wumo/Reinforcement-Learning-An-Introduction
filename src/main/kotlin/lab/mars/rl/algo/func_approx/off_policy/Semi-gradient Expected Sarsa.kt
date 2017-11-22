@@ -11,7 +11,7 @@ import lab.mars.rl.util.matrix.times
 fun FunctionApprox.`Semi-gradient Expected Sarsa`(q: ActionValueApproxFunction) {
     for (episode in 1..episodes) {
         log.debug { "$episode/$episodes" }
-        var s = started.rand()
+        var s = started()
         while (s.isNotTerminal()) {
             π.`ε-greedy update`(s, q)
             val a = π(s)
@@ -26,7 +26,7 @@ fun FunctionApprox.`Semi-gradient Expected Sarsa`(q: ActionValueApproxFunction) 
 
 fun FunctionApprox.`Semi-gradient Expected Sarsa`(q: ActionValueApproxFunction, β: Double) {
     var average_reward = 0.0
-    var s = started.rand()
+    var s = started()
     while (true) {
         π.`ε-greedy update`(s, q)
         val a = π(s)

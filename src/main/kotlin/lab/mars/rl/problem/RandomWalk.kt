@@ -17,7 +17,7 @@ object RandomWalk {
         mdp.apply {
             states[0].actions = emptyNSet()
             states[6].actions = emptyNSet()
-            started = states(3)
+            started = {states(3).rand()}
             for (a in 1..5) {
                 states[a].actions.apply {
                     this[0].possibles = cnsetOf(IndexedPossible(states[a - 1], 0.0, 0.5),

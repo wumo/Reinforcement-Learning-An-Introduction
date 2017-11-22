@@ -20,7 +20,7 @@ fun NStepTemporalDifference.prediction(): StateValueFunction {
         log.debug { "$episode/$episodes" }
         var T = Int.MAX_VALUE
         var t = 0
-        var s = started.rand()
+        var s = started()
         _R.clear();_R.append(0.0)
         _S.clear();_S.append(s)
 

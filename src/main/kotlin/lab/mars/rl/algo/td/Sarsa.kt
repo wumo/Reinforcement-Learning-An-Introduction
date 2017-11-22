@@ -14,7 +14,7 @@ fun TemporalDifference.sarsa(_alpha: (IndexedState, IndexedAction) -> Double = {
 
     for (episode in 1..episodes) {
         log.debug { "$episode/$episodes" }
-        var s = started.rand()
+        var s = started()
         `ε-greedy`(s, Q, π, ε)
         var a = π(s)
         while (true) {
