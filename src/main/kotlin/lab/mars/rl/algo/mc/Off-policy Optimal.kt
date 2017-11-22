@@ -13,7 +13,7 @@ import lab.mars.rl.util.tuples.tuple3
 fun MonteCarlo.`Off-policy MC Optimal`(): OptimalSolution {
     val Q = indexedMdp.QFunc { 0.0 }
     val C = indexedMdp.QFunc { 0.0 }
-    val b = indexedMdp.QFunc { 1.0 }
+    val b = IndexedPolicy(indexedMdp.QFunc { 1.0 })
     for (s in states) {
         if (s.isTerminal()) continue
         val prob = 1.0 / s.actions.size
@@ -34,7 +34,7 @@ fun MonteCarlo.`Off-policy MC Optimal`(): OptimalSolution {
         A.clear()
         var T = 0
         while (s.isNotTerminal()) {
-            val a = s.actions.rand(b(s))
+            val a = b(s)
             A.append(a)
             val (s_next, reward) = a.sample()
             S.append(s_next)
@@ -51,14 +51,14 @@ fun MonteCarlo.`Off-policy MC Optimal`(): OptimalSolution {
             C[s_t, a_t] += W
             Q[s_t, a_t] += W / C[s_t, a_t] * (G - Q[s_t, a_t])
 
-            val `a*` = argmax(s_t.actions) { Q[s_t, it] }
+            val a_opt = argmax(s_t.actions) { Q[s_t, it] }
             for (a in s_t.actions) {
                 π[s_t, a] = when {
-                    a === `a*` -> 1.0
+                    a === a_opt -> 1.0
                     else -> 0.0
                 }
             }
-            if (a_t !== `a*`) break
+            if (a_t !== a_opt) break
             W = W * 1 / b[s_t, a_t]
         }
     }

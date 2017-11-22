@@ -14,5 +14,5 @@ class IndexedState(val index: IntBuf) : Index(), State {
 
     inline override operator fun get(idx: Int) = index[idx]
 
-    override var actions: IndexedCollection<IndexedAction> = emptyNSet as ActionSet
+    override var actions: IndexedCollection<IndexedAction> = emptyNSet()
 }

@@ -4,7 +4,6 @@ package lab.mars.rl.model
 
 import lab.mars.rl.model.impl.mdp.*
 import lab.mars.rl.util.buf.DefaultIntBuf
-import lab.mars.rl.util.collection.Gettable
 import lab.mars.rl.util.collection.emptyNSet
 
 /**
@@ -17,17 +16,24 @@ import lab.mars.rl.util.collection.emptyNSet
 
 interface MDP {
     val γ: Double
-    val started: ()->State
+    val started: () -> State
 }
 
 interface Policy {
+    /**sample action when in state [s]*/
     operator fun invoke(s: State): Action<State>
+
+    /**probability of taking action [a] when in state [s]*/
     operator fun get(s: State, a: Action<State>): Double
-    fun `ε-greedy update`(s: State, evaluate: Gettable<Action<State>, Double>, ε: Double = 0.1)
+}
+
+interface RandomIterable<out E> : Iterable<E> {
+    fun rand(): E
+    val size: Int
 }
 
 interface State {
-    val actions: Iterable<Action<State>>
+    val actions: RandomIterable<Action<State>>
 }
 
 inline fun State.isTerminal() = !isNotTerminal()
@@ -47,4 +53,4 @@ val null_index = DefaultIntBuf.of(-1)
 val null_state = IndexedState(null_index)
 val null_action = IndexedAction(null_index)
 val null_possible = IndexedPossible(null_state, 0.0, 0.0)
-val emptyPossibleSet = emptyNSet as PossibleSet
+val emptyPossibleSet: PossibleSet = emptyNSet()

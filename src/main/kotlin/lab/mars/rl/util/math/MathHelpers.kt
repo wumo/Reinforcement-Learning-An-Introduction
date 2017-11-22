@@ -2,18 +2,19 @@
 
 package lab.mars.rl.util.math
 
+import lab.mars.rl.util.tuples.tuple2
 import java.util.concurrent.ThreadLocalRandom
 
 inline fun Rand() = ThreadLocalRandom.current()!!
 
-inline fun repeat(times: Int, condition: (Int) -> Boolean, action: (Int) -> Unit) {
+fun repeat(times: Int, condition: (Int) -> Boolean, action: (Int) -> Unit) {
     for (index in 0 until times) {
         if (!condition(index)) break
         action(index)
     }
 }
 
-inline fun <T> Π(set: Iterable<T>, evaluate: T.(T) -> Double): Double {
+fun <T> Π(set: Iterable<T>, evaluate: T.(T) -> Double): Double {
     var multi = 1.0
     set.forEach {
         multi *= it.evaluate(it)
@@ -21,7 +22,7 @@ inline fun <T> Π(set: Iterable<T>, evaluate: T.(T) -> Double): Double {
     return multi
 }
 
-inline fun <T> Σ(set: Iterable<T>, evaluate: T.(T) -> Double): Double {
+fun <T> Σ(set: Iterable<T>, evaluate: T.(T) -> Double): Double {
     var sum = 0.0
     set.forEach {
         sum += it.evaluate(it)
@@ -29,7 +30,7 @@ inline fun <T> Σ(set: Iterable<T>, evaluate: T.(T) -> Double): Double {
     return sum
 }
 
-inline fun <T> max(set: Iterable<T>, default: Double = Double.NaN, evaluate: T.(T) -> Double): Double {
+fun <T> max(set: Iterable<T>, default: Double = Double.NaN, evaluate: T.(T) -> Double): Double {
     val iterator = set.iterator()
     if (!iterator.hasNext()) return default
     var tmp = iterator.next()
@@ -43,7 +44,25 @@ inline fun <T> max(set: Iterable<T>, default: Double = Double.NaN, evaluate: T.(
     return max
 }
 
-inline fun <T> argmax(set: Iterable<T>, evaluate: T.(T) -> Double): T {
+fun <T> max_count(set: Iterable<T>, default: Double = Double.NaN, evaluate: T.(T) -> Double): tuple2<Double, Int> {
+    val iterator = set.iterator()
+    if (!iterator.hasNext()) return tuple2(default, 0)
+    var tmp = iterator.next()
+    var max = evaluate(tmp, tmp)
+    var count = 1
+    while (iterator.hasNext()) {
+        tmp = iterator.next()
+        val p = evaluate(tmp, tmp)
+        if (p > max) {
+            max = p
+            count = 1
+        } else if (p == max)
+            count++
+    }
+    return tuple2(max, count)
+}
+
+fun <T> argmax(set: Iterable<T>, evaluate: T.(T) -> Double): T {
     val iterator = set.iterator()
     var max_a: T = iterator.next()
     var max = evaluate(max_a, max_a)
@@ -58,7 +77,7 @@ inline fun <T> argmax(set: Iterable<T>, evaluate: T.(T) -> Double): T {
     return max_a
 }
 
-inline fun <T> argmax_tie_random(set: Iterable<T>, evaluate: T.(T) -> Double): T {
+fun <T> argmax_tie_random(set: Iterable<T>, evaluate: T.(T) -> Double): T {
     val iterator = set.iterator()
     var max_a: T = iterator.next()
     var max = evaluate(max_a, max_a)

@@ -18,7 +18,6 @@ fun FunctionApprox.`Differential semi-gradient n-step Sarsa`(qFunc: ActionValueA
 
     var t = 0
     val s = started()
-    π.`ε-greedy update`(s, qFunc)
     var a = π(s)
     _R.clear();_R.append(0.0)
     _S.clear();_S.append(s)
@@ -32,7 +31,6 @@ fun FunctionApprox.`Differential semi-gradient n-step Sarsa`(qFunc: ActionValueA
         val (s_next, reward) = a.sample()
         _R.append(reward)
         _S.append(s_next)
-        π.`ε-greedy update`(s_next, qFunc)
         a = π(s)
         _A.append(a)
         val τ = t - n + 1

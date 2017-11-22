@@ -24,7 +24,6 @@ fun FunctionApprox.`Episodic semi-gradient n-step Sarsa control`(qFunc: ActionVa
         var T = Int.MAX_VALUE
         var t = 0
         var s = started()
-        π.`ε-greedy update`(s, qFunc)
         var a = π(s)
         _R.clear();_R.append(0.0)
         _S.clear();_S.append(s)
@@ -45,7 +44,6 @@ fun FunctionApprox.`Episodic semi-gradient n-step Sarsa control`(qFunc: ActionVa
                     val _t = t - n + 1
                     if (_t < 0) n = T //n is too large, normalize it
                 } else {
-                    π.`ε-greedy update`(s, qFunc)
                     a = π(s)
                     _A.append(a)
                 }

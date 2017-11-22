@@ -78,7 +78,6 @@ fun FunctionApprox.`off-policy n-step Q(σ) episodic`(n: Int, q: ActionValueAppr
                     _ρ *= 1 - _σ[k] + _σ[k] * ρ[k]
                 }
                 q.w += α * _ρ * (G - q(_S[0], _A[0])) * q.`▽`(_S[0], _A[0])
-                π.`ε-greedy update`(_S[0], q)
             }
             t++
         } while (τ < T - 1)
@@ -142,7 +141,6 @@ fun FunctionApprox.`off-policy n-step Q(σ) continuing`(n: Int, q: ActionValueAp
                 _ρ *= 1 - _σ[k] + _σ[k] * ρ[k]
             }
             q.w += α * _ρ * (G - q(_S[0], _A[0])) * q.`▽`(_S[0], _A[0])
-            π.`ε-greedy update`(_S[0], q)
             TODO("not tested")
         }
         t++

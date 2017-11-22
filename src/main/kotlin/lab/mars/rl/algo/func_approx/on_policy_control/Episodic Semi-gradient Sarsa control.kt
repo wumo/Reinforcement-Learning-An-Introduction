@@ -11,12 +11,10 @@ fun FunctionApprox.`Episodic semi-gradient Sarsa control`(qFunc: ActionValueAppr
     for (episode in 1..episodes) {
         log.debug { "$episode/$episodes" }
         var s = started()
-        π.`ε-greedy update`(s, qFunc)
         var a = π(s)
         while (true) {
             val (s_next, reward) = a.sample()
             if (s_next.isNotTerminal()) {
-                π.`ε-greedy update`(s_next, qFunc)
                 val a_next = π(s_next)
                 qFunc.w += α * (reward + γ * qFunc(s_next, a_next) - qFunc(s, a)) * qFunc.`▽`(s, a)
                 s = s_next

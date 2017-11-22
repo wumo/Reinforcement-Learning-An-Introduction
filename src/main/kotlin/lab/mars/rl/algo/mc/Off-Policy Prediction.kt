@@ -12,7 +12,7 @@ import lab.mars.rl.util.tuples.tuple3
 fun MonteCarlo.`Off-policy MC prediction`(): StateValueFunction {
     val Q = indexedMdp.QFunc { 0.0 }
     val C = indexedMdp.QFunc { 0.0 }
-    val b = indexedMdp.QFunc { 1.0 }
+    val b = IndexedPolicy(indexedMdp.QFunc { 1.0 })
     for (s in states) {
         if (s.isTerminal()) continue
         val prob = 1.0 / s.actions.size
@@ -32,7 +32,7 @@ fun MonteCarlo.`Off-policy MC prediction`(): StateValueFunction {
         A.clear()
         var T = 0
         while (s.isNotTerminal()) {
-            val a = s.actions.rand(b(s))
+            val a = b(s)
             A.append(a)
             val (s_next, reward) = a.sample()
             S.append(s_next)

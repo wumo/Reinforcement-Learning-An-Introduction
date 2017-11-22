@@ -1,17 +1,17 @@
 package lab.mars.rl.model.impl.mdp
 
-import lab.mars.rl.algo.`ε-greedy`
 import lab.mars.rl.model.*
-import lab.mars.rl.util.collection.*
+import lab.mars.rl.util.collection.IndexedCollection
+import lab.mars.rl.util.collection.emptyNSet
 
 class IndexedPolicy(val p: IndexedCollection<Double>, val ε: Double = 0.1) : Policy {
-    override fun invoke(s: State): IndexedAction = (s as IndexedState).actions.rand(p(s))
+    override fun invoke(s: State): IndexedAction {
+        val eval = p(s as IndexedState)
+        return s.actions.rand { eval[it] }
+    }
 
     override fun get(s: State, a: Action<State>)
             = p[s as IndexedState, a as IndexedAction]
-
-    override fun `ε-greedy update`(s: State, evaluate: Gettable<Action<State>, Double>, ε: Double)
-            = `ε-greedy`(s as IndexedState, evaluate, this, ε)
 
     operator fun set(s: IndexedState, a: IndexedAction, v: Double) {
         p[s, a] = v

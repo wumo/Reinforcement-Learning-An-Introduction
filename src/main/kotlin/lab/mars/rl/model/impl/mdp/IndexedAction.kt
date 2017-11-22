@@ -14,7 +14,7 @@ class IndexedAction(val index: IntBuf) : Index(), Action<IndexedState> {
 
     inline override operator fun get(idx: Int) = index[idx]
 
-    var possibles: PossibleSet = emptyNSet as PossibleSet
+    var possibles: PossibleSet = emptyNSet ()
 
     override var sample = outer@ {
         if (possibles.isEmpty()) throw NoSuchElementException()

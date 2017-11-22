@@ -39,44 +39,44 @@ fun average_alpha(indexedMdp: IndexedMDP): (IndexedState, IndexedAction) -> Doub
 }
 
 fun `ε-greedy`(s: IndexedState, Q: ActionValueFunction, policy: IndexedPolicy, ε: Double) {
-    val `a*` = argmax(s.actions) { Q[s, it] }
+    val a_opt = argmax(s.actions) { Q[s, it] }
     val size = s.actions.size
     for (a in s.actions) {
         policy[s, a] = when {
-            a === `a*` -> 1 - ε + ε / size
+            a === a_opt -> 1 - ε + ε / size
             else -> ε / size
         }
     }
 }
 
 fun `ε-greedy`(s: IndexedState, evaluate: Gettable<Action<State>, Double>, q: IndexedPolicy, ε: Double) {
-    val `a*` = argmax(s.actions) { evaluate[it] }
+    val a_opt = argmax(s.actions) { evaluate[it] }
     val size = s.actions.size
     for (a in s.actions) {
         q[s, a] = when {
-            a === `a*` -> 1 - ε + ε / size
+            a === a_opt -> 1 - ε + ε / size
             else -> ε / size
         }
     }
 }
 
 fun `ε-greedy`(s: IndexedState, Q: ActionValueApproxFunction, policy: IndexedPolicy, ε: Double) {
-    val `a*` = argmax(s.actions) { Q(s, it) }
+    val a_opt = argmax(s.actions) { Q(s, it) }
     val size = s.actions.size
     for (a in s.actions) {
         policy[s, a] = when {
-            a === `a*` -> 1 - ε + ε / size
+            a === a_opt -> 1 - ε + ε / size
             else -> ε / size
         }
     }
 }
 
 fun `ε-greedy (tie broken randomly)`(s: IndexedState, Q: ActionValueFunction, policy: IndexedPolicy, ε: Double) {
-    val `a*` = argmax_tie_random(s.actions) { Q[s, it] }
+    val a_opt = argmax_tie_random(s.actions) { Q[s, it] }
     val size = s.actions.size
     for (a in s.actions) {
         policy[s, a] = when {
-            a === `a*` -> 1 - ε + ε / size
+            a === a_opt -> 1 - ε + ε / size
             else -> ε / size
         }
     }

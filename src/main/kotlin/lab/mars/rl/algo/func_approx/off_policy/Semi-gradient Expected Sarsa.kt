@@ -13,7 +13,6 @@ fun FunctionApprox.`Semi-gradient Expected Sarsa`(q: ActionValueApproxFunction) 
         log.debug { "$episode/$episodes" }
         var s = started()
         while (s.isNotTerminal()) {
-            π.`ε-greedy update`(s, q)
             val a = π(s)
             val (s_next, reward) = a.sample()
             val δ = reward + γ * Σ(s_next.actions) { π[s_next, it] * q(s_next, it) } - q(s, a)
@@ -28,7 +27,6 @@ fun FunctionApprox.`Semi-gradient Expected Sarsa`(q: ActionValueApproxFunction, 
     var average_reward = 0.0
     var s = started()
     while (true) {
-        π.`ε-greedy update`(s, q)
         val a = π(s)
         val (s_next, reward) = a.sample()
         val δ = reward - average_reward + Σ(s_next.actions) { π[s_next, it] * q(s_next, it) } - q(s, a)

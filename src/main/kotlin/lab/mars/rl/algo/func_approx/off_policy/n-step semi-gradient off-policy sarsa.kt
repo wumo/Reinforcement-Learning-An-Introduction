@@ -55,7 +55,6 @@ fun FunctionApprox.`n-step semi-gradient off-policy sarsa episodic`(n: Int, q: A
                 var G = Σ(1..min(n, T - τ)) { pow(γ, it - 1) * _R[it] }
                 if (τ + n < T) G += pow(γ, n) * q(_S[n], _A[n])
                 q.w += α * ρ * (G - q(_S[0], _A[0])) * q.`▽`(_S[0], _A[0])
-                π.`ε-greedy update`(_S[0], q)
             }
             t++
         } while (τ < T - 1)
@@ -94,7 +93,6 @@ fun FunctionApprox.`n-step semi-gradient off-policy sarsa continuing`(n: Int, q:
             val δ = Σ(1..n) { _R[it] - average_reward } + q(_S[n], _A[n]) - q(_S[0], _A[0])
             average_reward += β * δ
             q.w += α * ρ * δ * q.`▽`(_S[0], _A[0])
-            π.`ε-greedy update`(_S[0], q)
         }
         t++
     }

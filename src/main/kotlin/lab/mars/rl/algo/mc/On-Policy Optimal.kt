@@ -47,7 +47,7 @@ fun MonteCarlo.`On-policy first-visit MC control`(): OptimalSolution {
             }
         }
         for (s in tmpS) {
-            val `a*` = argmax(s.actions) {
+            val a_opt = argmax(s.actions) {
                 val n = count[s, it]
                 if (n > 0)
                     Q[s, it] / n
@@ -57,7 +57,7 @@ fun MonteCarlo.`On-policy first-visit MC control`(): OptimalSolution {
             val size = s.actions.size
             for (a in s.actions) {
                 π[s, a] = when {
-                    a === `a*` -> 1 - ε + ε / size
+                    a === a_opt -> 1 - ε + ε / size
                     else -> ε / size
                 }
             }

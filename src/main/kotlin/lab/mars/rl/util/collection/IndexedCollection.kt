@@ -2,11 +2,12 @@
 
 package lab.mars.rl.util.collection
 
+import lab.mars.rl.model.RandomIterable
 import lab.mars.rl.util.buf.*
 import lab.mars.rl.util.math.Rand
 import lab.mars.rl.util.tuples.tuple2
 
-interface IndexedCollection<E : Any> : Iterable<E>, Gettable<Index, E>, RandomGettable<E> {
+interface IndexedCollection<E : Any> : RandomIterable<E>, Gettable<Index, E> {
     /**
      * 构造一个与此集合相同形状的[IndexedCollection]（维度、树深度都相同）
      */
@@ -56,12 +57,12 @@ interface IndexedCollection<E : Any> : Iterable<E>, Gettable<Index, E>, RandomGe
      * @throws IllegalArgumentException  如果提供的参数不是合法的概率分布
      * @throws NoSuchElementException 如果集合为空
      */
-    fun rand(prob: Gettable<E, Double>): E {
+    fun rand(prob: (E)->Double): E {
         if (isEmpty()) throw NoSuchElementException()
         val p = Rand().nextDouble()
         var acc = 0.0
         for (element in this) {
-            acc += prob[element]
+            acc += prob(element)
             if (p <= acc)
                 return element
         }
@@ -88,7 +89,7 @@ interface IndexedCollection<E : Any> : Iterable<E>, Gettable<Index, E>, RandomGe
         return true
     }
 
-    val size: Int
+    override val size: Int
         get() {
             var count = 0
             for (element in this)

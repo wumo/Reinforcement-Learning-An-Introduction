@@ -42,11 +42,11 @@ fun TemporalDifference.DoubleQLearning(_alpha: (IndexedState, IndexedAction) -> 
 }
 
 private fun TemporalDifference.`ε-greedy`(s: IndexedState, Q1: ActionValueFunction, Q2: ActionValueFunction, π: IndexedPolicy) {
-    val `a*` = argmax(s.actions) { Q1[s, it] + Q2[s, it] }
+    val a_opt = argmax(s.actions) { Q1[s, it] + Q2[s, it] }
     val size = s.actions.size
     for (a in s.actions) {
         π[s, a] = when {
-            a === `a*` -> 1 - ε + ε / size
+            a === a_opt -> 1 - ε + ε / size
             else -> ε / size
         }
     }
