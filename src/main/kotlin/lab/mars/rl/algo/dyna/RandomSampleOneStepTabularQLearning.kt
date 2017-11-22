@@ -2,7 +2,6 @@ package lab.mars.rl.algo.dyna
 
 import lab.mars.rl.algo.V_from_Q
 import lab.mars.rl.algo.`ε-greedy`
-import lab.mars.rl.model.OptimalSolution
 import lab.mars.rl.model.impl.mdp.*
 import lab.mars.rl.model.isTerminal
 import lab.mars.rl.util.log.debug

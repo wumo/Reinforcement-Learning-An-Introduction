@@ -5,7 +5,7 @@ import lab.mars.rl.model.*
 import lab.mars.rl.util.collection.*
 
 class IndexedPolicy(val p: IndexedCollection<Double>, val ε: Double = 0.1) : Policy {
-    override fun invoke(s: State): IndexedAction = s.actions.rand(p(s as IndexedState))
+    override fun invoke(s: State): IndexedAction = (s as IndexedState).actions.rand(p(s))
 
     override fun get(s: State, a: Action<State>)
             = p[s as IndexedState, a as IndexedAction]

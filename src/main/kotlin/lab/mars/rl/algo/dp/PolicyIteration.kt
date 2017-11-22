@@ -2,9 +2,7 @@ package lab.mars.rl.algo.dp
 
 import lab.mars.rl.algo.Q_from_V
 import lab.mars.rl.algo.V_from_Q
-import lab.mars.rl.model.OptimalSolution
-import lab.mars.rl.model.impl.mdp.IndexedMDP
-import lab.mars.rl.model.impl.mdp.IndexedPolicy
+import lab.mars.rl.model.impl.mdp.*
 import lab.mars.rl.util.log.debug
 import lab.mars.rl.util.math.argmax
 import lab.mars.rl.util.math.Σ

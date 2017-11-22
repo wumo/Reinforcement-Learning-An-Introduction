@@ -5,7 +5,6 @@ package lab.mars.rl.model
 import lab.mars.rl.model.impl.mdp.*
 import lab.mars.rl.util.buf.DefaultIntBuf
 import lab.mars.rl.util.collection.*
-import lab.mars.rl.util.tuples.tuple3
 
 /**
  * <p>
@@ -14,12 +13,6 @@ import lab.mars.rl.util.tuples.tuple3
  *
  * @author wumo
  */
-typealias StateSet = IndexedCollection<IndexedState>
-typealias ActionSet = IndexedCollection<IndexedAction>
-typealias PossibleSet = IndexedCollection<IndexedPossible>
-typealias StateValueFunction = IndexedCollection<Double>
-typealias ActionValueFunction = IndexedCollection<Double>
-typealias OptimalSolution = tuple3<IndexedPolicy, StateValueFunction, ActionValueFunction>
 
 interface MDP {
     val γ: Double
@@ -33,11 +26,12 @@ interface Policy {
 }
 
 interface State {
-    var actions: ActionSet
+    val actions: Iterable<Action<State>>
 }
 
-inline fun State.isTerminal() = actions.isEmpty()
-inline fun State.isNotTerminal() = !actions.isEmpty()
+inline fun State.isTerminal() = !isNotTerminal()
+
+inline fun State.isNotTerminal() = actions.any()
 
 interface Action<out S : State> {
     val sample: () -> Possible<S>

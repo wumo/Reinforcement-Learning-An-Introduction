@@ -2,10 +2,10 @@
 
 package lab.mars.rl.model.impl.mdp
 
-import lab.mars.rl.model.ActionSet
 import lab.mars.rl.model.State
 import lab.mars.rl.util.buf.Index
 import lab.mars.rl.util.buf.IntBuf
+import lab.mars.rl.util.collection.IndexedCollection
 import lab.mars.rl.util.collection.emptyNSet
 
 class IndexedState(val index: IntBuf) : Index(), State {
@@ -14,5 +14,5 @@ class IndexedState(val index: IntBuf) : Index(), State {
 
     inline override operator fun get(idx: Int) = index[idx]
 
-    override var actions: ActionSet = emptyNSet as ActionSet
+    override var actions: IndexedCollection<IndexedAction> = emptyNSet as ActionSet
 }

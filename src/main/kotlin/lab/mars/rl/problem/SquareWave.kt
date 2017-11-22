@@ -1,13 +1,13 @@
 package lab.mars.rl.problem
 
-import lab.mars.rl.model.ActionSet
+import lab.mars.rl.model.Action
 import lab.mars.rl.model.State
 import lab.mars.rl.util.collection.emptyNSet
 import lab.mars.rl.util.math.Rand
 import lab.mars.rl.util.tuples.tuple2
 
-class D1DState(val x: Double) : State {
-    override var actions: ActionSet = emptyNSet()
+class WaveState(val x: Double) : State {
+    override var actions: Iterable<Action<State>> = emptyNSet()
 }
 
 object SquareWave {
@@ -17,6 +17,6 @@ object SquareWave {
     fun sample(): tuple2<State, Double> {
         val x = Rand().nextDouble(domain.start, domain.endInclusive)
         val y = invoke(x)
-        return tuple2(D1DState(x), y)
+        return tuple2(WaveState(x), y)
     }
 }

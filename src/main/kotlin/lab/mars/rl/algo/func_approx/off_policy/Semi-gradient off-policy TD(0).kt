@@ -3,6 +3,8 @@ package lab.mars.rl.algo.func_approx.off_policy
 import lab.mars.rl.algo.func_approx.FunctionApprox
 import lab.mars.rl.algo.func_approx.FunctionApprox.Companion.log
 import lab.mars.rl.model.*
+import lab.mars.rl.model.Policy
+import lab.mars.rl.model.isNotTerminal
 import lab.mars.rl.util.log.debug
 import lab.mars.rl.util.matrix.times
 

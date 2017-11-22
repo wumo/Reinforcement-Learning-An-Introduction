@@ -7,8 +7,8 @@ import javafx.scene.Scene
 import javafx.scene.canvas.Canvas
 import javafx.scene.paint.Color
 import javafx.stage.Stage
-import lab.mars.rl.model.StateValueFunction
 import lab.mars.rl.model.impl.mdp.IndexedState
+import lab.mars.rl.model.impl.mdp.StateValueFunction
 import lab.mars.rl.problem.RodManeuvering
 import lab.mars.rl.problem.RodManeuvering.currentStatus
 import lab.mars.rl.problem.RodManeuvering.height

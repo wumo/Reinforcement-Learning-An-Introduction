@@ -1,8 +1,8 @@
 package lab.mars.rl.algo.ntd
 
 import lab.mars.rl.algo.ntd.NStepTemporalDifference.Companion.log
-import lab.mars.rl.model.StateValueFunction
 import lab.mars.rl.model.impl.mdp.IndexedState
+import lab.mars.rl.model.impl.mdp.StateValueFunction
 import lab.mars.rl.model.isTerminal
 import lab.mars.rl.util.buf.newBuf
 import lab.mars.rl.util.log.debug

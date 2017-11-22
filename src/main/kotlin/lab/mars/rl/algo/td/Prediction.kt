@@ -1,7 +1,7 @@
 package lab.mars.rl.algo.td
 
 import lab.mars.rl.algo.td.TemporalDifference.Companion.log
-import lab.mars.rl.model.StateValueFunction
+import lab.mars.rl.model.impl.mdp.StateValueFunction
 import lab.mars.rl.model.isNotTerminal
 import lab.mars.rl.util.log.debug
 

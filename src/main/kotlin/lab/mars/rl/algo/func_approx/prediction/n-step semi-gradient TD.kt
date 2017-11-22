@@ -6,6 +6,8 @@ import lab.mars.rl.algo.func_approx.FunctionApprox
 import lab.mars.rl.algo.func_approx.FunctionApprox.Companion.log
 import lab.mars.rl.algo.ntd.MAX_N
 import lab.mars.rl.model.*
+import lab.mars.rl.model.State
+import lab.mars.rl.model.isTerminal
 import lab.mars.rl.util.buf.newBuf
 import lab.mars.rl.util.log.debug
 import lab.mars.rl.util.math.Σ
