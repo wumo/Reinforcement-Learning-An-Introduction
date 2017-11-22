@@ -8,7 +8,7 @@ import javafx.scene.canvas.Canvas
 import javafx.scene.paint.Color
 import javafx.stage.Stage
 import lab.mars.rl.model.ActionValueFunction
-import lab.mars.rl.model.State
+import lab.mars.rl.model.IndexedState
 import lab.mars.rl.model.StateValueFunction
 import java.util.concurrent.CyclicBarrier
 
@@ -17,7 +17,7 @@ class GridWorldUI : Application() {
 
     companion object {
         var after: () -> Unit = {}
-        var render: (ActionValueFunction, State) -> Unit = { _, _ -> }
+        var render: (ActionValueFunction, IndexedState) -> Unit = { _, _ -> }
         var width = 450.0
         var height = 300.0
         var grid_x = 9
@@ -39,7 +39,7 @@ class GridWorldUI : Application() {
     val barrier = CyclicBarrier(2)
     var max = 1.0
     var min = 0.0
-    fun render(V: StateValueFunction, s: State) {
+    fun render(V: StateValueFunction, s: IndexedState) {
         barrier.reset()
         Platform.runLater {
             val gc = canvas.graphicsContext2D

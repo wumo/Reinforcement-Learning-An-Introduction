@@ -1,13 +1,12 @@
+@file:Suppress("NAME_SHADOWING")
+
 package lab.mars.rl.algo.func_approx.off_policy
 
 import lab.mars.rl.algo.`ε-greedy`
 import lab.mars.rl.algo.func_approx.FunctionApprox
 import lab.mars.rl.algo.ntd.MAX_N
 import lab.mars.rl.algo.ntd.NStepTemporalDifference.Companion.log
-import lab.mars.rl.model.Action
-import lab.mars.rl.model.ActionValueApproxFunction
-import lab.mars.rl.model.NonDeterminedPolicy
-import lab.mars.rl.model.State
+import lab.mars.rl.model.*
 import lab.mars.rl.util.buf.newBuf
 import lab.mars.rl.util.debug
 import lab.mars.rl.util.matrix.times
@@ -20,8 +19,8 @@ fun FunctionApprox.`off-policy n-step Q(σ) episodic`(n: Int, q: ActionValueAppr
     val ρ = newBuf<Double>(min(n, MAX_N))
     val _σ = newBuf<Int>(min(n, MAX_N))
     val δ = newBuf<Double>(min(n, MAX_N))
-    val _S = newBuf<State>(min(n, MAX_N))
-    val _A = newBuf<Action>(min(n, MAX_N))
+    val _S = newBuf<IndexedState>(min(n, MAX_N))
+    val _A = newBuf<IndexedAction>(min(n, MAX_N))
 
     for (episode in 1..episodes) {
         log.debug { "$episode/$episodes" }
@@ -50,7 +49,7 @@ fun FunctionApprox.`off-policy n-step Q(σ) episodic`(n: Int, q: ActionValueAppr
                 _A.removeFirst()
             }
             if (t < T) {
-                val (s_next, reward, _) = a.sample()
+                val (s_next, reward) = a.sample()
                 _S.append(s_next)
                 s = s_next
                 if (s.isTerminal()) {
@@ -96,8 +95,8 @@ fun FunctionApprox.`off-policy n-step Q(σ) continuing`(n: Int, q: ActionValueAp
     val ρ = newBuf<Double>(min(n, MAX_N))
     val _σ = newBuf<Int>(min(n, MAX_N))
     val δ = newBuf<Double>(min(n, MAX_N))
-    val _S = newBuf<State>(min(n, MAX_N))
-    val _A = newBuf<Action>(min(n, MAX_N))
+    val _S = newBuf<IndexedState>(min(n, MAX_N))
+    val _A = newBuf<IndexedAction>(min(n, MAX_N))
 
     var t = 0
     var s = started.rand()
@@ -121,7 +120,7 @@ fun FunctionApprox.`off-policy n-step Q(σ) continuing`(n: Int, q: ActionValueAp
             _S.removeFirst()
             _A.removeFirst()
         }
-        val (s_next, reward, _) = a.sample()
+        val (s_next, reward) = a.sample()
         _S.append(s_next)
         s = s_next
         a = s.actions.rand(b(s));_A.append(a)

@@ -3,36 +3,34 @@ package lab.mars.rl.algo.dyna
 import lab.mars.rl.algo.V_from_Q_ND
 import lab.mars.rl.algo.`ε-greedy (tie broken randomly)`
 import lab.mars.rl.model.*
+import lab.mars.rl.util.*
 import lab.mars.rl.util.buf.DefaultBuf
-import lab.mars.rl.util.cnsetOf
-import lab.mars.rl.util.debug
-import lab.mars.rl.util.max
 import lab.mars.rl.util.tuples.tuple2
 import lab.mars.rl.util.tuples.tuple3
 import org.slf4j.LoggerFactory
 
 @Suppress("NAME_SHADOWING")
-class DynaQ(val mdp: MDP) {
+class DynaQ(val indexedMdp: IndexedMDP) {
     companion object {
         val log = LoggerFactory.getLogger(this::class.java)!!
     }
 
-    val γ = mdp.γ
-    val started = mdp.started
-    val states = mdp.states
-    var stepListener: (ActionValueFunction, State) -> Unit = { _, _ -> }
+    val γ = indexedMdp.γ
+    val started = indexedMdp.started
+    val states = indexedMdp.states
+    var stepListener: (ActionValueFunction, IndexedState) -> Unit = { _, _ -> }
     var episodeListener: (StateValueFunction) -> Unit = {}
 
     var episodes = 10000
     var α = 0.1
     var ε = 0.1
     var n = 10
-    fun optimal(_alpha: (State, Action) -> Double = { _, _ -> α }): OptimalSolution {
-        val π = mdp.QFunc { 0.0 }
-        val Q = mdp.QFunc { 0.0 }
-        val cachedSA = DefaultBuf.new<tuple2<State, Action>>(Q.size)
-        val Model = mdp.QFunc { emptyPossibleSet }
-        val V = mdp.VFunc { 0.0 }
+    fun optimal(_alpha: (IndexedState, IndexedAction) -> Double = { _, _ -> α }): OptimalSolution {
+        val π = indexedMdp.QFunc { 0.0 }
+        val Q = indexedMdp.QFunc { 0.0 }
+        val cachedSA = DefaultBuf.new<tuple2<IndexedState, IndexedAction>>(Q.size)
+        val Model = indexedMdp.QFunc { emptyPossibleSet }
+        val V = indexedMdp.VFunc { 0.0 }
         val result = tuple3(π, V, Q)
         for (episode in 1..episodes) {
             log.debug { "$episode/$episodes" }
@@ -44,11 +42,11 @@ class DynaQ(val mdp: MDP) {
                 step++
                 `ε-greedy (tie broken randomly)`(s, Q, π, ε)
                 val a = s.actions.rand(π(s))
-                val (s_next, reward, _) = a.sample()
+                val (s_next, reward) = a.sample()
                 Q[s, a] += _alpha(s, a) * (reward + γ * max(s_next.actions, 0.0) { Q[s_next, it] } - Q[s, a])
                 if (Model[s, a].isEmpty())
                     cachedSA.append(tuple2(s, a))
-                Model[s, a] = cnsetOf(Possible(s_next, reward, 1.0))
+                Model[s, a] = cnsetOf(IndexedPossible(s_next, reward, 1.0))
                 repeat(n) {
                     val (s, a) = cachedSA.rand()
                     val (s_next, reward) = Model[s, a].rand()

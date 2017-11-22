@@ -1,7 +1,7 @@
 package lab.mars.rl.problem
 
-import lab.mars.rl.model.MDP
-import lab.mars.rl.model.Possible
+import lab.mars.rl.model.IndexedMDP
+import lab.mars.rl.model.IndexedPossible
 import lab.mars.rl.model.impl.CNSetMDP
 import lab.mars.rl.util.buf.DefaultIntBuf
 import lab.mars.rl.util.buf.IntBuf
@@ -42,7 +42,7 @@ object DynaMaze {
         wall += obstacle
     }
 
-    fun make(): MDP {
+    fun make(): IndexedMDP {
         val mdp = CNSetMDP(gamma = 0.95,
                            state_dim = 9 x 6,
                            action_dim = 4)
@@ -57,7 +57,7 @@ object DynaMaze {
                         tmp[1] = s[1]
                     }
                     val reward = if (tmp[0] == 8 && tmp[1] == 5) 1.0 else 0.0
-                    action.possibles = cnsetOf(Possible(states[tmp], reward, 1.0))
+                    action.possibles = cnsetOf(IndexedPossible(states[tmp], reward, 1.0))
 
                 }
             states[8, 5].actions = emptyNSet()

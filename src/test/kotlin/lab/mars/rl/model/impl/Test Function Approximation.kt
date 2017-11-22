@@ -8,26 +8,20 @@ import kotlinx.coroutines.experimental.channels.Channel
 import kotlinx.coroutines.experimental.launch
 import kotlinx.coroutines.experimental.runBlocking
 import lab.mars.rl.algo.func_approx.FunctionApprox
-import lab.mars.rl.algo.func_approx.prediction.`Gradient Monte Carlo algorithm`
-import lab.mars.rl.algo.func_approx.prediction.`Semi-gradient TD(0)`
-import lab.mars.rl.algo.func_approx.prediction.`n-step semi-gradient TD`
+import lab.mars.rl.algo.func_approx.prediction.*
 import lab.mars.rl.algo.td.TemporalDifference
 import lab.mars.rl.algo.td.prediction
-import lab.mars.rl.model.State
-import lab.mars.rl.model.ValueFunction
+import lab.mars.rl.model.*
 import lab.mars.rl.problem.SquareWave.domain
 import lab.mars.rl.problem.SquareWave.maxResolution
 import lab.mars.rl.problem.SquareWave.sample
 import lab.mars.rl.problem.`1000-state RandomWalk`.make
 import lab.mars.rl.problem.`1000-state RandomWalk`.num_states
 import lab.mars.rl.util.buf.DefaultIntBuf
-import lab.mars.rl.util.ui.ChartApp
-import lab.mars.rl.util.ui.ChartView
-import lab.mars.rl.util.ui.chart
-import lab.mars.rl.util.ui.line
+import lab.mars.rl.util.matrix.times
+import lab.mars.rl.util.ui.*
 import org.apache.commons.math3.util.FastMath.*
 import org.junit.Test
-import lab.mars.rl.util.matrix.times
 
 class `Test Function Approximation` {
     class `1000-state Random walk problem` {
@@ -221,7 +215,7 @@ class `Test Function Approximation` {
                     func.w += feature.alpha(alpha, s) * (y - func(s)) * func.`▽`(s)
                 }
                 for (i in 0 until maxResolution) {
-                    val s = State(DefaultIntBuf.of(i))
+                    val s = IndexedState(DefaultIntBuf.of(i))
                     val y = func(s)
                     line[i * 2.0 / maxResolution] = y
                 }

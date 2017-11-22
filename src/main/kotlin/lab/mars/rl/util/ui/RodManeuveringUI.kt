@@ -7,7 +7,7 @@ import javafx.scene.Scene
 import javafx.scene.canvas.Canvas
 import javafx.scene.paint.Color
 import javafx.stage.Stage
-import lab.mars.rl.model.State
+import lab.mars.rl.model.IndexedState
 import lab.mars.rl.model.StateValueFunction
 import lab.mars.rl.problem.RodManeuvering
 import lab.mars.rl.problem.RodManeuvering.currentStatus
@@ -27,7 +27,7 @@ class RodManeuveringUI : Application() {
 
     companion object {
         var after: () -> Unit = {}
-        var render: (StateValueFunction, State) -> Unit = { _, _ -> }
+        var render: (StateValueFunction, IndexedState) -> Unit = { _, _ -> }
     }
 
     override fun start(ps: Stage?) {
@@ -59,7 +59,7 @@ class RodManeuveringUI : Application() {
     val barrier = CyclicBarrier(2)
     var max = 1.0
     var min = 0.0
-    fun render(V: StateValueFunction, s: State) {
+    fun render(V: StateValueFunction, s: IndexedState) {
         barrier.reset()
         runLater {
             val (x, y, rotation) = currentStatus(s)

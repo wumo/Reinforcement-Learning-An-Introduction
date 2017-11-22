@@ -2,19 +2,19 @@
 
 package lab.mars.rl.model.impl
 
-import lab.mars.rl.model.State
+import lab.mars.rl.model.IndexedState
 import lab.mars.rl.util.matrix.Matrix
 
 class SimpleTileCoding(val numOfTilings: Int,
                        tilingSize: Int,
                        val tileWidth: Int,
                        val tilingOffset: Double,
-                       val scale: (State) -> Double) : Feature {
+                       val scale: (IndexedState) -> Double) : Feature {
     val tilingSize = tilingSize + 1
     override val numOfComponents: Int
         get() = numOfTilings * tilingSize
 
-    override fun invoke(s: State): Matrix {
+    override fun invoke(s: IndexedState): Matrix {
         val s = scale(s)
         return Matrix.column(numOfComponents) {
             val tilingIdx = it / tilingSize
@@ -24,5 +24,5 @@ class SimpleTileCoding(val numOfTilings: Int,
         }
     }
 
-    override fun alpha(alpha: Double, s: State) = alpha / numOfTilings
+    override fun alpha(alpha: Double, s: IndexedState) = alpha / numOfTilings
 }

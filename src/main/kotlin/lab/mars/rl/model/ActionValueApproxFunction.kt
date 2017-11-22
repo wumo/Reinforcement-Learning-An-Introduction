@@ -7,13 +7,13 @@ interface ActionValueApproxFunction {
     /**
      * @return v(S,w)
      */
-    operator fun invoke(s: State, a: Action): Double
+    operator fun invoke(s: IndexedState, a: IndexedAction): Double
 
     /**
      * @param s current state
      * @param delta `α*[Gt-v(S,w)]`, do not multiply `∇`
      */
-    fun update(s: State, a: Action, delta: Double)
+    fun update(s: IndexedState, a: IndexedAction, delta: Double)
 
-    fun `▽`(s: State, a: Action): Matrix
+    fun `▽`(s: IndexedState, a: IndexedAction): Matrix
 }

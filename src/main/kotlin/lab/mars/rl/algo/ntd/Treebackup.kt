@@ -3,24 +3,22 @@ package lab.mars.rl.algo.ntd
 import lab.mars.rl.algo.V_from_Q_ND
 import lab.mars.rl.algo.`ε-greedy`
 import lab.mars.rl.algo.ntd.NStepTemporalDifference.Companion.log
-import lab.mars.rl.model.Action
-import lab.mars.rl.model.OptimalSolution
-import lab.mars.rl.model.State
+import lab.mars.rl.model.*
 import lab.mars.rl.util.buf.newBuf
 import lab.mars.rl.util.debug
 import lab.mars.rl.util.tuples.tuple3
 import lab.mars.rl.util.Σ
 import org.apache.commons.math3.util.FastMath.min
 
-fun NStepTemporalDifference.treebackup(alpha: (State, Action) -> Double = { _, _ -> this.α }): OptimalSolution {
-    val π = mdp.equiprobablePolicy()
-    val Q = mdp.QFunc { 0.0 }
+fun NStepTemporalDifference.treebackup(alpha: (IndexedState, IndexedAction) -> Double = { _, _ -> this.α }): OptimalSolution {
+    val π = indexedMdp.equiprobablePolicy()
+    val Q = indexedMdp.QFunc { 0.0 }
 
     val _Q = newBuf<Double>(min(n, MAX_N))
     val _π = newBuf<Double>(min(n, MAX_N))
     val δ = newBuf<Double>(min(n, MAX_N))
-    val _S = newBuf<State>(min(n, MAX_N))
-    val _A = newBuf<Action>(min(n, MAX_N))
+    val _S = newBuf<IndexedState>(min(n, MAX_N))
+    val _A = newBuf<IndexedAction>(min(n, MAX_N))
 
     for (episode in 1..episodes) {
         var n = n
@@ -45,7 +43,7 @@ fun NStepTemporalDifference.treebackup(alpha: (State, Action) -> Double = { _, _
                 _A.removeFirst()
             }
             if (t < T) {
-                val (s_next, reward, _) = a.sample()
+                val (s_next, reward) = a.sample()
                 _S.append(s_next)
                 s = s_next
                 if (s.isTerminal()) {
@@ -77,7 +75,7 @@ fun NStepTemporalDifference.treebackup(alpha: (State, Action) -> Double = { _, _
         } while (τ < T - 1)
         log.debug { "n=$n,T=$T" }
     }
-    val V = mdp.VFunc { 0.0 }
+    val V = indexedMdp.VFunc { 0.0 }
     val result = tuple3(π, V, Q)
     V_from_Q_ND(states, result)
     return result

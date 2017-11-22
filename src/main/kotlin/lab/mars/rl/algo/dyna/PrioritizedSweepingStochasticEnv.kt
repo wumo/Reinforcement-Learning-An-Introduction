@@ -3,10 +3,7 @@ package lab.mars.rl.algo.dyna
 import lab.mars.rl.algo.V_from_Q_ND
 import lab.mars.rl.algo.`ε-greedy (tie broken randomly)`
 import lab.mars.rl.model.*
-import lab.mars.rl.util.Rand
-import lab.mars.rl.util.debug
-import lab.mars.rl.util.max
-import lab.mars.rl.util.repeat
+import lab.mars.rl.util.*
 import lab.mars.rl.util.tuples.tuple2
 import lab.mars.rl.util.tuples.tuple3
 import org.apache.commons.math3.util.FastMath.abs
@@ -14,15 +11,15 @@ import org.slf4j.LoggerFactory
 import java.util.*
 
 @Suppress("NAME_SHADOWING")
-class PrioritizedSweepingStochasticEnv(val mdp: MDP) {
+class PrioritizedSweepingStochasticEnv(val indexedMdp: IndexedMDP) {
     companion object {
         val log = LoggerFactory.getLogger(this::class.java)!!
     }
 
-    val γ = mdp.γ
-    val started = mdp.started
-    val states = mdp.states
-    var stepListener: (ActionValueFunction, State) -> Unit = { _, _ -> }
+    val γ = indexedMdp.γ
+    val started = indexedMdp.started
+    val states = indexedMdp.states
+    var stepListener: (ActionValueFunction, IndexedState) -> Unit = { _, _ -> }
     var episodeListener: (StateValueFunction) -> Unit = {}
 
     var episodes = 10000
@@ -31,16 +28,16 @@ class PrioritizedSweepingStochasticEnv(val mdp: MDP) {
     var θ = 0.0
     var n = 10
 
-    fun optimal(_alpha: (State, Action) -> Double = { _, _ -> α }): OptimalSolution {
-        val π = mdp.QFunc { 0.0 }
-        val Q = mdp.QFunc { 0.0 }
-        val PQueue = PriorityQueue(Q.size, Comparator<tuple3<Double, State, Action>> { o1, o2 ->
+    fun optimal(_alpha: (IndexedState, IndexedAction) -> Double = { _, _ -> α }): OptimalSolution {
+        val π = indexedMdp.QFunc { 0.0 }
+        val Q = indexedMdp.QFunc { 0.0 }
+        val PQueue = PriorityQueue(Q.size, Comparator<tuple3<Double, IndexedState, IndexedAction>> { o1, o2 ->
             o2._1.compareTo(o1._1)
         })
-        val Model = mdp.QFunc { hashMapOf<tuple2<State, Double>, Int>() }
-        val N = mdp.QFunc { 0 }
-        val predecessor = mdp.VFunc { hashSetOf<tuple2<State, Action>>() }
-        val V = mdp.VFunc { 0.0 }
+        val Model = indexedMdp.QFunc { hashMapOf<tuple2<IndexedState, Double>, Int>() }
+        val N = indexedMdp.QFunc { 0 }
+        val predecessor = indexedMdp.VFunc { hashSetOf<tuple2<IndexedState, IndexedAction>>() }
+        val V = indexedMdp.VFunc { 0.0 }
         val result = tuple3(π, V, Q)
         for (episode in 1..episodes) {
             log.debug { "$episode/$episodes" }
@@ -52,7 +49,7 @@ class PrioritizedSweepingStochasticEnv(val mdp: MDP) {
                 step++
                 `ε-greedy (tie broken randomly)`(s, Q, π, ε)
                 val a = s.actions.rand(π(s))
-                val (s_next, reward, _) = a.sample()
+                val (s_next, reward) = a.sample()
                 Model[s, a].compute(tuple2(s_next, reward)) { _, v -> (v ?: 0) + 1 }
                 N[s, a]++
                 predecessor[s_next] += tuple2(s, a)
@@ -76,7 +73,7 @@ class PrioritizedSweepingStochasticEnv(val mdp: MDP) {
         return result
     }
 
-    fun HashMap<tuple2<State, Double>, Int>.rand(N: Int): tuple2<State, Double> {
+    fun HashMap<tuple2<IndexedState, Double>, Int>.rand(N: Int): tuple2<IndexedState, Double> {
         if (isEmpty()) throw NoSuchElementException()
         val p = Rand().nextDouble()
         var acc = 0.0
@@ -88,7 +85,7 @@ class PrioritizedSweepingStochasticEnv(val mdp: MDP) {
         throw IllegalArgumentException("random=$p, but accumulation=$acc")
     }
 
-    fun HashMap<tuple2<State, Double>, Int>.expectedReward(s: State): Double {
+    fun HashMap<tuple2<IndexedState, Double>, Int>.expectedReward(s: IndexedState): Double {
         if (isEmpty()) throw NoSuchElementException()
         var sum = 0.0
         var N = 0

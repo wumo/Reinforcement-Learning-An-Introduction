@@ -6,22 +6,17 @@ import lab.mars.rl.algo.`ε-greedy`
 import lab.mars.rl.algo.func_approx.FunctionApprox
 import lab.mars.rl.algo.func_approx.FunctionApprox.Companion.log
 import lab.mars.rl.algo.ntd.MAX_N
-import lab.mars.rl.model.Action
-import lab.mars.rl.model.ActionValueApproxFunction
-import lab.mars.rl.model.NonDeterminedPolicy
-import lab.mars.rl.model.State
+import lab.mars.rl.model.*
+import lab.mars.rl.util.*
 import lab.mars.rl.util.buf.newBuf
-import lab.mars.rl.util.debug
 import lab.mars.rl.util.matrix.times
-import lab.mars.rl.util.Π
-import lab.mars.rl.util.Σ
 import org.apache.commons.math3.util.FastMath.min
 import org.apache.commons.math3.util.FastMath.pow
 
 fun FunctionApprox.`n-step semi-gradient off-policy sarsa episodic`(n: Int, q: ActionValueApproxFunction, b: NonDeterminedPolicy) {
     val _R = newBuf<Double>(min(n, MAX_N))
-    val _S = newBuf<State>(min(n, MAX_N))
-    val _A = newBuf<Action>(min(n, MAX_N))
+    val _S = newBuf<IndexedState>(min(n, MAX_N))
+    val _A = newBuf<IndexedAction>(min(n, MAX_N))
 
     for (episode in 1..episodes) {
         log.debug { "$episode/$episodes" }
@@ -40,7 +35,7 @@ fun FunctionApprox.`n-step semi-gradient off-policy sarsa episodic`(n: Int, q: A
                 _A.removeFirst()
             }
             if (t < T) {
-                val (s_next, reward, _) = a.sample()
+                val (s_next, reward) = a.sample()
                 _R.append(reward)
                 _S.append(s_next)
                 s = s_next
@@ -71,8 +66,8 @@ fun FunctionApprox.`n-step semi-gradient off-policy sarsa episodic`(n: Int, q: A
 fun FunctionApprox.`n-step semi-gradient off-policy sarsa continuing`(n: Int, q: ActionValueApproxFunction, b: NonDeterminedPolicy, β: Double) {
     var average_reward = 0.0
     val _R = newBuf<Double>(min(n, MAX_N))
-    val _S = newBuf<State>(min(n, MAX_N))
-    val _A = newBuf<Action>(min(n, MAX_N))
+    val _S = newBuf<IndexedState>(min(n, MAX_N))
+    val _A = newBuf<IndexedAction>(min(n, MAX_N))
 
     var t = 0
     val s = started.rand()
@@ -86,7 +81,7 @@ fun FunctionApprox.`n-step semi-gradient off-policy sarsa continuing`(n: Int, q:
             _S.removeFirst()
             _A.removeFirst()
         }
-        val (s_next, reward, _) = a.sample()
+        val (s_next, reward) = a.sample()
         _R.append(reward)
         _S.append(s_next)
         a = s.actions.rand(b(s))

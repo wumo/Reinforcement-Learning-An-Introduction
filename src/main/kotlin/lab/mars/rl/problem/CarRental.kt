@@ -1,9 +1,7 @@
 package lab.mars.rl.problem
 
-import lab.mars.rl.model.MDP
-import lab.mars.rl.model.Possible
+import lab.mars.rl.model.*
 import lab.mars.rl.model.impl.CNSetMDP
-import lab.mars.rl.model.null_possible
 import lab.mars.rl.util.dimension.cnsetFrom
 import lab.mars.rl.util.dimension.x
 import lab.mars.rl.util.poisson
@@ -56,7 +54,7 @@ object CarRental {
         return min(max_L1_to_L2, accept_L1_to_L2)
     }
 
-    fun make(exercise4_4_version: Boolean): MDP {
+    fun make(exercise4_4_version: Boolean): IndexedMDP {
         val mdp = CNSetMDP(gamma = 0.9, state_dim = (max_car + 1) x (max_car + 1)) { idx ->
             val max_L1_to_L2 = max_move(idx[0], idx[1])
             val max_L2_to_L1 = max_move(idx[1], idx[0])
@@ -95,7 +93,7 @@ object CarRental {
                                 val min_rent = max(0, nL1 - new_L1) + max(0, nL2 - new_L2)
                                 var possible = possibles[new_L1, new_L2, total_rent - min_rent]
                                 if (possible === null_possible) {
-                                    possible = Possible(mdp.states[new_L1, new_L2], reward, _prob2)
+                                    possible = IndexedPossible(mdp.states[new_L1, new_L2], reward, _prob2)
                                     possibles[new_L1, new_L2, total_rent - min_rent] = possible
                                 } else
                                     possible.probability += _prob2

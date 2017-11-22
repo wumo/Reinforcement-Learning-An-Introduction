@@ -3,10 +3,9 @@ package lab.mars.rl.algo.func_approx.prediction
 import lab.mars.rl.algo.func_approx.FunctionApprox
 import lab.mars.rl.algo.func_approx.FunctionApprox.Companion.log
 import lab.mars.rl.model.impl.LinearFunc
+import lab.mars.rl.model.isNotTerminal
 import lab.mars.rl.util.debug
-import lab.mars.rl.util.matrix.Matrix
-import lab.mars.rl.util.matrix.plus
-import lab.mars.rl.util.matrix.times
+import lab.mars.rl.util.matrix.*
 
 fun FunctionApprox.LSTD(vFunc: LinearFunc, ε: Double) {
     val xFeature = vFunc.x
@@ -19,7 +18,7 @@ fun FunctionApprox.LSTD(vFunc: LinearFunc, ε: Double) {
         var x = xFeature(s)
         while (s.isNotTerminal()) {
             val a = s.actions.rand(π(s))
-            val (s_next, reward, _) = a.sample()
+            val (s_next, reward) = a.sample()
             val _x = xFeature(s_next)
 
             val v = A_.T * (x - γ * _x)

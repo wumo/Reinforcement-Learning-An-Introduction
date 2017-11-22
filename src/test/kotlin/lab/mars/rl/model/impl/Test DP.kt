@@ -2,13 +2,8 @@ package lab.mars.rl.model.impl
 
 import lab.mars.rl.algo.dp.PolicyIteration
 import lab.mars.rl.algo.dp.ValueIteration
-import lab.mars.rl.algo.td.TemporalDifference
-import lab.mars.rl.algo.td.sarsa
-import lab.mars.rl.problem.CarRental
-import lab.mars.rl.problem.DynaMaze
-import lab.mars.rl.problem.RodManeuvering
-import lab.mars.rl.problem.WindyGridworld
-import lab.mars.rl.util.argmax
+import lab.mars.rl.model.isNotTerminal
+import lab.mars.rl.problem.*
 import org.junit.Assert
 import org.junit.Test
 

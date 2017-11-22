@@ -1,7 +1,7 @@
 package lab.mars.rl.problem
 
-import lab.mars.rl.model.MDP
-import lab.mars.rl.model.Possible
+import lab.mars.rl.model.IndexedMDP
+import lab.mars.rl.model.IndexedPossible
 import lab.mars.rl.model.impl.CNSetMDP
 import lab.mars.rl.util.cnsetOf
 import lab.mars.rl.util.dimension.x
@@ -24,7 +24,7 @@ object GridWorld {
             intArrayOf(0, -1)//left
     )
     val desc_move = arrayOf(" ↑", " ↓", "→", "←")
-    fun make(): MDP {
+    fun make(): IndexedMDP {
         val mdp = CNSetMDP(gamma = 0.9,
                            state_dim = n x n,
                            action_dim = m)
@@ -37,7 +37,7 @@ object GridWorld {
                         x = s[0]
                         y = s[1]
                     }
-                    action.possibles = cnsetOf(Possible(states[x, y], -1.0, 1.0))
+                    action.possibles = cnsetOf(IndexedPossible(states[x, y], -1.0, 1.0))
                 }
             states[0, 0].actions = emptyNSet()
             states[n - 1, n - 1].actions = emptyNSet()

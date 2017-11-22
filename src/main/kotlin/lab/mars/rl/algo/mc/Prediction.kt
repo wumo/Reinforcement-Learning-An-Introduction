@@ -2,12 +2,13 @@ package lab.mars.rl.algo.mc
 
 import lab.mars.rl.algo.mc.MonteCarlo.Companion.log
 import lab.mars.rl.model.StateValueFunction
+import lab.mars.rl.model.isNotTerminal
 import lab.mars.rl.util.debug
 
 fun MonteCarlo.prediction(): StateValueFunction {
-    val V = mdp.VFunc { 0.0 }
-    val preReturn = mdp.VFunc { Double.NaN }
-    val count = mdp.VFunc { 0 }
+    val V = indexedMdp.VFunc { 0.0 }
+    val preReturn = indexedMdp.VFunc { Double.NaN }
+    val count = indexedMdp.VFunc { 0 }
 
     for (episode in 1..episodes) {
         log.debug { "$episode/$episodes" }
@@ -15,7 +16,7 @@ fun MonteCarlo.prediction(): StateValueFunction {
         var accumulate = 0.0
         while (s.isNotTerminal()) {
             val a = s.actions.rand(π(s))
-            val (s_next, reward, _) = a.sample()
+            val (s_next, reward) = a.sample()
             if (preReturn[s].isNaN())
                 preReturn[s] = accumulate
             accumulate += reward

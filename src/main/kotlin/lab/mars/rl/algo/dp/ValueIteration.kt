@@ -1,7 +1,7 @@
 package lab.mars.rl.algo.dp
 
 import lab.mars.rl.algo.θ
-import lab.mars.rl.model.MDP
+import lab.mars.rl.model.IndexedMDP
 import lab.mars.rl.model.StateValueFunction
 import lab.mars.rl.model.null_action
 import lab.mars.rl.util.argmax
@@ -19,16 +19,16 @@ import org.slf4j.LoggerFactory
  *
  * @author wumo
  */
-class ValueIteration(private val mdp: MDP) {
+class ValueIteration(private val indexedMdp: IndexedMDP) {
     companion object {
         val log = LoggerFactory.getLogger(this::class.java)!!
     }
 
-    val states = mdp.states
-    val γ = mdp.γ
+    val states = indexedMdp.states
+    val γ = indexedMdp.γ
     fun iteration(): StateValueFunction {
-        val V = mdp.VFunc { 0.0 }
-        val PI = mdp.VFunc { null_action }
+        val V = indexedMdp.VFunc { 0.0 }
+        val PI = indexedMdp.VFunc { null_action }
         //value iteration
         do {
             var Δ = 0.0

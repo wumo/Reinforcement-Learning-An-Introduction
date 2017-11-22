@@ -19,16 +19,16 @@ import org.slf4j.LoggerFactory
  *
  * @author wumo
  */
-class PolicyIteration(mdp: MDP) {
+class PolicyIteration(indexedMdp: IndexedMDP) {
     companion object {
         val log = LoggerFactory.getLogger(this::class.java)!!
     }
 
-    val states = mdp.states
-    private val γ = mdp.γ
-    private val V = mdp.VFunc { 0.0 }
-    private val π = mdp.VFunc { null_action }
-    private val Q = mdp.QFunc { 0.0 }
+    val states = indexedMdp.states
+    private val γ = indexedMdp.γ
+    private val V = indexedMdp.VFunc { 0.0 }
+    private val π = indexedMdp.VFunc { null_action }
+    private val Q = indexedMdp.QFunc { 0.0 }
 
     fun v_iteration(): tuple3<DeterminedPolicy, StateValueFunction, ActionValueFunction> {
         //Initialization

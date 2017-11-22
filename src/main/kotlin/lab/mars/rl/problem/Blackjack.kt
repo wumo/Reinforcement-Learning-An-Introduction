@@ -1,9 +1,6 @@
 package lab.mars.rl.problem
 
-import lab.mars.rl.model.MDP
-import lab.mars.rl.model.NonDeterminedPolicy
-import lab.mars.rl.model.Possible
-import lab.mars.rl.model.State
+import lab.mars.rl.model.*
 import lab.mars.rl.model.impl.CNSetMDP
 import lab.mars.rl.util.Rand
 import lab.mars.rl.util.buf.DefaultIntBuf
@@ -21,9 +18,9 @@ import lab.mars.rl.util.emptyNSet
 
 object Blackjack {
     private val playingCard = intArrayOf(1/*A*/, 2, 3, 4, 5, 6, 7, 8, 9, 10, 10/*J*/, 10/*Q*/, 10/*K*/)
-    private lateinit var win: State
-    private lateinit var draw: State
-    private lateinit var lose: State
+    private lateinit var win: IndexedState
+    private lateinit var draw: IndexedState
+    private lateinit var lose: IndexedState
 
     private const val reward_win = 1.0
     private const val reward_draw = 0.0
@@ -35,7 +32,7 @@ object Blackjack {
     private const val player_offset = 12
     private const val dealer_offset = 1
 
-    fun make(): Pair<MDP, NonDeterminedPolicy> {
+    fun make(): Pair<IndexedMDP, NonDeterminedPolicy> {
         val mdp = CNSetMDP(gamma = 1.0, state_dim = 0(3, 2 x 10 x 10), action_dim = { if (it[0] == 0) 1 else 2 })
         mdp.apply {
             win = states[0, 0]
@@ -61,7 +58,7 @@ object Blackjack {
         return Pair(mdp, policy1)
     }
 
-    private fun MDP.sticks(s: State) = {
+    private fun IndexedMDP.sticks(s: IndexedState) = {
         var dealer = s[dealer_idx] + dealer_offset
         var usableAceDealer = dealer == 1
         //前两张牌决定是否是Ace
@@ -86,16 +83,16 @@ object Blackjack {
         if (dealer <= 21) {
             val player = s[player_idx] + player_offset
             when {
-                player > dealer -> Possible(win, reward_win, 1.0)
-                player == dealer -> Possible(draw, reward_draw, 1.0)
-                player < dealer -> Possible(lose, reward_lose, 1.0)
+                player > dealer -> IndexedPossible(win, reward_win, 1.0)
+                player == dealer -> IndexedPossible(draw, reward_draw, 1.0)
+                player < dealer -> IndexedPossible(lose, reward_lose, 1.0)
                 else -> throw Exception("impossible")
             }
         } else//deal goes bust
-            Possible(win, reward_win, 1.0)
+            IndexedPossible(win, reward_win, 1.0)
     }
 
-    private fun MDP.hits(s: State) = {
+    private fun IndexedMDP.hits(s: IndexedState) = {
         var player = s[player_idx] + player_offset
         val card = drawCard()
         player += card
@@ -103,15 +100,15 @@ object Blackjack {
             player <= 21 -> {
                 val idx = DefaultIntBuf.from(s)
                 idx[player_idx] = player - player_offset
-                Possible(states[idx], 0.0, 1.0)
+                IndexedPossible(states[idx], 0.0, 1.0)
             }
-            s[ace_idx] == 0 -> Possible(lose, -1.0, 1.0)
+            s[ace_idx] == 0 -> IndexedPossible(lose, -1.0, 1.0)
             else -> {
                 player -= 10
                 val idx = DefaultIntBuf.from(s)
                 idx[ace_idx] = 0
                 idx[player_idx] = player - player_offset
-                Possible(states[idx], 0.0, 1.0)
+                IndexedPossible(states[idx], 0.0, 1.0)
             }
         }
     }

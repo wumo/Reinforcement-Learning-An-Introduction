@@ -1,7 +1,7 @@
 package lab.mars.rl.problem
 
-import lab.mars.rl.model.MDP
-import lab.mars.rl.model.Possible
+import lab.mars.rl.model.IndexedMDP
+import lab.mars.rl.model.IndexedPossible
 import lab.mars.rl.model.impl.CNSetMDP
 import lab.mars.rl.util.Rand
 import lab.mars.rl.util.emptyNSet
@@ -9,7 +9,7 @@ import lab.mars.rl.util.emptyNSet
 object MaximizationBias {
     val mean = -0.1
     val actionsOfB = 10
-    fun make(): MDP {
+    fun make(): IndexedMDP {
         val mdp = CNSetMDP(gamma = 1.0,
                            state_dim = 4,
                            action_dim = {
@@ -26,11 +26,11 @@ object MaximizationBias {
             for (a in states[2].actions)
                 a.sample = {
                     val next = if (a[0] == 0) 1 else 3
-                    Possible(states[next], 0.0, 1.0)
+                    IndexedPossible(states[next], 0.0, 1.0)
                 }
             for (a in states[1].actions)
                 a.sample = {
-                    Possible(states[0], Rand().nextGaussian() + mean, 1.0)
+                    IndexedPossible(states[0], Rand().nextGaussian() + mean, 1.0)
                 }
         }
         return mdp

@@ -2,8 +2,7 @@ package lab.mars.rl.algo.func_approx.off_policy
 
 import lab.mars.rl.algo.func_approx.FunctionApprox
 import lab.mars.rl.algo.func_approx.FunctionApprox.Companion.log
-import lab.mars.rl.model.NonDeterminedPolicy
-import lab.mars.rl.model.ValueFunction
+import lab.mars.rl.model.*
 import lab.mars.rl.util.debug
 import lab.mars.rl.util.matrix.times
 
@@ -13,7 +12,7 @@ fun FunctionApprox.`Semi-gradient off-policy TD(0) episodic`(v: ValueFunction, b
         var s = started.rand()
         while (s.isNotTerminal()) {
             val a = s.actions.rand(b(s))
-            val (s_next, reward, _) = a.sample()
+            val (s_next, reward) = a.sample()
             val ρ = π[s, a] / b[s, a]
             val δ = reward + γ * v(s_next) - v(s)
             v.w += α * ρ * δ * v.`▽`(s)
@@ -28,7 +27,7 @@ fun FunctionApprox.`Semi-gradient off-policy TD(0) continuing`(v: ValueFunction,
     var s = started.rand()
     while (true) {
         val a = s.actions.rand(b(s))
-        val (s_next, reward, _) = a.sample()
+        val (s_next, reward) = a.sample()
         val ρ = π[s, a] / b[s, a]
         val δ = reward - average_reward + v(s_next) - v(s)
         v.w += α * ρ * δ * v.`▽`(s)

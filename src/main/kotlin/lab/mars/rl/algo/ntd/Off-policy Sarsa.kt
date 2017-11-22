@@ -3,25 +3,21 @@ package lab.mars.rl.algo.ntd
 import lab.mars.rl.algo.V_from_Q_ND
 import lab.mars.rl.algo.`ε-greedy`
 import lab.mars.rl.algo.ntd.NStepTemporalDifference.Companion.log
-import lab.mars.rl.model.Action
-import lab.mars.rl.model.OptimalSolution
-import lab.mars.rl.model.State
+import lab.mars.rl.model.*
+import lab.mars.rl.util.*
 import lab.mars.rl.util.buf.newBuf
-import lab.mars.rl.util.debug
 import lab.mars.rl.util.tuples.tuple3
-import lab.mars.rl.util.Π
-import lab.mars.rl.util.Σ
 import org.apache.commons.math3.util.FastMath.min
 import org.apache.commons.math3.util.FastMath.pow
 
-fun NStepTemporalDifference.`off-policy sarsa`(alpha: (State, Action) -> Double = { _, _ -> this.α }): OptimalSolution {
-    val b = mdp.equiprobablePolicy()
+fun NStepTemporalDifference.`off-policy sarsa`(alpha: (IndexedState, IndexedAction) -> Double = { _, _ -> this.α }): OptimalSolution {
+    val b = indexedMdp.equiprobablePolicy()
     val π = b.copy()
 
-    val Q = mdp.QFunc { 0.0 }
+    val Q = indexedMdp.QFunc { 0.0 }
     val _R = newBuf<Double>(min(n, MAX_N))
-    val _S = newBuf<State>(min(n, MAX_N))
-    val _A = newBuf<Action>(min(n, MAX_N))
+    val _S = newBuf<IndexedState>(min(n, MAX_N))
+    val _A = newBuf<IndexedAction>(min(n, MAX_N))
 
     for (episode in 1..episodes) {
         log.debug { "$episode/$episodes" }
@@ -40,7 +36,7 @@ fun NStepTemporalDifference.`off-policy sarsa`(alpha: (State, Action) -> Double 
                 _A.removeFirst()
             }
             if (t < T) {
-                val (s_next, reward, _) = a.sample()
+                val (s_next, reward) = a.sample()
                 _R.append(reward)
                 _S.append(s_next)
                 s = s_next
@@ -66,7 +62,7 @@ fun NStepTemporalDifference.`off-policy sarsa`(alpha: (State, Action) -> Double 
         } while (τ < T - 1)
         log.debug { "n=$n,T=$T" }
     }
-    val V = mdp.VFunc { 0.0 }
+    val V = indexedMdp.VFunc { 0.0 }
     val result = tuple3(π, V, Q)
     V_from_Q_ND(states, result)
     return result

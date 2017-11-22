@@ -1,6 +1,6 @@
 package lab.mars.rl.algo.mc
 
-import lab.mars.rl.model.MDP
+import lab.mars.rl.model.IndexedMDP
 import lab.mars.rl.model.NonDeterminedPolicy
 import lab.mars.rl.util.emptyNSet
 import org.slf4j.LoggerFactory
@@ -12,14 +12,14 @@ import org.slf4j.LoggerFactory
  *
  * @author wumo
  */
-class MonteCarlo(val mdp: MDP, var π: NonDeterminedPolicy = emptyNSet()) {
+class MonteCarlo(val indexedMdp: IndexedMDP, var π: NonDeterminedPolicy = emptyNSet()) {
     companion object {
         val log = LoggerFactory.getLogger(this::class.java)!!
     }
 
-    val started = mdp.started
-    val states = mdp.states
+    val started = indexedMdp.started
+    val states = indexedMdp.states
     var episodes = 10000
-    val γ = mdp.γ
+    val γ = indexedMdp.γ
     var ε = 0.1
 }

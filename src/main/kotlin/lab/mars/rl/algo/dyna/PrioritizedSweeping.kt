@@ -3,10 +3,7 @@ package lab.mars.rl.algo.dyna
 import lab.mars.rl.algo.V_from_Q_ND
 import lab.mars.rl.algo.`ε-greedy (tie broken randomly)`
 import lab.mars.rl.model.*
-import lab.mars.rl.util.cnsetOf
-import lab.mars.rl.util.debug
-import lab.mars.rl.util.max
-import lab.mars.rl.util.repeat
+import lab.mars.rl.util.*
 import lab.mars.rl.util.tuples.tuple2
 import lab.mars.rl.util.tuples.tuple3
 import org.apache.commons.math3.util.FastMath.abs
@@ -14,15 +11,15 @@ import org.slf4j.LoggerFactory
 import java.util.*
 
 @Suppress("NAME_SHADOWING")
-class PrioritizedSweeping(val mdp: MDP) {
+class PrioritizedSweeping(val indexedMdp: IndexedMDP) {
     companion object {
         val log = LoggerFactory.getLogger(this::class.java)!!
     }
 
-    val γ = mdp.γ
-    val started = mdp.started
-    val states = mdp.states
-    var stepListener: (StateValueFunction, State) -> Unit = { _, _ -> }
+    val γ = indexedMdp.γ
+    val started = indexedMdp.started
+    val states = indexedMdp.states
+    var stepListener: (StateValueFunction, IndexedState) -> Unit = { _, _ -> }
     var episodeListener: (StateValueFunction) -> Unit = {}
 
     var episodes = 10000
@@ -30,15 +27,15 @@ class PrioritizedSweeping(val mdp: MDP) {
     var ε = 0.1
     var θ = 0.0
     var n = 10
-    fun optimal(_alpha: (State, Action) -> Double = { _, _ -> α }): OptimalSolution {
-        val π = mdp.QFunc { 0.0 }
-        val Q = mdp.QFunc { 0.0 }
-        val PQueue = PriorityQueue(Q.size, Comparator<tuple3<Double, State, Action>> { o1, o2 ->
+    fun optimal(_alpha: (IndexedState, IndexedAction) -> Double = { _, _ -> α }): OptimalSolution {
+        val π = indexedMdp.QFunc { 0.0 }
+        val Q = indexedMdp.QFunc { 0.0 }
+        val PQueue = PriorityQueue(Q.size, Comparator<tuple3<Double, IndexedState, IndexedAction>> { o1, o2 ->
             o2._1.compareTo(o1._1)
         })
-        val Model = mdp.QFunc { emptyPossibleSet }
-        val predecessor = mdp.VFunc { hashSetOf<tuple2<State, Action>>() }
-        val V = mdp.VFunc { 0.0 }
+        val Model = indexedMdp.QFunc { emptyPossibleSet }
+        val predecessor = indexedMdp.VFunc { hashSetOf<tuple2<IndexedState, IndexedAction>>() }
+        val V = indexedMdp.VFunc { 0.0 }
         val result = tuple3(π, V, Q)
         for (episode in 1..episodes) {
             log.debug { "$episode/$episodes" }
@@ -50,8 +47,8 @@ class PrioritizedSweeping(val mdp: MDP) {
                 step++
                 `ε-greedy (tie broken randomly)`(s, Q, π, ε)
                 val a = s.actions.rand(π(s))
-                val (s_next, reward, _) = a.sample()
-                Model[s, a] = cnsetOf(Possible(s_next, reward, 1.0))
+                val (s_next, reward) = a.sample()
+                Model[s, a] = cnsetOf(IndexedPossible(s_next, reward, 1.0))
                 predecessor[s_next] += tuple2(s, a)
                 val P = abs(reward + γ * max(s_next.actions, 0.0) { Q[s_next, it] } - Q[s, a])
                 if (P > θ) PQueue.add(tuple3(P, s, a))

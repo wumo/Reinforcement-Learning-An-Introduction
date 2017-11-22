@@ -3,6 +3,7 @@ package lab.mars.rl.model.impl
 import javafx.application.Application
 import lab.mars.rl.algo.average_alpha
 import lab.mars.rl.algo.dyna.*
+import lab.mars.rl.model.isNotTerminal
 import lab.mars.rl.problem.*
 import lab.mars.rl.util.argmax
 import lab.mars.rl.util.ui.GridWorldUI

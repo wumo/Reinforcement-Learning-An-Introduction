@@ -2,29 +2,27 @@ package lab.mars.rl.algo.mc
 
 import lab.mars.rl.algo.V_from_Q_ND
 import lab.mars.rl.algo.mc.MonteCarlo.Companion.log
-import lab.mars.rl.model.Action
-import lab.mars.rl.model.OptimalSolution
-import lab.mars.rl.model.State
+import lab.mars.rl.model.*
 import lab.mars.rl.util.argmax
 import lab.mars.rl.util.buf.newBuf
 import lab.mars.rl.util.debug
 import lab.mars.rl.util.tuples.tuple3
 
 fun MonteCarlo.`Off-policy MC Optimal`(): OptimalSolution {
-    val Q = mdp.QFunc { 0.0 }
-    val C = mdp.QFunc { 0.0 }
-    val b = mdp.QFunc { 1.0 }
+    val Q = indexedMdp.QFunc { 0.0 }
+    val C = indexedMdp.QFunc { 0.0 }
+    val b = indexedMdp.QFunc { 1.0 }
     for (s in states) {
         if (s.isTerminal()) continue
         val prob = 1.0 / s.actions.size
         for (a in s.actions)
             b[s, a] = prob
     }
-    val π = mdp.QFunc { 1.0 }
+    val π = indexedMdp.QFunc { 1.0 }
 
     val R = newBuf<Double>()
-    val S = newBuf<State>()
-    val A = newBuf<Action>()
+    val S = newBuf<IndexedState>()
+    val A = newBuf<IndexedAction>()
 
     for (episode in 1..episodes) {
         log.debug { "$episode/$episodes" }
@@ -36,7 +34,7 @@ fun MonteCarlo.`Off-policy MC Optimal`(): OptimalSolution {
         while (s.isNotTerminal()) {
             val a = s.actions.rand(b(s))
             A.append(a)
-            val (s_next, reward, _) = a.sample()
+            val (s_next, reward) = a.sample()
             S.append(s_next)
             R.append(reward)
             s = s_next
@@ -62,7 +60,7 @@ fun MonteCarlo.`Off-policy MC Optimal`(): OptimalSolution {
             W = W * 1 / b[s_t, a_t]
         }
     }
-    val V = mdp.VFunc { 0.0 }
+    val V = indexedMdp.VFunc { 0.0 }
     val result = tuple3(π, V, Q)
     V_from_Q_ND(states, result)
     return result

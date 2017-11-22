@@ -2,14 +2,13 @@ package lab.mars.rl.algo.func_approx.prediction
 
 import lab.mars.rl.algo.func_approx.FunctionApprox
 import lab.mars.rl.algo.func_approx.FunctionApprox.Companion.log
-import lab.mars.rl.model.State
-import lab.mars.rl.model.ValueFunction
+import lab.mars.rl.model.*
 import lab.mars.rl.util.buf.newBuf
 import lab.mars.rl.util.debug
 import lab.mars.rl.util.matrix.times
 
 fun FunctionApprox.`Gradient Monte Carlo algorithm`(v: ValueFunction) {
-    val _S = newBuf<State>()
+    val _S = newBuf<IndexedState>()
     val _R = newBuf<Double>()
 
     for (episode in 1..episodes) {
@@ -21,7 +20,7 @@ fun FunctionApprox.`Gradient Monte Carlo algorithm`(v: ValueFunction) {
         var accum = 0.0
         while (s.isNotTerminal()) {
             val a = s.actions.rand(π(s))
-            val (s_next, reward, _) = a.sample()
+            val (s_next, reward) = a.sample()
             accum += reward
             _S.append(s_next)
             _R.append(reward)

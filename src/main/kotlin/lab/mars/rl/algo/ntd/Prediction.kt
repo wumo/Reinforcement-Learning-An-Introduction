@@ -1,8 +1,7 @@
 package lab.mars.rl.algo.ntd
 
 import lab.mars.rl.algo.ntd.NStepTemporalDifference.Companion.log
-import lab.mars.rl.model.State
-import lab.mars.rl.model.StateValueFunction
+import lab.mars.rl.model.*
 import lab.mars.rl.util.buf.newBuf
 import lab.mars.rl.util.debug
 import lab.mars.rl.util.Σ
@@ -12,9 +11,9 @@ import org.apache.commons.math3.util.FastMath.pow
 
 fun NStepTemporalDifference.prediction(): StateValueFunction {
     var n = n
-    val V = mdp.VFunc { 0.0 }
+    val V = indexedMdp.VFunc { 0.0 }
     val _R = newBuf<Double>(min(n, MAX_N))
-    val _S = newBuf<State>(min(n, MAX_N))
+    val _S = newBuf<IndexedState>(min(n, MAX_N))
     for (episode in 1..episodes) {
         log.debug { "$episode/$episodes" }
         var T = Int.MAX_VALUE
@@ -30,7 +29,7 @@ fun NStepTemporalDifference.prediction(): StateValueFunction {
             }
             if (t < T) {
                 val a = s.actions.rand(initial_policy(s))
-                val (s_next, reward, _) = a.sample()
+                val (s_next, reward) = a.sample()
                 _R.append(reward)
                 _S.append(s_next)
                 s = s_next

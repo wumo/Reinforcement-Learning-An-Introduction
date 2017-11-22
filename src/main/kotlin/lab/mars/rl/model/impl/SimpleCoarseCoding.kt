@@ -1,6 +1,6 @@
 package lab.mars.rl.model.impl
 
-import lab.mars.rl.model.State
+import lab.mars.rl.model.IndexedState
 import lab.mars.rl.util.matrix.Matrix
 
 val ClosedRange<Double>.size: Double
@@ -18,11 +18,11 @@ class SimpleCoarseCoding(featureWidth: Double, domain: ClosedRange<Double>, val 
         }
     }
 
-    override fun invoke(s: State) = Matrix.column(numOfComponents) {
+    override fun invoke(s: IndexedState) = Matrix.column(numOfComponents) {
         if (features[it].contains(s[0].toDouble() * scale)) 1.0 //quantize the interval
         else 0.0
     }
 
-    override fun alpha(alpha: Double, s: State) =
+    override fun alpha(alpha: Double, s: IndexedState) =
             alpha / features.sumBy { if (it.contains(s[0].toDouble() * scale)) 1 else 0 }
 }

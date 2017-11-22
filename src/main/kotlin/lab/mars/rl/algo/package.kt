@@ -41,15 +41,15 @@ fun Q_from_V(gamma: Double, states: StateSet, pvq: tuple3<DeterminedPolicy, Stat
             Q[s, a] = Σ(a.possibles) { probability * (reward + gamma * V[next]) }
 }
 
-fun average_alpha(mdp: MDP): (State, Action) -> Double {
-    val N = mdp.QFunc { 0 }
+fun average_alpha(indexedMdp: IndexedMDP): (IndexedState, IndexedAction) -> Double {
+    val N = indexedMdp.QFunc { 0 }
     return { s, a ->
         N[s, a]++
         1.0 / N[s, a]
     }
 }
 
-fun `ε-greedy`(s: State, Q: ActionValueFunction, policy: NonDeterminedPolicy, `ε`: Double) {
+fun `ε-greedy`(s: IndexedState, Q: ActionValueFunction, policy: NonDeterminedPolicy, `ε`: Double) {
     val `a*` = argmax(s.actions) { Q[s, it] }
     val size = s.actions.size
     for (a in s.actions) {
@@ -60,7 +60,7 @@ fun `ε-greedy`(s: State, Q: ActionValueFunction, policy: NonDeterminedPolicy, `
     }
 }
 
-fun `ε-greedy`(s: State, Q: ActionValueApproxFunction, policy: NonDeterminedPolicy, `ε`: Double) {
+fun `ε-greedy`(s: IndexedState, Q: ActionValueApproxFunction, policy: NonDeterminedPolicy, `ε`: Double) {
     val `a*` = argmax(s.actions) { Q(s, it) }
     val size = s.actions.size
     for (a in s.actions) {
@@ -71,7 +71,7 @@ fun `ε-greedy`(s: State, Q: ActionValueApproxFunction, policy: NonDeterminedPol
     }
 }
 
-fun `ε-greedy (tie broken randomly)`(s: State, Q: ActionValueFunction, policy: NonDeterminedPolicy, `ε`: Double) {
+fun `ε-greedy (tie broken randomly)`(s: IndexedState, Q: ActionValueFunction, policy: NonDeterminedPolicy, `ε`: Double) {
     val `a*` = argmax_tie_random(s.actions) { Q[s, it] }
     val size = s.actions.size
     for (a in s.actions) {

@@ -2,10 +2,8 @@ package lab.mars.rl.model.impl
 
 import lab.mars.rl.algo.average_alpha
 import lab.mars.rl.algo.ntd.*
-import lab.mars.rl.problem.Blackjack
-import lab.mars.rl.problem.CliffWalking
-import lab.mars.rl.problem.RandomWalk
-import lab.mars.rl.problem.WindyGridworld
+import lab.mars.rl.model.isNotTerminal
+import lab.mars.rl.problem.*
 import lab.mars.rl.util.Rand
 import lab.mars.rl.util.argmax
 import org.junit.Test

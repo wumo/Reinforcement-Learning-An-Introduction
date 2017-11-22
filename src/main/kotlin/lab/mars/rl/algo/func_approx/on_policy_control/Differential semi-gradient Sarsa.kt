@@ -11,7 +11,7 @@ fun FunctionApprox.`Differential semi-gradient Sarsa`(qFunc: ActionValueApproxFu
     `ε-greedy`(s, qFunc, π, ε)
     var a = s.actions.rand(π(s))
     while (true) {
-        val (s_next, reward, _) = a.sample()
+        val (s_next, reward) = a.sample()
         `ε-greedy`(s_next, qFunc, π, ε)
         val a_next = s_next.actions.rand(π(s_next))
         val δ = reward - average_reward + qFunc(s_next, a_next) - qFunc(s, a)

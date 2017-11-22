@@ -2,10 +2,9 @@ package lab.mars.rl.algo.eligibility_trace
 
 import lab.mars.rl.algo.func_approx.FunctionApprox
 import lab.mars.rl.model.impl.LinearFunc
+import lab.mars.rl.model.isNotTerminal
 import lab.mars.rl.util.debug
-import lab.mars.rl.util.matrix.Matrix
-import lab.mars.rl.util.matrix.minus
-import lab.mars.rl.util.matrix.times
+import lab.mars.rl.util.matrix.*
 
 fun FunctionApprox.`True Online TD(λ) prediction`(vFunc: LinearFunc, λ: Double) {
     val xFeature = vFunc.x
@@ -19,7 +18,7 @@ fun FunctionApprox.`True Online TD(λ) prediction`(vFunc: LinearFunc, λ: Double
         var x = xFeature(s)
         while (s.isNotTerminal()) {
             val a = s.actions.rand(π(s))
-            val (s_next, reward, _) = a.sample()
+            val (s_next, reward) = a.sample()
             val _x = xFeature(s_next)
             val V = (w.T * x).asScalar()
             val _V = (w.T * _x).asScalar()

@@ -3,25 +3,22 @@ package lab.mars.rl.algo.dyna
 import lab.mars.rl.algo.V_from_Q_ND
 import lab.mars.rl.algo.`ε-greedy (tie broken randomly)`
 import lab.mars.rl.model.*
-import lab.mars.rl.util.Rand
-import lab.mars.rl.util.debug
-import lab.mars.rl.util.max
-import lab.mars.rl.util.repeat
+import lab.mars.rl.util.*
 import lab.mars.rl.util.tuples.tuple2
 import lab.mars.rl.util.tuples.tuple3
 import org.slf4j.LoggerFactory
 import java.util.*
 
 @Suppress("NAME_SHADOWING")
-class `Dyna-Q-OnPolicy`(val mdp: MDP) {
+class `Dyna-Q-OnPolicy`(val indexedMdp: IndexedMDP) {
     companion object {
         val log = LoggerFactory.getLogger(this::class.java)!!
     }
 
-    val γ = mdp.γ
-    val started = mdp.started
-    val states = mdp.states
-    var stepListener: (ActionValueFunction, State) -> Unit = { _, _ -> }
+    val γ = indexedMdp.γ
+    val started = indexedMdp.started
+    val states = indexedMdp.states
+    var stepListener: (ActionValueFunction, IndexedState) -> Unit = { _, _ -> }
     var episodeListener: (StateValueFunction) -> Unit = {}
 
     var episodes = 10000
@@ -29,15 +26,15 @@ class `Dyna-Q-OnPolicy`(val mdp: MDP) {
     var ε = 0.1
     var n = 10
 
-    fun optimal(_alpha: (State, Action) -> Double = { _, _ -> α }): OptimalSolution {
-        val π = mdp.QFunc { 0.0 }
-        val Q = mdp.QFunc { 0.0 }
-        val V = mdp.VFunc { 0.0 }
+    fun optimal(_alpha: (IndexedState, IndexedAction) -> Double = { _, _ -> α }): OptimalSolution {
+        val π = indexedMdp.QFunc { 0.0 }
+        val Q = indexedMdp.QFunc { 0.0 }
+        val V = indexedMdp.VFunc { 0.0 }
         val result = tuple3(π, V, Q)
 
-        val startedStates = hashMapOf<State, Int>()
-        val Model = mdp.QFunc { hashMapOf<tuple2<State, Double>, Int>() }
-        val N = mdp.QFunc { 0 }
+        val startedStates = hashMapOf<IndexedState, Int>()
+        val Model = indexedMdp.QFunc { hashMapOf<tuple2<IndexedState, Double>, Int>() }
+        val N = indexedMdp.QFunc { 0 }
 
         for (episode in 1..episodes) {
             log.debug { "$episode/$episodes" }
@@ -51,7 +48,7 @@ class `Dyna-Q-OnPolicy`(val mdp: MDP) {
                 step++
                 `ε-greedy (tie broken randomly)`(s, Q, π, ε)
                 val a = s.actions.rand(π(s))
-                val (s_next, reward, _) = a.sample()
+                val (s_next, reward) = a.sample()
                 Model[s, a].compute(tuple2(s_next, reward)) { _, v -> (v ?: 0) + 1 }
                 N[s, a]++
                 Q[s, a] += _alpha(s, a) * (reward + γ * max(s_next.actions, 0.0) { Q[s_next, it] } - Q[s, a])

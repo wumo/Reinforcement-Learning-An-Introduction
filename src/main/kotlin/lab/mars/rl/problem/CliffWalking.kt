@@ -1,7 +1,6 @@
 package lab.mars.rl.problem
 
-import lab.mars.rl.model.MDP
-import lab.mars.rl.model.Possible
+import lab.mars.rl.model.*
 import lab.mars.rl.model.impl.CNSetMDP
 import lab.mars.rl.util.cnsetOf
 import lab.mars.rl.util.dimension.x
@@ -17,7 +16,7 @@ object CliffWalking {
             intArrayOf(1, 0)//right
     )
     val desc_move = arrayOf(" ↑", " ↓", "←", "→")
-    fun make(): MDP {
+    fun make(): IndexedMDP {
         val mdp = CNSetMDP(gamma = 1.0,
                            state_dim = world_width x world_height,
                            action_dim = 4)
@@ -38,10 +37,10 @@ object CliffWalking {
                     val _x = (s[0] + m[0]).coerceIn(0, world_width - 1)
                     val _y = (s[1] + +m[1]).coerceIn(0, world_height - 1)
                     val next = states[_x, _y]
-                    a.possibles = cnsetOf(Possible(next, if (next === goal) 0.0 else -1.0, 1.0))
+                    a.possibles = cnsetOf(IndexedPossible(next, if (next === goal) 0.0 else -1.0, 1.0))
                 }
             }
-            startedState.actions[3].possibles = cnsetOf(Possible(startedState, -100.0, 1.0))
+            startedState.actions[3].possibles = cnsetOf(IndexedPossible(startedState, -100.0, 1.0))
             for (x in 1 until world_width - 1) {
                 val s = states[x, 1]
                 for (a in s.actions) {
@@ -53,7 +52,7 @@ object CliffWalking {
                         _y = 0
                     }
                     val next = states[_x, _y]
-                    a.possibles = cnsetOf(Possible(next, if (next === startedState) -100.0 else -1.0, 1.0))
+                    a.possibles = cnsetOf(IndexedPossible(next, if (next === startedState) -100.0 else -1.0, 1.0))
                 }
             }
 

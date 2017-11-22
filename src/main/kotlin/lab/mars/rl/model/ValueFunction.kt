@@ -7,7 +7,7 @@ interface ValueFunction {
     /**
      * @return v(S,w)
      */
-    operator fun invoke(s: State): Double
+    operator fun invoke(s: IndexedState): Double
 
-    fun `▽`(s: State): Matrix
+    fun `▽`(s: IndexedState): Matrix
 }

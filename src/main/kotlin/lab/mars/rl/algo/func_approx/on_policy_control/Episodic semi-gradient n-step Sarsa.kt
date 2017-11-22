@@ -6,9 +6,7 @@ import lab.mars.rl.algo.`ε-greedy`
 import lab.mars.rl.algo.func_approx.FunctionApprox
 import lab.mars.rl.algo.func_approx.FunctionApprox.Companion.log
 import lab.mars.rl.algo.ntd.MAX_N
-import lab.mars.rl.model.Action
-import lab.mars.rl.model.ActionValueApproxFunction
-import lab.mars.rl.model.State
+import lab.mars.rl.model.*
 import lab.mars.rl.util.buf.newBuf
 import lab.mars.rl.util.debug
 import lab.mars.rl.util.matrix.times
@@ -18,8 +16,8 @@ import org.apache.commons.math3.util.FastMath.pow
 
 fun FunctionApprox.`Episodic semi-gradient n-step Sarsa control`(qFunc: ActionValueApproxFunction, n: Int) {
     val _R = newBuf<Double>(min(n, MAX_N))
-    val _S = newBuf<State>(min(n, MAX_N))
-    val _A = newBuf<Action>(min(n, MAX_N))
+    val _S = newBuf<IndexedState>(min(n, MAX_N))
+    val _A = newBuf<IndexedAction>(min(n, MAX_N))
 
     for (episode in 1..episodes) {
         log.debug { "$episode/$episodes" }
@@ -39,7 +37,7 @@ fun FunctionApprox.`Episodic semi-gradient n-step Sarsa control`(qFunc: ActionVa
                 _A.removeFirst()
             }
             if (t < T) {
-                val (s_next, reward, _) = a.sample()
+                val (s_next, reward) = a.sample()
                 _R.append(reward)
                 _S.append(s_next)
                 s = s_next

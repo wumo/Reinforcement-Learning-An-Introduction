@@ -12,15 +12,15 @@ import org.apache.commons.math3.util.FastMath.sqrt
 import org.slf4j.LoggerFactory
 
 @Suppress("NAME_SHADOWING")
-class `Dyna-Q+`(val mdp: MDP) {
+class `Dyna-Q+`(val indexedMdp: IndexedMDP) {
     companion object {
         val log = LoggerFactory.getLogger(this::class.java)!!
     }
 
-    val γ = mdp.γ
-    val started = mdp.started
-    val states = mdp.states
-    var stepListener: (ActionValueFunction, State) -> Unit = { _, _ -> }
+    val γ = indexedMdp.γ
+    val started = indexedMdp.started
+    val states = indexedMdp.states
+    var stepListener: (ActionValueFunction, IndexedState) -> Unit = { _, _ -> }
     var episodeListener: (StateValueFunction) -> Unit = {}
 
     var episodes = 10000
@@ -29,12 +29,12 @@ class `Dyna-Q+`(val mdp: MDP) {
     var κ = 1e-4
     var n = 10
     val null_tuple3 = tuple3(null_state, Double.NaN, 0)
-    fun optimal(_alpha: (State, Action) -> Double = { _, _ -> α }): OptimalSolution {
-        val π = mdp.QFunc { 0.0 }
-        val Q = mdp.QFunc { 0.0 }
-        val cachedSA = DefaultBuf.new<tuple2<State, Action>>(Q.size)
-        val Model = mdp.QFunc { null_tuple3 }
-        val V = mdp.VFunc { 0.0 }
+    fun optimal(_alpha: (IndexedState, IndexedAction) -> Double = { _, _ -> α }): OptimalSolution {
+        val π = indexedMdp.QFunc { 0.0 }
+        val Q = indexedMdp.QFunc { 0.0 }
+        val cachedSA = DefaultBuf.new<tuple2<IndexedState, IndexedAction>>(Q.size)
+        val Model = indexedMdp.QFunc { null_tuple3 }
+        val V = indexedMdp.VFunc { 0.0 }
         val result = tuple3(π, V, Q)
         var time = 0
         for (episode in 1..episodes) {
@@ -46,7 +46,7 @@ class `Dyna-Q+`(val mdp: MDP) {
                 time++
                 `ε-greedy`(s, Q, π, ε)
                 val a = s.actions.rand(π(s))
-                val (s_next, reward, _) = a.sample()
+                val (s_next, reward) = a.sample()
                 Q[s, a] += _alpha(s, a) * (reward + γ * max(s_next.actions, 0.0) { Q[s_next, it] } - Q[s, a])
                 for (_a in s.actions) {
                     if (_a !== a && Model[s, _a] === null_tuple3) {

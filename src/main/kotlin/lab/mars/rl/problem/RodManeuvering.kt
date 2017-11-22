@@ -1,10 +1,7 @@
 package lab.mars.rl.problem
 
 import javafx.geometry.Point2D
-import lab.mars.rl.model.Action
-import lab.mars.rl.model.MDP
-import lab.mars.rl.model.Possible
-import lab.mars.rl.model.State
+import lab.mars.rl.model.*
 import lab.mars.rl.model.impl.mdpOf
 import lab.mars.rl.util.buf.DefaultBuf
 import lab.mars.rl.util.cnsetOf
@@ -123,7 +120,7 @@ object RodManeuvering {
     fun Point2D.rotate(angleRad: Double)
             = Point2D(x * cos(angleRad) - y * sin(angleRad), x * sin(angleRad) + y * cos(angleRad))
 
-    fun make(): MDP {
+    fun make(): IndexedMDP {
         val mdp = mdpOf(gamma = 0.95, state_dim = resolution x resolution x rotation_resolution, action_dim = 6)
         return mdp.apply {
             val goal = states[17, 6, 0]
@@ -139,8 +136,8 @@ object RodManeuvering {
                 if (s.isTerminal()) continue
                 val (x, y, rotation) = currentStatus(s)
                 s.actions.apply {
-                    fun Action.assign(nx: Int, ny: Int, r: Int) {
-                        var s_next: State
+                    fun IndexedAction.assign(nx: Int, ny: Int, r: Int) {
+                        var s_next: IndexedState
                         if (nx in 0 until resolution
                             && ny in 0 until resolution) {
                             s_next = states[nx, ny, (r + rotation_resolution) % rotation_resolution]
@@ -149,8 +146,8 @@ object RodManeuvering {
                         } else
                             s_next = s
                         possibles = cnsetOf(
-                                if (s_next === goal) Possible(s_next, 1.0, 1.0)
-                                else Possible(s_next, 0.0, 1.0))
+                                if (s_next === goal) IndexedPossible(s_next, 1.0, 1.0)
+                                else IndexedPossible(s_next, 0.0, 1.0))
                     }
 
                     this[0].assign(s[0], s[1], s[2] - 1)//turn clockwise
@@ -181,7 +178,7 @@ object RodManeuvering {
         }
     }
 
-    fun currentStatus(s: State): Triple<Double, Double, Double> {
+    fun currentStatus(s: IndexedState): Triple<Double, Double, Double> {
         val x = unit_x * (s[0] + 0.5)
         val y = unit_y * (s[1] + 0.5)
         val rotation = unit_rotation * s[2]

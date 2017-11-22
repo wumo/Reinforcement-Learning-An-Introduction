@@ -5,8 +5,7 @@ package lab.mars.rl.algo.func_approx.prediction
 import lab.mars.rl.algo.func_approx.FunctionApprox
 import lab.mars.rl.algo.func_approx.FunctionApprox.Companion.log
 import lab.mars.rl.algo.ntd.MAX_N
-import lab.mars.rl.model.State
-import lab.mars.rl.model.ValueFunction
+import lab.mars.rl.model.*
 import lab.mars.rl.util.buf.newBuf
 import lab.mars.rl.util.debug
 import lab.mars.rl.util.matrix.times
@@ -16,7 +15,7 @@ import org.apache.commons.math3.util.FastMath.pow
 
 fun FunctionApprox.`n-step semi-gradient TD`(n: Int, v: ValueFunction) {
     val _R = newBuf<Double>(min(n, MAX_N))
-    val _S = newBuf<State>(min(n, MAX_N))
+    val _S = newBuf<IndexedState>(min(n, MAX_N))
     for (episode in 1..episodes) {
         log.debug { "$episode/$episodes" }
         var n = n
@@ -32,7 +31,7 @@ fun FunctionApprox.`n-step semi-gradient TD`(n: Int, v: ValueFunction) {
                 _S.removeFirst()
             }
             if (t < T) {
-                val (s_next, reward, _) = a.sample()
+                val (s_next, reward) = a.sample()
                 _R.append(reward)
                 _S.append(s_next)
                 s = s_next
