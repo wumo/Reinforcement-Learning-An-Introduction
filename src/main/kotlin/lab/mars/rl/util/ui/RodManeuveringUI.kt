@@ -19,7 +19,7 @@ import lab.mars.rl.problem.RodManeuvering.rotation_resolution
 import lab.mars.rl.problem.RodManeuvering.unit_x
 import lab.mars.rl.problem.RodManeuvering.unit_y
 import lab.mars.rl.problem.RodManeuvering.width
-import lab.mars.rl.util.max
+import lab.mars.rl.util.math.max
 import java.util.concurrent.CyclicBarrier
 
 class RodManeuveringUI : Application() {

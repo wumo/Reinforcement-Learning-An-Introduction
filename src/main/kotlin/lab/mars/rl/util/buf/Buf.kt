@@ -1,6 +1,6 @@
 package lab.mars.rl.util.buf
 
-import lab.mars.rl.util.Rand
+import lab.mars.rl.util.math.Rand
 
 /**
  * <p>

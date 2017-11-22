@@ -2,9 +2,10 @@
 
 package lab.mars.rl.model
 
-import lab.mars.rl.util.*
-import lab.mars.rl.util.buf.DefaultIntBuf
-import lab.mars.rl.util.buf.IntBuf
+import lab.mars.rl.util.buf.*
+import lab.mars.rl.util.collection.IndexedCollection
+import lab.mars.rl.util.collection.emptyNSet
+import lab.mars.rl.util.math.Rand
 import lab.mars.rl.util.tuples.tuple3
 
 /**
@@ -14,13 +15,13 @@ import lab.mars.rl.util.tuples.tuple3
  *
  * @author wumo
  */
-typealias StateSet = RandomAccessCollection<IndexedState>
-typealias ActionSet = RandomAccessCollection<IndexedAction>
-typealias PossibleSet = RandomAccessCollection<IndexedPossible>
-typealias StateValueFunction = RandomAccessCollection<Double>
-typealias ActionValueFunction = RandomAccessCollection<Double>
-typealias DeterminedPolicy = RandomAccessCollection<IndexedAction>
-typealias NonDeterminedPolicy = RandomAccessCollection<Double>
+typealias StateSet = IndexedCollection<IndexedState>
+typealias ActionSet = IndexedCollection<IndexedAction>
+typealias PossibleSet = IndexedCollection<IndexedPossible>
+typealias StateValueFunction = IndexedCollection<Double>
+typealias ActionValueFunction = IndexedCollection<Double>
+typealias DeterminedPolicy = IndexedCollection<IndexedAction>
+typealias NonDeterminedPolicy = IndexedCollection<Double>
 typealias OptimalSolution = tuple3<NonDeterminedPolicy, StateValueFunction, ActionValueFunction>
 
 
@@ -39,8 +40,8 @@ interface MDP {
 class IndexedMDP(
         val γ: Double,
         val states: StateSet,
-        private val state_function: ((Index) -> Any) -> RandomAccessCollection<Any>,
-        private val state_action_function: ((Index) -> Any) -> RandomAccessCollection<Any>) {
+        private val state_function: ((Index) -> Any) -> IndexedCollection<Any>,
+        private val state_action_function: ((Index) -> Any) -> IndexedCollection<Any>) {
     var started = states
     /**
      * 创建由[IndexedState]索引的state function
@@ -48,7 +49,7 @@ class IndexedMDP(
      * create state function indexed by [IndexedState]
      */
     fun <T : Any> VFunc(element_maker: (Index) -> T) =
-            state_function(element_maker) as RandomAccessCollection<T>
+            state_function(element_maker) as IndexedCollection<T>
 
     /**
      * 创建由[IndexedState]和[IndexedAction]索引的state action function
@@ -56,7 +57,7 @@ class IndexedMDP(
      * create state action function indexed by [IndexedState] and [IndexedAction]
      */
     fun <T : Any> QFunc(element_maker: (Index) -> T) =
-            state_action_function(element_maker) as RandomAccessCollection<T>
+            state_action_function(element_maker) as IndexedCollection<T>
 
     /**
      * equiprobable random policy

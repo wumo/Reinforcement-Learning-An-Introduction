@@ -4,7 +4,7 @@ import lab.mars.rl.algo.V_from_Q_ND
 import lab.mars.rl.algo.mc.MonteCarlo.Companion.log
 import lab.mars.rl.model.*
 import lab.mars.rl.util.buf.newBuf
-import lab.mars.rl.util.debug
+import lab.mars.rl.util.log.debug
 import lab.mars.rl.util.tuples.tuple3
 
 fun MonteCarlo.`Off-policy MC prediction`(): StateValueFunction {

@@ -1,7 +1,7 @@
 package lab.mars.rl.problem
 
 import lab.mars.rl.model.IndexedState
-import lab.mars.rl.util.Rand
+import lab.mars.rl.util.math.Rand
 import lab.mars.rl.util.buf.DefaultIntBuf
 import lab.mars.rl.util.tuples.tuple2
 

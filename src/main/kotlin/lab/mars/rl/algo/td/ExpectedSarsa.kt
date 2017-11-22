@@ -4,9 +4,9 @@ import lab.mars.rl.algo.V_from_Q_ND
 import lab.mars.rl.algo.`ε-greedy`
 import lab.mars.rl.algo.td.TemporalDifference.Companion.log
 import lab.mars.rl.model.*
-import lab.mars.rl.util.debug
+import lab.mars.rl.util.log.debug
 import lab.mars.rl.util.tuples.tuple3
-import lab.mars.rl.util.Σ
+import lab.mars.rl.util.math.Σ
 
 fun TemporalDifference.expectedSarsa(_alpha: (IndexedState, IndexedAction) -> Double = { _, _ -> α }): OptimalSolution {
     val π = indexedMdp.QFunc { 0.0 }

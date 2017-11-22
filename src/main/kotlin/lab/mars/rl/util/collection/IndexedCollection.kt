@@ -1,15 +1,16 @@
 @file:Suppress("NOTHING_TO_INLINE", "UNCHECKED_CAST")
 
-package lab.mars.rl.util
+package lab.mars.rl.util.collection
 
-import lab.mars.rl.util.buf.DefaultIntBuf
+import lab.mars.rl.util.buf.*
+import lab.mars.rl.util.math.Rand
 import lab.mars.rl.util.tuples.tuple2
 
-interface RandomAccessCollection<E : Any> : Iterable<E> {
+interface IndexedCollection<E : Any> : Iterable<E> {
     /**
-     * 构造一个与此集合相同形状的[RandomAccessCollection]（维度、树深度都相同）
+     * 构造一个与此集合相同形状的[IndexedCollection]（维度、树深度都相同）
      */
-    fun <T : Any> copycat(element_maker: (Index) -> T): RandomAccessCollection<T>
+    fun <T : Any> copycat(element_maker: (Index) -> T): IndexedCollection<T>
 
     fun copy() = copycat { get(it) }
 
@@ -22,16 +23,16 @@ interface RandomAccessCollection<E : Any> : Iterable<E> {
     operator fun get(vararg dim: Index): E = get(MultiIndex(dim as Array<Index>))
 
     /**
-     * 对应位置元素为[RandomAccessCollection<E>]，则可以使用invoke操作符进行部分获取，
+     * 对应位置元素为[IndexedCollection<E>]，则可以使用invoke操作符进行部分获取，
      * 由于获取的是子集，索引维度将要去掉前缀长度，如：原来通过`[0,0,0]`来索引，`invoke(0)`之后，则只能通过`[0,0]`来获取
      */
-    operator fun invoke(subset_dim: Index): RandomAccessCollection<E>
+    operator fun invoke(subset_dim: Index): IndexedCollection<E>
 
     /**@see invoke */
-    operator fun invoke(vararg subset_dim: Int): RandomAccessCollection<E> = invoke(DefaultIntBuf.reuse(subset_dim))
+    operator fun invoke(vararg subset_dim: Int): IndexedCollection<E> = invoke(DefaultIntBuf.reuse(subset_dim))
 
     /**@see invoke */
-    operator fun invoke(vararg subset_dim: Index): RandomAccessCollection<E> = invoke(MultiIndex(subset_dim as Array<Index>))
+    operator fun invoke(vararg subset_dim: Index): IndexedCollection<E> = invoke(MultiIndex(subset_dim as Array<Index>))
 
     /**
      * 返回第[idx]个元素，这里的元素顺序与[iterator()]的顺序一致
@@ -55,7 +56,7 @@ interface RandomAccessCollection<E : Any> : Iterable<E> {
      * @throws IllegalArgumentException  如果提供的参数不是合法的概率分布
      * @throws NoSuchElementException 如果集合为空
      */
-    fun rand(prob: RandomAccessCollection<Double>): E {
+    fun rand(prob: IndexedCollection<Double>): E {
         if (isEmpty()) throw NoSuchElementException()
         val p = Rand().nextDouble()
         var acc = 0.0
@@ -78,7 +79,7 @@ interface RandomAccessCollection<E : Any> : Iterable<E> {
     /**
      * 如果集合不为空，则执行[block]
      */
-    fun ifAny(block: RandomAccessCollection<E>.(RandomAccessCollection<E>) -> Unit) {
+    fun ifAny(block: IndexedCollection<E>.(IndexedCollection<E>) -> Unit) {
         for (element in this) return block(this, this)
     }
 
@@ -96,17 +97,17 @@ interface RandomAccessCollection<E : Any> : Iterable<E> {
         }
 }
 
-inline fun <T : Any> RandomAccessCollection<T>.isNotEmpty() = !isEmpty()
+inline fun <T : Any> IndexedCollection<T>.isNotEmpty() = !isEmpty()
 
-interface ExtendableRAC<E : Any> : RandomAccessCollection<E> {
-    operator fun set(subset_dim: Index, s: RandomAccessCollection<E>)
-    operator fun set(vararg subset_dim: Int, s: RandomAccessCollection<E>) = set(DefaultIntBuf.reuse(subset_dim), s)
-    operator fun set(vararg subset_dim: Index, s: RandomAccessCollection<E>) = set(MultiIndex(subset_dim as Array<Index>), s)
+interface ExtendableRAC<E : Any> : IndexedCollection<E> {
+    operator fun set(subset_dim: Index, s: IndexedCollection<E>)
+    operator fun set(vararg subset_dim: Int, s: IndexedCollection<E>) = set(DefaultIntBuf.reuse(subset_dim), s)
+    operator fun set(vararg subset_dim: Index, s: IndexedCollection<E>) = set(MultiIndex(subset_dim as Array<Index>), s)
 
     fun <T : Any> raw_set(element_maker: (Index, E) -> T) {
         withIndices().forEach { (idx, value) ->
             val tmp = element_maker(idx, value)
-            (tmp as? RandomAccessCollection<E>)?.apply {
+            (tmp as? IndexedCollection<E>)?.apply {
                 set(idx, this)
             } ?: set(idx, tmp as E)
         }

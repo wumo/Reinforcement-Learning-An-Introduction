@@ -4,7 +4,7 @@ import lab.mars.rl.model.*
 import lab.mars.rl.model.impl.CNSetMDP
 import lab.mars.rl.util.dimension.cnsetFrom
 import lab.mars.rl.util.dimension.x
-import lab.mars.rl.util.poisson
+import lab.mars.rl.util.math.poisson
 import org.apache.commons.math3.util.FastMath.*
 
 /**

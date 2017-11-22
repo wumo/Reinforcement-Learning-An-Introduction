@@ -14,7 +14,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package lab.mars.rl.util
+package lab.mars.rl.util.math
 
 import org.apache.commons.math3.special.Gamma
 import org.apache.commons.math3.util.FastMath

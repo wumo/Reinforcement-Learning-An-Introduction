@@ -3,7 +3,7 @@ package lab.mars.rl.problem
 import lab.mars.rl.model.IndexedMDP
 import lab.mars.rl.model.IndexedPossible
 import lab.mars.rl.model.impl.CNSetMDP
-import lab.mars.rl.util.cnsetOf
+import lab.mars.rl.util.collection.cnsetOf
 import org.apache.commons.math3.util.FastMath.min
 
 /**
@@ -30,7 +30,7 @@ object Gambler {
                         cnsetOf(IndexedPossible(states[capital], 0.0, 1.0))
                     else
                         cnsetOf(IndexedPossible(states[capital - stake], 0.0, 1 - p_head), //lose
-                                IndexedPossible(states[capital + stake], if (capital + stake == goal_coin) 1.0 else 0.0, p_head))//win
+                                                            IndexedPossible(states[capital + stake], if (capital + stake == goal_coin) 1.0 else 0.0, p_head))//win
                 }
             }
         }

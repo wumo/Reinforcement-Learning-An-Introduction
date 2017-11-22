@@ -4,10 +4,10 @@ import lab.mars.rl.algo.Q_from_V
 import lab.mars.rl.algo.V_from_Q
 import lab.mars.rl.algo.θ
 import lab.mars.rl.model.*
-import lab.mars.rl.util.argmax
-import lab.mars.rl.util.debug
+import lab.mars.rl.util.math.argmax
+import lab.mars.rl.util.log.debug
 import lab.mars.rl.util.tuples.tuple3
-import lab.mars.rl.util.Σ
+import lab.mars.rl.util.math.Σ
 import org.apache.commons.math3.util.FastMath.abs
 import org.apache.commons.math3.util.FastMath.max
 import org.slf4j.LoggerFactory

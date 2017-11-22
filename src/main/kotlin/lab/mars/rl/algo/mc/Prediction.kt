@@ -3,7 +3,7 @@ package lab.mars.rl.algo.mc
 import lab.mars.rl.algo.mc.MonteCarlo.Companion.log
 import lab.mars.rl.model.StateValueFunction
 import lab.mars.rl.model.isNotTerminal
-import lab.mars.rl.util.debug
+import lab.mars.rl.util.log.debug
 
 fun MonteCarlo.prediction(): StateValueFunction {
     val V = indexedMdp.VFunc { 0.0 }

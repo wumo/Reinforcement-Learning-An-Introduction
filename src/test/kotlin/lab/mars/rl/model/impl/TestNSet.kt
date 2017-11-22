@@ -6,7 +6,7 @@ import lab.mars.rl.util.dimension.invoke
 import lab.mars.rl.util.dimension.not
 import lab.mars.rl.util.dimension.nsetFrom
 import lab.mars.rl.util.dimension.x
-import lab.mars.rl.util.nsetOf
+import lab.mars.rl.util.collection.nsetOf
 import org.junit.Assert
 import org.junit.Test
 

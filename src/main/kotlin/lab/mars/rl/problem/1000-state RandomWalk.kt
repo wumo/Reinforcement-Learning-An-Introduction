@@ -4,8 +4,8 @@ import lab.mars.rl.model.IndexedMDP
 import lab.mars.rl.model.NonDeterminedPolicy
 import lab.mars.rl.model.IndexedPossible
 import lab.mars.rl.model.impl.CNSetMDP
-import lab.mars.rl.util.Rand
-import lab.mars.rl.util.emptyNSet
+import lab.mars.rl.util.math.Rand
+import lab.mars.rl.util.collection.emptyNSet
 
 /**
  * <p>

@@ -3,8 +3,8 @@ package lab.mars.rl.algo.dyna
 import lab.mars.rl.algo.V_from_Q_ND
 import lab.mars.rl.algo.`ε-greedy`
 import lab.mars.rl.model.*
-import lab.mars.rl.util.debug
-import lab.mars.rl.util.max
+import lab.mars.rl.util.log.debug
+import lab.mars.rl.util.math.max
 import lab.mars.rl.util.tuples.tuple3
 import org.slf4j.LoggerFactory
 

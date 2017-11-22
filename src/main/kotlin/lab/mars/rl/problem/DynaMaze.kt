@@ -5,9 +5,9 @@ import lab.mars.rl.model.IndexedPossible
 import lab.mars.rl.model.impl.CNSetMDP
 import lab.mars.rl.util.buf.DefaultIntBuf
 import lab.mars.rl.util.buf.IntBuf
-import lab.mars.rl.util.cnsetOf
+import lab.mars.rl.util.collection.cnsetOf
 import lab.mars.rl.util.dimension.x
-import lab.mars.rl.util.emptyNSet
+import lab.mars.rl.util.collection.emptyNSet
 
 object DynaMaze {
     private val move = arrayOf(

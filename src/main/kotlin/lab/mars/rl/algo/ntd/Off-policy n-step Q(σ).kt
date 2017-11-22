@@ -5,9 +5,9 @@ import lab.mars.rl.algo.`ε-greedy`
 import lab.mars.rl.algo.ntd.NStepTemporalDifference.Companion.log
 import lab.mars.rl.model.*
 import lab.mars.rl.util.buf.newBuf
-import lab.mars.rl.util.debug
+import lab.mars.rl.util.log.debug
 import lab.mars.rl.util.tuples.tuple3
-import lab.mars.rl.util.Σ
+import lab.mars.rl.util.math.Σ
 import org.apache.commons.math3.util.FastMath.min
 
 fun NStepTemporalDifference.`off-policy n-step Q(σ)`(alpha: (IndexedState, IndexedAction) -> Double = { _, _ -> this.α }): OptimalSolution {

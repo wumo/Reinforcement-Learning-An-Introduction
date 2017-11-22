@@ -1,13 +1,15 @@
-package lab.mars.rl.util
+package lab.mars.rl.util.collection
 
+import lab.mars.rl.util.buf.Index
+import lab.mars.rl.util.math.Rand
 import lab.mars.rl.util.buf.DefaultBuf
 import lab.mars.rl.util.tuples.tuple2
 
-class HashMapRAC<E : Any>() : RandomAccessCollection<E> {
+class HashMapRAC<E : Any>() : IndexedCollection<E> {
     private val raw = hashMapOf<Index, E>()
     private val contigus = DefaultBuf.new<E>()
 
-    override fun <T : Any> copycat(element_maker: (Index) -> T): RandomAccessCollection<T> {
+    override fun <T : Any> copycat(element_maker: (Index) -> T): IndexedCollection<T> {
         TODO()
     }
 
@@ -29,7 +31,7 @@ class HashMapRAC<E : Any>() : RandomAccessCollection<E> {
 
     override fun get(dim: Index) = raw[dim]!!
 
-    override fun invoke(subset_dim: Index): RandomAccessCollection<E> {
+    override fun invoke(subset_dim: Index): IndexedCollection<E> {
         TODO()
     }
 

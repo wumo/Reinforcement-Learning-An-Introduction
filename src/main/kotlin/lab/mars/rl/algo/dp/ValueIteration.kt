@@ -4,10 +4,10 @@ import lab.mars.rl.algo.θ
 import lab.mars.rl.model.IndexedMDP
 import lab.mars.rl.model.StateValueFunction
 import lab.mars.rl.model.null_action
-import lab.mars.rl.util.argmax
-import lab.mars.rl.util.debug
-import lab.mars.rl.util.max
-import lab.mars.rl.util.Σ
+import lab.mars.rl.util.math.argmax
+import lab.mars.rl.util.log.debug
+import lab.mars.rl.util.math.max
+import lab.mars.rl.util.math.Σ
 import org.apache.commons.math3.util.FastMath.abs
 import org.apache.commons.math3.util.FastMath.max
 import org.slf4j.LoggerFactory

@@ -8,7 +8,7 @@ import lab.mars.rl.algo.ntd.MAX_N
 import lab.mars.rl.model.*
 import lab.mars.rl.util.buf.newBuf
 import lab.mars.rl.util.matrix.times
-import lab.mars.rl.util.Σ
+import lab.mars.rl.util.math.Σ
 import org.apache.commons.math3.util.FastMath.min
 
 fun FunctionApprox.`Differential semi-gradient n-step Sarsa`(qFunc: ActionValueApproxFunction, n: Int, β: Double) {

@@ -3,8 +3,10 @@ package lab.mars.rl.algo.dyna
 import lab.mars.rl.algo.V_from_Q_ND
 import lab.mars.rl.algo.`ε-greedy (tie broken randomly)`
 import lab.mars.rl.model.*
-import lab.mars.rl.util.*
 import lab.mars.rl.util.buf.DefaultBuf
+import lab.mars.rl.util.collection.cnsetOf
+import lab.mars.rl.util.log.debug
+import lab.mars.rl.util.math.max
 import lab.mars.rl.util.tuples.tuple2
 import lab.mars.rl.util.tuples.tuple3
 import org.slf4j.LoggerFactory

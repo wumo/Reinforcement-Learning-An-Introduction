@@ -2,7 +2,7 @@ package lab.mars.rl.algo.ntd
 
 import lab.mars.rl.model.IndexedMDP
 import lab.mars.rl.model.NonDeterminedPolicy
-import lab.mars.rl.util.emptyNSet
+import lab.mars.rl.util.collection.emptyNSet
 import org.slf4j.LoggerFactory
 
 const val MAX_N = 1024

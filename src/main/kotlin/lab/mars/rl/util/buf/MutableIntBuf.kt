@@ -1,7 +1,5 @@
 package lab.mars.rl.util.buf
 
-import lab.mars.rl.util.Index
-
 /**
  * <p>
  * Created on 2017-09-28.

@@ -2,11 +2,11 @@
 
 package lab.mars.rl.util.dimension
 
-import lab.mars.rl.util.*
 import lab.mars.rl.util.buf.DefaultIntBuf
 import lab.mars.rl.util.buf.IntBuf
 import lab.mars.rl.util.buf.MutableIntBuf
 import lab.mars.rl.util.buf.buf
+import lab.mars.rl.util.collection.*
 import java.util.*
 
 /**

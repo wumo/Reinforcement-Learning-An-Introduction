@@ -2,9 +2,9 @@ package lab.mars.rl.problem
 
 import lab.mars.rl.model.*
 import lab.mars.rl.model.impl.CNSetMDP
-import lab.mars.rl.util.cnsetOf
+import lab.mars.rl.util.collection.cnsetOf
 import lab.mars.rl.util.dimension.x
-import lab.mars.rl.util.emptyNSet
+import lab.mars.rl.util.collection.emptyNSet
 
 object CliffWalking {
     val world_height = 4

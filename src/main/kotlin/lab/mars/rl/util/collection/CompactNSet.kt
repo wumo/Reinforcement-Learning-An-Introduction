@@ -1,8 +1,10 @@
 @file:Suppress("UNCHECKED_CAST", "NOTHING_TO_INLINE")
 
-package lab.mars.rl.util
+package lab.mars.rl.util.collection
 
+import lab.mars.rl.util.buf.Index
 import lab.mars.rl.util.buf.*
+import lab.mars.rl.util.exception.IndexOutOfDimensionException
 import lab.mars.rl.util.tuples.tuple2
 import java.util.*
 
@@ -30,7 +32,7 @@ inline fun <E : Any> emptyCNSet(): CompactNSet<E> = emptyCNSet as CompactNSet<E>
 
 class CompactNSet<E : Any>
 constructor(internal val data: MutableBuf<Any>, val rootOffset: Int = 0, val subLevel: Int = 0)
-    : RandomAccessCollection<E> {
+    : IndexedCollection<E> {
     private var _size = -1
 
     class SubTree(val size: Int, val offset2nd: Int, var offsetEnd: Int = -1)
@@ -55,7 +57,7 @@ constructor(internal val data: MutableBuf<Any>, val rootOffset: Int = 0, val sub
     }
 
     override fun <T : Any> copycat(element_maker: (Index) -> T)
-            : RandomAccessCollection<T> {
+            : IndexedCollection<T> {
         val new_data = DefaultBuf.new<Any>(data.cap)
         for (a in 0..data.lastIndex)
             new_data.append((data[a] as? Cell<E>)?.copy() ?: data[a])
@@ -112,7 +114,7 @@ constructor(internal val data: MutableBuf<Any>, val rootOffset: Int = 0, val sub
         else data[idx] = s
     }
 
-    override fun invoke(subset_dim: Index): RandomAccessCollection<E> {
+    override fun invoke(subset_dim: Index): IndexedCollection<E> {
         return operation(subset_dim.iterator()) { offset, level ->
             CompactNSet<E>(data, offset, level).apply { size }
         }
@@ -166,7 +168,7 @@ constructor(internal val data: MutableBuf<Any>, val rootOffset: Int = 0, val sub
         val tmp = data[offset] as? Cell<E>
                   ?: Cell(DefaultBuf.new(), data[offset] as E)
         val subtree = SubTree(size = size,
-                              offset2nd = data.writePtr)
+                                                                      offset2nd = data.writePtr)
         tmp.subtrees.append(subtree)
         data[offset] = tmp
         data.unfold(size - 1)

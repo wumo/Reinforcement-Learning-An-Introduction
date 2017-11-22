@@ -5,7 +5,7 @@ import ch.qos.logback.classic.LoggerContext
 import lab.mars.rl.model.IndexedMDP
 import lab.mars.rl.model.NonDeterminedPolicy
 import lab.mars.rl.model.StateValueFunction
-import lab.mars.rl.util.argmax
+import lab.mars.rl.util.math.argmax
 import org.slf4j.Logger
 import org.slf4j.LoggerFactory
 

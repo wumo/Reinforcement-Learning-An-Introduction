@@ -1,10 +1,12 @@
 @file:Suppress("NOTHING_TO_INLINE", "UNCHECKED_CAST", "OVERRIDE_BY_INLINE")
 
-package lab.mars.rl.util
+package lab.mars.rl.util.collection
 
+import lab.mars.rl.util.buf.Index
 import lab.mars.rl.util.buf.DefaultIntBuf
 import lab.mars.rl.util.buf.IntBuf
 import lab.mars.rl.util.buf.MutableIntBuf
+import lab.mars.rl.util.exception.IndexOutOfDimensionException
 import lab.mars.rl.util.tuples.tuple2
 import java.util.*
 
@@ -57,7 +59,7 @@ inline fun <E : Any> emptyNSet(): NSet<E> = emptyNSet as NSet<E>
  */
 class NSet<E : Any>(private val dim: IntArray, private val stride: IntArray, private val root: Array<Any>) :
         ExtendableRAC<E> {
-    override fun <T : Any> copycat(element_maker: (Index) -> T): RandomAccessCollection<T> {
+    override fun <T : Any> copycat(element_maker: (Index) -> T): IndexedCollection<T> {
         val index = DefaultIntBuf.zero(dim.size)
         return NSet(dim, stride, Array(root.size) {
             copycat(root[it], index, element_maker)
@@ -115,7 +117,7 @@ class NSet<E : Any>(private val dim: IntArray, private val stride: IntArray, pri
         }
     }
 
-    override fun ifAny(block: RandomAccessCollection<E>.(RandomAccessCollection<E>) -> Unit) {
+    override fun ifAny(block: IndexedCollection<E>.(IndexedCollection<E>) -> Unit) {
         if (!root.isEmpty()) block(this, this)
     }
 
@@ -127,11 +129,11 @@ class NSet<E : Any>(private val dim: IntArray, private val stride: IntArray, pri
         _set(dim, s)
     }
 
-    override fun set(subset_dim: Index, s: RandomAccessCollection<E>) {
+    override fun set(subset_dim: Index, s: IndexedCollection<E>) {
         _set(subset_dim, s)
     }
 
-    override fun invoke(subset_dim: Index): RandomAccessCollection<E> = _get(subset_dim)
+    override fun invoke(subset_dim: Index): IndexedCollection<E> = _get(subset_dim)
 
     private fun <T : Any> _get(idx: Index): T = get_or_set(idx.iterator()) { it }
 

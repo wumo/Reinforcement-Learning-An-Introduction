@@ -1,6 +1,6 @@
 @file:Suppress("NOTHING_TO_INLINE")
 
-package lab.mars.rl.util
+package lab.mars.rl.util.buf
 
 abstract class Index : Iterable<Int> {
     val isEmpty: Boolean

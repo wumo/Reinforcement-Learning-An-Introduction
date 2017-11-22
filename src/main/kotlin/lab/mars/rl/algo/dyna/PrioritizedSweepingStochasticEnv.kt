@@ -3,7 +3,9 @@ package lab.mars.rl.algo.dyna
 import lab.mars.rl.algo.V_from_Q_ND
 import lab.mars.rl.algo.`ε-greedy (tie broken randomly)`
 import lab.mars.rl.model.*
-import lab.mars.rl.util.*
+import lab.mars.rl.util.log.debug
+import lab.mars.rl.util.math.Rand
+import lab.mars.rl.util.math.max
 import lab.mars.rl.util.tuples.tuple2
 import lab.mars.rl.util.tuples.tuple3
 import org.apache.commons.math3.util.FastMath.abs
@@ -55,7 +57,7 @@ class PrioritizedSweepingStochasticEnv(val indexedMdp: IndexedMDP) {
                 predecessor[s_next] += tuple2(s, a)
                 val P = abs(reward + γ * max(s_next.actions, 0.0) { Q[s_next, it] } - Q[s, a])
                 if (P > θ) PQueue.add(tuple3(P, s, a))
-                repeat(n, { PQueue.isNotEmpty() }) {
+                lab.mars.rl.util.math.repeat(n, { PQueue.isNotEmpty() }) {
                     val (_, s, a) = PQueue.poll()
                     val (s_next, reward) = Model[s, a].rand(N[s, a])
                     Q[s, a] += _alpha(s, a) * (reward + γ * max(s_next.actions, 0.0) { Q[s_next, it] } - Q[s, a])

@@ -7,8 +7,10 @@ import lab.mars.rl.algo.func_approx.FunctionApprox
 import lab.mars.rl.algo.func_approx.FunctionApprox.Companion.log
 import lab.mars.rl.algo.ntd.MAX_N
 import lab.mars.rl.model.*
-import lab.mars.rl.util.*
 import lab.mars.rl.util.buf.newBuf
+import lab.mars.rl.util.log.debug
+import lab.mars.rl.util.math.Π
+import lab.mars.rl.util.math.Σ
 import lab.mars.rl.util.matrix.times
 import org.apache.commons.math3.util.FastMath.min
 import org.apache.commons.math3.util.FastMath.pow

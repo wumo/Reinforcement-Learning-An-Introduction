@@ -4,7 +4,7 @@ import lab.mars.rl.algo.V_from_Q_ND
 import lab.mars.rl.algo.`ε-greedy`
 import lab.mars.rl.algo.td.TemporalDifference.Companion.log
 import lab.mars.rl.model.*
-import lab.mars.rl.util.debug
+import lab.mars.rl.util.log.debug
 import lab.mars.rl.util.tuples.tuple3
 
 fun TemporalDifference.sarsa(_alpha: (IndexedState, IndexedAction) -> Double = { _, _ -> α }): OptimalSolution {

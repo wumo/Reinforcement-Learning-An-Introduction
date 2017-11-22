@@ -3,7 +3,9 @@ package lab.mars.rl.algo.td
 import lab.mars.rl.algo.V_from_Q_ND
 import lab.mars.rl.algo.td.TemporalDifference.Companion.log
 import lab.mars.rl.model.*
-import lab.mars.rl.util.*
+import lab.mars.rl.util.log.debug
+import lab.mars.rl.util.math.Rand
+import lab.mars.rl.util.math.argmax
 import lab.mars.rl.util.tuples.tuple3
 
 

@@ -3,7 +3,9 @@ package lab.mars.rl.algo.dyna
 import lab.mars.rl.algo.V_from_Q_ND
 import lab.mars.rl.algo.`ε-greedy (tie broken randomly)`
 import lab.mars.rl.model.*
-import lab.mars.rl.util.*
+import lab.mars.rl.util.log.debug
+import lab.mars.rl.util.math.Rand
+import lab.mars.rl.util.math.max
 import lab.mars.rl.util.tuples.tuple2
 import lab.mars.rl.util.tuples.tuple3
 import org.slf4j.LoggerFactory
@@ -54,7 +56,7 @@ class `Dyna-Q-OnPolicy`(val indexedMdp: IndexedMDP) {
                 Q[s, a] += _alpha(s, a) * (reward + γ * max(s_next.actions, 0.0) { Q[s_next, it] } - Q[s, a])
 
                 var _s = startedStates.rand(episode)
-                repeat(n, { _s.isNotTerminal() }) {
+                lab.mars.rl.util.math.repeat(n, { _s.isNotTerminal() }) {
                     `ε-greedy (tie broken randomly)`(_s, Q, π, ε)//using on-policy to distribute computation
                     val a = _s.actions.rand(π(_s))
                     if (Model[_s, a].isEmpty()) return@repeat

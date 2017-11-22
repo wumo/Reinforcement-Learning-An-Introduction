@@ -2,8 +2,8 @@
 
 package lab.mars.rl.model.impl
 
-import lab.mars.rl.util.Index
-import lab.mars.rl.util.MultiIndex
+import lab.mars.rl.util.buf.Index
+import lab.mars.rl.util.buf.MultiIndex
 import lab.mars.rl.util.buf.DefaultIntBuf
 import org.junit.Assert
 import org.junit.Test

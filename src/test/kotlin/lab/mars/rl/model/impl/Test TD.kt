@@ -4,7 +4,7 @@ import lab.mars.rl.algo.average_alpha
 import lab.mars.rl.algo.td.*
 import lab.mars.rl.model.isNotTerminal
 import lab.mars.rl.problem.*
-import lab.mars.rl.util.argmax
+import lab.mars.rl.util.math.argmax
 import org.junit.Test
 
 class `TD` {

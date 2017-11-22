@@ -1,5 +1,6 @@
-package lab.mars.rl.util
+package lab.mars.rl.util.tile
 
+import lab.mars.rl.util.buf.Index
 import lab.mars.rl.util.buf.DefaultIntBuf
 import org.apache.commons.math3.util.FastMath.floor
 
