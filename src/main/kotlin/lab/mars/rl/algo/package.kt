@@ -1,10 +1,9 @@
 package lab.mars.rl.algo
 
 import lab.mars.rl.model.*
-import lab.mars.rl.util.math.argmax
-import lab.mars.rl.util.math.argmax_tie_random
-import lab.mars.rl.util.tuples.tuple3
-import lab.mars.rl.util.math.Σ
+import lab.mars.rl.model.impl.mdp.*
+import lab.mars.rl.util.collection.Gettable
+import lab.mars.rl.util.math.*
 
 /**
  * <p>
@@ -13,28 +12,18 @@ import lab.mars.rl.util.math.Σ
  *
  * @author wumo
  */
-const val θ = 1e-6
 
-fun V_from_Q(states: StateSet, pvq: tuple3<DeterminedPolicy, StateValueFunction, ActionValueFunction>) {
-    val (PI, V, Q) = pvq
+fun V_from_Q(states: StateSet, pvq: OptimalSolution) {
+    val (π, V, Q) = pvq
     for (s in states)
         s.actions.ifAny {
-            V[s] = Q[s, PI[s]]
+            V[s] = Σ(this) {
+                π[s, it] * Q[s, it]
+            }
         }
 }
 
-fun V_from_Q_ND(states: StateSet, pvq: tuple3<NonDeterminedPolicy, StateValueFunction, ActionValueFunction>) {
-    val (PI, V, Q) = pvq
-    for (s in states)
-        s.actions.ifAny {
-            var sum = 0.0
-            for ((a, prob) in PI(s).withIndices())
-                sum += prob * Q[s, a]
-            V[s] = sum
-        }
-}
-
-fun Q_from_V(gamma: Double, states: StateSet, pvq: tuple3<DeterminedPolicy, StateValueFunction, ActionValueFunction>) {
+fun Q_from_V(gamma: Double, states: StateSet, pvq: OptimalSolution) {
     val (_, V, Q) = pvq
     for (s in states)
         for (a in s.actions)
@@ -49,35 +38,46 @@ fun average_alpha(indexedMdp: IndexedMDP): (IndexedState, IndexedAction) -> Doub
     }
 }
 
-fun `ε-greedy`(s: IndexedState, Q: ActionValueFunction, policy: NonDeterminedPolicy, `ε`: Double) {
+fun `ε-greedy`(s: IndexedState, Q: ActionValueFunction, policy: IndexedPolicy, ε: Double) {
     val `a*` = argmax(s.actions) { Q[s, it] }
     val size = s.actions.size
     for (a in s.actions) {
         policy[s, a] = when {
-            a === `a*` -> 1 - `ε` + `ε` / size
-            else -> `ε` / size
+            a === `a*` -> 1 - ε + ε / size
+            else -> ε / size
         }
     }
 }
 
-fun `ε-greedy`(s: IndexedState, Q: ActionValueApproxFunction, policy: NonDeterminedPolicy, `ε`: Double) {
+fun `ε-greedy`(s: IndexedState, evaluate: Gettable<Action<State>, Double>, q: IndexedPolicy, ε: Double) {
+    val `a*` = argmax(s.actions) { evaluate[it] }
+    val size = s.actions.size
+    for (a in s.actions) {
+        q[s, a] = when {
+            a === `a*` -> 1 - ε + ε / size
+            else -> ε / size
+        }
+    }
+}
+
+fun `ε-greedy`(s: IndexedState, Q: ActionValueApproxFunction, policy: IndexedPolicy, ε: Double) {
     val `a*` = argmax(s.actions) { Q(s, it) }
     val size = s.actions.size
     for (a in s.actions) {
         policy[s, a] = when {
-            a === `a*` -> 1 - `ε` + `ε` / size
-            else -> `ε` / size
+            a === `a*` -> 1 - ε + ε / size
+            else -> ε / size
         }
     }
 }
 
-fun `ε-greedy (tie broken randomly)`(s: IndexedState, Q: ActionValueFunction, policy: NonDeterminedPolicy, `ε`: Double) {
+fun `ε-greedy (tie broken randomly)`(s: IndexedState, Q: ActionValueFunction, policy: IndexedPolicy, ε: Double) {
     val `a*` = argmax_tie_random(s.actions) { Q[s, it] }
     val size = s.actions.size
     for (a in s.actions) {
         policy[s, a] = when {
-            a === `a*` -> 1 - `ε` + `ε` / size
-            else -> `ε` / size
+            a === `a*` -> 1 - ε + ε / size
+            else -> ε / size
         }
     }
 }

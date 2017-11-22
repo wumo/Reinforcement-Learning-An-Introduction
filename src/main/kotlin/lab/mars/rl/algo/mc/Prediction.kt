@@ -15,7 +15,7 @@ fun MonteCarlo.prediction(): StateValueFunction {
         var s = started.rand()
         var accumulate = 0.0
         while (s.isNotTerminal()) {
-            val a = s.actions.rand(π(s))
+            val a = π(s)
             val (s_next, reward) = a.sample()
             if (preReturn[s].isNaN())
                 preReturn[s] = accumulate

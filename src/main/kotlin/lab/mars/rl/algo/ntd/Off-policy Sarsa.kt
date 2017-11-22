@@ -1,9 +1,11 @@
 package lab.mars.rl.algo.ntd
 
-import lab.mars.rl.algo.V_from_Q_ND
+import lab.mars.rl.algo.V_from_Q
 import lab.mars.rl.algo.`ε-greedy`
 import lab.mars.rl.algo.ntd.NStepTemporalDifference.Companion.log
-import lab.mars.rl.model.*
+import lab.mars.rl.model.OptimalSolution
+import lab.mars.rl.model.impl.mdp.*
+import lab.mars.rl.model.isTerminal
 import lab.mars.rl.util.buf.newBuf
 import lab.mars.rl.util.log.debug
 import lab.mars.rl.util.math.Π
@@ -14,7 +16,7 @@ import org.apache.commons.math3.util.FastMath.pow
 
 fun NStepTemporalDifference.`off-policy sarsa`(alpha: (IndexedState, IndexedAction) -> Double = { _, _ -> this.α }): OptimalSolution {
     val b = indexedMdp.equiprobablePolicy()
-    val π = b.copy()
+    val π =IndexedPolicy(b.copy())
 
     val Q = indexedMdp.QFunc { 0.0 }
     val _R = newBuf<Double>(min(n, MAX_N))
@@ -66,6 +68,6 @@ fun NStepTemporalDifference.`off-policy sarsa`(alpha: (IndexedState, IndexedActi
     }
     val V = indexedMdp.VFunc { 0.0 }
     val result = tuple3(π, V, Q)
-    V_from_Q_ND(states, result)
+    V_from_Q(states, result)
     return result
 }

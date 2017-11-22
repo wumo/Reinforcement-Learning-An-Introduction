@@ -89,13 +89,13 @@ class `Test DP` {
             var count = 0
             print(s)
             while (s.isNotTerminal()) {
-                val a = PI[s]
+                val a = PI(s)
                 val possible = a.sample()
                 s = possible.next
                 count++
                 print("${DynaMaze.desc_move[a[0]]}$s")
             }
-            println("\nsteps=$count")//optimal=12
+            println("\nsteps=$count")//optimal=14
         }
     }
 
@@ -109,13 +109,13 @@ class `Test DP` {
             var count = 0
             print(s)
             while (s.isNotTerminal()) {
-                val a = PI[s]
+                val a = PI(s)
                 val possible = a.sample()
                 s = possible.next
                 count++
                 print("$a$s")
             }
-            println("\nsteps=$count")//optimal=14
+            println("\nsteps=$count")//optimal=39
         }
     }
 }

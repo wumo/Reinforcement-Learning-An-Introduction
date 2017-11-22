@@ -1,8 +1,8 @@
 package lab.mars.rl.problem
 
-import lab.mars.rl.model.IndexedMDP
-import lab.mars.rl.model.IndexedPossible
-import lab.mars.rl.model.impl.CNSetMDP
+import lab.mars.rl.model.impl.mdp.IndexedMDP
+import lab.mars.rl.model.impl.mdp.IndexedPossible
+import lab.mars.rl.model.impl.mdp.CNSetMDP
 import lab.mars.rl.util.buf.DefaultIntBuf
 import lab.mars.rl.util.buf.IntBuf
 import lab.mars.rl.util.collection.cnsetOf
@@ -44,8 +44,8 @@ object DynaMaze {
 
     fun make(): IndexedMDP {
         val mdp = CNSetMDP(gamma = 0.95,
-                           state_dim = 9 x 6,
-                           action_dim = 4)
+                                                      state_dim = 9 x 6,
+                                                      action_dim = 4)
         return mdp.apply {
             for (s in states)
                 for (action in s.actions) {

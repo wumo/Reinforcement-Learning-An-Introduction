@@ -1,13 +1,10 @@
 package lab.mars.rl.algo.dp
 
-import lab.mars.rl.algo.θ
-import lab.mars.rl.model.IndexedMDP
 import lab.mars.rl.model.StateValueFunction
+import lab.mars.rl.model.impl.mdp.IndexedMDP
 import lab.mars.rl.model.null_action
-import lab.mars.rl.util.math.argmax
 import lab.mars.rl.util.log.debug
-import lab.mars.rl.util.math.max
-import lab.mars.rl.util.math.Σ
+import lab.mars.rl.util.math.*
 import org.apache.commons.math3.util.FastMath.abs
 import org.apache.commons.math3.util.FastMath.max
 import org.slf4j.LoggerFactory
@@ -24,6 +21,7 @@ class ValueIteration(private val indexedMdp: IndexedMDP) {
         val log = LoggerFactory.getLogger(this::class.java)!!
     }
 
+    val θ = 1e-6
     val states = indexedMdp.states
     val γ = indexedMdp.γ
     fun iteration(): StateValueFunction {

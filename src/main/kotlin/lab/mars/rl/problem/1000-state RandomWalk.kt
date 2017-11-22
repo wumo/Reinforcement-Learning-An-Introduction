@@ -1,11 +1,8 @@
 package lab.mars.rl.problem
 
-import lab.mars.rl.model.IndexedMDP
-import lab.mars.rl.model.NonDeterminedPolicy
-import lab.mars.rl.model.IndexedPossible
-import lab.mars.rl.model.impl.CNSetMDP
-import lab.mars.rl.util.math.Rand
+import lab.mars.rl.model.impl.mdp.*
 import lab.mars.rl.util.collection.emptyNSet
+import lab.mars.rl.util.math.Rand
 
 /**
  * <p>
@@ -17,7 +14,7 @@ import lab.mars.rl.util.collection.emptyNSet
 object `1000-state RandomWalk` {
     val num_states = 1000
     val step_range = 100
-    fun make(): Pair<IndexedMDP, NonDeterminedPolicy> {
+    fun make(): Pair<IndexedMDP, IndexedPolicy> {
         val mdp = CNSetMDP(1.0, num_states + 2, 1)
         mdp.apply {
             val last = num_states + 1
@@ -31,13 +28,13 @@ object `1000-state RandomWalk` {
                     val next = (a + move).coerceIn(0, last)
                     IndexedPossible(states[next],
                                     when (next) {
-                                 0 -> -1.0
-                                 last -> 1.0
-                                 else -> 0.0
-                             }, 1.0)
+                                        0 -> -1.0
+                                        last -> 1.0
+                                        else -> 0.0
+                                    }, 1.0)
                 }
         }
-        val policy = mdp.QFunc { 1.0 }
+        val policy = IndexedPolicy(mdp.QFunc { 1.0 })
         return Pair(mdp, policy)
     }
 }

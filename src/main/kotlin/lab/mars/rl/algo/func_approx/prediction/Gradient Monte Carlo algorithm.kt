@@ -8,7 +8,7 @@ import lab.mars.rl.util.log.debug
 import lab.mars.rl.util.matrix.times
 
 fun FunctionApprox.`Gradient Monte Carlo algorithm`(v: ValueFunction) {
-    val _S = newBuf<IndexedState>()
+    val _S = newBuf<State>()
     val _R = newBuf<Double>()
 
     for (episode in 1..episodes) {
@@ -19,7 +19,7 @@ fun FunctionApprox.`Gradient Monte Carlo algorithm`(v: ValueFunction) {
         var T = 0
         var accum = 0.0
         while (s.isNotTerminal()) {
-            val a = s.actions.rand(π(s))
+            val a = π(s)
             val (s_next, reward) = a.sample()
             accum += reward
             _S.append(s_next)

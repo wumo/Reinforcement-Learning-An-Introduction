@@ -1,8 +1,9 @@
 package lab.mars.rl.algo.dyna
 
-import lab.mars.rl.algo.V_from_Q_ND
+import lab.mars.rl.algo.V_from_Q
 import lab.mars.rl.algo.`ε-greedy (tie broken randomly)`
 import lab.mars.rl.model.*
+import lab.mars.rl.model.impl.mdp.*
 import lab.mars.rl.util.log.debug
 import lab.mars.rl.util.math.Rand
 import lab.mars.rl.util.math.max
@@ -31,7 +32,7 @@ class PrioritizedSweepingStochasticEnv(val indexedMdp: IndexedMDP) {
     var n = 10
 
     fun optimal(_alpha: (IndexedState, IndexedAction) -> Double = { _, _ -> α }): OptimalSolution {
-        val π = indexedMdp.QFunc { 0.0 }
+        val π = IndexedPolicy(indexedMdp.QFunc { 0.0 })
         val Q = indexedMdp.QFunc { 0.0 }
         val PQueue = PriorityQueue(Q.size, Comparator<tuple3<Double, IndexedState, IndexedAction>> { o1, o2 ->
             o2._1.compareTo(o1._1)
@@ -46,11 +47,11 @@ class PrioritizedSweepingStochasticEnv(val indexedMdp: IndexedMDP) {
             var step = 0
             var s = started.rand()
             while (s.isNotTerminal()) {
-                V_from_Q_ND(states, result)
+                V_from_Q(states, result)
                 stepListener(V, s)
                 step++
                 `ε-greedy (tie broken randomly)`(s, Q, π, ε)
-                val a = s.actions.rand(π(s))
+                val a = π(s)
                 val (s_next, reward) = a.sample()
                 Model[s, a].compute(tuple2(s_next, reward)) { _, v -> (v ?: 0) + 1 }
                 N[s, a]++

@@ -2,7 +2,6 @@
 
 package lab.mars.rl.algo.func_approx.off_policy
 
-import lab.mars.rl.algo.`ε-greedy`
 import lab.mars.rl.algo.func_approx.FunctionApprox
 import lab.mars.rl.algo.func_approx.FunctionApprox.Companion.log
 import lab.mars.rl.algo.ntd.MAX_N
@@ -15,10 +14,10 @@ import lab.mars.rl.util.matrix.times
 import org.apache.commons.math3.util.FastMath.min
 import org.apache.commons.math3.util.FastMath.pow
 
-fun FunctionApprox.`n-step semi-gradient off-policy sarsa episodic`(n: Int, q: ActionValueApproxFunction, b: NonDeterminedPolicy) {
+fun FunctionApprox.`n-step semi-gradient off-policy sarsa episodic`(n: Int, q: ActionValueApproxFunction, b: Policy) {
     val _R = newBuf<Double>(min(n, MAX_N))
-    val _S = newBuf<IndexedState>(min(n, MAX_N))
-    val _A = newBuf<IndexedAction>(min(n, MAX_N))
+    val _S = newBuf<State>(min(n, MAX_N))
+    val _A = newBuf<Action<State>>(min(n, MAX_N))
 
     for (episode in 1..episodes) {
         log.debug { "$episode/$episodes" }
@@ -26,7 +25,7 @@ fun FunctionApprox.`n-step semi-gradient off-policy sarsa episodic`(n: Int, q: A
         var T = Int.MAX_VALUE
         var t = 0
         var s = started.rand()
-        var a = s.actions.rand(b(s))
+        var a = b(s)
         _R.clear();_R.append(0.0)
         _S.clear();_S.append(s)
         _A.clear();_A.append(a)
@@ -46,7 +45,7 @@ fun FunctionApprox.`n-step semi-gradient off-policy sarsa episodic`(n: Int, q: A
                     val _t = t - n + 1
                     if (_t < 0) n = T //n is too large, normalize it
                 } else {
-                    a = s.actions.rand(b(s))
+                    a = b(s)
                     _A.append(a)
                 }
             }
@@ -56,7 +55,7 @@ fun FunctionApprox.`n-step semi-gradient off-policy sarsa episodic`(n: Int, q: A
                 var G = Σ(1..min(n, T - τ)) { pow(γ, it - 1) * _R[it] }
                 if (τ + n < T) G += pow(γ, n) * q(_S[n], _A[n])
                 q.w += α * ρ * (G - q(_S[0], _A[0])) * q.`▽`(_S[0], _A[0])
-                `ε-greedy`(_S[0], q, π, ε)
+                π.`ε-greedy update`(_S[0], q)
             }
             t++
         } while (τ < T - 1)
@@ -65,15 +64,15 @@ fun FunctionApprox.`n-step semi-gradient off-policy sarsa episodic`(n: Int, q: A
     }
 }
 
-fun FunctionApprox.`n-step semi-gradient off-policy sarsa continuing`(n: Int, q: ActionValueApproxFunction, b: NonDeterminedPolicy, β: Double) {
+fun FunctionApprox.`n-step semi-gradient off-policy sarsa continuing`(n: Int, q: ActionValueApproxFunction, b: Policy, β: Double) {
     var average_reward = 0.0
     val _R = newBuf<Double>(min(n, MAX_N))
-    val _S = newBuf<IndexedState>(min(n, MAX_N))
-    val _A = newBuf<IndexedAction>(min(n, MAX_N))
+    val _S = newBuf<State>(min(n, MAX_N))
+    val _A = newBuf<Action<State>>(min(n, MAX_N))
 
     var t = 0
     val s = started.rand()
-    var a = s.actions.rand(b(s))
+    var a = b(s)
     _R.clear();_R.append(0.0)
     _S.clear();_S.append(s)
     _A.clear();_A.append(a)
@@ -86,7 +85,7 @@ fun FunctionApprox.`n-step semi-gradient off-policy sarsa continuing`(n: Int, q:
         val (s_next, reward) = a.sample()
         _R.append(reward)
         _S.append(s_next)
-        a = s.actions.rand(b(s))
+        a = b(s)
         _A.append(a)
 
         val τ = t - n + 1
@@ -95,7 +94,7 @@ fun FunctionApprox.`n-step semi-gradient off-policy sarsa continuing`(n: Int, q:
             val δ = Σ(1..n) { _R[it] - average_reward } + q(_S[n], _A[n]) - q(_S[0], _A[0])
             average_reward += β * δ
             q.w += α * ρ * δ * q.`▽`(_S[0], _A[0])
-            `ε-greedy`(_S[0], q, π, ε)
+            π.`ε-greedy update`(_S[0], q)
         }
         t++
     }

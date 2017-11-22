@@ -1,12 +1,11 @@
 package lab.mars.rl.problem
 
-import lab.mars.rl.model.*
-import lab.mars.rl.model.impl.CNSetMDP
-import lab.mars.rl.util.math.Rand
+import lab.mars.rl.model.impl.mdp.*
 import lab.mars.rl.util.buf.DefaultIntBuf
+import lab.mars.rl.util.collection.emptyNSet
 import lab.mars.rl.util.dimension.invoke
 import lab.mars.rl.util.dimension.x
-import lab.mars.rl.util.collection.emptyNSet
+import lab.mars.rl.util.math.Rand
 
 /**
  * <p>
@@ -32,7 +31,7 @@ object Blackjack {
     private const val player_offset = 12
     private const val dealer_offset = 1
 
-    fun make(): Pair<IndexedMDP, NonDeterminedPolicy> {
+    fun make(): IndexedProblem {
         val mdp = CNSetMDP(gamma = 1.0, state_dim = 0(3, 2 x 10 x 10), action_dim = { if (it[0] == 0) 1 else 2 })
         mdp.apply {
             win = states[0, 0]
@@ -55,7 +54,7 @@ object Blackjack {
                 policy1[s, s.actions[0]] = 1.0
             else
                 policy1[s, s.actions[1]] = 1.0
-        return Pair(mdp, policy1)
+        return Pair(mdp, IndexedPolicy(policy1))
     }
 
     private fun IndexedMDP.sticks(s: IndexedState) = {

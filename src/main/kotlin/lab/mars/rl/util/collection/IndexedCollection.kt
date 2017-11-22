@@ -6,7 +6,7 @@ import lab.mars.rl.util.buf.*
 import lab.mars.rl.util.math.Rand
 import lab.mars.rl.util.tuples.tuple2
 
-interface IndexedCollection<E : Any> : Iterable<E> {
+interface IndexedCollection<E : Any> : Iterable<E>, Gettable<Index, E>, RandomGettable<E> {
     /**
      * 构造一个与此集合相同形状的[IndexedCollection]（维度、树深度都相同）
      */
@@ -18,7 +18,7 @@ interface IndexedCollection<E : Any> : Iterable<E> {
 
     fun withIndices(): Iterator<tuple2<out Index, E>>
 
-    operator fun get(dim: Index): E
+    override operator fun get(dim: Index): E
     operator fun get(vararg dim: Int): E = get(DefaultIntBuf.reuse(dim))
     operator fun get(vararg dim: Index): E = get(MultiIndex(dim as Array<Index>))
 
@@ -47,7 +47,7 @@ interface IndexedCollection<E : Any> : Iterable<E> {
     /**
      * 以等概率获取随意的一个元素
      */
-    fun rand() = at(Rand().nextInt(size))
+    override fun rand() = at(Rand().nextInt(size))
 
     /**
      * 如果此集合内的元素是[Index]类型，则可以提供概率分布[prob]，以此概
@@ -56,12 +56,12 @@ interface IndexedCollection<E : Any> : Iterable<E> {
      * @throws IllegalArgumentException  如果提供的参数不是合法的概率分布
      * @throws NoSuchElementException 如果集合为空
      */
-    fun rand(prob: IndexedCollection<Double>): E {
+    fun rand(prob: Gettable<E, Double>): E {
         if (isEmpty()) throw NoSuchElementException()
         val p = Rand().nextDouble()
         var acc = 0.0
         for (element in this) {
-            acc += prob[element as Index]
+            acc += prob[element]
             if (p <= acc)
                 return element
         }

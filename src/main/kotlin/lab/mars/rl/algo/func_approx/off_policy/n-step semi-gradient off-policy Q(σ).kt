@@ -2,25 +2,24 @@
 
 package lab.mars.rl.algo.func_approx.off_policy
 
-import lab.mars.rl.algo.`ε-greedy`
 import lab.mars.rl.algo.func_approx.FunctionApprox
 import lab.mars.rl.algo.ntd.MAX_N
 import lab.mars.rl.algo.ntd.NStepTemporalDifference.Companion.log
 import lab.mars.rl.model.*
 import lab.mars.rl.util.buf.newBuf
 import lab.mars.rl.util.log.debug
-import lab.mars.rl.util.matrix.times
 import lab.mars.rl.util.math.Σ
+import lab.mars.rl.util.matrix.times
 import org.apache.commons.math3.util.FastMath.min
 
-fun FunctionApprox.`off-policy n-step Q(σ) episodic`(n: Int, q: ActionValueApproxFunction, b: NonDeterminedPolicy, σ: (Int) -> Int = { 0 }) {
+fun FunctionApprox.`off-policy n-step Q(σ) episodic`(n: Int, q: ActionValueApproxFunction, b: Policy, σ: (Int) -> Int = { 0 }) {
     val _Q = newBuf<Double>(min(n, MAX_N))
     val _π = newBuf<Double>(min(n, MAX_N))
     val ρ = newBuf<Double>(min(n, MAX_N))
     val _σ = newBuf<Int>(min(n, MAX_N))
     val δ = newBuf<Double>(min(n, MAX_N))
-    val _S = newBuf<IndexedState>(min(n, MAX_N))
-    val _A = newBuf<IndexedAction>(min(n, MAX_N))
+    val _S = newBuf<State>(min(n, MAX_N))
+    val _A = newBuf<Action<State>>(min(n, MAX_N))
 
     for (episode in 1..episodes) {
         log.debug { "$episode/$episodes" }
@@ -28,7 +27,7 @@ fun FunctionApprox.`off-policy n-step Q(σ) episodic`(n: Int, q: ActionValueAppr
         var T = Int.MAX_VALUE
         var t = 0
         var s = started.rand()
-        var a = s.actions.rand(b(s))
+        var a = b(s)
 
         _Q.clear(); _Q.append(0.0)
         _π.clear(); _π.append(π[s, a])
@@ -58,7 +57,7 @@ fun FunctionApprox.`off-policy n-step Q(σ) episodic`(n: Int, q: ActionValueAppr
                     val _t = t - n + 1
                     if (_t < 0) n = T //n is too large, normalize it
                 } else {
-                    a = s.actions.rand(b(s));_A.append(a)
+                    a = b(s);_A.append(a)
                     val tmp_σ = σ(t + 1)
                     _σ.append(tmp_σ)
                     δ.append(reward + γ * tmp_σ * q(s, a) + γ * (1 - tmp_σ) * Σ(s.actions) { π[s, it] * q(s, it) } - _Q.last)
@@ -79,7 +78,7 @@ fun FunctionApprox.`off-policy n-step Q(σ) episodic`(n: Int, q: ActionValueAppr
                     _ρ *= 1 - _σ[k] + _σ[k] * ρ[k]
                 }
                 q.w += α * _ρ * (G - q(_S[0], _A[0])) * q.`▽`(_S[0], _A[0])
-                `ε-greedy`(_S[0], q, π, ε)
+                π.`ε-greedy update`(_S[0], q)
             }
             t++
         } while (τ < T - 1)
@@ -87,20 +86,19 @@ fun FunctionApprox.`off-policy n-step Q(σ) episodic`(n: Int, q: ActionValueAppr
     }
 }
 
-
-fun FunctionApprox.`off-policy n-step Q(σ) continuing`(n: Int, q: ActionValueApproxFunction, b: NonDeterminedPolicy, σ: (Int) -> Int = { 0 }, β: Double) {
+fun FunctionApprox.`off-policy n-step Q(σ) continuing`(n: Int, q: ActionValueApproxFunction, b: Policy, σ: (Int) -> Int = { 0 }, β: Double) {
     var average_reward = 0.0
     val _Q = newBuf<Double>(min(n, MAX_N))
     val _π = newBuf<Double>(min(n, MAX_N))
     val ρ = newBuf<Double>(min(n, MAX_N))
     val _σ = newBuf<Int>(min(n, MAX_N))
     val δ = newBuf<Double>(min(n, MAX_N))
-    val _S = newBuf<IndexedState>(min(n, MAX_N))
-    val _A = newBuf<IndexedAction>(min(n, MAX_N))
+    val _S = newBuf<State>(min(n, MAX_N))
+    val _A = newBuf<Action<State>>(min(n, MAX_N))
 
     var t = 0
     var s = started.rand()
-    var a = s.actions.rand(b(s))
+    var a = b(s)
 
     _Q.clear(); _Q.append(0.0)
     _π.clear(); _π.append(π[s, a])
@@ -123,7 +121,7 @@ fun FunctionApprox.`off-policy n-step Q(σ) continuing`(n: Int, q: ActionValueAp
         val (s_next, reward) = a.sample()
         _S.append(s_next)
         s = s_next
-        a = s.actions.rand(b(s));_A.append(a)
+        a = b(s);_A.append(a)
         val tmp_σ = σ(t + 1)
         _σ.append(tmp_σ)
         val _δ = reward - average_reward + tmp_σ * q(s, a) + (1 - tmp_σ) * Σ(s.actions) { π[s, it] * q(s, it) } - _Q.last
@@ -144,7 +142,8 @@ fun FunctionApprox.`off-policy n-step Q(σ) continuing`(n: Int, q: ActionValueAp
                 _ρ *= 1 - _σ[k] + _σ[k] * ρ[k]
             }
             q.w += α * _ρ * (G - q(_S[0], _A[0])) * q.`▽`(_S[0], _A[0])
-            `ε-greedy`(_S[0], q, π, ε)
+            π.`ε-greedy update`(_S[0], q)
+            TODO("not tested")
         }
         t++
     }

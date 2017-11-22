@@ -1,16 +1,16 @@
 package lab.mars.rl.algo.td
 
-import lab.mars.rl.algo.V_from_Q_ND
+import lab.mars.rl.algo.V_from_Q
 import lab.mars.rl.algo.td.TemporalDifference.Companion.log
 import lab.mars.rl.model.*
+import lab.mars.rl.model.impl.mdp.*
 import lab.mars.rl.util.log.debug
 import lab.mars.rl.util.math.Rand
 import lab.mars.rl.util.math.argmax
 import lab.mars.rl.util.tuples.tuple3
 
-
 fun TemporalDifference.DoubleQLearning(_alpha: (IndexedState, IndexedAction) -> Double = { _, _ -> α }): OptimalSolution {
-    val π = indexedMdp.QFunc { 0.0 }
+    val π = IndexedPolicy(indexedMdp.QFunc { 0.0 })
     var Q1 = indexedMdp.QFunc { 0.0 }
     var Q2 = indexedMdp.QFunc { 0.0 }
 
@@ -19,7 +19,7 @@ fun TemporalDifference.DoubleQLearning(_alpha: (IndexedState, IndexedAction) -> 
         var s = started.rand()
         while (true) {
             `ε-greedy`(s, Q1, Q2, π)
-            val a = s.actions.rand(π(s))
+            val a = π(s)
             val (s_next, reward) = a.sample()
             if (Rand().nextBoolean()) {
                 val tmp = Q1
@@ -37,11 +37,11 @@ fun TemporalDifference.DoubleQLearning(_alpha: (IndexedState, IndexedAction) -> 
     }
     val V = indexedMdp.VFunc { 0.0 }
     val result = tuple3(π, V, Q1)
-    V_from_Q_ND(states, result)
+    V_from_Q(states, result)
     return result
 }
 
-private fun TemporalDifference.`ε-greedy`(s: IndexedState, Q1: ActionValueFunction, Q2: ActionValueFunction, π: NonDeterminedPolicy) {
+private fun TemporalDifference.`ε-greedy`(s: IndexedState, Q1: ActionValueFunction, Q2: ActionValueFunction, π: IndexedPolicy) {
     val `a*` = argmax(s.actions) { Q1[s, it] + Q2[s, it] }
     val size = s.actions.size
     for (a in s.actions) {

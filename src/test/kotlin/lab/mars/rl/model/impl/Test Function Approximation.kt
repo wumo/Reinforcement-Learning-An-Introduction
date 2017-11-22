@@ -11,7 +11,10 @@ import lab.mars.rl.algo.func_approx.FunctionApprox
 import lab.mars.rl.algo.func_approx.prediction.*
 import lab.mars.rl.algo.td.TemporalDifference
 import lab.mars.rl.algo.td.prediction
-import lab.mars.rl.model.*
+import lab.mars.rl.model.ValueFunction
+import lab.mars.rl.model.impl.func.*
+import lab.mars.rl.model.impl.mdp.IndexedState
+import lab.mars.rl.model.isTerminal
 import lab.mars.rl.problem.SquareWave.domain
 import lab.mars.rl.problem.SquareWave.maxResolution
 import lab.mars.rl.problem.SquareWave.sample
@@ -44,7 +47,7 @@ class `Test Function Approximation` {
             val algo2 = FunctionApprox(prob, PI)
             algo2.episodes = 100000
             algo2.α = 2e-5
-            val func = StateAggregationValueFunction(num_states + 2, 10)
+            val func = StateAggregationValueFunction(num_states + 2, 10, { (it as IndexedState)[0] })
             algo2.`Gradient Monte Carlo algorithm`(func)
             prob.apply {
                 val line = line("gradient MC")
@@ -77,7 +80,7 @@ class `Test Function Approximation` {
             val algo2 = FunctionApprox(prob, PI)
             algo2.episodes = 100000
             algo2.α = 2e-4
-            val func = StateAggregationValueFunction(num_states + 2, 10)
+            val func = StateAggregationValueFunction(num_states + 2, 10, { (it as IndexedState)[0] })
             algo2.`Semi-gradient TD(0)`(func)
             prob.apply {
                 val line = line("Semi-gradient TD(0)")
@@ -110,7 +113,7 @@ class `Test Function Approximation` {
             val algo2 = FunctionApprox(prob, PI)
             algo2.episodes = 100000
             algo2.α = 2e-4
-            val func = StateAggregationValueFunction(num_states + 2, 10)
+            val func = StateAggregationValueFunction(num_states + 2, 10, { (it as IndexedState)[0] })
             algo2.`n-step semi-gradient TD`(10, func)
             prob.apply {
                 val line = line("n-step semi-gradient TD")
@@ -207,7 +210,7 @@ class `Test Function Approximation` {
                 val line = line("feature width: ${featureWidth.format(1)}")
                 val feature = SimpleCoarseCoding(featureWidth,
                                                  domain,
-                                                 2.0 / maxResolution,
+                                                 { (it as IndexedState)[0] * 2.0 / maxResolution },
                                                  50)
                 val func = LinearFunc(feature)
                 repeat(numOfSample) {
@@ -248,7 +251,7 @@ class `Test Function Approximation` {
                                        5,
                                        ceil(num_states / 5.0).toInt(),
                                        4.0,
-                                       { s -> (s[0] - 1).toDouble() })
+                                       { s -> ((s as IndexedState)[0] - 1).toDouble() })
         val func = LinearFunc(feature)
         val algo2 = FunctionApprox(prob, PI)
         algo2.episodes = 100000
@@ -302,7 +305,7 @@ class `Test Function Approximation` {
                                                                    5,
                                                                    ceil(prob.states.size / 5.0).toInt(),
                                                                    4.0,
-                                                                   { s -> (s[0] - 1).toDouble() }))
+                                                                   { s -> ((s as IndexedState)[0] - 1).toDouble() }))
                             algo.α = alpha / numOfTiling
                             algo.episodeListener = { episode ->
                                 _errors[episode - 1] += RMS(func)

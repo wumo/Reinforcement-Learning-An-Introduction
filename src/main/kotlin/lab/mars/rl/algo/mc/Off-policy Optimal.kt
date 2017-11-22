@@ -1,11 +1,12 @@
 package lab.mars.rl.algo.mc
 
-import lab.mars.rl.algo.V_from_Q_ND
+import lab.mars.rl.algo.V_from_Q
 import lab.mars.rl.algo.mc.MonteCarlo.Companion.log
 import lab.mars.rl.model.*
-import lab.mars.rl.util.math.argmax
+import lab.mars.rl.model.impl.mdp.*
 import lab.mars.rl.util.buf.newBuf
 import lab.mars.rl.util.log.debug
+import lab.mars.rl.util.math.argmax
 import lab.mars.rl.util.tuples.tuple3
 
 fun MonteCarlo.`Off-policy MC Optimal`(): OptimalSolution {
@@ -61,7 +62,7 @@ fun MonteCarlo.`Off-policy MC Optimal`(): OptimalSolution {
         }
     }
     val V = indexedMdp.VFunc { 0.0 }
-    val result = tuple3(π, V, Q)
-    V_from_Q_ND(states, result)
+    val result = tuple3(IndexedPolicy(π), V, Q)
+    V_from_Q(states, result)
     return result
 }

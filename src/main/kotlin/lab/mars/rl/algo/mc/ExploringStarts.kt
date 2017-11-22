@@ -2,20 +2,17 @@
 
 package lab.mars.rl.algo.mc
 
-import lab.mars.rl.algo.V_from_Q_ND
+import lab.mars.rl.algo.V_from_Q
 import lab.mars.rl.algo.mc.MonteCarlo.Companion.log
 import lab.mars.rl.model.*
+import lab.mars.rl.model.impl.mdp.*
 import lab.mars.rl.util.buf.newBuf
 import lab.mars.rl.util.log.debug
 import lab.mars.rl.util.math.argmax
 import lab.mars.rl.util.tuples.tuple3
 
 fun MonteCarlo.`Optimal Exploring Starts`(): OptimalSolution {
-    if (π.isEmpty()) {
-        π = indexedMdp.QFunc { 0.0 }
-        for (s in started)
-            π[s, s.actions.first()] = 1.0
-    }
+    if (π == null_policy) π = IndexedPolicy(indexedMdp.QFunc { 1.0 })
     val Q = indexedMdp.QFunc { 0.0 }
     val tmpQ = indexedMdp.QFunc { Double.NaN }
     val count = indexedMdp.QFunc { 0 }
@@ -33,7 +30,7 @@ fun MonteCarlo.`Optimal Exploring Starts`(): OptimalSolution {
                 tmpQ[s, a] = accumulate
             accumulate += reward
             s = s_next
-        } while (s.isNotTerminal().apply { if (this) a = s.actions.rand(π(s)) })
+        } while (s.isNotTerminal().apply { if (this) a = π(s) })
 
         tmpS.clear()
         for (s in states) {
@@ -70,6 +67,6 @@ fun MonteCarlo.`Optimal Exploring Starts`(): OptimalSolution {
     }
     val V = indexedMdp.VFunc { 0.0 }
     val result = tuple3(π, V, Q)
-    V_from_Q_ND(states, result)
+    V_from_Q(states, result)
     return result
 }

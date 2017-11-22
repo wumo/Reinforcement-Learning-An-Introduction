@@ -2,7 +2,7 @@ package lab.mars.rl.algo.eligibility_trace
 
 import lab.mars.rl.algo.func_approx.FunctionApprox
 import lab.mars.rl.algo.func_approx.FunctionApprox.Companion.log
-import lab.mars.rl.model.impl.LinearFunc
+import lab.mars.rl.model.impl.func.LinearFunc
 import lab.mars.rl.model.isNotTerminal
 import lab.mars.rl.util.log.debug
 import lab.mars.rl.util.matrix.Matrix
@@ -16,7 +16,7 @@ fun FunctionApprox.`Semi-gradient TD(λ) prediction`(vFunc: LinearFunc, λ: Doub
         log.debug { "$episode/$episodes" }
         var s = started.rand()
         while (s.isNotTerminal()) {
-            val a = s.actions.rand(π(s))
+            val a = π(s)
             val (s_next, reward) = a.sample()
             z = γ * λ * z + vFunc.`▽`(s)
             val δ = reward + γ * vFunc(s_next) - vFunc(s)

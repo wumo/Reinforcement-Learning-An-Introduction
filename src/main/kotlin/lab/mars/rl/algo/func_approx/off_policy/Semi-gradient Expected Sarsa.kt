@@ -1,21 +1,20 @@
 package lab.mars.rl.algo.func_approx.off_policy
 
-import lab.mars.rl.algo.`ε-greedy`
 import lab.mars.rl.algo.func_approx.FunctionApprox
 import lab.mars.rl.algo.func_approx.FunctionApprox.Companion.log
 import lab.mars.rl.model.ActionValueApproxFunction
 import lab.mars.rl.model.isNotTerminal
 import lab.mars.rl.util.log.debug
-import lab.mars.rl.util.matrix.times
 import lab.mars.rl.util.math.Σ
+import lab.mars.rl.util.matrix.times
 
 fun FunctionApprox.`Semi-gradient Expected Sarsa`(q: ActionValueApproxFunction) {
     for (episode in 1..episodes) {
         log.debug { "$episode/$episodes" }
         var s = started.rand()
         while (s.isNotTerminal()) {
-            `ε-greedy`(s, q, π, ε)
-            val a = s.actions.rand(π(s))
+            π.`ε-greedy update`(s, q)
+            val a = π(s)
             val (s_next, reward) = a.sample()
             val δ = reward + γ * Σ(s_next.actions) { π[s_next, it] * q(s_next, it) } - q(s, a)
             q.w += α * δ * q.`▽`(s, a)
@@ -29,8 +28,8 @@ fun FunctionApprox.`Semi-gradient Expected Sarsa`(q: ActionValueApproxFunction, 
     var average_reward = 0.0
     var s = started.rand()
     while (true) {
-        `ε-greedy`(s, q, π, ε)
-        val a = s.actions.rand(π(s))
+        π.`ε-greedy update`(s, q)
+        val a = π(s)
         val (s_next, reward) = a.sample()
         val δ = reward - average_reward + Σ(s_next.actions) { π[s_next, it] * q(s_next, it) } - q(s, a)
         q.w += α * δ * q.`▽`(s, a)

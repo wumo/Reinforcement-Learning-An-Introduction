@@ -1,7 +1,9 @@
 package lab.mars.rl.algo.ntd
 
 import lab.mars.rl.algo.ntd.NStepTemporalDifference.Companion.log
-import lab.mars.rl.model.*
+import lab.mars.rl.model.StateValueFunction
+import lab.mars.rl.model.impl.mdp.IndexedState
+import lab.mars.rl.model.isTerminal
 import lab.mars.rl.util.buf.newBuf
 import lab.mars.rl.util.log.debug
 import lab.mars.rl.util.math.Σ
@@ -28,7 +30,7 @@ fun NStepTemporalDifference.prediction(): StateValueFunction {
                 _S.removeFirst(1)
             }
             if (t < T) {
-                val a = s.actions.rand(initial_policy(s))
+                val a = initial_policy(s)
                 val (s_next, reward) = a.sample()
                 _R.append(reward)
                 _S.append(s_next)

@@ -1,8 +1,9 @@
 package lab.mars.rl.algo.dyna
 
-import lab.mars.rl.algo.V_from_Q_ND
+import lab.mars.rl.algo.V_from_Q
 import lab.mars.rl.algo.`ε-greedy (tie broken randomly)`
 import lab.mars.rl.model.*
+import lab.mars.rl.model.impl.mdp.*
 import lab.mars.rl.util.log.debug
 import lab.mars.rl.util.math.Rand
 import lab.mars.rl.util.math.max
@@ -29,7 +30,7 @@ class `Dyna-Q-OnPolicy`(val indexedMdp: IndexedMDP) {
     var n = 10
 
     fun optimal(_alpha: (IndexedState, IndexedAction) -> Double = { _, _ -> α }): OptimalSolution {
-        val π = indexedMdp.QFunc { 0.0 }
+        val π = IndexedPolicy(indexedMdp.QFunc { 0.0 })
         val Q = indexedMdp.QFunc { 0.0 }
         val V = indexedMdp.VFunc { 0.0 }
         val result = tuple3(π, V, Q)
@@ -45,11 +46,11 @@ class `Dyna-Q-OnPolicy`(val indexedMdp: IndexedMDP) {
             var s = started.rand()
             startedStates.compute(s) { _, v -> (v ?: 0) + 1 }//record the total visits of each state
             while (s.isNotTerminal()) {
-                V_from_Q_ND(states, result)
+                V_from_Q(states, result)
                 stepListener(V, s)
                 step++
                 `ε-greedy (tie broken randomly)`(s, Q, π, ε)
-                val a = s.actions.rand(π(s))
+                val a = π(s)
                 val (s_next, reward) = a.sample()
                 Model[s, a].compute(tuple2(s_next, reward)) { _, v -> (v ?: 0) + 1 }
                 N[s, a]++
@@ -58,7 +59,7 @@ class `Dyna-Q-OnPolicy`(val indexedMdp: IndexedMDP) {
                 var _s = startedStates.rand(episode)
                 lab.mars.rl.util.math.repeat(n, { _s.isNotTerminal() }) {
                     `ε-greedy (tie broken randomly)`(_s, Q, π, ε)//using on-policy to distribute computation
-                    val a = _s.actions.rand(π(_s))
+                    val a = π(_s)
                     if (Model[_s, a].isEmpty()) return@repeat
                     stat++
                     val (s_next, reward) = Model[_s, a].rand(N[_s, a])

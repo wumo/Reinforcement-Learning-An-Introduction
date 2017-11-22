@@ -1,8 +1,6 @@
 package lab.mars.rl.algo.td
 
-import lab.mars.rl.model.IndexedMDP
-import lab.mars.rl.model.NonDeterminedPolicy
-import lab.mars.rl.util.collection.emptyNSet
+import lab.mars.rl.model.impl.mdp.*
 import org.slf4j.LoggerFactory
 
 /**
@@ -12,7 +10,7 @@ import org.slf4j.LoggerFactory
  *
  * @author wumo
  */
-class TemporalDifference(val indexedMdp: IndexedMDP, var initial_policy: NonDeterminedPolicy = emptyNSet()) {
+class TemporalDifference(val indexedMdp: IndexedMDP, var initial_policy: IndexedPolicy = null_policy) {
     companion object {
         val log = LoggerFactory.getLogger(this::class.java)!!
     }

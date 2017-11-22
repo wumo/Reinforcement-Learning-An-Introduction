@@ -1,11 +1,11 @@
 @file:Suppress("NOTHING_TO_INLINE")
 
-package lab.mars.rl.model.impl
+package lab.mars.rl.model.impl.mdp
 
-import lab.mars.rl.model.IndexedAction
-import lab.mars.rl.model.IndexedMDP
-import lab.mars.rl.model.IndexedState
+import lab.mars.rl.algo.`ε-greedy`
+import lab.mars.rl.model.*
 import lab.mars.rl.util.buf.IntBuf
+import lab.mars.rl.util.collection.Gettable
 import lab.mars.rl.util.dimension.*
 
 /**

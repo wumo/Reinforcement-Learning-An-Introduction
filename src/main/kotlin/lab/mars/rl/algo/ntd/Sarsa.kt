@@ -1,18 +1,20 @@
 package lab.mars.rl.algo.ntd
 
-import lab.mars.rl.algo.V_from_Q_ND
+import lab.mars.rl.algo.V_from_Q
 import lab.mars.rl.algo.`ε-greedy`
 import lab.mars.rl.algo.ntd.NStepTemporalDifference.Companion.log
-import lab.mars.rl.model.*
+import lab.mars.rl.model.OptimalSolution
+import lab.mars.rl.model.impl.mdp.*
+import lab.mars.rl.model.isTerminal
 import lab.mars.rl.util.buf.newBuf
 import lab.mars.rl.util.log.debug
-import lab.mars.rl.util.tuples.tuple3
 import lab.mars.rl.util.math.Σ
+import lab.mars.rl.util.tuples.tuple3
 import org.apache.commons.math3.util.FastMath.min
 import org.apache.commons.math3.util.FastMath.pow
 
 fun NStepTemporalDifference.sarsa(alpha: (IndexedState, IndexedAction) -> Double = { _, _ -> this.α }): OptimalSolution {
-    val π = indexedMdp.QFunc { 0.0 }
+    val π = IndexedPolicy(indexedMdp.QFunc { 0.0 })
     val Q = indexedMdp.QFunc { 0.0 }
     val _R = newBuf<Double>(min(n, MAX_N))
     val _S = newBuf<IndexedState>(min(n, MAX_N))
@@ -24,8 +26,9 @@ fun NStepTemporalDifference.sarsa(alpha: (IndexedState, IndexedAction) -> Double
         var T = Int.MAX_VALUE
         var t = 0
         var s = started.rand()
+
         `ε-greedy`(s, Q, π, ε)
-        var a = s.actions.rand(π(s))
+        var a = π(s)
         _R.clear();_R.append(0.0)
         _S.clear();_S.append(s)
         _A.clear();_A.append(a)
@@ -46,7 +49,7 @@ fun NStepTemporalDifference.sarsa(alpha: (IndexedState, IndexedAction) -> Double
                     if (_t < 0) n = T //n is too large, normalize it
                 } else {
                     `ε-greedy`(s, Q, π, ε)
-                    a = s.actions.rand(π(s))
+                    a = π(s)
                     _A.append(a)
                 }
             }
@@ -63,6 +66,6 @@ fun NStepTemporalDifference.sarsa(alpha: (IndexedState, IndexedAction) -> Double
     }
     val V = indexedMdp.VFunc { 0.0 }
     val result = tuple3(π, V, Q)
-    V_from_Q_ND(states, result)
+    V_from_Q(states, result)
     return result
 }

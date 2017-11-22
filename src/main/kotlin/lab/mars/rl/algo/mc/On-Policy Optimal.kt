@@ -2,16 +2,19 @@
 
 package lab.mars.rl.algo.mc
 
-import lab.mars.rl.algo.V_from_Q_ND
+import lab.mars.rl.algo.V_from_Q
 import lab.mars.rl.algo.mc.MonteCarlo.Companion.log
 import lab.mars.rl.model.*
-import lab.mars.rl.util.math.argmax
+import lab.mars.rl.model.impl.mdp.IndexedPolicy
+import lab.mars.rl.model.impl.mdp.IndexedState
 import lab.mars.rl.util.buf.newBuf
 import lab.mars.rl.util.log.debug
+import lab.mars.rl.util.math.argmax
 import lab.mars.rl.util.tuples.tuple3
 
 fun MonteCarlo.`On-policy first-visit MC control`(): OptimalSolution {
-    val π = indexedMdp.equiprobablePolicy()
+    val ε = 0.1
+    val π = IndexedPolicy(indexedMdp.equiprobablePolicy())
     val Q = indexedMdp.QFunc { 0.0 }
     val tmpQ = indexedMdp.QFunc { Double.NaN }
     val count = indexedMdp.QFunc { 0 }
@@ -22,7 +25,7 @@ fun MonteCarlo.`On-policy first-visit MC control`(): OptimalSolution {
         var s = started.rand()
         var accumulate = 0.0
         while (s.isNotTerminal()) {
-            val a = s.actions.rand(π(s))
+            val a = π(s)
             val (s_next, reward) = a.sample()
             if (tmpQ[s, a].isNaN())
                 tmpQ[s, a] = accumulate
@@ -69,6 +72,6 @@ fun MonteCarlo.`On-policy first-visit MC control`(): OptimalSolution {
     }
     val V = indexedMdp.VFunc { 0.0 }
     val result = tuple3(π, V, Q)
-    V_from_Q_ND(states, result)
+    V_from_Q(states, result)
     return result
 }

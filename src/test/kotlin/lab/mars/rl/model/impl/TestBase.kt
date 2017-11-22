@@ -2,9 +2,9 @@ package lab.mars.rl.model.impl
 
 import ch.qos.logback.classic.Level
 import ch.qos.logback.classic.LoggerContext
-import lab.mars.rl.model.IndexedMDP
-import lab.mars.rl.model.NonDeterminedPolicy
 import lab.mars.rl.model.StateValueFunction
+import lab.mars.rl.model.impl.mdp.IndexedMDP
+import lab.mars.rl.model.impl.mdp.IndexedPolicy
 import lab.mars.rl.util.math.argmax
 import org.slf4j.Logger
 import org.slf4j.LoggerFactory
@@ -59,7 +59,7 @@ fun logLevel(level: Level) {
     rootLogger.level = level
 }
 
-fun printBlackjack(prob: IndexedMDP, PI: NonDeterminedPolicy, V: StateValueFunction) {
+fun printBlackjack(prob: IndexedMDP, PI: IndexedPolicy, V: StateValueFunction) {
     println("---------------------Usable Ace--------------------------")
     for (a in 9 downTo 0) {
         for (b in 0 until 10) {

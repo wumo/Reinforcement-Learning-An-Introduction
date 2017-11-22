@@ -1,7 +1,7 @@
 package lab.mars.rl.problem
 
 import lab.mars.rl.model.*
-import lab.mars.rl.model.impl.CNSetMDP
+import lab.mars.rl.model.impl.mdp.*
 import lab.mars.rl.util.collection.cnsetOf
 import lab.mars.rl.util.dimension.x
 import lab.mars.rl.util.collection.emptyNSet
@@ -30,8 +30,8 @@ object WindyGridworld {
     val desc_king_move = arrayOf(" ↑", " ↓", "←", "→", "↖", "↗", "↘", "↙")
     fun make(KingMove: Boolean = false): IndexedMDP {
         val mdp = CNSetMDP(gamma = 1.0,
-                           state_dim = world_width x world_height,
-                           action_dim = if (KingMove) 8 else 4)
+                                                      state_dim = world_width x world_height,
+                                                      action_dim = if (KingMove) 8 else 4)
         return mdp.apply {
             val goal = states[7, 3]
             goal.actions = emptyNSet()

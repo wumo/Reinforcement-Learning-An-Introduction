@@ -1,21 +1,21 @@
 @file:Suppress("NAME_SHADOWING")
 
-package lab.mars.rl.model.impl
+package lab.mars.rl.model.impl.func
 
-import lab.mars.rl.model.IndexedState
+import lab.mars.rl.model.State
 import lab.mars.rl.util.matrix.Matrix
 
 class SimpleTileCoding(val numOfTilings: Int,
                        tilingSize: Int,
                        val tileWidth: Int,
                        val tilingOffset: Double,
-                       val scale: (IndexedState) -> Double) : Feature {
+                       val scalar: (State) -> Double) : Feature {
     val tilingSize = tilingSize + 1
     override val numOfComponents: Int
         get() = numOfTilings * tilingSize
 
-    override fun invoke(s: IndexedState): Matrix {
-        val s = scale(s)
+    override fun invoke(s: State): Matrix {
+        val s = scalar(s)
         return Matrix.column(numOfComponents) {
             val tilingIdx = it / tilingSize
             val tileIdx = it % tilingSize
@@ -24,5 +24,5 @@ class SimpleTileCoding(val numOfTilings: Int,
         }
     }
 
-    override fun alpha(alpha: Double, s: IndexedState) = alpha / numOfTilings
+    override fun alpha(alpha: Double, s: State) = alpha / numOfTilings
 }
