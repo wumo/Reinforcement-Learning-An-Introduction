@@ -16,12 +16,13 @@ class CarState(val position: Double, val velocity: Double) : State {
     override val actions: RandomIterable<Action<CarState>> =
             if (position == POSITION_MAX) emptyNSet()
             else cnsetFrom(3) {
-                DefaultAction({
-                                  val newVelocity = (velocity + 0.001 * (it[0] - 1) - 0.0025 * cos(3 * position))
-                                          .coerceIn(VELOCITY_MIN, VELOCITY_MAX)
-                                  val newPosition = (position + newVelocity).coerceIn(POSITION_MIN, POSITION_MAX)
-                                  Possible(CarState(newPosition, newVelocity), -1.0)
-                              })
+                val a = it[0] - 1
+                DefaultAction(a) {
+                    val newVelocity = (velocity + 0.001 * a - 0.0025 * cos(3 * position))
+                            .coerceIn(VELOCITY_MIN, VELOCITY_MAX)
+                    val newPosition = (position + newVelocity).coerceIn(POSITION_MIN, POSITION_MAX)
+                    Possible(CarState(newPosition, newVelocity), -1.0)
+                }
             }
 }
 

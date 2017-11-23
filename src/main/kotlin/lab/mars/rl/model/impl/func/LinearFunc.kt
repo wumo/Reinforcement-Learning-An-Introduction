@@ -6,7 +6,6 @@ import org.apache.commons.math3.util.FastMath.*
 
 interface Feature<in E> {
     operator fun invoke(s: E): Matrix
-    fun alpha(alpha: Double, s: E): Double = alpha
     val numOfComponents: Int
 }
 

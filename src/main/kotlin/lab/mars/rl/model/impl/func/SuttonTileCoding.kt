@@ -41,8 +41,6 @@ class SuttonTileCoding(numTilesOfEachTiling: Int, _numTilings: Int) : Feature<tu
         return result
     }
 
-    override fun alpha(alpha: Double, s: tuple2<DoubleArray, IntArray>) = alpha / numTilings
-
     /** Returns a power of two size for the given target capacity.*/
     fun tableSizeFor(cap: Int): Int {
         var n = cap - 1

@@ -1,4 +1,4 @@
-@file:Suppress("NAME_SHADOWING")
+@file:Suppress("NAME_SHADOWING", "UNCHECKED_CAST")
 
 package lab.mars.rl.model.impl
 
@@ -8,17 +8,21 @@ import kotlinx.coroutines.experimental.channels.Channel
 import kotlinx.coroutines.experimental.launch
 import kotlinx.coroutines.experimental.runBlocking
 import lab.mars.rl.algo.func_approx.FunctionApprox
+import lab.mars.rl.algo.func_approx.on_policy_control.`Episodic semi-gradient Sarsa control`
 import lab.mars.rl.algo.func_approx.prediction.*
 import lab.mars.rl.algo.td.TemporalDifference
 import lab.mars.rl.algo.td.prediction
 import lab.mars.rl.model.*
 import lab.mars.rl.model.impl.func.*
-import lab.mars.rl.model.impl.mdp.IndexedState
-import lab.mars.rl.problem.MountainCar
+import lab.mars.rl.model.impl.mdp.*
+import lab.mars.rl.problem.*
+import lab.mars.rl.problem.MountainCar.POSITION_MAX
+import lab.mars.rl.problem.MountainCar.POSITION_MIN
+import lab.mars.rl.problem.MountainCar.VELOCITY_MAX
+import lab.mars.rl.problem.MountainCar.VELOCITY_MIN
 import lab.mars.rl.problem.SquareWave.domain
 import lab.mars.rl.problem.SquareWave.maxResolution
 import lab.mars.rl.problem.SquareWave.sample
-import lab.mars.rl.problem.WaveState
 import lab.mars.rl.problem.`1000-state RandomWalk`.make
 import lab.mars.rl.problem.`1000-state RandomWalk`.num_states
 import lab.mars.rl.util.matrix.times
@@ -475,7 +479,7 @@ class `Test Function Approximation` {
                 val func = LinearFunc(feature)
                 repeat(numOfSample) {
                     val (s, y) = sample()
-                    func.w += feature.alpha(alpha, trans(s)) * (y - func(trans(s))) * func.`▽`(trans(s))
+                    func.w += alpha / feature.features.sumBy { if (it.contains(trans(s))) 1 else 0 } * (y - func(trans(s))) * func.`▽`(trans(s))
                 }
                 for (i in 0 until maxResolution) {
                     val s = WaveState(i * 2.0 / maxResolution)
@@ -493,9 +497,21 @@ class `Test Function Approximation` {
         @Test
         fun `Episodic Semi-gradient Sarsa control`() {
             val mdp = MountainCar.make()
-//            val algo=FunctionApprox()
-//            val feature=SuttonTileCoding(511,8,{(it as CarState)})
-//            algo.`Episodic semi-gradient Sarsa control`()
+            val feature = SuttonTileCoding(511, 8)
+            val func = LinearFunc(feature)
+            val positionScale = feature.numTilings / (POSITION_MAX - POSITION_MIN)
+            val velocityScale = feature.numTilings / (VELOCITY_MAX - VELOCITY_MIN)
+            val trans = { s: State, a: Action<State> ->
+                s as CarState
+                a as DefaultAction<Int, CarState>
+                tuple2(doubleArrayOf(positionScale * s.position, velocityScale * s.velocity), intArrayOf(a.value))
+            }
+            val π = `ε-greedy function policy`(func, trans)
+            val algo = FunctionApprox(mdp, π)
+            val alpha = 0.1
+            algo.α = alpha / 8
+            algo.`Episodic semi-gradient Sarsa control`(func, trans)
+
         }
     }
 }

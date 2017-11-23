@@ -20,5 +20,4 @@ class SimpleTileCoding(val numOfTilings: Int,
         }
     }
 
-    override fun alpha(alpha: Double, s: Double) = alpha / numOfTilings
 }

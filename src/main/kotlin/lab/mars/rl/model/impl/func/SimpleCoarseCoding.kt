@@ -22,6 +22,4 @@ class SimpleCoarseCoding(featureWidth: Double, domain: ClosedRange<Double>,
         else 0.0
     }
 
-    override fun alpha(alpha: Double, s: Double) =
-            alpha / features.sumBy { if (it.contains(s)) 1 else 0 }
 }
