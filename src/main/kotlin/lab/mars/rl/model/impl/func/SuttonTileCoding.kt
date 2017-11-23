@@ -8,8 +8,11 @@ import lab.mars.rl.util.tuples.tuple2
 import org.apache.commons.math3.util.FastMath
 import org.apache.commons.math3.util.FastMath.ceil
 
-class SuttonTileCoding(size: Int, val numTilings: Int, val tileConv: (State) -> tuple2<DoubleArray, IntArray>) : Feature {
-    override val numOfComponents = numTilings * size
+val MAXIMUM_CAPACITY = 1 shl 30
+
+class SuttonTileCoding(numTilesOfEachTiling: Int, _numTilings: Int, val tileConv: (State) -> tuple2<DoubleArray, IntArray>) : Feature {
+    val numTilings = tableSizeFor(_numTilings)
+    override val numOfComponents = numTilings * (numTilesOfEachTiling+1)
     override fun invoke(s: State): Matrix {
         val (floats, ints) = tileConv(s)
         val activeTiles = tiles(floats, ints)
@@ -19,11 +22,11 @@ class SuttonTileCoding(size: Int, val numTilings: Int, val tileConv: (State) -> 
         return x
     }
 
-    private val data = HashMap<Index, Int>(ceil(size / 0.75).toInt())
+    val data = HashMap<Index, Int>(ceil(numTilesOfEachTiling / 0.75).toInt())
 
     private fun tiles(floats: DoubleArray, ints: IntArray): IntArray {
         val qfloats = IntArray(floats.size) { FastMath.floor(floats[it] * numTilings).toInt() }
-        val result = IntArray(floats.size)
+        val result = IntArray(numTilings)
         for (tiling in 0 until numTilings) {
             val tilingX2 = tiling * 2
             val coords = newIntBuf(1 + floats.size + ints.size)
@@ -40,4 +43,15 @@ class SuttonTileCoding(size: Int, val numTilings: Int, val tileConv: (State) -> 
     }
 
     override fun alpha(alpha: Double, s: State) = alpha / numTilings
+
+    /** Returns a power of two size for the given target capacity.*/
+    fun tableSizeFor(cap: Int): Int {
+        var n = cap - 1
+        n = n or n.ushr(1)
+        n = n or n.ushr(2)
+        n = n or n.ushr(4)
+        n = n or n.ushr(8)
+        n = n or n.ushr(16)
+        return if (n < 0) 1 else if (n >= MAXIMUM_CAPACITY) MAXIMUM_CAPACITY else n + 1
+    }
 }
