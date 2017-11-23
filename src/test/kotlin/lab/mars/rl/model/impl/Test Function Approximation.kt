@@ -339,17 +339,7 @@ class `Test Function Approximation` {
     }
 
     @Test
-    fun `Sutton Tile Coding`() {
-        val numOfTilings = 8
-
-        val feature = SuttonTileCoding(5,
-                                       numOfTilings,
-                                       { s -> tuple2(doubleArrayOf((s as IndexedState)[0] * 5.0 / num_states), intArrayOf()) })
-
-    }
-
-    @Test
-    fun `Sutton Tile Coding2 `() {
+    fun `Sutton Tile Coding `() {
         val chart = chart("samples")
         val (prob, PI) = make()
         val algo = TemporalDifference(prob, PI)
