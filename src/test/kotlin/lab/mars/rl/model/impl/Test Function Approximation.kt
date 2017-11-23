@@ -423,7 +423,7 @@ class `Test Function Approximation` {
                     val algo = FunctionApprox(prob, PI)
                     algo.episodes = episodes
                     val _errors = DoubleArray(episodes) { 0.0 }
-                    val func = LinearFunc(SimpleTileCoding(1,
+                    val func = LinearFunc(SimpleTileCoding(numOfTiling,
                                                            5,
                                                            ceil(prob.states.size / 5.0).toInt(),
                                                            4.0,

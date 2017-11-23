@@ -6,11 +6,11 @@ import lab.mars.rl.model.State
 import lab.mars.rl.util.matrix.Matrix
 
 class SimpleTileCoding(val numOfTilings: Int,
-                       tilingSize: Int,
+                       _tilingSize: Int,
                        val tileWidth: Int,
                        val tilingOffset: Double,
                        val scalar: (State) -> Double) : Feature {
-    val tilingSize = tilingSize + 1
+    val tilingSize = _tilingSize + 1
     override val numOfComponents = numOfTilings * tilingSize
 
     override fun invoke(s: State): Matrix {
