@@ -2,7 +2,6 @@ package lab.mars.rl.model.impl.func
 
 import lab.mars.rl.model.State
 import lab.mars.rl.model.ValueFunction
-import lab.mars.rl.model.impl.mdp.IndexedState
 import lab.mars.rl.util.matrix.Matrix
 import org.apache.commons.math3.util.FastMath.*
 
@@ -19,15 +18,15 @@ operator fun DoubleArray.times(elements: DoubleArray): Double {
     return result
 }
 
-class SimplePolynomial(override val numOfComponents: Int, val scale: Double) : Feature {
+class SimplePolynomial(override val numOfComponents: Int, val scalar:(State)-> Double) : Feature{
     override fun invoke(s: State) = Matrix.column(numOfComponents) {
-        pow((s as IndexedState)[0].toDouble() * scale, it)
+        pow(scalar(s), it)
     }
 }
 
-class SimpleFourier(override val numOfComponents: Int, val scale: Double) : Feature {
+class SimpleFourier(override val numOfComponents: Int, val scalar:(State)-> Double) : Feature {
     override fun invoke(s: State) = Matrix.column(numOfComponents) {
-        cos(it * PI * (s as IndexedState)[0].toDouble() * scale)
+        cos(it * PI * scalar(s))
     }
 }
 

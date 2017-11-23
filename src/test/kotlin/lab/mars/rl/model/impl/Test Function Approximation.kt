@@ -151,8 +151,8 @@ class `Test Function Approximation` {
             val runs = 5
             val description = listOf("polynomial", "fourier")
             val alphas = listOf(1e-4, 5e-5)
-            val func_maker = listOf({ order: Int -> SimplePolynomial(order + 1, 1.0 / num_states) },
-                                    { order: Int -> SimpleFourier(order + 1, 1.0 / num_states) })
+            val func_maker = listOf({ order: Int -> SimplePolynomial(order + 1, { (it as IndexedState)[0] * 1.0 / num_states }) },
+                                    { order: Int -> SimpleFourier(order + 1, { (it as IndexedState)[0] * 1.0 / num_states }) })
             val orders = intArrayOf(5, 10, 20)
             val outerChan = Channel<Boolean>(orders.size * alphas.size)
             runBlocking {

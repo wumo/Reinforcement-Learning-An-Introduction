@@ -11,12 +11,21 @@ package lab.mars.rl.util.buf
  */
 fun IntArray.buf(start: Int, end: Int): DefaultIntBuf = DefaultIntBuf.reuse(this, start, end)
 
+/**
+ * @param num 初始化[num]长度、初值为0的[DefaultIntBuf]
+ */
+inline fun zeroIntBuf(num: Int) = DefaultIntBuf.new(num, num)
+
+inline fun newIntBuf(cap: Int = 8, size: Int = 0) = DefaultIntBuf(IntArray(cap), 0, size, cap)
+inline fun intBufOf(vararg s: Int) = DefaultIntBuf(s, 0, s.size)
+
 open class DefaultIntBuf(private var ring: IntArray, private var offset: Int, size: Int, cap: Int = size) :
         MutableIntBuf() {
+
     companion object {
         val MAX_ARRAY_SIZE = Integer.MAX_VALUE - 8
         /**
-         * @param s 用枚举的参数构成初始的[DefaultIntBuf]
+         * @param s 用枚举的参数构成初始的[DefaultIntBuf] /
          */
         inline fun of(vararg s: Int) = DefaultIntBuf(s, 0, s.size)
 
@@ -53,7 +62,6 @@ open class DefaultIntBuf(private var ring: IntArray, private var offset: Int, si
         get() = _size
     override val cap: Int
         get() = _cap
-
 
     private inline fun index(i: Int): Int = (offset + i) % ring.size
 
@@ -114,6 +122,11 @@ open class DefaultIntBuf(private var ring: IntArray, private var offset: Int, si
         val result = IntArray(_size)
         ringCopy(ring, offset, result, 0, _size)
         return result
+    }
+
+    override fun append(data: IntArray) {
+        for (datum in data)
+            append(datum)
     }
 
     override fun copy() = reuse(toIntArray())

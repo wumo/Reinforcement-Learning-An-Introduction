@@ -47,4 +47,5 @@ abstract class MutableIntBuf : IntBuf() {
     }
 
     abstract fun reuseBacked(): IntBuf
+    abstract fun append(data: IntArray)
 }

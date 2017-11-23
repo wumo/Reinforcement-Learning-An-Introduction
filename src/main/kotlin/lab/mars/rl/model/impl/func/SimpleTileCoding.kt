@@ -11,8 +11,7 @@ class SimpleTileCoding(val numOfTilings: Int,
                        val tilingOffset: Double,
                        val scalar: (State) -> Double) : Feature {
     val tilingSize = tilingSize + 1
-    override val numOfComponents: Int
-        get() = numOfTilings * tilingSize
+    override val numOfComponents = numOfTilings * tilingSize
 
     override fun invoke(s: State): Matrix {
         val s = scalar(s)
