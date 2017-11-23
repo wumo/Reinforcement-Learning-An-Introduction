@@ -1,13 +1,12 @@
 package lab.mars.rl.model.impl.func
 
-import lab.mars.rl.model.State
-import lab.mars.rl.model.ValueFunction
+import lab.mars.rl.model.ApproximateFunction
 import lab.mars.rl.util.matrix.Matrix
 import org.apache.commons.math3.util.FastMath.*
 
-interface Feature {
-    operator fun invoke(s: State): Matrix
-    fun alpha(alpha: Double, s: State): Double = alpha
+interface Feature<in E> {
+    operator fun invoke(s: E): Matrix
+    fun alpha(alpha: Double, s: E): Double = alpha
     val numOfComponents: Int
 }
 
@@ -18,22 +17,22 @@ operator fun DoubleArray.times(elements: DoubleArray): Double {
     return result
 }
 
-class SimplePolynomial(override val numOfComponents: Int, val scalar:(State)-> Double) : Feature{
-    override fun invoke(s: State) = Matrix.column(numOfComponents) {
-        pow(scalar(s), it)
+class SimplePolynomial(override val numOfComponents: Int) : Feature<Double> {
+    override fun invoke(s: Double) = Matrix.column(numOfComponents) {
+        pow(s, it)
     }
 }
 
-class SimpleFourier(override val numOfComponents: Int, val scalar:(State)-> Double) : Feature {
-    override fun invoke(s: State) = Matrix.column(numOfComponents) {
-        cos(it * PI * scalar(s))
+class SimpleFourier(override val numOfComponents: Int) : Feature<Double> {
+    override fun invoke(s: Double) = Matrix.column(numOfComponents) {
+        cos(it * PI * s)
     }
 }
 
-class LinearFunc(val x: Feature) : ValueFunction {
-    override fun `▽`(s: State) = x(s)
+class LinearFunc<in E>(val x: Feature<E>) : ApproximateFunction<E> {
+    override fun `▽`(input: E) = x(input)
 
     override val w = Matrix.column(x.numOfComponents)
 
-    override fun invoke(s: State) = (w.T * x(s)).asScalar()
+    override fun invoke(input: E) = (w.T * x(input)).asScalar()
 }

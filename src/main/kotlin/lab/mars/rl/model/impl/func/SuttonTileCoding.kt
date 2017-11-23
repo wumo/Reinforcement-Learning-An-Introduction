@@ -1,6 +1,5 @@
 package lab.mars.rl.model.impl.func
 
-import lab.mars.rl.model.State
 import lab.mars.rl.util.buf.Index
 import lab.mars.rl.util.buf.newIntBuf
 import lab.mars.rl.util.matrix.Matrix
@@ -10,11 +9,11 @@ import org.apache.commons.math3.util.FastMath.ceil
 
 val MAXIMUM_CAPACITY = 1 shl 30
 
-class SuttonTileCoding(numTilesOfEachTiling: Int, _numTilings: Int, val tileConv: (State) -> tuple2<DoubleArray, IntArray>) : Feature {
+class SuttonTileCoding(numTilesOfEachTiling: Int, _numTilings: Int) : Feature<tuple2<DoubleArray, IntArray>> {
     val numTilings = tableSizeFor(_numTilings)
-    override val numOfComponents = numTilings * (numTilesOfEachTiling+1)
-    override fun invoke(s: State): Matrix {
-        val (floats, ints) = tileConv(s)
+    override val numOfComponents = numTilings * (numTilesOfEachTiling + 1)
+    override fun invoke(s: tuple2<DoubleArray, IntArray>): Matrix {
+        val (floats, ints) = s
         val activeTiles = tiles(floats, ints)
         val x = Matrix.column(numOfComponents) { 0.0 }
         for (activeTile in activeTiles)
@@ -42,7 +41,7 @@ class SuttonTileCoding(numTilesOfEachTiling: Int, _numTilings: Int, val tileConv
         return result
     }
 
-    override fun alpha(alpha: Double, s: State) = alpha / numTilings
+    override fun alpha(alpha: Double, s: tuple2<DoubleArray, IntArray>) = alpha / numTilings
 
     /** Returns a power of two size for the given target capacity.*/
     fun tableSizeFor(cap: Int): Int {
