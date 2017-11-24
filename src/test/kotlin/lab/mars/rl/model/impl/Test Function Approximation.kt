@@ -4,9 +4,8 @@ package lab.mars.rl.model.impl
 
 import ch.qos.logback.classic.Level
 import javafx.application.Application
+import kotlinx.coroutines.experimental.*
 import kotlinx.coroutines.experimental.channels.Channel
-import kotlinx.coroutines.experimental.launch
-import kotlinx.coroutines.experimental.runBlocking
 import lab.mars.rl.algo.func_approx.FunctionApprox
 import lab.mars.rl.algo.func_approx.on_policy_control.`Episodic semi-gradient Sarsa control`
 import lab.mars.rl.algo.func_approx.on_policy_control.`Episodic semi-gradient n-step Sarsa control`
@@ -34,7 +33,7 @@ import lab.mars.rl.util.ui.D3DChartUI.D3DChart
 import org.apache.commons.math3.util.FastMath.*
 import org.junit.Test
 
-class `TestFunctionApproximation` {
+class `Test Function Approximation` {
     class `1000-state Random walk problem` {
         @Test
         fun `Gradient Monte Carlo`() {
@@ -672,7 +671,7 @@ class `TestFunctionApproximation` {
     }
 
     @Test
-    fun `Effect_of_the_aandnonearlyperformance`() {
+    fun `Effect of the a and n on early performance`() {
         logLevel(Level.ERROR)
         val mdp = MountainCar.make()
 
@@ -681,17 +680,19 @@ class `TestFunctionApproximation` {
         val velocityScale = numTilings / (VELOCITY_MAX - VELOCITY_MIN)
         val episodes = 50
         val runs = 5
-        val alphas = listOf(0.1,0.2, 0.4, 0.6, 0.8, 1.0)
-        val nSteps = listOf(1, 2, 4)
+        val alphas = listOf(0.05, 0.1, 0.2, 0.4, 0.6, 0.8, 1.0, 1.2)
+        val nSteps = listOf(1, 2, 4, 8, 16)
 
         val chart = chart("performance")
         runBlocking {
             for (n in nSteps) {
                 val line = line("n=$n ")
                 for (alpha in alphas) {
+                    if ((n == 8 && alpha > 1) || (n == 16 && alpha > 0.75))
+                        continue
                     val runChan = Channel<Int>(runs)
                     repeat(runs) {
-                        launch {
+                        async {
                             val feature = SuttonTileCoding(255, numTilings)
                             val func = LinearFunc(feature)
 
@@ -719,7 +720,7 @@ class `TestFunctionApproximation` {
                         println("alpha=$alpha n=$n run once")
                     }
 
-                    line[alpha] = step / runs.toDouble()
+                    line[alpha] = step / (runs*episodes).toDouble()
                 }
                 chart += line
                 println("finish n=$n")

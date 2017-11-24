@@ -15,13 +15,13 @@ class SuttonTileCoding(numTilesOfEachTiling: Int, _numTilings: Int) : Feature<tu
     override fun invoke(s: tuple2<DoubleArray, IntArray>): Matrix {
         val (floats, ints) = s
         val activeTiles = tiles(floats, ints)
-        val x = Matrix.column(numOfComponents) { 0.0 }
+        val x = Matrix.column(numOfComponents)
         for (activeTile in activeTiles)
             x[activeTile] = 1.0
         return x
     }
 
-    val data = HashMap<Index, Int>(ceil(numTilesOfEachTiling / 0.75).toInt())
+    val data = HashMap<Index, Int>(ceil(numOfComponents / 0.75).toInt())
 
     private fun tiles(floats: DoubleArray, ints: IntArray): IntArray {
         val qfloats = IntArray(floats.size) { FastMath.floor(floats[it] * numTilings).toInt() }

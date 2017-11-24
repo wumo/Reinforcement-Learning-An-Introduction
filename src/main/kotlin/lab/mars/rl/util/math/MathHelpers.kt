@@ -79,16 +79,19 @@ fun <T> argmax(set: Iterable<T>, evaluate: T.(T) -> Double): T {
 
 fun <T> argmax_tie_random(set: Iterable<T>, evaluate: T.(T) -> Double): T {
     val iterator = set.iterator()
-    var max_a: T = iterator.next()
-    var max = evaluate(max_a, max_a)
+    var max_a = arrayListOf(iterator.next())
+    var max = evaluate(max_a[0], max_a[0])
     while (iterator.hasNext()) {
         val tmp = iterator.next()
         val p = evaluate(tmp, tmp)
         if (p > max) {
             max = p
-            max_a = tmp
-        } else if (p == max && Rand().nextBoolean())
-            max_a = tmp
+            max_a.apply {
+                clear()
+                add(tmp)
+            }
+        } else if (p == max)
+            max_a.add(tmp)
     }
-    return max_a
+    return max_a[Rand().nextInt(max_a.size)]
 }

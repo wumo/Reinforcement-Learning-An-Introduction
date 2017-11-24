@@ -40,7 +40,7 @@ class Matrix(val rows: Int, val cols: Int = rows) {
         }
     }
 
-    val raw = DoubleArray(rows * cols) { 0.0 }
+    val raw = DoubleArray(rows * cols)
     operator fun get(a: Int) = raw[a]
     operator fun get(a: Int, b: Int) = raw[a * cols + b]
     operator fun set(a: Int, b: Int, value: Double) {
