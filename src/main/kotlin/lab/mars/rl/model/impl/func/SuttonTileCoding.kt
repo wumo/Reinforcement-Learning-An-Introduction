@@ -4,8 +4,8 @@ import lab.mars.rl.util.buf.Index
 import lab.mars.rl.util.buf.newIntBuf
 import lab.mars.rl.util.matrix.Matrix
 import lab.mars.rl.util.tuples.tuple2
-import org.apache.commons.math3.util.FastMath
 import org.apache.commons.math3.util.FastMath.ceil
+import org.apache.commons.math3.util.FastMath.floor
 
 val MAXIMUM_CAPACITY = 1 shl 30
 
@@ -24,7 +24,7 @@ class SuttonTileCoding(numTilesOfEachTiling: Int, _numTilings: Int) : Feature<tu
     val data = HashMap<Index, Int>(ceil(numOfComponents / 0.75).toInt())
 
     private fun tiles(floats: DoubleArray, ints: IntArray): IntArray {
-        val qfloats = IntArray(floats.size) { FastMath.floor(floats[it] * numTilings).toInt() }
+        val qfloats = IntArray(floats.size) { floor(floats[it] * numTilings).toInt() }
         val result = IntArray(numTilings)
         for (tiling in 0 until numTilings) {
             val tilingX2 = tiling * 2

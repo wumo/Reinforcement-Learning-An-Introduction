@@ -501,6 +501,7 @@ class `Test Function Approximation` {
             val mdp = MountainCar.make()
             val feature = SuttonTileCoding(511, 8)
             val func = LinearFunc(feature)
+            print(feature.numTilings)
             val positionScale = feature.numTilings / (POSITION_MAX - POSITION_MIN)
             val velocityScale = feature.numTilings / (VELOCITY_MAX - VELOCITY_MIN)
             val trans = { s: State, a: Action<State> ->
@@ -558,7 +559,7 @@ class `Test Function Approximation` {
                     launch {
                         val runChan = Channel<IntArray>(runs)
                         repeat(runs) {
-                            launch {
+                            async {
                                 val feature = SuttonTileCoding(511, numTilings)
                                 val func = LinearFunc(feature)
 
@@ -620,10 +621,10 @@ class `Test Function Approximation` {
             val outerChan = Channel<Boolean>(nSteps.size)
             runBlocking {
                 for ((i, n) in nSteps.withIndex())
-                    launch {
+                    async {
                         val runChan = Channel<IntArray>(runs)
                         repeat(runs) {
-                            launch {
+                            async {
                                 val feature = SuttonTileCoding(511, numTilings)
                                 val func = LinearFunc(feature)
 
@@ -720,7 +721,7 @@ class `Test Function Approximation` {
                         println("alpha=$alpha n=$n run once")
                     }
 
-                    line[alpha] = step / (runs*episodes).toDouble()
+                    line[alpha] = step / (runs * episodes).toDouble()
                 }
                 chart += line
                 println("finish n=$n")

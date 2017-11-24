@@ -14,13 +14,13 @@ import org.apache.commons.math3.util.FastMath.min
 import org.apache.commons.math3.util.FastMath.pow
 
 fun <E> FunctionApprox.`Episodic semi-gradient n-step Sarsa control`(q: ApproximateFunction<E>, trans: (State, Action<State>) -> E, n: Int) {
-    val _R = newBuf<Double>(min(n, MAX_N))
-    val _S = newBuf<State>(min(n, MAX_N))
-    val _A = newBuf<Action<State>>(min(n, MAX_N))
+    val _R = newBuf<Double>(min(n + 1, MAX_N))
+    val _S = newBuf<State>(min(n + 1, MAX_N))
+    val _A = newBuf<Action<State>>(min(n + 1, MAX_N))
 
     for (episode in 1..episodes) {
         log.debug { "$episode/$episodes" }
-        var step=0
+        var step = 0
         var n = n
         var T = Int.MAX_VALUE
         var t = 0
@@ -59,6 +59,6 @@ fun <E> FunctionApprox.`Episodic semi-gradient n-step Sarsa control`(q: Approxim
             t++
         } while (τ < T - 1)
         log.debug { "n=$n,T=$T" }
-        episodeListener(episode,step)
+        episodeListener(episode, step)
     }
 }
