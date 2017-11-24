@@ -34,7 +34,7 @@ import lab.mars.rl.util.ui.D3DChartUI.D3DChart
 import org.apache.commons.math3.util.FastMath.*
 import org.junit.Test
 
-class `Test Function Approximation` {
+class `TestFunctionApproximation` {
     class `1000-state Random walk problem` {
         @Test
         fun `Gradient Monte Carlo`() {
@@ -669,65 +669,63 @@ class `Test Function Approximation` {
             Application.launch(ChartApp::class.java)
         }
 
-        @Test
-        fun `Effect of the α and n on early performance`() {
-            logLevel(Level.ERROR)
-            val mdp = MountainCar.make()
+    }
 
-            val numTilings = 8
-            val positionScale = numTilings / (POSITION_MAX - POSITION_MIN)
-            val velocityScale = numTilings / (VELOCITY_MAX - VELOCITY_MIN)
-            val episodes = 50
-            val runs = 2
-            val alphas = listOf(0.2, 0.4, 0.6, 0.8, 1.0, 1.2, 1.4, 1.6)
-            val nSteps = listOf(1, 2, 4, 8, 16)
+    @Test
+    fun `Effect_of_the_aandnonearlyperformance`() {
+        logLevel(Level.ERROR)
+        val mdp = MountainCar.make()
 
-            val chart = chart("performance")
-            runBlocking {
-                for (n in nSteps)
-                    for (alpha in alphas) {
-                        val runChan = Channel<IntArray>(runs)
-                        repeat(runs) {
-                            launch {
-                                val feature = SuttonTileCoding(255, numTilings)
-                                val func = LinearFunc(feature)
+        val numTilings = 8
+        val positionScale = numTilings / (POSITION_MAX - POSITION_MIN)
+        val velocityScale = numTilings / (VELOCITY_MAX - VELOCITY_MIN)
+        val episodes = 50
+        val runs = 5
+        val alphas = listOf(0.1,0.2, 0.4, 0.6, 0.8, 1.0)
+        val nSteps = listOf(1, 2, 4)
 
-                                val trans = { s: State, a: Action<State> ->
-                                    s as CarState
-                                    a as DefaultAction<Int, CarState>
-                                    tuple2(doubleArrayOf(positionScale * s.position, velocityScale * s.velocity), intArrayOf(a.value))
-                                }
-                                val π = `ε-greedy function policy`(func, trans)
-                                val algo = FunctionApprox(mdp, π)
-                                algo.episodes = episodes
+        val chart = chart("performance")
+        runBlocking {
+            for (n in nSteps) {
+                val line = line("n=$n ")
+                for (alpha in alphas) {
+                    val runChan = Channel<Int>(runs)
+                    repeat(runs) {
+                        launch {
+                            val feature = SuttonTileCoding(255, numTilings)
+                            val func = LinearFunc(feature)
 
-                                algo.α = alpha / numTilings
-                                val steps = IntArray(episodes)
-                                algo.episodeListener = { episode, step ->
-                                    steps[episode - 1] += step
-                                }
-                                algo.`Episodic semi-gradient n-step Sarsa control`(func, trans, n)
-                                runChan.send(steps)
+                            val trans = { s: State, a: Action<State> ->
+                                s as CarState
+                                a as DefaultAction<Int, CarState>
+                                tuple2(doubleArrayOf(positionScale * s.position, velocityScale * s.velocity), intArrayOf(a.value))
                             }
-                        }
-                        val steps = IntArray(episodes)
-                        repeat(runs) {
-                            val _steps = runChan.receive()
-                            _steps.forEachIndexed { episode, s ->
-                                steps[episode] += s
+                            val π = `ε-greedy function policy`(func, trans)
+                            val algo = FunctionApprox(mdp, π)
+                            algo.episodes = episodes
+                            algo.α = alpha / numTilings
+                            var _step = 0
+                            algo.episodeListener = { episode, step ->
+                                _step += step
                             }
-                            println("alpha=$alpha n=$n run once")
+                            algo.`Episodic semi-gradient n-step Sarsa control`(func, trans, n)
+                            runChan.send(_step)
                         }
-                        val line = line("alpha=$alpha n=$n ")
-                        for (episode in 1..episodes) {
-                            line[episode] = steps[episode - 1] / runs.toDouble()
-                        }
-                        chart += line
-                        println("finish alpha=$alpha n=$n")
                     }
+                    var step = 0
+                    repeat(runs) {
+                        val _step = runChan.receive()
+                        step += _step
+                        println("alpha=$alpha n=$n run once")
+                    }
+
+                    line[alpha] = step / runs.toDouble()
+                }
+                chart += line
+                println("finish n=$n")
             }
-            ChartView.charts += chart
-            Application.launch(ChartApp::class.java)
         }
+        ChartView.charts += chart
+        Application.launch(ChartApp::class.java)
     }
 }
