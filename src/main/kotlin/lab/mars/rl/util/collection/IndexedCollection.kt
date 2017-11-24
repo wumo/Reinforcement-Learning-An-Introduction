@@ -7,6 +7,14 @@ import lab.mars.rl.util.buf.*
 import lab.mars.rl.util.math.Rand
 import lab.mars.rl.util.tuples.tuple2
 
+val emptyIter: Iterator<Any> = object : Iterator<Any> {
+    override fun hasNext() = false
+
+    override fun next(): Any {
+        throw NoSuchElementException()
+    }
+}
+
 interface IndexedCollection<E : Any> : RandomIterable<E>, Gettable<Index, E> {
     /**
      * 构造一个与此集合相同形状的[IndexedCollection]（维度、树深度都相同）
@@ -18,6 +26,34 @@ interface IndexedCollection<E : Any> : RandomIterable<E>, Gettable<Index, E> {
     fun indices(): Iterator<Index>
 
     fun withIndices(): Iterator<tuple2<out Index, E>>
+
+    operator fun <F : Any> invoke(subset: E.() -> IndexedCollection<F>) = object : Iterator<tuple2<E, F>> {
+        var result: tuple2<E, F>? = null
+        var outer: E? = null
+        val iterOuter = this@IndexedCollection.iterator()
+        var iterInner: Iterator<F> = emptyIter as Iterator<F>
+        override fun hasNext(): Boolean {
+            while (true) {
+                if (iterInner.hasNext()) return true
+                if (!iterOuter.hasNext()) return false
+                val tmp = iterOuter.next()
+                iterInner = subset(tmp).iterator()
+                outer = tmp
+            }
+        }
+
+        override fun next(): tuple2<E, F> {
+            while (true) {
+                if (iterInner.hasNext()) return pack(outer!!, iterInner.next())
+                if (!iterOuter.hasNext()) throw NoSuchElementException()
+                val tmp = iterOuter.next()
+                iterInner = subset(tmp).iterator()
+                outer = tmp
+            }
+        }
+
+        inline fun pack(e: E, f: F) = result?.invoke(e, f) ?: tuple2(e, f)
+    }
 
     override operator fun get(dim: Index): E
     operator fun get(vararg dim: Int): E = get(DefaultIntBuf.reuse(dim))
@@ -57,7 +93,7 @@ interface IndexedCollection<E : Any> : RandomIterable<E>, Gettable<Index, E> {
      * @throws IllegalArgumentException  如果提供的参数不是合法的概率分布
      * @throws NoSuchElementException 如果集合为空
      */
-    fun rand(prob: (E)->Double): E {
+    fun rand(prob: (E) -> Double): E {
         if (isEmpty()) throw NoSuchElementException()
         val p = Rand().nextDouble()
         var acc = 0.0

@@ -25,9 +25,8 @@ fun V_from_Q(states: StateSet, pvq: OptimalSolution) {
 
 fun Q_from_V(gamma: Double, states: StateSet, pvq: OptimalSolution) {
     val (_, V, Q) = pvq
-    for (s in states)
-        for (a in s.actions)
-            Q[s, a] = Σ(a.possibles) { probability * (reward + gamma * V[next]) }
+    for ((s, a) in states { actions })
+        Q[s, a] = Σ(a.possibles) { probability * (reward + gamma * V[next]) }
 }
 
 fun average_alpha(indexedMdp: IndexedMDP): (IndexedState, IndexedAction) -> Double {

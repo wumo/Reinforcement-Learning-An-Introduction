@@ -508,10 +508,16 @@ class `Test Function Approximation` {
             }
             val π = `ε-greedy function policy`(func, trans)
             val algo = FunctionApprox(mdp, π)
+            algo.episodes=9000
             val alpha = 0.1
             algo.α = alpha / 8
             algo.`Episodic semi-gradient Sarsa control`(func, trans)
 
+        }
+
+        @Test
+        fun `test ui`() {
+            Application.launch(D3DChartUI::class.java)
         }
     }
 }

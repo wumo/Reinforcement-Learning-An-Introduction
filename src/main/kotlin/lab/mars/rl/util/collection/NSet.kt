@@ -200,13 +200,10 @@ class NSet<E : Any>(private val dim: IntArray, private val stride: IntArray, pri
         internal val set = this@NSet
         private var parent: GeneralIterator<T> = this
 
-        override fun hasNext(): Boolean {
-            return dfs({ true }, { false })
-        }
+        override fun hasNext() = dfs({ true }, { false })
 
-        override fun next(): T {
-            return dfs({ traverser.current.increment();traverser.visitor(traverser, it) }, { throw NoSuchElementException() })
-        }
+        override fun next() =
+                dfs({ traverser.current.increment();traverser.visitor(traverser, it) }, { throw NoSuchElementException() })
 
         private inline fun increment(): Int {
             traverser.translate(traverser)

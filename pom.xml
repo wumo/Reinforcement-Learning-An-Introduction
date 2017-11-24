@@ -17,6 +17,7 @@
     </developers>
 
     <properties>
+        <orson-charts-fx.version>1.0</orson-charts-fx.version>
         <tornadofx.version>1.7.12</tornadofx.version>
         <commons.math.version>3.6.1</commons.math.version>
         <junit.version>4.12</junit.version>
@@ -33,6 +34,11 @@
     </properties>
 
     <dependencies>
+        <dependency>
+            <groupId>com.object-refinery</groupId>
+            <artifactId>orson-charts-fx</artifactId>
+            <version>${orson-charts-fx.version}</version>
+        </dependency>
         <dependency>
             <groupId>no.tornado</groupId>
             <artifactId>tornadofx</artifactId>

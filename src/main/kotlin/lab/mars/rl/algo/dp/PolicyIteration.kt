@@ -64,12 +64,10 @@ class PolicyIteration(indexedMdp: IndexedMDP) {
             //Policy Evaluation
             do {
                 var delta = 0.0
-                for (s in states) {
-                    for (a in s.actions) {
-                        val q = Q[s, a]
-                        Q[s, a] = Σ(a.possibles) { probability * (reward + γ * if (next.actions.any()) Q[next, π(next)] else 0.0) }
-                        delta = max(delta, abs(q - Q[s, a]))
-                    }
+                for ((s, a) in states { actions }) {
+                    val q = Q[s, a]
+                    Q[s, a] = Σ(a.possibles) { probability * (reward + γ * if (next.actions.any()) Q[next, π(next)] else 0.0) }
+                    delta = max(delta, abs(q - Q[s, a]))
                 }
                 log.debug { "delta=$delta" }
             } while (delta >= θ)
