@@ -1,4 +1,4 @@
-@file:Suppress("NOTHING_TO_INLINE")
+@file:Suppress("NOTHING_TO_INLINE", "UNCHECKED_CAST")
 
 package lab.mars.rl.util.ui
 
@@ -16,10 +16,10 @@ import javafx.scene.*
 import javafx.scene.layout.FlowPane
 import javafx.scene.layout.StackPane
 import javafx.stage.Stage
+import lab.mars.rl.problem.MountainCar
 import lab.mars.rl.util.ui.D3DChartUI.Companion.charts
-import lab.mars.rl.util.ui.D3DChartUI.D3DChart
-import org.apache.commons.math3.util.FastMath.sin
 import tornadofx.plusAssign
+import java.lang.Math.sin
 
 class D3DChartUI : Application() {
     companion object {
@@ -56,7 +56,7 @@ class D3DChartUI : Application() {
         val renderer = plot.renderer as SurfaceRenderer
         renderer.xSamples = c.xSample
         renderer.zSamples = c.ySample
-        renderer.drawFaceOutlines = false
+        renderer.drawFaceOutlines = true
         renderer.colorScale = RainbowScale(Range(c.zRange.start, c.zRange.endInclusive))
         chart.setLegendPosition(LegendAnchor.BOTTOM_RIGHT, Orientation.VERTICAL)
         return SubScene(
@@ -80,11 +80,16 @@ class D3DChartUI : Application() {
 }
 
 fun main(args: Array<String>) {
-    val chart = D3DChart("y = sin(x^2 + z^2)",
-                         "X", "Z", "Y",
-                         30, 30,
-                         -2.0..2.0, -2.0..2.0, -1.0..1.0, 10.0, 10.0, 5.0
-    ) { x, y -> sin(x * x + y * y) }
+    val chart = D3DChartUI.D3DChart("y = sin(x^2 + z^2)",
+                                    "X", "Z", "Y",
+                                    40, 40,
+                                    MountainCar.POSITION_MIN..MountainCar.POSITION_MAX,
+                                    MountainCar.VELOCITY_MIN..MountainCar.VELOCITY_MAX, -1.0..1.0, 10.0, 10.0, 5.0
+    ) { x, y ->
+        assert(x in MountainCar.POSITION_MIN..MountainCar.POSITION_MAX)
+        assert(y in MountainCar.VELOCITY_MIN..MountainCar.VELOCITY_MAX)
+        println("$x,$y"); sin(x * x + y * y)
+    }
     charts += chart
     Application.launch(D3DChartUI::class.java)
 }

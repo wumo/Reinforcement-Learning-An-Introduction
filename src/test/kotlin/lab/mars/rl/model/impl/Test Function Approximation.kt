@@ -8,7 +8,7 @@ import kotlinx.coroutines.experimental.channels.Channel
 import kotlinx.coroutines.experimental.launch
 import kotlinx.coroutines.experimental.runBlocking
 import lab.mars.rl.algo.func_approx.FunctionApprox
-import lab.mars.rl.algo.func_approx.on_policy_control.`Episodic semi-gradient Sarsa control`
+import lab.mars.rl.algo.func_approx.on_policy_control.`Episodic semi-gradient n-step Sarsa control`
 import lab.mars.rl.algo.func_approx.prediction.*
 import lab.mars.rl.algo.td.TemporalDifference
 import lab.mars.rl.algo.td.prediction
@@ -28,6 +28,8 @@ import lab.mars.rl.problem.`1000-state RandomWalk`.num_states
 import lab.mars.rl.util.matrix.times
 import lab.mars.rl.util.tuples.tuple2
 import lab.mars.rl.util.ui.*
+import lab.mars.rl.util.ui.D3DChartUI.Companion.charts
+import lab.mars.rl.util.ui.D3DChartUI.D3DChart
 import org.apache.commons.math3.util.FastMath.*
 import org.junit.Test
 
@@ -508,11 +510,26 @@ class `Test Function Approximation` {
             }
             val π = `ε-greedy function policy`(func, trans)
             val algo = FunctionApprox(mdp, π)
-            algo.episodes=9000
+            algo.episodes = 9000
             val alpha = 0.1
             algo.α = alpha / 8
-            algo.`Episodic semi-gradient Sarsa control`(func, trans)
+            algo.episodeListener = { episode ->
 
+            }
+            algo.`Episodic semi-gradient n-step Sarsa control`(func, trans, 1)
+            val chart = D3DChart("Moutain Car", "Position", "Velocity", "Value",
+                                 40, 40,
+                                 POSITION_MIN..POSITION_MAX,
+                                 VELOCITY_MIN..VELOCITY_MAX,
+                                 0.0..120.0, 10.0, 10.0, 5.0) { x, y ->
+                if (x !in POSITION_MIN..POSITION_MAX || y !in VELOCITY_MIN..VELOCITY_MAX)
+                    return@D3DChart Double.NaN
+                val f = doubleArrayOf(positionScale * x, velocityScale * y)
+                val cost = -lab.mars.rl.util.math.max(-1..1) { func(tuple2(f, intArrayOf(it))) }
+                cost
+            }
+            charts += chart
+            Application.launch(D3DChartUI::class.java)
         }
 
         @Test

@@ -27,10 +27,10 @@ class CarState(val position: Double, val velocity: Double) : State {
 }
 
 object MountainCar {
-    val POSITION_MIN = -1.2
-    val POSITION_MAX = 0.5
-    val VELOCITY_MIN = -0.07
-    val VELOCITY_MAX = 0.07
+    const val POSITION_MIN = -1.2
+    const val POSITION_MAX = 0.5
+    const val VELOCITY_MIN = -0.07
+    const val VELOCITY_MAX = 0.07
     fun make() = DefaultMDP(1.0) {
         CarState(Rand().nextDouble(-0.6, -0.4), 0.0)
     }
