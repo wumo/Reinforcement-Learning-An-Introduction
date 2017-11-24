@@ -10,15 +10,17 @@ import lab.mars.rl.util.matrix.times
 fun <E> FunctionApprox.`Semi-gradient Expected Sarsa`(q: ApproximateFunction<E>, trans: (State, Action<State>) -> E) {
     for (episode in 1..episodes) {
         log.debug { "$episode/$episodes" }
+        var step=0
         var s = started()
         while (s.isNotTerminal()) {
+            step++
             val a = π(s)
             val (s_next, reward) = a.sample()
             val δ = reward + γ * Σ(s_next.actions) { π[s_next, it] * q(trans(s_next, it)) } - q(trans(s, a))
             q.w += α * δ * q.`▽`(trans(s, a))
             s = s_next
         }
-        episodeListener(episode)
+        episodeListener(episode,step)
     }
 }
 

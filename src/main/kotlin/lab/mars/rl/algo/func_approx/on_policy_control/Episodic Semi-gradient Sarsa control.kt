@@ -9,9 +9,11 @@ import lab.mars.rl.util.matrix.times
 fun <E> FunctionApprox.`Episodic semi-gradient Sarsa control`(q: ApproximateFunction<E>, trans: (State, Action<State>) -> E) {
     for (episode in 1..episodes) {
         log.debug { "$episode/$episodes" }
+        var step=0
         var s = started()
         var a = π(s)
         while (true) {
+            step++
             val (s_next, reward) = a.sample()
             if (s_next.isNotTerminal()) {
                 val a_next = π(s_next)
@@ -23,6 +25,6 @@ fun <E> FunctionApprox.`Episodic semi-gradient Sarsa control`(q: ApproximateFunc
                 break
             }
         }
-        episodeListener(episode)
+        episodeListener(episode,step)
     }
 }

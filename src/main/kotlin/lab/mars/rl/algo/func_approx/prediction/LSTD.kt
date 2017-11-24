@@ -8,16 +8,18 @@ import lab.mars.rl.model.isNotTerminal
 import lab.mars.rl.util.log.debug
 import lab.mars.rl.util.matrix.*
 
-fun<E> FunctionApprox.LSTD(vFunc: LinearFunc<E>,trans:(State)->E, ε: Double) {
+fun <E> FunctionApprox.LSTD(vFunc: LinearFunc<E>, trans: (State) -> E, ε: Double) {
     val xFeature = vFunc.x
     val d = xFeature.numOfComponents
     val A_ = 1 / ε * Matrix.identity(d)
     val b = Matrix.column(d)
     for (episode in 1..episodes) {
         log.debug { "$episode/$episodes" }
+        var step = 0
         var s = started()
         var x = xFeature(trans(s))
         while (s.isNotTerminal()) {
+            step++
             val a = π(s)
             val (s_next, reward) = a.sample()
             val _x = xFeature(trans(s_next))
@@ -28,7 +30,7 @@ fun<E> FunctionApprox.LSTD(vFunc: LinearFunc<E>,trans:(State)->E, ε: Double) {
             s = s_next
             x = _x
         }
-        episodeListener(episode)
+        episodeListener(episode, step)
     }
     vFunc.w `=` A_ * b
 }

@@ -52,7 +52,7 @@ class Matrix(val rows: Int, val cols: Int = rows) {
     }
 
     infix fun `=`(m: Matrix) {
-        require(rows == m.cols && cols == m.rows)
+        require(rows == m.rows && cols == m.cols)
         System.arraycopy(m.raw, 0, raw, 0, raw.size)
     }
 

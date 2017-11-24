@@ -21,6 +21,7 @@ fun <E> FunctionApprox.`n-step semi-gradient off-policy sarsa episodic`(n: Int, 
 
     for (episode in 1..episodes) {
         log.debug { "$episode/$episodes" }
+        var step=0
         var n = n
         var T = Int.MAX_VALUE
         var t = 0
@@ -30,6 +31,7 @@ fun <E> FunctionApprox.`n-step semi-gradient off-policy sarsa episodic`(n: Int, 
         _S.clear();_S.append(s)
         _A.clear();_A.append(a)
         do {
+            step++
             if (t >= n) {//最多存储n个
                 _R.removeFirst()
                 _S.removeFirst()
@@ -59,7 +61,7 @@ fun <E> FunctionApprox.`n-step semi-gradient off-policy sarsa episodic`(n: Int, 
             t++
         } while (τ < T - 1)
         log.debug { "n=$n,T=$T" }
-        episodeListener(episode)
+        episodeListener(episode,step)
     }
 }
 

@@ -1,6 +1,7 @@
 package lab.mars.rl.algo.eligibility_trace
 
 import lab.mars.rl.algo.func_approx.FunctionApprox
+import lab.mars.rl.algo.func_approx.FunctionApprox.Companion.log
 import lab.mars.rl.model.State
 import lab.mars.rl.model.impl.func.LinearFunc
 import lab.mars.rl.model.isNotTerminal
@@ -14,10 +15,12 @@ fun <E> FunctionApprox.`True Online TD(λ) prediction`(vFunc: LinearFunc<E>, tra
     var z = Matrix.column(d)
     var Vold = 0.0
     for (episode in 1..episodes) {
-        FunctionApprox.log.debug { "$episode/$episodes" }
+        log.debug { "$episode/$episodes" }
+        var step = 0
         var s = started()
         var x = xFeature(trans(s))
         while (s.isNotTerminal()) {
+            step++
             val a = π(s)
             val (s_next, reward) = a.sample()
             val _x = xFeature(trans(s_next))
@@ -30,6 +33,6 @@ fun <E> FunctionApprox.`True Online TD(λ) prediction`(vFunc: LinearFunc<E>, tra
             x = _x
             s = s_next
         }
-        episodeListener(episode)
+        episodeListener(episode, step)
     }
 }

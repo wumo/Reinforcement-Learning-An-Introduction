@@ -12,8 +12,8 @@ import lab.mars.rl.util.math.Σ
 import lab.mars.rl.util.matrix.times
 import org.apache.commons.math3.util.FastMath.min
 
-fun<E> FunctionApprox.`off-policy n-step Q(σ) episodic`(n: Int, b: Policy, σ: (Int) -> Int = { 0 },
-                                                     q: ApproximateFunction<E>, trans: (State, Action<State>) -> E) {
+fun <E> FunctionApprox.`off-policy n-step Q(σ) episodic`(n: Int, b: Policy, σ: (Int) -> Int = { 0 },
+                                                         q: ApproximateFunction<E>, trans: (State, Action<State>) -> E) {
     val _Q = newBuf<Double>(min(n, MAX_N))
     val _π = newBuf<Double>(min(n, MAX_N))
     val ρ = newBuf<Double>(min(n, MAX_N))
@@ -24,6 +24,7 @@ fun<E> FunctionApprox.`off-policy n-step Q(σ) episodic`(n: Int, b: Policy, σ: 
 
     for (episode in 1..episodes) {
         log.debug { "$episode/$episodes" }
+        var step = 0
         var n = n
         var T = Int.MAX_VALUE
         var t = 0
@@ -39,6 +40,7 @@ fun<E> FunctionApprox.`off-policy n-step Q(σ) episodic`(n: Int, b: Policy, σ: 
         _A.clear();_A.append(a)
 
         do {
+            step++
             if (t >= n) {//最多存储n个
                 _Q.removeFirst()
                 _π.removeFirst()
@@ -83,6 +85,7 @@ fun<E> FunctionApprox.`off-policy n-step Q(σ) episodic`(n: Int, b: Policy, σ: 
             t++
         } while (τ < T - 1)
         log.debug { "n=$n,T=$T" }
+        episodeListener(episode, step)
     }
 }
 

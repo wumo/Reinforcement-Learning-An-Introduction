@@ -56,7 +56,7 @@ class D3DChartUI : Application() {
         val renderer = plot.renderer as SurfaceRenderer
         renderer.xSamples = c.xSample
         renderer.zSamples = c.ySample
-        renderer.drawFaceOutlines = true
+        renderer.drawFaceOutlines = false
         renderer.colorScale = RainbowScale(Range(c.zRange.start, c.zRange.endInclusive))
         chart.setLegendPosition(LegendAnchor.BOTTOM_RIGHT, Orientation.VERTICAL)
         return SubScene(

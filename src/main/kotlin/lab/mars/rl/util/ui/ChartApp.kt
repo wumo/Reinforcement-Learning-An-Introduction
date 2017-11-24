@@ -19,16 +19,18 @@ class ChartView : View() {
         val charts = mutableListOf<chart>()
     }
 
-    override val root = flowpane {
-        for (chart in charts) {
-            linechart(chart.title, NumberAxis(), NumberAxis()) {
-                for (line in chart.lines) {
-                    series(line.description) {
-                        for ((k, v) in line.data)
-                            data(k, v)
+    override val root = stackpane {
+        flowpane {
+            for (chart in charts) {
+                linechart(chart.title, NumberAxis(), NumberAxis()) {
+                    for (line in chart.lines) {
+                        series(line.description) {
+                            for ((k, v) in line.data)
+                                data(k, v)
+                        }
                     }
+                    createSymbols = false
                 }
-                createSymbols = false
             }
         }
     }

@@ -18,6 +18,7 @@ fun <E> FunctionApprox.`n-step semi-gradient TD`(n: Int, v: ApproximateFunction<
     val _S = newBuf<State>(min(n, MAX_N))
     for (episode in 1..episodes) {
         log.debug { "$episode/$episodes" }
+        var step = 0
         var n = n
         var T = Int.MAX_VALUE
         var t = 0
@@ -26,12 +27,14 @@ fun <E> FunctionApprox.`n-step semi-gradient TD`(n: Int, v: ApproximateFunction<
         _R.clear();_R.append(0.0)
         _S.clear();_S.append(s)
         do {
+            step++
             if (t >= n) {//最多存储n个
                 _R.removeFirst()
                 _S.removeFirst()
             }
             if (t < T) {
                 val (s_next, reward) = a.sample()
+
                 _R.append(reward)
                 _S.append(s_next)
                 s = s_next
@@ -51,6 +54,6 @@ fun <E> FunctionApprox.`n-step semi-gradient TD`(n: Int, v: ApproximateFunction<
             t++
         } while (τ < T - 1)
         log.debug { "n=$n,T=$T" }
-        episodeListener(episode)
+        episodeListener(episode, step)
     }
 }

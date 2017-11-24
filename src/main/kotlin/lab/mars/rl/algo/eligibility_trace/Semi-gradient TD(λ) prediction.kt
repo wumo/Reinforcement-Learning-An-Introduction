@@ -15,8 +15,10 @@ fun <E> FunctionApprox.`Semi-gradient TD(λ) prediction`(vFunc: LinearFunc<E>, t
     var z = Matrix.column(d)
     for (episode in 1..episodes) {
         log.debug { "$episode/$episodes" }
+        var step = 0
         var s = started()
         while (s.isNotTerminal()) {
+            step++
             val a = π(s)
             val (s_next, reward) = a.sample()
             z = γ * λ * z + vFunc.`▽`(trans(s))
@@ -24,6 +26,6 @@ fun <E> FunctionApprox.`Semi-gradient TD(λ) prediction`(vFunc: LinearFunc<E>, t
             vFunc.w += α * δ * z
             s = s_next
         }
-        episodeListener(episode)
+        episodeListener(episode, step)
     }
 }
