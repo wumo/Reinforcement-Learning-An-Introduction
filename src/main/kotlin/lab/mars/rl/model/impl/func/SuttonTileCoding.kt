@@ -1,7 +1,5 @@
 package lab.mars.rl.model.impl.func
 
-import lab.mars.rl.util.buf.Index
-import lab.mars.rl.util.buf.newIntBuf
 import lab.mars.rl.util.matrix.Matrix
 import lab.mars.rl.util.tuples.tuple2
 import org.apache.commons.math3.util.FastMath.ceil
@@ -21,22 +19,23 @@ class SuttonTileCoding(numTilesOfEachTiling: Int, _numTilings: Int) : Feature<tu
         return x
     }
 
-    val data = HashMap<Index, Int>(ceil(numOfComponents / 0.75).toInt())
+    val data = HashMap<ArrayList<Double>, Int>(ceil(numOfComponents / 0.75).toInt())
 
     private fun tiles(floats: DoubleArray, ints: IntArray): IntArray {
-        val qfloats = IntArray(floats.size) { floor(floats[it] * numTilings).toInt() }
+        val qfloats = DoubleArray(floats.size) { floor(floats[it] * numTilings) }
         val result = IntArray(numTilings)
         for (tiling in 0 until numTilings) {
             val tilingX2 = tiling * 2
-            val coords = newIntBuf(1 + floats.size + ints.size)
-            coords.append(tiling)
+            val coords = ArrayList<Double>(1 + floats.size + ints.size)
+            coords.add(tiling.toDouble())
             var b = tiling
             for (q in qfloats) {
-                coords.append((q + b) / numTilings)
+                coords.add(floor(((q + b) / numTilings)))
                 b += tilingX2
             }
-            coords.append(ints)
-            result[tiling] = data[coords] ?: data.size.apply { data[coords] = data.size }
+            for (int in ints)
+                coords.add(int.toDouble())
+            result[tiling] = data.getOrPut(coords, { data.size })
         }
         return result
     }

@@ -633,7 +633,7 @@ class `Test Function Approximation` {
                                     a as DefaultAction<Int, CarState>
                                     tuple2(doubleArrayOf(positionScale * s.position, velocityScale * s.velocity), intArrayOf(a.value))
                                 }
-                                val π = `ε-greedy function policy`(func, trans)
+                                val π = `ε-greedy function policy`(func, trans, 0.0)
                                 val algo = FunctionApprox(mdp, π)
                                 algo.episodes = episodes
                                 algo.α = alphas[i] / numTilings
@@ -681,7 +681,7 @@ class `Test Function Approximation` {
         val velocityScale = numTilings / (VELOCITY_MAX - VELOCITY_MIN)
         val episodes = 50
         val runs = 5
-        val alphas = listOf(0.05, 0.1, 0.2, 0.4, 0.6, 0.8, 1.0, 1.2)
+        val alphas = listOf(0.05, 0.1, 0.2, 0.4, 0.6, 0.8, 1.0, 1.2, 1.4)
         val nSteps = listOf(1, 2, 4, 8, 16)
 
         val chart = chart("performance")
@@ -689,8 +689,9 @@ class `Test Function Approximation` {
             for (n in nSteps) {
                 val line = line("n=$n ")
                 for (alpha in alphas) {
-                    if ((n == 8 && alpha > 1) || (n == 16 && alpha > 0.75))
+                    if ((n == 8 && alpha > 1) || (n == 16 && alpha > 0.75)) {
                         continue
+                    }
                     val runChan = Channel<Int>(runs)
                     repeat(runs) {
                         async {
@@ -702,7 +703,7 @@ class `Test Function Approximation` {
                                 a as DefaultAction<Int, CarState>
                                 tuple2(doubleArrayOf(positionScale * s.position, velocityScale * s.velocity), intArrayOf(a.value))
                             }
-                            val π = `ε-greedy function policy`(func, trans)
+                            val π = `ε-greedy function policy`(func, trans, 0.0)
                             val algo = FunctionApprox(mdp, π)
                             algo.episodes = episodes
                             algo.α = alpha / numTilings
