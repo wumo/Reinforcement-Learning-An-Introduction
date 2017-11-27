@@ -72,6 +72,7 @@ Eligibility Traces
 * [Dyna Maze](src/main/kotlin/lab/mars/rl/problem/DynaMaze.kt) (p.136)
 * [Rod Maneuvering](src/main/kotlin/lab/mars/rl/problem/RodManeuvering.kt) (p.141)
 * [1000-state Random Walk](src/main/kotlin/lab/mars/rl/problem/1000-state%20RandomWalk.kt) (p.166)
+* [Mountain Car](src/main/kotlin/lab/mars/rl/problem/MountainCar.kt) (p.198)
 
 ## Running
 Built with [Maven](https://maven.apache.org/) 
