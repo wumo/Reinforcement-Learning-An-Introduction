@@ -74,8 +74,18 @@ Eligibility Traces
 * [1000-state Random Walk](src/main/kotlin/lab/mars/rl/problem/1000-state%20RandomWalk.kt) (p.166)
 * [Mountain Car](src/main/kotlin/lab/mars/rl/problem/MountainCar.kt) (p.198)
 
-## Running
+## Build
 Built with [Maven](https://maven.apache.org/) 
 
+## Test cases
 Try [Testcases](src/test/kotlin/lab/mars/rl/model/impl)
 
+![Figure 10.1](src/test/resources/Figure%2010.1.PNG)
+
+Figure 10.1: The Mountain Car task (upper left panel) and the cost-to-go function (− maxa q^(s; a; w)) learned
+during one run
+
+![Figure 10.4](src/test/resources/Figure%2010.4.PNG)
+
+Figure 10.4: Effect of the α and n on early performance of n-step semi-gradient Sarsa and tile-coding function
+approximation on the Mountain Car task
