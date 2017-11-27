@@ -24,6 +24,7 @@ import java.lang.Math.sin
 class D3DChartUI : Application() {
     companion object {
         val charts = mutableListOf<D3DChart>()
+        var title: String = ""
     }
 
     class D3DChart(val title: String, val xAxisLabel: String, val yAxisLabel: String, val zAxisLabel: String,
@@ -74,7 +75,7 @@ class D3DChartUI : Application() {
 
         val scene = Scene(flowPane, 800.0, 800.0)
         stage!!.scene = scene
-        stage.title = "Orson Charts: SurfaceRendererFXDemo1.java"
+        stage.title = title
         stage.show()
     }
 }

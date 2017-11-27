@@ -8,13 +8,13 @@ class line(val description: String, val data: MutableMap<Number, Number> = hashM
     operator fun set(x: Number, y: Number) = data.put(x, y)
 }
 
-class chart(val title: String, val lines: MutableCollection<line> = ConcurrentLinkedQueue()) {
+class chart(val title: String, val xAxisLabel: String, val yAxisLabel: String, val lines: MutableCollection<line> = ConcurrentLinkedQueue()) {
     operator fun plusAssign(line: line) {
         lines += line
     }
 }
 
-class ChartView : View() {
+class D2DChart : View() {
     companion object {
         val charts = mutableListOf<chart>()
     }
@@ -23,10 +23,16 @@ class ChartView : View() {
         flowpane {
             for (chart in charts) {
                 linechart(chart.title, NumberAxis(), NumberAxis()) {
-                    (yAxis as NumberAxis).isForceZeroInRange=false
-                    (xAxis as NumberAxis).isForceZeroInRange=false
-                    yAxis.isAutoRanging = true
-                    xAxis.isAutoRanging=true
+                    (xAxis as NumberAxis).apply {
+                        isForceZeroInRange = false
+                        isAutoRanging = true
+                        label = chart.xAxisLabel
+                    }
+                    (yAxis as NumberAxis).apply {
+                        isForceZeroInRange = false
+                        isAutoRanging = true
+                        label = chart.yAxisLabel
+                    }
                     for (line in chart.lines) {
                         series(line.description) {
                             for ((k, v) in line.data)
@@ -40,4 +46,4 @@ class ChartView : View() {
     }
 }
 
-class ChartApp : App(ChartView::class)
+class ChartApp : App(D2DChart::class)

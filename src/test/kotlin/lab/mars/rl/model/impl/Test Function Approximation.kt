@@ -29,6 +29,7 @@ import lab.mars.rl.util.matrix.times
 import lab.mars.rl.util.tuples.tuple2
 import lab.mars.rl.util.ui.*
 import lab.mars.rl.util.ui.D3DChartUI.Companion.charts
+import lab.mars.rl.util.ui.D3DChartUI.Companion.title
 import lab.mars.rl.util.ui.D3DChartUI.D3DChart
 import org.apache.commons.math3.util.FastMath.*
 import org.junit.Test
@@ -37,7 +38,7 @@ class `Test Function Approximation` {
     class `1000-state Random walk problem` {
         @Test
         fun `Gradient Monte Carlo`() {
-            val chart = chart("V")
+            val chart = chart("V", "state", "value")
             val (prob, PI) = make()
             val algo = TemporalDifference(prob, PI)
             algo.episodes = 100000
@@ -65,13 +66,13 @@ class `Test Function Approximation` {
                 }
                 chart += line
             }
-            ChartView.charts += chart
+            D2DChart.charts += chart
             Application.launch(ChartApp::class.java)
         }
 
         @Test
         fun `Semi-gradient TD(0)`() {
-            val chart = chart("V")
+            val chart = chart("V", "state", "value")
             val (prob, PI) = make()
             val algo = TemporalDifference(prob, PI)
             algo.episodes = 100000
@@ -99,13 +100,13 @@ class `Test Function Approximation` {
                 }
                 chart += line
             }
-            ChartView.charts += chart
+            D2DChart.charts += chart
             Application.launch(ChartApp::class.java)
         }
 
         @Test
         fun `n-step semi-gradient TD`() {
-            val chart = chart("V")
+            val chart = chart("V", "state", "value")
             val (prob, PI) = make()
             val algo = TemporalDifference(prob, PI)
             algo.episodes = 100000
@@ -133,7 +134,7 @@ class `Test Function Approximation` {
                 }
                 chart += line
             }
-            ChartView.charts += chart
+            D2DChart.charts += chart
             Application.launch(ChartApp::class.java)
         }
 
@@ -156,7 +157,7 @@ class `Test Function Approximation` {
                 return sqrt(result)
             }
 
-            val chart = chart("RMS")
+            val chart = chart("RMS", "episode", "RMS")
             val episodes = 5000
             val runs = 5
             val description = listOf("polynomial", "fourier")
@@ -204,13 +205,13 @@ class `Test Function Approximation` {
                     outerChan.receive()
                 }
             }
-            ChartView.charts += chart
+            D2DChart.charts += chart
             Application.launch(ChartApp::class.java)
         }
 
         @Test
         fun `Tile Coding`() {
-            val chart = chart("samples")
+            val chart = chart("samples", "state", "value")
             val (prob, PI) = make()
             val algo = TemporalDifference(prob, PI)
             algo.episodes = 100000
@@ -244,7 +245,7 @@ class `Test Function Approximation` {
                 }
                 chart += line
             }
-            ChartView.charts += chart
+            D2DChart.charts += chart
             Application.launch(ChartApp::class.java)
         }
 
@@ -267,7 +268,7 @@ class `Test Function Approximation` {
                 return sqrt(result)
             }
 
-            val chart = chart("RMS")
+            val chart = chart("RMS", "episode", "RMS")
             val episodes = 10000
             val runs = 5
             val alpha = 1e-4
@@ -314,13 +315,13 @@ class `Test Function Approximation` {
                     outerChan.receive()
                 }
             }
-            ChartView.charts += chart
+            D2DChart.charts += chart
             Application.launch(ChartApp::class.java)
         }
 
         @Test
         fun `Sutton Tile Coding `() {
-            val chart = chart("samples")
+            val chart = chart("samples", "state", "value")
             val (prob, PI) = make()
             val algo = TemporalDifference(prob, PI)
             algo.episodes = 100000
@@ -356,7 +357,7 @@ class `Test Function Approximation` {
             }
             println("data size=${feature.data.size}")
             feature.data.forEach { k, v -> println("$k=$v") }
-            ChartView.charts += chart
+            D2DChart.charts += chart
             Application.launch(ChartApp::class.java)
         }
 
@@ -379,7 +380,7 @@ class `Test Function Approximation` {
                 return sqrt(result)
             }
 
-            val chart = chart("RMS")
+            val chart = chart("RMS", "episode", "RMS")
 
             val episodes = 10000
             val runs = 5
@@ -461,7 +462,7 @@ class `Test Function Approximation` {
                     outerChan.receive()
                 }
             }
-            ChartView.charts += chart
+            D2DChart.charts += chart
             Application.launch(ChartApp::class.java)
         }
     }
@@ -472,7 +473,7 @@ class `Test Function Approximation` {
         val numOfSamples = listOf(10, 40, 160, 2560, 10240)
         val featureWidths = listOf(0.2, .4, 1.0)
         for (numOfSample in numOfSamples) {
-            val chart = chart("$numOfSample samples")
+            val chart = chart("$numOfSample samples", "state", "value")
             for (featureWidth in featureWidths) {
                 val line = line("feature width: ${featureWidth.format(1)}")
                 val feature = SimpleCoarseCoding(featureWidth,
@@ -490,7 +491,7 @@ class `Test Function Approximation` {
                 }
                 chart += line
             }
-            ChartView.charts += chart
+            D2DChart.charts += chart
         }
         Application.launch(ChartApp::class.java)
     }
@@ -509,19 +510,20 @@ class `Test Function Approximation` {
                 a as DefaultAction<Int, CarState>
                 tuple2(doubleArrayOf(positionScale * s.position, velocityScale * s.velocity), intArrayOf(a.value))
             }
-            val π = `ε-greedy function policy`(func, trans)
+            val π = `ε-greedy function policy`(func, trans, 0.0)
             val algo = FunctionApprox(mdp, π)
             algo.episodes = 9000
-            val alpha = 0.1
+            val alpha = 0.3
             algo.α = alpha / 8
             val episodes = intArrayOf(1, 12, 104, 1000, 9000)
+            title = "The Mountain Car task"
             algo.episodeListener = { episode, _ ->
                 if (episode in episodes) {
                     val _feature = SuttonTileCoding(511, 8)
                     _feature.data.putAll(feature.data)
                     val _func = LinearFunc(_feature)
                     _func.w `=` func.w
-                    val chart = D3DChart("Mountain Car", "Position", "Velocity", "Value",
+                    val chart = D3DChart("Episode $episode", "Position", "Velocity", "Value",
                                          40, 40,
                                          POSITION_MIN..POSITION_MAX,
                                          VELOCITY_MIN..VELOCITY_MAX,
@@ -552,7 +554,7 @@ class `Test Function Approximation` {
             val runs = 10
             val alphas = listOf(0.1, 0.2, 0.5)
 
-            val chart = chart("Learning curves")
+            val chart = chart("Learning curves", "episode", "steps per episode")
             val outerChan = Channel<Boolean>(alphas.size)
             runBlocking {
                 for (alpha in alphas)
@@ -568,7 +570,7 @@ class `Test Function Approximation` {
                                     a as DefaultAction<Int, CarState>
                                     tuple2(doubleArrayOf(positionScale * s.position, velocityScale * s.velocity), intArrayOf(a.value))
                                 }
-                                val π = `ε-greedy function policy`(func, trans)
+                                val π = `ε-greedy function policy`(func, trans, 0.0)
                                 val algo = FunctionApprox(mdp, π)
                                 algo.episodes = episodes
                                 algo.α = alpha / numTilings
@@ -600,7 +602,7 @@ class `Test Function Approximation` {
                     outerChan.receive()
                 }
             }
-            ChartView.charts += chart
+            D2DChart.charts += chart
             Application.launch(ChartApp::class.java)
         }
 
@@ -617,7 +619,7 @@ class `Test Function Approximation` {
             val alphas = listOf(0.5, 0.3)
             val nSteps = listOf(1, 8)
 
-            val chart = chart("performance")
+            val chart = chart("One-step vs multi-step performance", "episode", "steps per episode")
             val outerChan = Channel<Boolean>(nSteps.size)
             runBlocking {
                 for ((i, n) in nSteps.withIndex())
@@ -665,7 +667,7 @@ class `Test Function Approximation` {
                     outerChan.receive()
                 }
             }
-            ChartView.charts += chart
+            D2DChart.charts += chart
             Application.launch(ChartApp::class.java)
         }
 
@@ -680,11 +682,12 @@ class `Test Function Approximation` {
         val positionScale = numTilings / (POSITION_MAX - POSITION_MIN)
         val velocityScale = numTilings / (VELOCITY_MAX - VELOCITY_MIN)
         val episodes = 50
-        val runs =10
+        val runs = 10
         val alphas = listOf(0.05, 0.1, 0.2, 0.4, 0.6, 0.8, 1.0, 1.2, 1.4, 1.5)
         val nSteps = listOf(1, 2, 4, 8, 16)
 
-        val chart = chart("performance")
+        val chart = chart("Effect of the a and n on early performance",
+                          "α x number of tilings (8)", "steps per episode")
         val truncateStep = 300
         runBlocking {
             for (n in nSteps) {
@@ -696,7 +699,7 @@ class `Test Function Approximation` {
                     val runChan = Channel<Int>(runs)
                     repeat(runs) {
                         async {
-                            val feature = SuttonTileCoding(255, numTilings)
+                            val feature = SuttonTileCoding(511, numTilings)
                             val func = LinearFunc(feature)
 
                             val trans = { s: State, a: Action<State> ->
@@ -709,7 +712,7 @@ class `Test Function Approximation` {
                             algo.episodes = episodes
                             algo.α = alpha / numTilings
                             var _step = 0
-                            algo.episodeListener = { episode, step ->
+                            algo.episodeListener = { _, step ->
                                 _step += step
                             }
                             algo.`Episodic semi-gradient n-step Sarsa control`(func, trans, n)
@@ -730,7 +733,7 @@ class `Test Function Approximation` {
                 println("finish n=$n")
             }
         }
-        ChartView.charts += chart
+        D2DChart.charts += chart
         Application.launch(ChartApp::class.java)
     }
 }
