@@ -82,7 +82,7 @@ Try [Testcases](src/test/kotlin/lab/mars/rl/model/impl)
 
 ![Figure 10.1](src/test/resources/Figure%2010.1.PNG)
 
-Figure 10.1: The Mountain Car task (upper left panel) and the cost-to-go function (− maxa q^(s; a; w)) learned
+Figure 10.1: The Mountain Car task and the cost-to-go function learned
 during one run
 
 ![Figure 10.4](src/test/resources/Figure%2010.4.PNG)
