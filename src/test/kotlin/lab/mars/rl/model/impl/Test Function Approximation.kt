@@ -674,7 +674,7 @@ class `Test Function Approximation` {
     }
 
     @Test
-    fun `Effect of the a and n on early performance`() {
+    fun `Effect of the α and n on early performance`() {
         logLevel(Level.ERROR)
         val mdp = MountainCar.make()
 
@@ -682,58 +682,47 @@ class `Test Function Approximation` {
         val positionScale = numTilings / (POSITION_MAX - POSITION_MIN)
         val velocityScale = numTilings / (VELOCITY_MAX - VELOCITY_MIN)
         val episodes = 50
-        val runs = 10
-        val alphas = listOf(0.05, 0.1, 0.2, 0.4, 0.6, 0.8, 1.0, 1.2, 1.4, 1.5)
+        val runs = 5
+        val alphas = DoubleArray(100) { 0.1 + it * 0.014 }
         val nSteps = listOf(1, 2, 4, 8, 16)
 
-        val chart = chart("Effect of the a and n on early performance",
+        val chart = chart("Effect of the α and n on early performance",
                           "α x number of tilings (8)", "steps per episode")
         val truncateStep = 300
-        runBlocking {
-            for (n in nSteps) {
-                val line = line("n=$n ")
-                for (alpha in alphas) {
-                    if ((n == 8 && alpha > 1) || (n == 16 && alpha > 0.75)) {
-                        continue
-                    }
-                    val runChan = Channel<Int>(runs)
-                    repeat(runs) {
-                        async {
-                            val feature = SuttonTileCoding(511, numTilings)
-                            val func = LinearFunc(feature)
-
-                            val trans = { s: State, a: Action<State> ->
-                                s as CarState
-                                a as DefaultAction<Int, CarState>
-                                tuple2(doubleArrayOf(positionScale * s.position, velocityScale * s.velocity), intArrayOf(a.value))
-                            }
-                            val π = `ε-greedy function policy`(func, trans, 0.0)
-                            val algo = FunctionApprox(mdp, π)
-                            algo.episodes = episodes
-                            algo.α = alpha / numTilings
-                            var _step = 0
-                            algo.episodeListener = { _, step ->
-                                _step += step
-                            }
-                            algo.`Episodic semi-gradient n-step Sarsa control`(func, trans, n)
-                            runChan.send(_step)
-                        }
-                    }
-                    var step = 0
-                    repeat(runs) {
-                        val _step = runChan.receive()
-                        step += _step
-                        println("alpha=$alpha n=$n run once")
-                    }
-                    val s = step / (runs * episodes).toDouble()
-                    if (s < truncateStep)
-                        line[alpha] = s
+        for (n in nSteps) {
+            val line = line("n=$n ")
+            for (alpha in alphas) {
+                if ((n == 8 && alpha > 1) || (n == 16 && alpha > 0.75)) {
+                    continue
                 }
-                chart += line
-                println("finish n=$n")
+                var step = 0
+                for (run in 1..runs) {
+                    val feature = SuttonTileCoding(511, numTilings)
+                    val func = LinearFunc(feature)
+                    val trans = { s: State, a: Action<State> ->
+                        s as CarState
+                        a as DefaultAction<Int, CarState>
+                        tuple2(doubleArrayOf(positionScale * s.position, velocityScale * s.velocity), intArrayOf(a.value))
+                    }
+                    val π = `ε-greedy function policy`(func, trans, 0.0)
+                    val algo = FunctionApprox(mdp, π)
+                    algo.episodes = episodes
+                    algo.α = alpha / numTilings
+                    algo.episodeListener = { _, _step ->
+                        step += _step
+                    }
+                    algo.`Episodic semi-gradient n-step Sarsa control`(func, trans, n)
+                    println("alpha=$alpha n=$n run:$run")
+                }
+                val s = step / (runs * episodes).toDouble()
+                if (s < truncateStep)
+                    line[alpha] = s
             }
+            chart += line
+            println("finish n=$n")
         }
         D2DChart.charts += chart
         Application.launch(ChartApp::class.java)
     }
+
 }

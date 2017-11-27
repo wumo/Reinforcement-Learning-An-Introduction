@@ -9,10 +9,14 @@ import lab.mars.rl.util.matrix.times
 fun <E> FunctionApprox.`Episodic semi-gradient Sarsa control`(q: ApproximateFunction<E>, trans: (State, Action<State>) -> E) {
     for (episode in 1..episodes) {
         log.debug { "$episode/$episodes" }
-        var step=0
+        var step = 0
         var s = started()
         var a = π(s)
         while (true) {
+            if (step >= maxSteps) {
+                log.debug("episode terminated due to exceeding max steps")
+                break
+            }
             step++
             val (s_next, reward) = a.sample()
             if (s_next.isNotTerminal()) {
@@ -25,6 +29,6 @@ fun <E> FunctionApprox.`Episodic semi-gradient Sarsa control`(q: ApproximateFunc
                 break
             }
         }
-        episodeListener(episode,step)
+        episodeListener(episode, step)
     }
 }

@@ -30,6 +30,10 @@ fun <E> FunctionApprox.`Episodic semi-gradient n-step Sarsa control`(q: Approxim
         _S.clear();_S.append(s)
         _A.clear();_A.append(a)
         do {
+            if (step >= maxSteps) {
+                log.debug("episode terminated due to exceeding max steps")
+                break
+            }
             step++
             if (t >= n) {//最多存储n个
                 _R.removeFirst()
