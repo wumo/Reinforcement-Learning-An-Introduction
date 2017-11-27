@@ -10,6 +10,10 @@ import lab.mars.rl.util.tuples.tuple3
 import lab.mars.rl.util.ui.*
 import org.apache.commons.math3.util.FastMath.*
 
+/**
+ * https://github.com/ShangtongZhang/reinforcement-learning-an-introduction/blob/master/chapter10/MountainCar.py
+ */
+
 //all possible actions
 val ACTION_REVERSE = -1
 val ACTION_ZERO = 0
@@ -244,12 +248,13 @@ fun figure10_3() {
 }
 
 fun figure10_4() {
-    val alphas = listOf(0.05, 0.1, 0.2, 0.4, 0.6, 0.8, 1.0, 1.2, 1.4,1.6)
+    val alphas = listOf(0.05, 0.1, 0.2, 0.4, 0.6, 0.8, 1.0, 1.2, 1.4, 1.5)
     val nSteps = listOf(1, 2, 4, 8, 16)
     val episodes = 50
-    val runs = 5
+    val runs = 10
 
     val chart = chart("performance")
+    val truncateStep = 300
     runBlocking {
         for (n in nSteps) {
             val line = line("n=$n ")
@@ -274,8 +279,10 @@ fun figure10_4() {
                     step += _step
                     println("alpha=$alpha n=$n run once")
                 }
+                val s = step / (runs * episodes).toDouble()
 
-                line[alpha] = step / (runs * episodes).toDouble()
+                if (s < truncateStep)
+                    line[alpha] = s
             }
             chart += line
             println("finish n=$n")

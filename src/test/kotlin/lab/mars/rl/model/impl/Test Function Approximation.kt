@@ -680,11 +680,12 @@ class `Test Function Approximation` {
         val positionScale = numTilings / (POSITION_MAX - POSITION_MIN)
         val velocityScale = numTilings / (VELOCITY_MAX - VELOCITY_MIN)
         val episodes = 50
-        val runs = 5
-        val alphas = listOf(0.05, 0.1, 0.2, 0.4, 0.6, 0.8, 1.0, 1.2, 1.4)
+        val runs =10
+        val alphas = listOf(0.05, 0.1, 0.2, 0.4, 0.6, 0.8, 1.0, 1.2, 1.4, 1.5)
         val nSteps = listOf(1, 2, 4, 8, 16)
 
         val chart = chart("performance")
+        val truncateStep = 300
         runBlocking {
             for (n in nSteps) {
                 val line = line("n=$n ")
@@ -721,8 +722,9 @@ class `Test Function Approximation` {
                         step += _step
                         println("alpha=$alpha n=$n run once")
                     }
-
-                    line[alpha] = step / (runs * episodes).toDouble()
+                    val s = step / (runs * episodes).toDouble()
+                    if (s < truncateStep)
+                        line[alpha] = s
                 }
                 chart += line
                 println("finish n=$n")

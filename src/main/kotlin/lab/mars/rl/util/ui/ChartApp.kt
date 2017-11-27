@@ -23,6 +23,10 @@ class ChartView : View() {
         flowpane {
             for (chart in charts) {
                 linechart(chart.title, NumberAxis(), NumberAxis()) {
+                    (yAxis as NumberAxis).isForceZeroInRange=false
+                    (xAxis as NumberAxis).isForceZeroInRange=false
+                    yAxis.isAutoRanging = true
+                    xAxis.isAutoRanging=true
                     for (line in chart.lines) {
                         series(line.description) {
                             for ((k, v) in line.data)
