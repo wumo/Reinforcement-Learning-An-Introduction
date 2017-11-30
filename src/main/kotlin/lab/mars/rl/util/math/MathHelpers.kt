@@ -7,6 +7,18 @@ import java.util.concurrent.ThreadLocalRandom
 
 inline fun Rand() = ThreadLocalRandom.current()!!
 
+fun <T> rand(set: Iterable<T>, evaluate: T.(T) -> Double): T {
+    val dem = set.sumByDouble { evaluate(it, it) }
+    val p = Rand().nextDouble()
+    var acc = 0.0
+    for (element in set) {
+        acc += evaluate(element, element) / dem
+        if (p <= acc)
+            return element
+    }
+    throw IllegalArgumentException("random=$p, but accumulation=$acc")
+}
+
 fun repeat(times: Int, condition: (Int) -> Boolean, action: (Int) -> Unit) {
     for (index in 0 until times) {
         if (!condition(index)) break
