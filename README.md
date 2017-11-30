@@ -60,6 +60,9 @@ Eligibility Traces
 * [Semi-gradient TD(λ) prediction](src/main/kotlin/lab/mars/rl/algo/eligibility_trace/Semi-gradient%20TD(λ)%20prediction.kt) (p.240)
 * [True Online TD(λ) prediction](src/main/kotlin/lab/mars/rl/algo/eligibility_trace/True%20Online%20TD(λ)%20prediction.kt) (p.246)
 
+Policy Gradient Methods
+* [REINFORCE, A Monte-Carlo Policy-Gradient Method (episodic)](src/main/kotlin/lab/mars/rl/algo/policy_gradient/REINFORCE.kt) (p.271)
+
 ## Implemented problems:
 * [Grid world](src/main/kotlin/lab/mars/rl/problem/GridWorld.kt) (p.61)
 * [Jack's Car Rental and exercise 4.4](src/main/kotlin/lab/mars/rl/problem/CarRental.kt) (p.65)
