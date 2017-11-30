@@ -109,9 +109,7 @@ open class DefaultBuf<T : Any>(private var ring: Array<Any>, private var offset:
         require(start in 0..end)
         require(end < _size)
         when {
-            start == 0 -> {
-                offset = index((end - start + 1))
-            }
+            start == 0 -> offset = index((end - start + 1))
             end == lastIndex -> {
             }
             else -> {
