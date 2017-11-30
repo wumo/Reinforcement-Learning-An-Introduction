@@ -55,26 +55,26 @@ inline fun <E : Any> emptyNSet(): NSet<E> = emptyNSet as NSet<E>
  * @param root 根节点一维数组
  */
 class NSet<E : Any>(private val dim: IntArray, private val stride: IntArray, private val root: Array<Any>) :
-        ExtendableRAC<E> {
+    ExtendableRAC<E> {
     override fun <T : Any> copycat(element_maker: (Index) -> T): IndexedCollection<T> {
         val index = DefaultIntBuf.zero(dim.size)
         return NSet(dim, stride, Array(root.size) {
             copycat(root[it], index, element_maker)
-                    .apply { index.increment(dim) }
+                .apply { index.increment(dim) }
         })
     }
 
     private fun <T : Any> copycat(prototype: Any, index: DefaultIntBuf, element_maker: (IntBuf) -> T): Any =
-            when (prototype) {
-                is NSet<*> -> {
-                    index.append(prototype.dim.size, 0)
-                    NSet<T>(prototype.dim, prototype.stride, Array(prototype.root.size) {
-                        copycat(prototype.root[it], index, element_maker)
-                                .apply { index.increment(prototype.dim) }
-                    }).apply { index.removeLast(prototype.dim.size) }
-                }
-                else -> element_maker(index)
+        when (prototype) {
+            is NSet<*> -> {
+                index.append(prototype.dim.size, 0)
+                NSet<T>(prototype.dim, prototype.stride, Array(prototype.root.size) {
+                    copycat(prototype.root[it], index, element_maker)
+                        .apply { index.increment(prototype.dim) }
+                }).apply { index.removeLast(prototype.dim.size) }
             }
+            else -> element_maker(index)
+        }
 
     override fun <T : Any> raw_set(element_maker: (Index, E) -> T) {
         val index = DefaultIntBuf.new()
@@ -203,7 +203,7 @@ class NSet<E : Any>(private val dim: IntArray, private val stride: IntArray, pri
         override fun hasNext() = dfs({ true }, { false })
 
         override fun next() =
-                dfs({ traverser.current.increment();traverser.visitor(traverser, it) }, { throw NoSuchElementException() })
+            dfs({ traverser.current.increment();traverser.visitor(traverser, it) }, { throw NoSuchElementException() })
 
         private inline fun increment(): Int {
             traverser.translate(traverser)

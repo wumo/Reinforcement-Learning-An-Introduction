@@ -10,7 +10,7 @@ import lab.mars.rl.util.matrix.times
 fun <E> FunctionApprox.`Semi-gradient Expected Sarsa`(q: ApproximateFunction<E>, trans: (State, Action<State>) -> E) {
     for (episode in 1..episodes) {
         log.debug { "$episode/$episodes" }
-        var step=0
+        var step = 0
         var s = started()
         while (s.isNotTerminal()) {
             step++
@@ -20,7 +20,7 @@ fun <E> FunctionApprox.`Semi-gradient Expected Sarsa`(q: ApproximateFunction<E>,
             q.w += α * δ * q.`▽`(trans(s, a))
             s = s_next
         }
-        episodeListener(episode,step)
+        episodeListener(episode, step)
     }
 }
 

@@ -14,17 +14,17 @@ import org.apache.commons.math3.util.FastMath.cos
 
 class CarState(val position: Double, val velocity: Double) : State {
     override val actions: RandomIterable<Action<CarState>> =
-            if (position == POSITION_MAX) emptyNSet()
-            else cnsetFrom(3) {
-                val a = it[0] - 1
-                DefaultAction(a) {
-                    var newVelocity = (velocity + 0.001 * a - 0.0025 * cos(3 * position))
-                            .coerceIn(VELOCITY_MIN, VELOCITY_MAX)
-                    val newPosition = (position + newVelocity).coerceIn(POSITION_MIN, POSITION_MAX)
-                    if (newPosition == POSITION_MIN) newVelocity = 0.0
-                    Possible(CarState(newPosition, newVelocity), -1.0)
-                }
+        if (position == POSITION_MAX) emptyNSet()
+        else cnsetFrom(3) {
+            val a = it[0] - 1
+            DefaultAction(a) {
+                var newVelocity = (velocity + 0.001 * a - 0.0025 * cos(3 * position))
+                    .coerceIn(VELOCITY_MIN, VELOCITY_MAX)
+                val newPosition = (position + newVelocity).coerceIn(POSITION_MIN, POSITION_MAX)
+                if (newPosition == POSITION_MIN) newVelocity = 0.0
+                Possible(CarState(newPosition, newVelocity), -1.0)
             }
+        }
 }
 
 object MountainCar {

@@ -83,10 +83,10 @@ infix fun Int.x(d: GeneralDimension): GeneralDimension {
 }
 
 operator fun GeneralDimension.invoke(vararg s: Any) =
-        this.apply {
-            if (s.isNotEmpty())
-                levels.add(EnumeratedDimension(Array(s.size) { s[it].toDim() }))
-        }
+    this.apply {
+        if (s.isNotEmpty())
+            levels.add(EnumeratedDimension(Array(s.size) { s[it].toDim() }))
+    }
 
 infix fun GeneralDimension.x(a: Int): GeneralDimension {
     require(a >= 0)
@@ -111,8 +111,7 @@ infix fun GeneralDimension.x(a: Int): GeneralDimension {
 }
 
 infix fun GeneralDimension.x(block: (IntBuf) -> Any) =
-        this.apply { levels.add(VariationalDimension(block)) }
-
+    this.apply { levels.add(VariationalDimension(block)) }
 
 infix fun GeneralDimension.x(d: GeneralDimension): GeneralDimension {
     val first = this

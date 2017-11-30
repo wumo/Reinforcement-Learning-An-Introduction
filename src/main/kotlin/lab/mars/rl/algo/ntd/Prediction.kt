@@ -10,7 +10,6 @@ import lab.mars.rl.util.math.Σ
 import org.apache.commons.math3.util.FastMath.min
 import org.apache.commons.math3.util.FastMath.pow
 
-
 fun NStepTemporalDifference.prediction(): StateValueFunction {
     var n = n
     val V = indexedMdp.VFunc { 0.0 }

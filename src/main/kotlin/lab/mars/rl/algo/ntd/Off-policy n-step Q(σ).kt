@@ -13,7 +13,7 @@ import org.apache.commons.math3.util.FastMath.min
 
 fun NStepTemporalDifference.`off-policy n-step Q(σ)`(alpha: (IndexedState, IndexedAction) -> Double = { _, _ -> this.α }): OptimalSolution {
     val b = indexedMdp.equiprobablePolicy()
-    val π =indexedMdp.equiprobablePolicy()
+    val π = indexedMdp.equiprobablePolicy()
     val Q = indexedMdp.QFunc { 0.0 }
 
     val _Q = newBuf<Double>(min(n, MAX_N))
@@ -30,7 +30,7 @@ fun NStepTemporalDifference.`off-policy n-step Q(σ)`(alpha: (IndexedState, Inde
         var T = Int.MAX_VALUE
         var t = 0
         var s = started()
-        var a =b(s)
+        var a = b(s)
 
         _Q.clear(); _Q.append(0.0)
         _π.clear(); _π.append(π[s, a])
@@ -60,7 +60,7 @@ fun NStepTemporalDifference.`off-policy n-step Q(σ)`(alpha: (IndexedState, Inde
                     val _t = t - n + 1
                     if (_t < 0) n = T //n is too large, normalize it
                 } else {
-                    a =b(s);_A.append(a)
+                    a = b(s);_A.append(a)
                     val tmp_σ = σ(t + 1)
                     _σ.append(tmp_σ)
                     δ.append(reward + γ * tmp_σ * Q[s, a] + γ * (1 - tmp_σ) * Σ(s.actions) { π[s, it] * Q[s, it] } - _Q.last)

@@ -20,7 +20,7 @@ inline fun newIntBuf(cap: Int = 8, size: Int = 0) = DefaultIntBuf(IntArray(cap),
 inline fun intBufOf(vararg s: Int) = DefaultIntBuf(s, 0, s.size)
 
 open class DefaultIntBuf(private var ring: IntArray, private var offset: Int, size: Int, cap: Int = size) :
-        MutableIntBuf() {
+    MutableIntBuf() {
 
     companion object {
         val MAX_ARRAY_SIZE = Integer.MAX_VALUE - 8
@@ -50,9 +50,9 @@ open class DefaultIntBuf(private var ring: IntArray, private var offset: Int, si
 
     init {
         require(
-                offset in 0..ring.lastIndex &&
-                size in 0..ring.size &&
-                cap in size..ring.size)
+            offset in 0..ring.lastIndex &&
+            size in 0..ring.size &&
+            cap in size..ring.size)
     }
 
     private var _size = size

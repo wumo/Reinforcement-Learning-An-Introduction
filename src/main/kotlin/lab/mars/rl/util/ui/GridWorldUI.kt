@@ -70,5 +70,4 @@ class GridWorldUI : Application() {
         barrier.await()
     }
 
-
 }

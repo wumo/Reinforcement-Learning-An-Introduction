@@ -60,7 +60,7 @@ object RodManeuvering {
 
         fun range(a: Double, b: Double) = if (a < b) a..b else b..a
         fun intersect(a: ClosedRange<Double>, b: ClosedRange<Double>)
-                = a.start in b || a.endInclusive in b || b.start in a || b.endInclusive in a
+            = a.start in b || a.endInclusive in b || b.start in a || b.endInclusive in a
     }
 
     val rodLength = 100.0
@@ -118,7 +118,7 @@ object RodManeuvering {
     }
 
     fun Point2D.rotate(angleRad: Double)
-            = Point2D(x * cos(angleRad) - y * sin(angleRad), x * sin(angleRad) + y * cos(angleRad))
+        = Point2D(x * cos(angleRad) - y * sin(angleRad), x * sin(angleRad) + y * cos(angleRad))
 
     fun make(): IndexedMDP {
         val mdp = mdpOf(gamma = 0.95, state_dim = resolution x resolution x rotation_resolution, action_dim = 6)
@@ -146,8 +146,8 @@ object RodManeuvering {
                         } else
                             s_next = s
                         possibles = cnsetOf(
-                                if (s_next === goal) IndexedPossible(s_next, 1.0, 1.0)
-                                else IndexedPossible(s_next, 0.0, 1.0))
+                            if (s_next === goal) IndexedPossible(s_next, 1.0, 1.0)
+                            else IndexedPossible(s_next, 0.0, 1.0))
                     }
 
                     this[0].assign(s[0], s[1], s[2] - 1)//turn clockwise
@@ -174,7 +174,7 @@ object RodManeuvering {
                     this[5].assign(nx, ny, s[2])//move backward perpendicular to the long axis
                 }
             }
-            started = {states(3, 13, 0).rand()}
+            started = { states(3, 13, 0).rand() }
         }
     }
 

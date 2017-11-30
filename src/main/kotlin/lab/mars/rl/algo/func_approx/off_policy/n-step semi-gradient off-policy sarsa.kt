@@ -21,7 +21,7 @@ fun <E> FunctionApprox.`n-step semi-gradient off-policy sarsa episodic`(n: Int, 
 
     for (episode in 1..episodes) {
         log.debug { "$episode/$episodes" }
-        var step=0
+        var step = 0
         var n = n
         var T = Int.MAX_VALUE
         var t = 0
@@ -61,7 +61,7 @@ fun <E> FunctionApprox.`n-step semi-gradient off-policy sarsa episodic`(n: Int, 
             t++
         } while (τ < T - 1)
         log.debug { "n=$n,T=$T" }
-        episodeListener(episode,step)
+        episodeListener(episode, step)
     }
 }
 

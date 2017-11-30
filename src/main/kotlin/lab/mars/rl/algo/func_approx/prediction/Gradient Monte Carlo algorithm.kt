@@ -13,7 +13,7 @@ fun <E> FunctionApprox.`Gradient Monte Carlo algorithm`(v: ApproximateFunction<E
 
     for (episode in 1..episodes) {
         log.debug { "$episode/$episodes" }
-        var step=0
+        var step = 0
         _S.clear(); _R.clear()
         var s = started()
         _S.append(s); _R.append(0.0)
@@ -35,6 +35,6 @@ fun <E> FunctionApprox.`Gradient Monte Carlo algorithm`(v: ApproximateFunction<E
             val Gt = accum - pre
             v.w += α * (Gt - v(trans(_S[t]))) * v.`▽`(trans(_S[t]))
         }
-        episodeListener(episode,step)
+        episodeListener(episode, step)
     }
 }

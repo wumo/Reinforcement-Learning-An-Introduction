@@ -20,7 +20,6 @@ import org.apache.commons.math3.special.Gamma
 import org.apache.commons.math3.util.FastMath
 import org.apache.commons.math3.util.MathUtils
 
-
 fun poisson(mean: Double, n: Int): Double {
     //        if (n > 11) return 0;
     //        return exp(-mean) * pow(mean, n) / CombinatoricsUtils.factorial(n);

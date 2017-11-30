@@ -20,10 +20,10 @@ import tornadofx.plusAssign
 
 class RawD3DChartUI : Application() {
     class RawD3DChart(val gridx: Int, val gridy: Int,
-                   val width: Double = 10.0,
-                   val height: Double = 10.0,
-                   val depth: Double = 10.0,
-                   value: (Int, Int) -> Double) {
+                      val width: Double = 10.0,
+                      val height: Double = 10.0,
+                      val depth: Double = 10.0,
+                      value: (Int, Int) -> Double) {
         var min_y = Float.POSITIVE_INFINITY
         var max_y = Float.NEGATIVE_INFINITY
         val vertexSize = 3
@@ -71,7 +71,7 @@ class RawD3DChartUI : Application() {
         inline fun f_idx(x: Int, y: Int) = (x * ((gridx - 1)) + y) * faceSize
 
         private fun normalize(y: Float)
-                = if (max_y == min_y) 0f else (depth * (y - min_y) / (max_y - min_y)).toFloat()
+            = if (max_y == min_y) 0f else (depth * (y - min_y) / (max_y - min_y)).toFloat()
     }
 
     companion object {
@@ -101,22 +101,22 @@ class RawD3DChartUI : Application() {
         // Create and position camera
         val camera = PerspectiveCamera(true)
         camera.transforms.addAll(
-                pivot,
-                yRotate,
-                Rotate(-45.0, Rotate.X_AXIS),
-                Translate(0.0, 0.0, -50.0)
+            pivot,
+            yRotate,
+            Rotate(-45.0, Rotate.X_AXIS),
+            Translate(0.0, 0.0, -50.0)
         )
 
         // animate the camera position.
         val timeline = Timeline(
-                KeyFrame(
-                        Duration.seconds(0.0),
-                        KeyValue(yRotate.angleProperty(), 0)
-                ),
-                KeyFrame(
-                        Duration.seconds(15.0),
-                        KeyValue(yRotate.angleProperty(), 360)
-                )
+            KeyFrame(
+                Duration.seconds(0.0),
+                KeyValue(yRotate.angleProperty(), 0)
+            ),
+            KeyFrame(
+                Duration.seconds(15.0),
+                KeyValue(yRotate.angleProperty(), 360)
+            )
         )
         timeline.cycleCount = Timeline.INDEFINITE
         timeline.play()
@@ -126,10 +126,10 @@ class RawD3DChartUI : Application() {
 
         // Use a SubScene
         val subScene = SubScene(
-                root,
-                300.0, 300.0,
-                true,
-                SceneAntialiasing.BALANCED
+            root,
+            300.0, 300.0,
+            true,
+            SceneAntialiasing.BALANCED
         )
         subScene.fill = Color.ALICEBLUE
         subScene.camera = camera

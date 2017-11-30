@@ -26,16 +26,16 @@ fun strideOfDim(dim: IntArray): IntArray {
 }
 
 fun <E : Any> nsetFrom(dim: Dimension, recipe: (IntBuf) -> E) =
-        dim.NSet(recipe)
+    dim.NSet(recipe)
 
 fun <E : Any> nsetFrom(dim: Int, recipe: (IntBuf) -> E) =
-        dim.NSet(recipe)
+    dim.NSet(recipe)
 
 fun <E : Any> cnsetFrom(dim: Dimension, recipe: (IntBuf) -> E) =
-        dim.CNSet(recipe)
+    dim.CNSet(recipe)
 
 fun <E : Any> cnsetFrom(dim: Int, recipe: (IntBuf) -> E) =
-        dim.CNSet(recipe)
+    dim.CNSet(recipe)
 
 interface levelsIterator : Iterator<Dimension> {
     fun snapshot(): levelsIterator
@@ -50,10 +50,10 @@ val emptyLevelsIterator = object : levelsIterator {
 }
 
 fun <E : Any> Int.NSet(recipe: (IntBuf) -> E) =
-        GeneralDimension(DefaultIntBuf.of(this), emptyLevels).NSet(recipe)
+    GeneralDimension(DefaultIntBuf.of(this), emptyLevels).NSet(recipe)
 
 fun <E : Any> Int.CNSet(recipe: (IntBuf) -> E) =
-        GeneralDimension(DefaultIntBuf.of(this), emptyLevels).CNSet(recipe)
+    GeneralDimension(DefaultIntBuf.of(this), emptyLevels).CNSet(recipe)
 
 sealed class Dimension {
     abstract fun <E : Any> NSet(slot: DefaultIntBuf, recipe: (IntBuf) -> Any): NSet<E>
@@ -95,15 +95,15 @@ sealed class Dimension {
 
 class ExpandDimension(internal val dim: Int) : Dimension() {
     override fun <E : Any> NSet(slot: DefaultIntBuf, recipe: (IntBuf) -> Any)
-            = dim.toDim().NSet<E>(slot, recipe)
+        = dim.toDim().NSet<E>(slot, recipe)
 
     override fun sum(slot: MutableIntBuf, successors: levelsIterator)
-            = dim.toDim().sum(slot, successors)
+        = dim.toDim().sum(slot, successors)
 
     override fun <E : Any> CNSet(set: CompactNSet<E>, offset: Int,
                                  slot: MutableIntBuf, successors: levelsIterator,
                                  recipe: (IntBuf) -> E)
-            = dim.toDim().CNSet(set, offset, slot, successors, recipe)
+        = dim.toDim().CNSet(set, offset, slot, successors, recipe)
 }
 
 class VariationalDimension(private val dimFunc: (IntBuf) -> Any)
@@ -111,15 +111,15 @@ class VariationalDimension(private val dimFunc: (IntBuf) -> Any)
 
     override fun <E : Any> NSet(slot: DefaultIntBuf,
                                 recipe: (IntBuf) -> Any)
-            = dimFunc(slot).toDim().NSet<E>(slot, recipe)
+        = dimFunc(slot).toDim().NSet<E>(slot, recipe)
 
     override fun sum(slot: MutableIntBuf, successors: levelsIterator)
-            = dimFunc(slot).toDim().sum(slot, successors)
+        = dimFunc(slot).toDim().sum(slot, successors)
 
     override fun <E : Any> CNSet(set: CompactNSet<E>, offset: Int,
                                  slot: MutableIntBuf, successors: levelsIterator,
                                  recipe: (IntBuf) -> E)
-            = dimFunc(slot).toDim().CNSet(set, offset, slot, successors, recipe)
+        = dimFunc(slot).toDim().CNSet(set, offset, slot, successors, recipe)
 }
 
 inline fun <T> Array<T>.isSingle() = this.size == 1
@@ -243,8 +243,8 @@ constructor(private val enumerated: Array<Dimension>)
 
 inline fun MutableIntBuf.isZero() = this.size == 1 && this[0] == 0
 class GeneralDimension(
-        internal val dim: DefaultIntBuf,
-        internal val levels: LinkedList<Dimension>) : Dimension() {
+    internal val dim: DefaultIntBuf,
+    internal val levels: LinkedList<Dimension>) : Dimension() {
 
     fun copy() = GeneralDimension(dim.copy(), LinkedList(levels))
 
@@ -318,7 +318,7 @@ class GeneralDimension(
                     var sum = 0
                     for (a in 0 until total)
                         sum += cascadeSum(slot, successors.snapshot())
-                                .apply { slot.increment(dim) }
+                            .apply { slot.increment(dim) }
                     slot.removeLast(dim.size)
                     sum
                 }
@@ -327,7 +327,7 @@ class GeneralDimension(
     }
 
     private inline fun cascadeSum(slot: MutableIntBuf, successors: levelsIterator)
-            = if (successors.hasNext()) successors.next().sum(slot, successors) else 0
+        = if (successors.hasNext()) successors.next().sum(slot, successors) else 0
 
     override fun <E : Any> CNSet(set: CompactNSet<E>, offset: Int,
                                  slot: MutableIntBuf, successors: levelsIterator,

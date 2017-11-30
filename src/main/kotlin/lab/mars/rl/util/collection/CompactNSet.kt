@@ -20,7 +20,7 @@ import java.util.*
  */
 fun <T : Any> cnsetOf(vararg elements: T): CompactNSet<T> {
     val set = CompactNSet<T>(Array<Any>(elements.size) { elements[it] }.buf(0, 0))
-    val subtree=set.expand(0, elements.size)
+    val subtree = set.expand(0, elements.size)
     subtree.offsetEnd = set.data.writePtr - 1
     set.size
     return set
@@ -56,7 +56,7 @@ constructor(internal val data: MutableBuf<Any>, val rootOffset: Int = 0, val sub
     }
 
     override fun <T : Any> copycat(element_maker: (Index) -> T)
-            : IndexedCollection<T> {
+        : IndexedCollection<T> {
         val new_data = DefaultBuf.new<Any>(data.cap)
         for (a in 0..data.lastIndex)
             new_data.append((data[a] as? Cell<E>)?.copy() ?: data[a])
@@ -97,7 +97,7 @@ constructor(internal val data: MutableBuf<Any>, val rootOffset: Int = 0, val sub
     }
 
     fun location(idx: Index): Int =
-            operation(idx.iterator()) { offset, _ -> offset }
+        operation(idx.iterator()) { offset, _ -> offset }
 
     fun _get(idx: Int): E {
         val tmp = data[idx]
@@ -128,10 +128,10 @@ constructor(internal val data: MutableBuf<Any>, val rootOffset: Int = 0, val sub
     }
 
     override fun get(dim: Index): E =
-            operation(dim.iterator()) { offset, _ -> _get(offset) }
+        operation(dim.iterator()) { offset, _ -> _get(offset) }
 
     override fun set(dim: Index, s: E) =
-            operation(dim.iterator()) { offset, _ -> _set(offset, s) }
+        operation(dim.iterator()) { offset, _ -> _set(offset, s) }
 
     override fun set(element_maker: (Index, E) -> E) {
         dfs(rootOffset, subLevel) { slot, offset ->
@@ -167,7 +167,7 @@ constructor(internal val data: MutableBuf<Any>, val rootOffset: Int = 0, val sub
         val tmp = data[offset] as? Cell<E>
                   ?: Cell(DefaultBuf.new(), data[offset] as E)
         val subtree = SubTree(size = size,
-                                                                      offset2nd = data.writePtr)
+                              offset2nd = data.writePtr)
         tmp.subtrees.append(subtree)
         data[offset] = tmp
         data.unfold(size - 1)
@@ -185,7 +185,7 @@ constructor(internal val data: MutableBuf<Any>, val rootOffset: Int = 0, val sub
     }
 
     inner class Itr<T>(
-            private val visitor: (IntBuf, E) -> T
+        private val visitor: (IntBuf, E) -> T
     ) : Iterator<T> {
         private var offset = rootOffset
         private var visited = 0
@@ -252,11 +252,11 @@ constructor(internal val data: MutableBuf<Any>, val rootOffset: Int = 0, val sub
 
         init {
             offset2nd =
-                    if (_size <= 1) 0
-                    else {
-                        val subtree = (data[rootOffset] as Cell<E>)[subLevel]
-                        subtree.offset2nd
-                    }
+                if (_size <= 1) 0
+                else {
+                    val subtree = (data[rootOffset] as Cell<E>)[subLevel]
+                    subtree.offset2nd
+                }
         }
 
         var a = 0

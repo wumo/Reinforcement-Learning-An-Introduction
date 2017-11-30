@@ -12,7 +12,7 @@ import lab.mars.rl.util.tuples.tuple3
 import org.apache.commons.math3.util.FastMath.min
 
 fun NStepTemporalDifference.treebackup(alpha: (IndexedState, IndexedAction) -> Double = { _, _ -> this.α }): OptimalSolution {
-    val π =indexedMdp.equiprobablePolicy()
+    val π = indexedMdp.equiprobablePolicy()
     val Q = indexedMdp.QFunc { 0.0 }
 
     val _Q = newBuf<Double>(min(n, MAX_N))

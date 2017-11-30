@@ -30,7 +30,7 @@ class DynaQ(val indexedMdp: IndexedMDP) {
     var ε = 0.1
     var n = 10
     fun optimal(_alpha: (IndexedState, IndexedAction) -> Double = { _, _ -> α }): OptimalSolution {
-        val π =IndexedPolicy(indexedMdp.QFunc { 0.0 })
+        val π = IndexedPolicy(indexedMdp.QFunc { 0.0 })
         val Q = indexedMdp.QFunc { 0.0 }
         val cachedSA = DefaultBuf.new<tuple2<IndexedState, IndexedAction>>(Q.size)
         val Model = indexedMdp.QFunc { emptyPossibleSet }

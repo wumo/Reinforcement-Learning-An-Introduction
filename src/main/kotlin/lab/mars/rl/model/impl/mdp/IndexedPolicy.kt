@@ -11,7 +11,7 @@ class IndexedPolicy(val p: IndexedCollection<Double>, val ε: Double = 0.1) : Po
     }
 
     override fun get(s: State, a: Action<State>)
-            = p[s as IndexedState, a as IndexedAction]
+        = p[s as IndexedState, a as IndexedAction]
 
     operator fun set(s: IndexedState, a: IndexedAction, v: Double) {
         p[s, a] = v

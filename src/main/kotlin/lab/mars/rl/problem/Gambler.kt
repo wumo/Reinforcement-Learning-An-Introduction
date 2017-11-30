@@ -16,8 +16,8 @@ object Gambler {
 
     fun make(p_head: Double): IndexedMDP {
         val mdp = CNSetMDP(gamma = 1.0,
-                                                      state_dim = goal_coin + 1,
-                                                      action_dim = { min(it[0], goal_coin - it[0]) + 1 })
+                           state_dim = goal_coin + 1,
+                           action_dim = { min(it[0], goal_coin - it[0]) + 1 })
         mdp.apply {
             for (s in states) {
                 val capital = s[0]

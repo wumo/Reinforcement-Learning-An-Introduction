@@ -9,10 +9,10 @@ import lab.mars.rl.util.dimension.x
 
 object DynaMaze {
     private val move = arrayOf(
-            intArrayOf(-1, 0), //left
-            intArrayOf(1, 0), //right
-            intArrayOf(0, 1), //up
-            intArrayOf(0, -1)//down
+        intArrayOf(-1, 0), //left
+        intArrayOf(1, 0), //right
+        intArrayOf(0, 1), //up
+        intArrayOf(0, -1)//down
     )
     val desc_move = arrayOf("←", "→", " ↑", " ↓")
     val wall = hashSetOf<IntBuf>()

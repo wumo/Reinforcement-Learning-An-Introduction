@@ -9,18 +9,18 @@ object MaximizationBias {
     val actionsOfB = 10
     fun make(): IndexedMDP {
         val mdp = CNSetMDP(gamma = 1.0,
-                                                      state_dim = 4,
-                                                      action_dim = {
-                                                          when (it[0]) {
-                                                              1 -> actionsOfB
-                                                              2 -> 2
-                                                              else -> 1
-                                                          }
-                                                      })
+                           state_dim = 4,
+                           action_dim = {
+                               when (it[0]) {
+                                   1 -> actionsOfB
+                                   2 -> 2
+                                   else -> 1
+                               }
+                           })
         mdp.apply {
             states[0].actions = emptyNSet()
             states[3].actions = emptyNSet()
-            started = {states(2).rand()}
+            started = { states(2).rand() }
             for (a in states[2].actions)
                 a.sample = {
                     val next = if (a[0] == 0) 1 else 3

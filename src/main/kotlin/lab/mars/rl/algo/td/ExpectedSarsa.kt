@@ -10,7 +10,7 @@ import lab.mars.rl.util.math.Σ
 import lab.mars.rl.util.tuples.tuple3
 
 fun TemporalDifference.expectedSarsa(_alpha: (IndexedState, IndexedAction) -> Double = { _, _ -> α }): OptimalSolution {
-    val π =IndexedPolicy(indexedMdp.QFunc { 0.0 })
+    val π = IndexedPolicy(indexedMdp.QFunc { 0.0 })
     val Q = indexedMdp.QFunc { 0.0 }
 
     for (episode in 1..episodes) {
@@ -18,7 +18,7 @@ fun TemporalDifference.expectedSarsa(_alpha: (IndexedState, IndexedAction) -> Do
         var s = started()
         while (s.isNotTerminal()) {
             `ε-greedy`(s, Q, π, ε)
-            val a =π(s)
+            val a = π(s)
             val (s_next, reward) = a.sample()
             Q[s, a] += _alpha(s, a) * (reward + γ * Σ(s_next.actions) { π[s_next, it] * Q[s_next, it] } - Q[s, a])
             s = s_next

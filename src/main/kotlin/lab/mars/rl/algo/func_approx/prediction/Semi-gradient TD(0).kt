@@ -9,7 +9,7 @@ import lab.mars.rl.util.matrix.times
 fun <E> FunctionApprox.`Semi-gradient TD(0)`(v: ApproximateFunction<E>, trans: (State) -> E) {
     for (episode in 1..episodes) {
         log.debug { "$episode/$episodes" }
-        var step=0
+        var step = 0
         var s = started()
         while (s.isNotTerminal()) {
             step++
@@ -18,6 +18,6 @@ fun <E> FunctionApprox.`Semi-gradient TD(0)`(v: ApproximateFunction<E>, trans: (
             v.w += α * (reward + γ * (if (s_next.isTerminal()) 0.0 else v(trans(s_next))) - v(trans(s))) * v.`▽`(trans(s))
             s = s_next
         }
-        episodeListener(episode,step)
+        episodeListener(episode, step)
     }
 }

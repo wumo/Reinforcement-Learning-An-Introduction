@@ -44,9 +44,9 @@ class D3DChartUI : Application() {
     private fun createChart(c: D3DChart): SubScene {
 
         val chart = Chart3DFactory.createSurfaceChart(
-                "",
-                c.title,
-                c.value, c.xAxisLabel, c.zAxisLabel, c.yAxisLabel)
+            "",
+            c.title,
+            c.value, c.xAxisLabel, c.zAxisLabel, c.yAxisLabel)
 
         val plot = chart.plot as XYZPlot
         plot.dimensions = Dimension3D(c.width, c.depth, c.height)
@@ -61,10 +61,10 @@ class D3DChartUI : Application() {
         renderer.colorScale = RainbowScale(Range(c.zRange.start, c.zRange.endInclusive))
         chart.setLegendPosition(LegendAnchor.BOTTOM_RIGHT, Orientation.VERTICAL)
         return SubScene(
-                StackPane(Chart3DViewer(chart)),
-                400.0, 400.0,
-                true,
-                SceneAntialiasing.BALANCED
+            StackPane(Chart3DViewer(chart)),
+            400.0, 400.0,
+            true,
+            SceneAntialiasing.BALANCED
         )
     }
 

@@ -24,7 +24,7 @@ inline fun <T : Any> reuseBuf(array: Array<Any>,
 inline fun <reified T : Any> newBuf(size: Int, noinline init: (Int) -> T) = Array(size, init).buf()
 
 open class DefaultBuf<T : Any>(private var ring: Array<Any>, private var offset: Int, size: Int, cap: Int = size) :
-        MutableBuf<T> {
+    MutableBuf<T> {
     companion object {
         val MAX_ARRAY_SIZE = Integer.MAX_VALUE - 8
         /**
@@ -55,9 +55,9 @@ open class DefaultBuf<T : Any>(private var ring: Array<Any>, private var offset:
 
     init {
         require(
-                offset in 0..ring.lastIndex &&
-                size in 0..ring.size &&
-                cap in size..ring.size)
+            offset in 0..ring.lastIndex &&
+            size in 0..ring.size &&
+            cap in size..ring.size)
     }
 
     private var _size = size
@@ -67,7 +67,6 @@ open class DefaultBuf<T : Any>(private var ring: Array<Any>, private var offset:
         get() = _size
     override val cap: Int
         get() = _cap
-
 
     private inline fun index(i: Int): Int = (offset + i) % ring.size
 

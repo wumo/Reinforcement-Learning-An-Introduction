@@ -16,16 +16,16 @@ object GridWorld {
     private const val n = 4
     private const val m = 4
     private val move = arrayOf(
-            intArrayOf(-1, 0), //up
-            intArrayOf(1, 0), //down
-            intArrayOf(0, 1), //right
-            intArrayOf(0, -1)//left
+        intArrayOf(-1, 0), //up
+        intArrayOf(1, 0), //down
+        intArrayOf(0, 1), //right
+        intArrayOf(0, -1)//left
     )
     val desc_move = arrayOf(" ↑", " ↓", "→", "←")
     fun make(): IndexedMDP {
         val mdp = CNSetMDP(gamma = 0.9,
-                                                      state_dim = n x n,
-                                                      action_dim = m)
+                           state_dim = n x n,
+                           action_dim = m)
         mdp.apply {
             for (s in states)
                 for (action in s.actions) {

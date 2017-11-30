@@ -18,7 +18,7 @@ fun TemporalDifference.QLearning(_alpha: (IndexedState, IndexedAction) -> Double
         var s = started()
         while (s.isNotTerminal()) {
             `ε-greedy`(s, Q, π, ε)
-            val a =π(s)
+            val a = π(s)
             val (s_next, reward) = a.sample()
             Q[s, a] += _alpha(s, a) * (reward + γ * max(s_next.actions, 0.0) { Q[s_next, it] } - Q[s, a])
             s = s_next
