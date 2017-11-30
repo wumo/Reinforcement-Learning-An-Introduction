@@ -10,8 +10,8 @@ import lab.mars.rl.util.matrix.Matrix
 import lab.mars.rl.util.matrix.times
 
 fun <E> FunctionApprox.`Semi-gradient TD(λ) prediction`(vFunc: LinearFunc<E>, trans: (State) -> E, λ: Double) {
-    val xFeature = vFunc.x
-    val d = xFeature.numOfComponents
+    val X = vFunc.x
+    val d = X.numOfComponents
     var z = Matrix.column(d)
     for (episode in 1..episodes) {
         log.debug { "$episode/$episodes" }
