@@ -4,8 +4,8 @@ import lab.mars.rl.util.buf.DefaultIntBuf
 import lab.mars.rl.util.buf.IntBuf
 import lab.mars.rl.util.collection.nsetOf
 import lab.mars.rl.util.dimension.*
-import org.junit.Assert
-import org.junit.Test
+import org.junit.jupiter.api.Assertions.*
+import org.junit.jupiter.api.Test
 
 @Suppress("UNUSED_VARIABLE", "NAME_SHADOWING", "VARIABLE_WITH_REDUNDANT_INITIALIZER")
 /**
@@ -39,7 +39,7 @@ class TestNSet {
                 DefaultIntBuf.of(6, 1, 2))
         var i = 0
         for (index in set.indices()) {
-            Assert.assertTrue(index.equals(expected[i++]))
+            assertTrue(index.equals(expected[i++]))
         }
     }
 
@@ -63,7 +63,7 @@ class TestNSet {
                 DefaultIntBuf.of(1, 1, 3))
         var i = 0
         for (index in set.indices()) {
-            Assert.assertTrue(index.equals(expected[i++]))
+            assertTrue(index.equals(expected[i++]))
         }
     }
 
@@ -76,7 +76,7 @@ class TestNSet {
             r2.add((index as IntBuf).toIntArray())
         }
         r1.forEach { println(it.asList()) }
-        Assert.assertArrayEquals(r1.toTypedArray(), r2.toTypedArray())
+        assertArrayEquals(r1.toTypedArray(), r2.toTypedArray())
     }
 
     @Test
@@ -107,7 +107,7 @@ class TestNSet {
         for (i in 0 until size) {
             println("$i\t ${r1[i].asList()} vs.${r2[i].asList()}");
         }
-        Assert.assertArrayEquals(r1.toTypedArray(), r2.toTypedArray())
+        assertArrayEquals(r1.toTypedArray(), r2.toTypedArray())
     }
 
     @Test
@@ -134,9 +134,9 @@ class TestNSet {
         val set = nsetFrom(2 x { 3 x 4 }) { i++ }
         println(set[0, 0, 0])
         set[1] = tmp
-        Assert.assertEquals(0, set[1, 0])
-        Assert.assertEquals(1, set[1, 1])
-        Assert.assertEquals(2, set[0, 0, 0])
+        assertEquals(0, set[1, 0])
+        assertEquals(1, set[1, 1])
+        assertEquals(2, set[0, 0, 0])
     }
 
     @Test
@@ -160,7 +160,7 @@ class TestNSet {
         i = 0
         for (a in set) {
             println(a)
-            Assert.assertEquals(i++, a)
+            assertEquals(i++, a)
         }
     }
 
@@ -172,7 +172,7 @@ class TestNSet {
         i = 0
         for (a in set) {
             println(a)
-            Assert.assertEquals(i++, a)
+            assertEquals(i++, a)
         }
         for (index in set.indices()) {
             println(index)
@@ -205,33 +205,33 @@ class TestNSet {
                     for (d in 0 until 6)
                         exp.add(DefaultIntBuf.of(a, b, c, d))
         var set = nsetFrom(3 x 4 x 5 x 6) {
-            Assert.assertTrue(it.equals(exp[i])); i++
+            assertTrue(it.equals(exp[i])); i++
         }
         i = 0
         nsetFrom(0 x 3 x 4 x 0 x 5 x 6) {
-            Assert.assertTrue(it.equals(exp[i])); i++
+            assertTrue(it.equals(exp[i])); i++
         }
         i = 0
         nsetFrom((3 x 4 x 5) x 6) {
-            Assert.assertTrue(it.equals(exp[i])); i++
+            assertTrue(it.equals(exp[i])); i++
         }
         i = 0
         set = nsetFrom((3 x 4 x 5) x 6 x 0) {
-            Assert.assertTrue(it.equals(exp[i])); i++
+            assertTrue(it.equals(exp[i])); i++
         }
         set[0, 0, 0, 0]
         i = 0
         nsetFrom(3 x (4 x 5) x 6) {
-            Assert.assertTrue(it.equals(exp[i])); i++
+            assertTrue(it.equals(exp[i])); i++
         }
         i = 0
         set = nsetFrom(0 x (3 x 4 x 5) x 6) {
-            Assert.assertTrue(it.equals(exp[i])); i++
+            assertTrue(it.equals(exp[i])); i++
         }
         set[0, 0, 0, 0]
         i = 0
         set = nsetFrom(0 x (3 x 4 x 5) x (6 x 0)) {
-            Assert.assertTrue(it.equals(exp[i])); i++
+            assertTrue(it.equals(exp[i])); i++
         }
         set[0, 0, 0, 0]
     }

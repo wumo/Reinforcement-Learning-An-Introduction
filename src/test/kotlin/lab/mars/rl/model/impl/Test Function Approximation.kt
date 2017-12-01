@@ -32,7 +32,7 @@ import lab.mars.rl.util.ui.D3DChartUI.Companion.charts
 import lab.mars.rl.util.ui.D3DChartUI.Companion.title
 import lab.mars.rl.util.ui.D3DChartUI.D3DChart
 import org.apache.commons.math3.util.FastMath.*
-import org.junit.Test
+import org.junit.jupiter.api.Test
 
 class `Test Function Approximation` {
     class `1000-state Random walk problem` {

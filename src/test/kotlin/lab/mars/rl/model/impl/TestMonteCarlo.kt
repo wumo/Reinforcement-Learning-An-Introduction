@@ -3,7 +3,7 @@ package lab.mars.rl.model.impl
 import lab.mars.rl.algo.mc.*
 import lab.mars.rl.problem.Blackjack
 import lab.mars.rl.problem.RandomWalk
-import org.junit.Test
+import org.junit.jupiter.api.Test
 
 class `MC` {
     class `Blackjack Problem` {

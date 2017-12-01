@@ -4,9 +4,8 @@ import lab.mars.rl.algo.dp.PolicyIteration
 import lab.mars.rl.algo.dp.ValueIteration
 import lab.mars.rl.model.isNotTerminal
 import lab.mars.rl.problem.*
-import org.junit.Assert
-import org.junit.Test
-
+import org.junit.jupiter.api.Assertions.assertEquals
+import org.junit.jupiter.api.Test
 
 @Suppress("UNUSED_VARIABLE")
 class `Test DP` {
@@ -53,7 +52,7 @@ class `Test DP` {
             var i = 0
             for (a in CarRental.max_car downTo 0)
                 for (b in 0..CarRental.max_car)
-                    Assert.assertEquals(`Car Rental Result`[i++], V[prob.states[a, b]].format(2))
+                    assertEquals(`Car Rental Result`[i++], V[prob.states[a, b]].format(2))
         }
 
         @Test
@@ -64,7 +63,7 @@ class `Test DP` {
             var i = 0
             for (a in CarRental.max_car downTo 0)
                 for (b in 0..CarRental.max_car)
-                    Assert.assertEquals(`Car Rental Result`[i++], V[prob.states[a, b]].format(2))
+                    assertEquals(`Car Rental Result`[i++], V[prob.states[a, b]].format(2))
         }
 
         @Test
@@ -75,7 +74,7 @@ class `Test DP` {
             var i = 0
             for (a in CarRental.max_car downTo 0)
                 for (b in 0..CarRental.max_car)
-                    Assert.assertEquals(`Car Rental Result`[i++], V[prob.states[a, b]].format(2))
+                    assertEquals(`Car Rental Result`[i++], V[prob.states[a, b]].format(2))
         }
     }
 

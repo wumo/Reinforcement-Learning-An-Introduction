@@ -6,8 +6,7 @@ import lab.mars.rl.model.isNotTerminal
 import lab.mars.rl.problem.*
 import lab.mars.rl.util.math.Rand
 import lab.mars.rl.util.math.argmax
-import org.junit.Test
-
+import org.junit.jupiter.api.Test
 
 class `n-step TD` {
     class `Blackjack problem` {

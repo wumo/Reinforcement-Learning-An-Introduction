@@ -3,8 +3,8 @@
 package lab.mars.rl.model.impl
 
 import lab.mars.rl.util.buf.*
-import org.junit.Assert
-import org.junit.Test
+import org.junit.jupiter.api.Assertions.assertEquals
+import org.junit.jupiter.api.Test
 
 /**
  * <p>
@@ -22,19 +22,19 @@ class TestIndex {
         val _idx = MultiIndex(indices as Array<Index>)
         val expected = IntArray(8) { it }
         _idx.forEach(0, 0) { idx, value ->
-            Assert.assertEquals(expected[idx], value)
+            assertEquals(expected[idx], value)
         }
         _idx.forEach(4, 7) { idx, value ->
-            Assert.assertEquals(expected[idx], value)
+            assertEquals(expected[idx], value)
         }
         _idx.forEach { idx, value ->
-            Assert.assertEquals(expected[idx], value)
+            assertEquals(expected[idx], value)
         }
         _idx.forEach(2, 5) { idx, value ->
-            Assert.assertEquals(expected[idx], value)
+            assertEquals(expected[idx], value)
         }
         _idx.forEach(0, 5) { idx, value ->
-            Assert.assertEquals(expected[idx], value)
+            assertEquals(expected[idx], value)
         }
     }
 }
