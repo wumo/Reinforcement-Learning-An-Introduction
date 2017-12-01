@@ -1,6 +1,7 @@
 package lab.mars.rl.algo.policy_gradient
 
 import lab.mars.rl.algo.func_approx.FunctionApprox
+import lab.mars.rl.algo.func_approx.FunctionApprox.Companion.log
 import lab.mars.rl.model.*
 import lab.mars.rl.model.impl.func.LinearFunc
 import lab.mars.rl.util.buf.newBuf
@@ -12,7 +13,7 @@ import org.apache.commons.math3.util.FastMath
 
 fun <E> FunctionApprox.REINFORCE(π: ApproximateFunction<E>, trans: (State, Action<State>) -> E) {
     for (episode in 1..episodes) {
-        FunctionApprox.log.debug { "$episode/$episodes" }
+        log.debug { "$episode/$episodes" }
         var step = 0
         val s = started()
         var a = rand(s.actions) { π(trans(s, it)) }
