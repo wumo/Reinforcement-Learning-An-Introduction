@@ -7,7 +7,6 @@ import lab.mars.rl.problem.*
 import org.junit.jupiter.api.Assertions.assertEquals
 import org.junit.jupiter.api.Test
 
-@Suppress("UNUSED_VARIABLE")
 class `Test DP` {
     @Test
     fun `GridWorld`() {
@@ -19,7 +18,7 @@ class `Test DP` {
         }
     }
 
-    class `Car Rental ` {
+    class `Car Rental Problem` {
         val `Car Rental Result` = arrayOf(
                 "554.95", "561.56", "567.59", "573.19", "578.54", "583.63", "588.50", "593.15", "597.57", "601.78", "605.83", "609.70", "613.40", "616.91", "620.25", "623.49", "626.55", "629.41", "632.20", "634.75", "636.99",
                 "550.82", "557.59", "563.80", "569.59", "575.19", "580.54", "585.63", "590.50", "595.15", "599.57", "603.78", "607.83", "611.70", "615.40", "618.91", "622.25", "625.49", "628.55", "631.41", "634.02", "636.31",
