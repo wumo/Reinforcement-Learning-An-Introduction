@@ -26,6 +26,8 @@ fun <T> Σ(set: Iterable<T>, evaluate: T.(T) -> Matrix): Matrix {
 }
 
 class Matrix(val rows: Int, val cols: Int = rows) {
+    val size = cols * rows
+
     companion object {
         fun identity(d: Int): Matrix {
             val m = Matrix(d)
