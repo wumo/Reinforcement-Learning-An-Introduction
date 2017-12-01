@@ -65,6 +65,7 @@ Policy Gradient Methods
 * [REINFORCE with Baseline (episodic)](src/main/kotlin/lab/mars/rl/algo/policy_gradient/REINFORCE%20with%20Baseline%20(episodic).kt) (p.273)
 * [One-step Actor-Critic (episodic)](src/main/kotlin/lab/mars/rl/algo/policy_gradient/One-step%20Actor-Critic%20(episodic).kt) (p.274)
 * [Actor-Critic with Eligibility Traces (episodic)](src/main/kotlin/lab/mars/rl/algo/policy_gradient/Actor-Critic%20with%20Eligibility%20Traces%20(episodic).kt) (p.275)
+* [Actor-Critic with Eligibility Traces (continuing)](src/main/kotlin/lab/mars/rl/algo/policy_gradient/Actor-Critic%20with%20Eligibility%20Traces%20(continuing).kt) (p.277)
 
 ## Implemented problems:
 * [Grid world](src/main/kotlin/lab/mars/rl/problem/GridWorld.kt) (p.61)
