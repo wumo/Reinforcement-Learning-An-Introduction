@@ -63,6 +63,7 @@ Eligibility Traces
 Policy Gradient Methods
 * [REINFORCE, A Monte-Carlo Policy-Gradient Method (episodic)](src/main/kotlin/lab/mars/rl/algo/policy_gradient/REINFORCE.kt) (p.271)
 * [REINFORCE with Baseline (episodic)](src/main/kotlin/lab/mars/rl/algo/policy_gradient/REINFORCE%20with%20Baseline%20(episodic).kt) (p.273)
+* [One-step Actor{Critic (episodic)](src/main/kotlin/lab/mars/rl/algo/policy_gradient/One-step%20Actor-Critic%20(episodic).kt) (p.274)
 
 ## Implemented problems:
 * [Grid world](src/main/kotlin/lab/mars/rl/problem/GridWorld.kt) (p.61)
