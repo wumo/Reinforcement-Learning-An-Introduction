@@ -162,7 +162,7 @@ class `Test Function Approximation` {
                                            4.0)
             val trans = { s: State -> ((s as IndexedState)[0] - 1).toDouble() }
             val func = LinearFunc(feature)
-            algo2.LSTD(func, trans, 0.1)
+            algo2.LSTD(func, trans, 1.0)
             prob.apply {
                 val line = line("LSTD")
                 for (s in states) {
