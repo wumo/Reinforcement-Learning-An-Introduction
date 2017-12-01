@@ -3,7 +3,7 @@ package lab.mars.rl.algo.func_approx.on_policy_control
 import lab.mars.rl.algo.func_approx.FunctionApprox
 import lab.mars.rl.algo.func_approx.FunctionApprox.Companion.log
 import lab.mars.rl.model.*
-import lab.mars.rl.util.debug
+import lab.mars.rl.util.log.debug
 import lab.mars.rl.util.matrix.times
 
 fun <E> FunctionApprox.`Episodic semi-gradient Sarsa control`(q: ApproximateFunction<E>, trans: (State, Action<State>) -> E) {
