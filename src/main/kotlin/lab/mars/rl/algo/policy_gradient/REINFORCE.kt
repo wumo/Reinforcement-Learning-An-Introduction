@@ -37,15 +37,15 @@ fun <E> FunctionApprox.REINFORCE(π: ApproximateFunction<E>, trans: (State, Acti
             }
             a = rand(s.actions) { π(trans(s, it)) }
         }
-        var γ_t = 1 / γ
+        var γ_t = 1.0
         for (t in 0 until T) {
             val G = accu - R[t]
-            γ_t *= γ
             val `▽` = if (π is LinearFunc)
                 π.x(trans(S[t], A[t])) - Σ(S[t].actions) { π(trans(S[t], it)) * π.x(trans(S[t], it)) }
             else
                 π.`▽`(trans(S[t], A[t])) / π(trans(S[t], A[t]))
             π.w += α * γ_t * G * `▽`
+            γ_t *= γ
         }
     }
 }
