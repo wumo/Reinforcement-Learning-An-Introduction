@@ -14,6 +14,17 @@ operator fun Double.minus(m: Matrix): Double {
     return this - m[0, 0]
 }
 
+fun <T> Σ(set: Iterable<T>, evaluate: T.(T) -> Matrix): Matrix {
+    val iter = set.iterator()
+    val first = iter.next()
+    val sum = evaluate(first, first)
+    while (iter.hasNext()) {
+        val next = iter.next()
+        sum += evaluate(next, next)
+    }
+    return sum
+}
+
 class Matrix(val rows: Int, val cols: Int = rows) {
     companion object {
         fun identity(d: Int): Matrix {

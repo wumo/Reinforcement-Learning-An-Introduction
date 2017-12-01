@@ -2,10 +2,12 @@ package lab.mars.rl.algo.policy_gradient
 
 import lab.mars.rl.algo.func_approx.FunctionApprox
 import lab.mars.rl.model.*
+import lab.mars.rl.model.impl.func.LinearFunc
 import lab.mars.rl.util.buf.newBuf
 import lab.mars.rl.util.debug
 import lab.mars.rl.util.math.rand
 import lab.mars.rl.util.matrix.times
+import lab.mars.rl.util.matrix.Σ
 import org.apache.commons.math3.util.FastMath
 
 fun <E> FunctionApprox.REINFORCE(π: ApproximateFunction<E>, trans: (State, Action<State>) -> E) {
@@ -37,7 +39,12 @@ fun <E> FunctionApprox.REINFORCE(π: ApproximateFunction<E>, trans: (State, Acti
         }
         for (t in 0..T) {
             val G = accu - R[t]
-            π.w += α * FastMath.pow(γ, t) * G * (π.`▽`(trans(S[t], A[t])) / π(trans(S[t], A[t])))
+
+            val `▽` = if (π is LinearFunc)
+                π.x(trans(S[t], A[t])) - Σ(S[t].actions) { π(trans(S[t], it)) * π.x(trans(S[t], it)) }
+            else
+                π.`▽`(trans(S[t], A[t])) / π(trans(S[t], A[t]))
+            π.w += α * FastMath.pow(γ, t) * G * `▽`
         }
     }
 }
