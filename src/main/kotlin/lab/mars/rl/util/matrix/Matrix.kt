@@ -76,10 +76,10 @@ class Matrix(val rows: Int, val cols: Int = rows) {
     }
 
     operator fun times(m: Matrix): Matrix {
-        require(rows == m.cols && cols == m.rows)
-        val result = Matrix(rows)
+        require(cols == m.rows)
+        val result = Matrix(rows, m.cols)
         for (a in 0 until rows)
-            for (b in 0 until rows) {
+            for (b in 0 until m.cols) {
                 var sum = 0.0
                 for (k in 0 until cols)
                     sum += this[a, k] * m[k, b]

@@ -23,7 +23,6 @@ import lab.mars.rl.problem.MountainCar.VELOCITY_MIN
 import lab.mars.rl.problem.SquareWave.domain
 import lab.mars.rl.problem.SquareWave.maxResolution
 import lab.mars.rl.problem.SquareWave.sample
-import lab.mars.rl.problem.`1000-state RandomWalk`.make
 import lab.mars.rl.problem.`1000-state RandomWalk`.num_states
 import lab.mars.rl.util.matrix.times
 import lab.mars.rl.util.tuples.tuple2
@@ -39,7 +38,7 @@ class `Test Function Approximation` {
         @Test
         fun `Gradient Monte Carlo`() {
             val chart = chart("V", "state", "value")
-            val (prob, PI) = make()
+            val (prob, PI) = `1000-state RandomWalk`.make()
             val algo = TemporalDifference(prob, PI)
             algo.episodes = 100000
             val V = algo.prediction()
@@ -73,7 +72,7 @@ class `Test Function Approximation` {
         @Test
         fun `Semi-gradient TD(0)`() {
             val chart = chart("V", "state", "value")
-            val (prob, PI) = make()
+            val (prob, PI) = `1000-state RandomWalk`.make()
             val algo = TemporalDifference(prob, PI)
             algo.episodes = 100000
             val V = algo.prediction()
@@ -107,7 +106,7 @@ class `Test Function Approximation` {
         @Test
         fun `n-step semi-gradient TD`() {
             val chart = chart("V", "state", "value")
-            val (prob, PI) = make()
+            val (prob, PI) = `1000-state RandomWalk`.make()
             val algo = TemporalDifference(prob, PI)
             algo.episodes = 100000
             val V = algo.prediction()
@@ -139,10 +138,48 @@ class `Test Function Approximation` {
         }
 
         @Test
+        fun `LSTD prediction`() {
+            val chart = chart("V", "state", "value")
+            val (prob, PI) = `1000-state RandomWalk`.make()
+            val algo = TemporalDifference(prob, PI)
+            algo.episodes = 100000
+            val V = algo.prediction()
+            prob.apply {
+                val line = line("TD")
+                for (s in states) {
+                    println("${V[s].format(2)} ")
+                    line[s[0]] = V[s]
+                }
+                chart += line
+            }
+
+            val algo2 = FunctionApprox(prob, PI)
+            algo2.episodes = 100
+            val numOfTilings = 50
+            val feature = SimpleTileCoding(numOfTilings,
+                                           5,
+                                           ceil(num_states / 5.0).toInt(),
+                                           4.0)
+            val trans = { s: State -> ((s as IndexedState)[0] - 1).toDouble() }
+            val func = LinearFunc(feature)
+            algo2.LSTD(func, trans, 0.1)
+            prob.apply {
+                val line = line("LSTD")
+                for (s in states) {
+                    println("${func(trans(s)).format(2)} ")
+                    line[s[0]] = func(trans(s))
+                }
+                chart += line
+            }
+            D2DChart.charts += chart
+            Application.launch(ChartApp::class.java)
+        }
+
+        @Test
         fun `Gradient Monte Carlo with Fourier basis vs polynomials`() {
             logLevel(Level.ERROR)
 
-            val (prob, PI) = make()
+            val (prob, PI) = `1000-state RandomWalk`.make()
             val algo = TemporalDifference(prob, PI)
             algo.episodes = 100000
             val V = algo.prediction()
@@ -212,7 +249,7 @@ class `Test Function Approximation` {
         @Test
         fun `Tile Coding`() {
             val chart = chart("samples", "state", "value")
-            val (prob, PI) = make()
+            val (prob, PI) = `1000-state RandomWalk`.make()
             val algo = TemporalDifference(prob, PI)
             algo.episodes = 100000
             val V = algo.prediction()
@@ -253,7 +290,7 @@ class `Test Function Approximation` {
         fun `Tile Coding RMS`() {
             logLevel(Level.ERROR)
 
-            val (prob, PI) = make()
+            val (prob, PI) = `1000-state RandomWalk`.make()
             val algo = TemporalDifference(prob, PI)
             algo.episodes = 100000
             val V = algo.prediction()
@@ -322,7 +359,7 @@ class `Test Function Approximation` {
         @Test
         fun `Sutton Tile Coding `() {
             val chart = chart("samples", "state", "value")
-            val (prob, PI) = make()
+            val (prob, PI) = `1000-state RandomWalk`.make()
             val algo = TemporalDifference(prob, PI)
             algo.episodes = 100000
             val V = algo.prediction()
@@ -338,8 +375,7 @@ class `Test Function Approximation` {
             val alpha = 1e-4
             val numOfTilings = 32
 
-            val feature = SuttonTileCoding(5,
-                                           numOfTilings)
+            val feature = SuttonTileCoding(5, numOfTilings)
             val trans = { s: State -> tuple2(doubleArrayOf((s as IndexedState)[0] * 5.0 / num_states), intArrayOf()) }
 
             val func = LinearFunc(feature)
@@ -365,7 +401,7 @@ class `Test Function Approximation` {
         fun `Sutton Tile Coding RMS`() {
             logLevel(Level.ERROR)
 
-            val (prob, PI) = make()
+            val (prob, PI) = `1000-state RandomWalk`.make()
             val algo = TemporalDifference(prob, PI)
             algo.episodes = 100000
             val V = algo.prediction()
