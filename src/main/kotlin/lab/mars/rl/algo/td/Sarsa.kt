@@ -8,7 +8,7 @@ import lab.mars.rl.model.isNotTerminal
 import lab.mars.rl.util.log.debug
 import lab.mars.rl.util.tuples.tuple3
 
-fun TemporalDifference.sarsa(_alpha: (IndexedState, IndexedAction) -> Double = { _, _ -> α }): OptimalSolution {
+fun TemporalDifference.sarsa(α: (IndexedState, IndexedAction) -> Double = { _, _ -> this.α }): OptimalSolution {
     val π = IndexedPolicy(indexedMdp.QFunc { 0.0 })
     val Q = indexedMdp.QFunc { 0.0 }
 
@@ -22,11 +22,11 @@ fun TemporalDifference.sarsa(_alpha: (IndexedState, IndexedAction) -> Double = {
             if (s_next.isNotTerminal()) {
                 `ε-greedy`(s_next, Q, π, ε)
                 val a_next = π(s_next)
-                Q[s, a] += _alpha(s, a) * (reward + γ * Q[s_next, a_next] - Q[s, a])
+                Q[s, a] += α(s, a) * (reward + γ * Q[s_next, a_next] - Q[s, a])
                 s = s_next
                 a = a_next
             } else {
-                Q[s, a] += _alpha(s, a) * (reward + γ * 0.0 - Q[s, a])//Q[terminalState,*]=0.0
+                Q[s, a] += α(s, a) * (reward + γ * 0.0 - Q[s, a])//Q[terminalState,*]=0.0
                 break
             }
         }

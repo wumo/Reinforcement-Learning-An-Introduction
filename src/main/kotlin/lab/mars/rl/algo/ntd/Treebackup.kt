@@ -11,7 +11,7 @@ import lab.mars.rl.util.math.Σ
 import lab.mars.rl.util.tuples.tuple3
 import org.apache.commons.math3.util.FastMath.min
 
-fun NStepTemporalDifference.treebackup(alpha: (IndexedState, IndexedAction) -> Double = { _, _ -> this.α }): OptimalSolution {
+fun NStepTemporalDifference.treebackup(α: (IndexedState, IndexedAction) -> Double = { _, _ -> this.α }): OptimalSolution {
     val π = indexedMdp.equiprobablePolicy()
     val Q = indexedMdp.QFunc { 0.0 }
 
@@ -69,7 +69,7 @@ fun NStepTemporalDifference.treebackup(alpha: (IndexedState, IndexedAction) -> D
                     G += Z * δ[k]
                     if (k < end) Z *= γ * _π[k + 1]
                 }
-                Q[_S[0], _A[0]] += alpha(_S[0], _A[0]) * (G - Q[_S[0], _A[0]])
+                Q[_S[0], _A[0]] += α(_S[0], _A[0]) * (G - Q[_S[0], _A[0]])
                 `ε-greedy`(_S[0], Q, π, ε)
             }
             t++

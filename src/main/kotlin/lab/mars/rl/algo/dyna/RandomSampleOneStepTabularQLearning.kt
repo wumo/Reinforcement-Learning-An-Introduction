@@ -21,14 +21,14 @@ class RandomSampleOneStepTabularQLearning(val indexedMdp: IndexedMDP) {
     var α = 0.1
     var ε = 0.1
 
-    fun optimal(_alpha: (IndexedState, IndexedAction) -> Double = { _, _ -> α }): OptimalSolution {
+    fun optimal(α: (IndexedState, IndexedAction) -> Double = { _, _ -> this.α }): OptimalSolution {
         val Q = indexedMdp.QFunc { 0.0 }
         for (episode in 1..episodes) {
             log.debug { "$episode/$episodes" }
             val s = started()
             val a = s.actions.rand()//Exploring Starts
             val (s_next, reward) = a.sample()
-            Q[s, a] += _alpha(s, a) * (reward + γ * max(s_next.actions, 0.0) { Q[s_next, it] } - Q[s, a])
+            Q[s, a] += α(s, a) * (reward + γ * max(s_next.actions, 0.0) { Q[s_next, it] } - Q[s, a])
         }
         val π = IndexedPolicy(indexedMdp.QFunc { 0.0 })
         for (s in states) {

@@ -6,7 +6,7 @@ val ClosedRange<Double>.size: Double
     get() = endInclusive - start
 
 class SimpleCoarseCoding(featureWidth: Double, domain: ClosedRange<Double>,
-                         override val numOfComponents: Int, converter: (Array<out Any>) -> Double) : Feature<Double>(converter) {
+                         override val numOfComponents: Int, conv: (Array<out Any>) -> Double) : Feature<Double>(conv) {
     val features: Array<ClosedRange<Double>>
 
     init {

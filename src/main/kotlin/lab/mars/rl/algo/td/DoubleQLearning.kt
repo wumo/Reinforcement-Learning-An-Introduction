@@ -9,7 +9,7 @@ import lab.mars.rl.util.math.Rand
 import lab.mars.rl.util.math.argmax
 import lab.mars.rl.util.tuples.tuple3
 
-fun TemporalDifference.DoubleQLearning(_alpha: (IndexedState, IndexedAction) -> Double = { _, _ -> α }): OptimalSolution {
+fun TemporalDifference.DoubleQLearning(α: (IndexedState, IndexedAction) -> Double = { _, _ -> this.α }): OptimalSolution {
     val π = IndexedPolicy(indexedMdp.QFunc { 0.0 })
     var Q1 = indexedMdp.QFunc { 0.0 }
     var Q2 = indexedMdp.QFunc { 0.0 }
@@ -27,10 +27,10 @@ fun TemporalDifference.DoubleQLearning(_alpha: (IndexedState, IndexedAction) -> 
                 Q2 = tmp
             }
             if (s_next.isNotTerminal()) {
-                Q1[s, a] += _alpha(s, a) * (reward + γ * Q2[s_next, argmax(s_next.actions) { Q1[s_next, it] }] - Q1[s, a])
+                Q1[s, a] += α(s, a) * (reward + γ * Q2[s_next, argmax(s_next.actions) { Q1[s_next, it] }] - Q1[s, a])
                 s = s_next
             } else {
-                Q1[s, a] += _alpha(s, a) * (reward + γ * 0.0 - Q1[s, a])//Q[terminalState,*]=0.0
+                Q1[s, a] += α(s, a) * (reward + γ * 0.0 - Q1[s, a])//Q[terminalState,*]=0.0
                 break
             }
         }

@@ -9,7 +9,7 @@ import lab.mars.rl.util.log.debug
 import lab.mars.rl.util.math.max
 import lab.mars.rl.util.tuples.tuple3
 
-fun TemporalDifference.QLearning(_alpha: (IndexedState, IndexedAction) -> Double = { _, _ -> α }): OptimalSolution {
+fun TemporalDifference.QLearning(α: (IndexedState, IndexedAction) -> Double = { _, _ -> this.α }): OptimalSolution {
     val π = IndexedPolicy(indexedMdp.QFunc { 0.0 })
     val Q = indexedMdp.QFunc { 0.0 }
 
@@ -20,7 +20,7 @@ fun TemporalDifference.QLearning(_alpha: (IndexedState, IndexedAction) -> Double
             `ε-greedy`(s, Q, π, ε)
             val a = π(s)
             val (s_next, reward) = a.sample()
-            Q[s, a] += _alpha(s, a) * (reward + γ * max(s_next.actions, 0.0) { Q[s_next, it] } - Q[s, a])
+            Q[s, a] += α(s, a) * (reward + γ * max(s_next.actions, 0.0) { Q[s_next, it] } - Q[s, a])
             s = s_next
         }
     }

@@ -7,7 +7,7 @@ import org.apache.commons.math3.util.FastMath.floor
 
 val MAXIMUM_CAPACITY = 1 shl 30
 
-class SuttonTileCoding(numTilesOfEachTiling: Int, _numTilings: Int, converter: (Array<out Any>) -> tuple2<DoubleArray, IntArray>) : Feature<tuple2<DoubleArray, IntArray>>(converter) {
+class SuttonTileCoding(numTilesOfEachTiling: Int, _numTilings: Int, conv: (Array<out Any>) -> tuple2<DoubleArray, IntArray>) : Feature<tuple2<DoubleArray, IntArray>>(conv) {
     val numTilings = tableSizeFor(_numTilings)
     override val numOfComponents = numTilings * (numTilesOfEachTiling + 1)
     override fun _invoke(s: tuple2<DoubleArray, IntArray>): Matrix {

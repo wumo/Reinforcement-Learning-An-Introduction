@@ -31,7 +31,7 @@ class PrioritizedSweeping(val indexedMdp: IndexedMDP) {
     var ε = 0.1
     var θ = 0.0
     var n = 10
-    fun optimal(_alpha: (IndexedState, IndexedAction) -> Double = { _, _ -> α }): OptimalSolution {
+    fun optimal(α: (IndexedState, IndexedAction) -> Double = { _, _ -> this.α }): OptimalSolution {
         val π = IndexedPolicy(indexedMdp.QFunc { 0.0 })
         val Q = indexedMdp.QFunc { 0.0 }
         val PQueue = PriorityQueue(Q.size, Comparator<tuple3<Double, IndexedState, IndexedAction>> { o1, o2 ->
@@ -59,7 +59,7 @@ class PrioritizedSweeping(val indexedMdp: IndexedMDP) {
                 lab.mars.rl.util.math.repeat(n, { PQueue.isNotEmpty() }) {
                     val (_, s, a) = PQueue.poll()
                     val (s_next, reward) = Model[s, a].rand()
-                    Q[s, a] += _alpha(s, a) * (reward + γ * max(s_next.actions, 0.0) { Q[s_next, it] } - Q[s, a])
+                    Q[s, a] += α(s, a) * (reward + γ * max(s_next.actions, 0.0) { Q[s_next, it] } - Q[s, a])
                     for ((s_pre, a_pre) in predecessor[s]) {
                         val (s_next, reward) = Model[s_pre, a_pre].rand()
                         assert(s_next === s)

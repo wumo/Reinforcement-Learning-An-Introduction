@@ -31,7 +31,7 @@ class `Dyna-Q+`(val indexedMdp: IndexedMDP) {
     var κ = 1e-4
     var n = 10
     val null_tuple3 = tuple3(null_state, Double.NaN, 0)
-    fun optimal(_alpha: (IndexedState, IndexedAction) -> Double = { _, _ -> α }): OptimalSolution {
+    fun optimal(α: (IndexedState, IndexedAction) -> Double = { _, _ -> this.α }): OptimalSolution {
         val π = IndexedPolicy(indexedMdp.QFunc { 0.0 })
         val Q = indexedMdp.QFunc { 0.0 }
         val cachedSA = DefaultBuf.new<tuple2<IndexedState, IndexedAction>>(Q.size)
@@ -49,7 +49,7 @@ class `Dyna-Q+`(val indexedMdp: IndexedMDP) {
                 `ε-greedy`(s, Q, π, ε)
                 val a = π(s)
                 val (s_next, reward) = a.sample()
-                Q[s, a] += _alpha(s, a) * (reward + γ * max(s_next.actions, 0.0) { Q[s_next, it] } - Q[s, a])
+                Q[s, a] += α(s, a) * (reward + γ * max(s_next.actions, 0.0) { Q[s_next, it] } - Q[s, a])
                 for (_a in s.actions) {
                     if (_a !== a && Model[s, _a] === null_tuple3) {
                         cachedSA.append(tuple2(s, _a))
@@ -63,7 +63,7 @@ class `Dyna-Q+`(val indexedMdp: IndexedMDP) {
                     val (s, a) = cachedSA.rand()
                     var (s_next, reward, t) = Model[s, a]
                     reward += κ * sqrt((time - t).toDouble())
-                    Q[s, a] += _alpha(s, a) * (reward + γ * max(s_next.actions, 0.0) { Q[s_next, it] } - Q[s, a])
+                    Q[s, a] += α(s, a) * (reward + γ * max(s_next.actions, 0.0) { Q[s_next, it] } - Q[s, a])
                 }
                 s = s_next
             }

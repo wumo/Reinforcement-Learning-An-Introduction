@@ -11,7 +11,7 @@ import lab.mars.rl.util.math.Σ
 import lab.mars.rl.util.tuples.tuple3
 import org.apache.commons.math3.util.FastMath.min
 
-fun NStepTemporalDifference.`off-policy n-step Q(σ)`(alpha: (IndexedState, IndexedAction) -> Double = { _, _ -> this.α }): OptimalSolution {
+fun NStepTemporalDifference.`off-policy n-step Q(σ)`(α: (IndexedState, IndexedAction) -> Double = { _, _ -> this.α }): OptimalSolution {
     val b = indexedMdp.equiprobablePolicy()
     val π = indexedMdp.equiprobablePolicy()
     val Q = indexedMdp.QFunc { 0.0 }
@@ -80,7 +80,7 @@ fun NStepTemporalDifference.`off-policy n-step Q(σ)`(alpha: (IndexedState, Inde
                     if (k < end) Z *= γ * ((1 - _σ[k + 1]) * _π[k + 1] + _σ[k + 1])
                     _ρ *= 1 - _σ[k] + _σ[k] * ρ[k]
                 }
-                Q[_S[0], _A[0]] += alpha(_S[0], _A[0]) * _ρ * (G - Q[_S[0], _A[0]])
+                Q[_S[0], _A[0]] += α(_S[0], _A[0]) * _ρ * (G - Q[_S[0], _A[0]])
                 `ε-greedy`(_S[0], Q, π, ε)
             }
             t++

@@ -29,7 +29,7 @@ class `Dyna-Q-OnPolicy`(val indexedMdp: IndexedMDP) {
     var ε = 0.1
     var n = 10
 
-    fun optimal(_alpha: (IndexedState, IndexedAction) -> Double = { _, _ -> α }): OptimalSolution {
+    fun optimal(α: (IndexedState, IndexedAction) -> Double = { _, _ -> this.α }): OptimalSolution {
         val π = IndexedPolicy(indexedMdp.QFunc { 0.0 })
         val Q = indexedMdp.QFunc { 0.0 }
         val V = indexedMdp.VFunc { 0.0 }
@@ -54,7 +54,7 @@ class `Dyna-Q-OnPolicy`(val indexedMdp: IndexedMDP) {
                 val (s_next, reward) = a.sample()
                 Model[s, a].compute(tuple2(s_next, reward)) { _, v -> (v ?: 0) + 1 }
                 N[s, a]++
-                Q[s, a] += _alpha(s, a) * (reward + γ * max(s_next.actions, 0.0) { Q[s_next, it] } - Q[s, a])
+                Q[s, a] += α(s, a) * (reward + γ * max(s_next.actions, 0.0) { Q[s_next, it] } - Q[s, a])
 
                 var _s = startedStates.rand(episode)
                 lab.mars.rl.util.math.repeat(n, { _s.isNotTerminal() }) {
@@ -63,7 +63,7 @@ class `Dyna-Q-OnPolicy`(val indexedMdp: IndexedMDP) {
                     if (Model[_s, a].isEmpty()) return@repeat
                     stat++
                     val (s_next, reward) = Model[_s, a].rand(N[_s, a])
-                    Q[_s, a] += _alpha(_s, a) * (reward + γ * max(s_next.actions, 0.0) { Q[s_next, it] } - Q[_s, a])
+                    Q[_s, a] += α(_s, a) * (reward + γ * max(s_next.actions, 0.0) { Q[s_next, it] } - Q[_s, a])
                     _s = s_next
                 }
                 s = s_next

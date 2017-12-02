@@ -7,7 +7,7 @@ import lab.mars.rl.util.matrix.Matrix
 class SimpleTileCoding(val numOfTilings: Int,
                        _tilingSize: Int,
                        val tileWidth: Int,
-                       val tilingOffset: Double, converter: (Array<out Any>) -> Double) : Feature<Double>(converter) {
+                       val tilingOffset: Double, conv: (Array<out Any>) -> Double) : Feature<Double>(conv) {
     val tilingSize = _tilingSize + 1
     override val numOfComponents = numOfTilings * tilingSize
 

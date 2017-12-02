@@ -13,7 +13,7 @@ import lab.mars.rl.util.tuples.tuple3
 import org.apache.commons.math3.util.FastMath.min
 import org.apache.commons.math3.util.FastMath.pow
 
-fun NStepTemporalDifference.`off-policy sarsa`(alpha: (IndexedState, IndexedAction) -> Double = { _, _ -> this.α }): OptimalSolution {
+fun NStepTemporalDifference.`off-policy sarsa`(α: (IndexedState, IndexedAction) -> Double = { _, _ -> this.α }): OptimalSolution {
     val b = indexedMdp.equiprobablePolicy()
     val π = indexedMdp.equiprobablePolicy()
 
@@ -58,7 +58,7 @@ fun NStepTemporalDifference.`off-policy sarsa`(alpha: (IndexedState, IndexedActi
                 val ρ = Π(1..min(n - 1, T - 1 - τ)) { π[_S[it], _A[it]] / b[_S[it], _A[it]] }
                 var G = Σ(1..min(n, T - τ)) { pow(γ, it - 1) * _R[it] }
                 if (τ + n < T) G += pow(γ, n) * Q[_S[n], _A[n]]
-                Q[_S[0], _A[0]] += alpha(_S[0], _A[0]) * ρ * (G - Q[_S[0], _A[0]])
+                Q[_S[0], _A[0]] += α(_S[0], _A[0]) * ρ * (G - Q[_S[0], _A[0]])
                 `ε-greedy`(_S[0], Q, π, ε)
             }
             t++
