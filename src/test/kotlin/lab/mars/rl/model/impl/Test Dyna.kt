@@ -8,7 +8,7 @@ import lab.mars.rl.problem.*
 import lab.mars.rl.util.math.argmax
 import lab.mars.rl.util.ui.GridWorldUI
 import lab.mars.rl.util.ui.RodManeuveringUI
-import org.junit.jupiter.api.Test
+import org.junit.Test
 import java.util.concurrent.CountDownLatch
 import kotlin.concurrent.thread
 

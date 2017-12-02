@@ -13,7 +13,7 @@ import lab.mars.rl.util.matrix.times
 import org.apache.commons.math3.util.FastMath.min
 
 fun <E> FunctionApprox.`off-policy n-step Q(σ) episodic`(n: Int, b: Policy, σ: (Int) -> Int = { 0 },
-                                                         q: ApproximateFunction<E>, trans: (State, Action<State>) -> E) {
+                                                         q: ApproximateFunction<E>) {
     val _Q = newBuf<Double>(min(n, MAX_N))
     val _π = newBuf<Double>(min(n, MAX_N))
     val ρ = newBuf<Double>(min(n, MAX_N))
@@ -63,8 +63,8 @@ fun <E> FunctionApprox.`off-policy n-step Q(σ) episodic`(n: Int, b: Policy, σ:
                     a = b(s);_A.append(a)
                     val tmp_σ = σ(t + 1)
                     _σ.append(tmp_σ)
-                    δ.append(reward + γ * tmp_σ * q(trans(s, a)) + γ * (1 - tmp_σ) * Σ(s.actions) { π[s, it] * q(trans(s, it)) } - _Q.last)
-                    _Q.append(q(trans(s, a)))
+                    δ.append(reward + γ * tmp_σ * q(s, a) + γ * (1 - tmp_σ) * Σ(s.actions) { π[s, it] * q(s, it) } - _Q.last)
+                    _Q.append(q(s, a))
                     _π.append(π[s, a])
                     ρ.append(π[s, a] / b[s, a])
                 }
@@ -80,7 +80,7 @@ fun <E> FunctionApprox.`off-policy n-step Q(σ) episodic`(n: Int, b: Policy, σ:
                     if (k < end) Z *= γ * ((1 - _σ[k + 1]) * _π[k + 1] + _σ[k + 1])
                     _ρ *= 1 - _σ[k] + _σ[k] * ρ[k]
                 }
-                q.w += α * _ρ * (G - q(trans(_S[0], _A[0]))) * q.`▽`(trans(_S[0], _A[0]))
+                q.w += α * _ρ * (G - q(_S[0], _A[0])) * q.`▽`(_S[0], _A[0])
             }
             t++
         } while (τ < T - 1)
@@ -90,7 +90,7 @@ fun <E> FunctionApprox.`off-policy n-step Q(σ) episodic`(n: Int, b: Policy, σ:
 }
 
 fun <E> FunctionApprox.`off-policy n-step Q(σ) continuing`(n: Int, b: Policy, σ: (Int) -> Int = { 0 }, β: Double
-                                                           , q: ApproximateFunction<E>, trans: (State, Action<State>) -> E) {
+                                                           , q: ApproximateFunction<E>) {
     var average_reward = 0.0
     val _Q = newBuf<Double>(min(n, MAX_N))
     val _π = newBuf<Double>(min(n, MAX_N))
@@ -128,10 +128,10 @@ fun <E> FunctionApprox.`off-policy n-step Q(σ) continuing`(n: Int, b: Policy, �
         a = b(s);_A.append(a)
         val tmp_σ = σ(t + 1)
         _σ.append(tmp_σ)
-        val _δ = reward - average_reward + tmp_σ * q(trans(s, a)) + (1 - tmp_σ) * Σ(s.actions) { π[s, it] * q(trans(s, it)) } - _Q.last
+        val _δ = reward - average_reward + tmp_σ * q(s, a) + (1 - tmp_σ) * Σ(s.actions) { π[s, it] * q(s, it) } - _Q.last
         δ.append(_δ)
         average_reward += β * _δ
-        _Q.append(q(trans(s, a)))
+        _Q.append(q(s, a))
         _π.append(π[s, a])
         ρ.append(π[s, a] / b[s, a])
         val τ = t - n + 1
@@ -145,7 +145,7 @@ fun <E> FunctionApprox.`off-policy n-step Q(σ) continuing`(n: Int, b: Policy, �
                 if (k < end) Z *= (1 - _σ[k + 1]) * _π[k + 1] + _σ[k + 1]
                 _ρ *= 1 - _σ[k] + _σ[k] * ρ[k]
             }
-            q.w += α * _ρ * (G - q(trans(_S[0], _A[0]))) * q.`▽`(trans(_S[0], _A[0]))
+            q.w += α * _ρ * (G - q(_S[0], _A[0])) * q.`▽`(_S[0], _A[0])
         }
         t++
     }

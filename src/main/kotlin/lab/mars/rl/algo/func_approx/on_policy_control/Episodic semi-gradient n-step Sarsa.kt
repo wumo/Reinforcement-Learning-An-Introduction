@@ -13,7 +13,7 @@ import lab.mars.rl.util.matrix.times
 import org.apache.commons.math3.util.FastMath.min
 import org.apache.commons.math3.util.FastMath.pow
 
-fun <E> FunctionApprox.`Episodic semi-gradient n-step Sarsa control`(q: ApproximateFunction<E>, trans: (State, Action<State>) -> E, n: Int) {
+fun <E> FunctionApprox.`Episodic semi-gradient n-step Sarsa control`(q: ApproximateFunction<E>, n: Int) {
     val _R = newBuf<Double>(min(n + 1, MAX_N))
     val _S = newBuf<State>(min(n + 1, MAX_N))
     val _A = newBuf<Action<State>>(min(n + 1, MAX_N))
@@ -57,8 +57,8 @@ fun <E> FunctionApprox.`Episodic semi-gradient n-step Sarsa control`(q: Approxim
             val τ = t - n + 1
             if (τ >= 0) {
                 var G = Σ(1..min(n, T - τ)) { pow(γ, it - 1) * _R[it] }
-                if (τ + n < T) G += pow(γ, n) * q(trans(_S[n], _A[n]))
-                q.w += α * (G - q(trans(_S[0], _A[0]))) * q.`▽`(trans(_S[0], _A[0]))
+                if (τ + n < T) G += pow(γ, n) * q(_S[n], _A[n])
+                q.w += α * (G - q(_S[0], _A[0])) * q.`▽`(_S[0], _A[0])
             }
             t++
         } while (τ < T - 1)

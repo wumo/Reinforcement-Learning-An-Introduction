@@ -4,8 +4,8 @@ import lab.mars.rl.util.buf.DefaultIntBuf
 import lab.mars.rl.util.buf.IntBuf
 import lab.mars.rl.util.collection.nsetOf
 import lab.mars.rl.util.dimension.*
-import org.junit.jupiter.api.Assertions.*
-import org.junit.jupiter.api.Test
+import org.junit.Assert.*
+import org.junit.Test
 
 @Suppress("UNUSED_VARIABLE", "NAME_SHADOWING", "VARIABLE_WITH_REDUNDANT_INITIALIZER")
 /**

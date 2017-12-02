@@ -59,8 +59,8 @@ fun `ε-greedy`(s: IndexedState, evaluate: Gettable<Action<State>, Double>, q: I
     }
 }
 
-fun <E> `ε-greedy`(s: IndexedState, Q: ApproximateFunction<E>, trans: (State, Action<State>) -> E, policy: IndexedPolicy, ε: Double) {
-    val a_opt = argmax(s.actions) { Q(trans(s, it)) }
+fun <E> `ε-greedy`(s: IndexedState, Q: ApproximateFunction<E>, policy: IndexedPolicy, ε: Double) {
+    val a_opt = argmax(s.actions) { Q(s, it) }
     val size = s.actions.size
     for (a in s.actions) {
         policy[s, a] = when {

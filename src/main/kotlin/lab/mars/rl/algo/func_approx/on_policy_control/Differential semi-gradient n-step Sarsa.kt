@@ -10,7 +10,7 @@ import lab.mars.rl.util.math.Σ
 import lab.mars.rl.util.matrix.times
 import org.apache.commons.math3.util.FastMath.min
 
-fun <E> FunctionApprox.`Differential semi-gradient n-step Sarsa`(q: ApproximateFunction<E>, trans: (State, Action<State>) -> E, n: Int, β: Double) {
+fun <E> FunctionApprox.`Differential semi-gradient n-step Sarsa`(q: ApproximateFunction<E>, n: Int, β: Double) {
     var average_reward = 0.0
     val _R = newBuf<Double>(min(n, MAX_N))
     val _S = newBuf<State>(min(n, MAX_N))
@@ -35,9 +35,9 @@ fun <E> FunctionApprox.`Differential semi-gradient n-step Sarsa`(q: ApproximateF
         _A.append(a)
         val τ = t - n + 1
         if (τ >= 0) {
-            val δ = Σ(1..n) { _R[it] - average_reward } + q(trans(_S[n], _A[n])) - q(trans(_S[0], _A[0]))
+            val δ = Σ(1..n) { _R[it] - average_reward } + q(_S[n], _A[n]) - q(_S[0], _A[0])
             average_reward += β * δ
-            q.w += α * δ * q.`▽`(trans(_S[0], _A[0]))
+            q.w += α * δ * q.`▽`(_S[0], _A[0])
         }
         t++
     }

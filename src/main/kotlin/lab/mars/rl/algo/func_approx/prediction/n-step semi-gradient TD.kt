@@ -13,7 +13,7 @@ import lab.mars.rl.util.matrix.times
 import org.apache.commons.math3.util.FastMath.min
 import org.apache.commons.math3.util.FastMath.pow
 
-fun <E> FunctionApprox.`n-step semi-gradient TD`(n: Int, v: ApproximateFunction<E>, trans: (State) -> E) {
+fun <E> FunctionApprox.`n-step semi-gradient TD`(n: Int, v: ApproximateFunction<E>) {
     val _R = newBuf<Double>(min(n, MAX_N))
     val _S = newBuf<State>(min(n, MAX_N))
     for (episode in 1..episodes) {
@@ -48,8 +48,8 @@ fun <E> FunctionApprox.`n-step semi-gradient TD`(n: Int, v: ApproximateFunction<
             val τ = t - n + 1
             if (τ >= 0) {
                 var G = Σ(1..min(n, T - τ)) { pow(γ, it - 1) * _R[it] }
-                if (τ + n < T) G += pow(γ, n) * v(trans(_S[n]))
-                v.w += α * (G - v(trans(_S[0]))) * v.`▽`(trans(_S[0]))
+                if (τ + n < T) G += pow(γ, n) * v(_S[n])
+                v.w += α * (G - v(_S[0])) * v.`▽`(_S[0])
             }
             t++
         } while (τ < T - 1)

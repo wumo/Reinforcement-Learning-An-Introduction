@@ -12,9 +12,10 @@ import lab.mars.rl.algo.func_approx.on_policy_control.`Episodic semi-gradient n-
 import lab.mars.rl.algo.func_approx.prediction.*
 import lab.mars.rl.algo.td.TemporalDifference
 import lab.mars.rl.algo.td.prediction
-import lab.mars.rl.model.*
+import lab.mars.rl.model.ApproximateFunction
 import lab.mars.rl.model.impl.func.*
 import lab.mars.rl.model.impl.mdp.*
+import lab.mars.rl.model.isTerminal
 import lab.mars.rl.problem.*
 import lab.mars.rl.problem.MountainCar.POSITION_MAX
 import lab.mars.rl.problem.MountainCar.POSITION_MIN
@@ -24,6 +25,7 @@ import lab.mars.rl.problem.SquareWave.domain
 import lab.mars.rl.problem.SquareWave.maxResolution
 import lab.mars.rl.problem.SquareWave.sample
 import lab.mars.rl.problem.`1000-state RandomWalk`.num_states
+import lab.mars.rl.util.math.max
 import lab.mars.rl.util.matrix.times
 import lab.mars.rl.util.tuples.tuple2
 import lab.mars.rl.util.ui.*
@@ -31,7 +33,7 @@ import lab.mars.rl.util.ui.D3DChartUI.Companion.charts
 import lab.mars.rl.util.ui.D3DChartUI.Companion.title
 import lab.mars.rl.util.ui.D3DChartUI.D3DChart
 import org.apache.commons.math3.util.FastMath.*
-import org.junit.jupiter.api.Test
+import org.junit.Test
 
 class `Test Function Approximation` {
     class `1000-state Random walk problem` {
@@ -54,14 +56,13 @@ class `Test Function Approximation` {
             val algo2 = FunctionApprox(prob, PI)
             algo2.episodes = 100000
             algo2.α = 2e-5
-            val func = StateAggregation(num_states + 2, 10)
-            val trans = { s: State -> (s as IndexedState)[0] }
-            algo2.`Gradient Monte Carlo algorithm`(func, trans)
+            val func = StateAggregation(num_states + 2, 10) { (s) -> (s as IndexedState)[0] }
+            algo2.`Gradient Monte Carlo algorithm`(func)
             prob.apply {
                 val line = line("gradient MC")
                 for (s in states) {
-                    println("${func(trans(s)).format(2)} ")
-                    line[s[0]] = func(trans(s))
+                    println("${func(s).format(2)} ")
+                    line[s[0]] = func(s)
                 }
                 chart += line
             }
@@ -88,14 +89,13 @@ class `Test Function Approximation` {
             val algo2 = FunctionApprox(prob, PI)
             algo2.episodes = 100000
             algo2.α = 2e-4
-            val func = StateAggregation(num_states + 2, 10)
-            val trans = { s: State -> (s as IndexedState)[0] }
-            algo2.`Semi-gradient TD(0)`(func, trans)
+            val func = StateAggregation(num_states + 2, 10) { (s) -> (s as IndexedState)[0] }
+            algo2.`Semi-gradient TD(0)`(func)
             prob.apply {
                 val line = line("Semi-gradient TD(0)")
                 for (s in states) {
-                    println("${func(trans(s)).format(2)} ")
-                    line[s[0]] = func(trans(s))
+                    println("${func(s).format(2)} ")
+                    line[s[0]] = func(s)
                 }
                 chart += line
             }
@@ -122,14 +122,13 @@ class `Test Function Approximation` {
             val algo2 = FunctionApprox(prob, PI)
             algo2.episodes = 100000
             algo2.α = 2e-4
-            val func = StateAggregation(num_states + 2, 10)
-            val trans = { s: State -> (s as IndexedState)[0] }
-            algo2.`n-step semi-gradient TD`(10, func, trans)
+            val func = StateAggregation(num_states + 2, 10) { (s) -> (s as IndexedState)[0] }
+            algo2.`n-step semi-gradient TD`(10, func)
             prob.apply {
                 val line = line("n-step semi-gradient TD")
                 for (s in states) {
-                    println("${func(trans(s)).format(2)} ")
-                    line[s[0]] = func(trans(s))
+                    println("${func(s).format(2)} ")
+                    line[s[0]] = func(s)
                 }
                 chart += line
             }
@@ -159,15 +158,14 @@ class `Test Function Approximation` {
             val feature = SimpleTileCoding(numOfTilings,
                                            5,
                                            ceil(num_states / 5.0).toInt(),
-                                           4.0)
-            val trans = { s: State -> ((s as IndexedState)[0] - 1).toDouble() }
+                                           4.0) { (s) -> ((s as IndexedState)[0] - 1).toDouble() }
             val func = LinearFunc(feature)
-            algo2.LSTD(func, trans, 1.0)
+            algo2.LSTD(func, 1.0)
             prob.apply {
                 val line = line("LSTD")
                 for (s in states) {
-                    println("${func(trans(s)).format(2)} ")
-                    line[s[0]] = func(trans(s))
+                    println("${func(s).format(2)} ")
+                    line[s[0]] = func(s)
                 }
                 chart += line
             }
@@ -184,11 +182,11 @@ class `Test Function Approximation` {
             algo.episodes = 100000
             val V = algo.prediction()
 
-            fun RMS(f: ApproximateFunction<Double>, trans: (State) -> Double): Double {
+            fun RMS(f: ApproximateFunction<Double>): Double {
                 var result = 0.0
                 for (s in prob.states) {
                     if (s.isTerminal()) continue
-                    result += pow(V[s] - f(trans(s)), 2)
+                    result += pow(V[s] - f(s), 2)
                 }
                 result /= prob.states.size
                 return sqrt(result)
@@ -199,9 +197,8 @@ class `Test Function Approximation` {
             val runs = 5
             val description = listOf("polynomial", "fourier")
             val alphas = listOf(1e-4, 5e-5)
-            val func_maker = listOf({ order: Int -> SimplePolynomial(order + 1) },
-                                    { order: Int -> SimpleFourier(order + 1) })
-            val trans = { s: State -> (s as IndexedState)[0] * 1.0 / num_states }
+            val func_maker = listOf({ order: Int -> SimplePolynomial(order + 1) { (s) -> (s as IndexedState)[0] * 1.0 / num_states } },
+                                    { order: Int -> SimpleFourier(order + 1) { (s) -> (s as IndexedState)[0] * 1.0 / num_states } })
             val orders = intArrayOf(5, 10, 20)
             val outerChan = Channel<Boolean>(orders.size * alphas.size)
             runBlocking {
@@ -217,9 +214,9 @@ class `Test Function Approximation` {
                                     val _errors = DoubleArray(episodes) { 0.0 }
                                     val func = LinearFunc(func_maker[func_id](order))
                                     algo.episodeListener = { episode, _ ->
-                                        _errors[episode - 1] += RMS(func, trans)
+                                        _errors[episode - 1] += RMS(func)
                                     }
-                                    algo.`Gradient Monte Carlo algorithm`(func, trans)
+                                    algo.`Gradient Monte Carlo algorithm`(func)
                                     runChan.send(_errors)
                                 }
                             val errors = DoubleArray(episodes) { 0.0 }
@@ -267,18 +264,17 @@ class `Test Function Approximation` {
             val feature = SimpleTileCoding(numOfTilings,
                                            5,
                                            ceil(num_states / 5.0).toInt(),
-                                           4.0)
-            val trans = { s: State -> ((s as IndexedState)[0] - 1).toDouble() }
+                                           4.0) { (s) -> ((s as IndexedState)[0] - 1).toDouble() }
             val func = LinearFunc(feature)
             val algo2 = FunctionApprox(prob, PI)
             algo2.episodes = 100000
             algo2.α = alpha / numOfTilings
-            algo2.`Gradient Monte Carlo algorithm`(func, trans)
+            algo2.`Gradient Monte Carlo algorithm`(func)
             prob.apply {
                 val line = line("Tile Coding")
                 for (s in states) {
-                    println("${s[0]}=${func(trans(s)).format(2)} ")
-                    line[s[0]] = func(trans(s))
+                    println("${s[0]}=${func(s).format(2)} ")
+                    line[s[0]] = func(s)
                 }
                 chart += line
             }
@@ -295,11 +291,11 @@ class `Test Function Approximation` {
             algo.episodes = 100000
             val V = algo.prediction()
 
-            fun RMS(f: ApproximateFunction<Double>, trans: (State) -> Double): Double {
+            fun RMS(f: ApproximateFunction<Double>): Double {
                 var result = 0.0
                 for (s in prob.states) {
                     if (s.isTerminal()) continue
-                    result += pow(V[s] - f(trans(s)), 2)
+                    result += pow(V[s] - f(s), 2)
                 }
                 result /= prob.states.size
                 return sqrt(result)
@@ -311,7 +307,6 @@ class `Test Function Approximation` {
             val alpha = 1e-4
             val numOfTilings = intArrayOf(1, 50)
             val outerChan = Channel<Boolean>(numOfTilings.size)
-            val trans = { s: State -> ((s as IndexedState)[0] - 1).toDouble() }
             runBlocking {
                 for (numOfTiling in numOfTilings)
                     launch {
@@ -321,15 +316,15 @@ class `Test Function Approximation` {
                                 val func = LinearFunc(SimpleTileCoding(numOfTiling,
                                                                        5,
                                                                        ceil(prob.states.size / 5.0).toInt(),
-                                                                       4.0))
+                                                                       4.0) { (s) -> ((s as IndexedState)[0] - 1).toDouble() })
                                 val algo = FunctionApprox(prob, PI)
                                 algo.α = alpha / numOfTiling
                                 algo.episodes = episodes
                                 val _errors = DoubleArray(episodes)
                                 algo.episodeListener = { episode, _ ->
-                                    _errors[episode - 1] += RMS(func, trans)
+                                    _errors[episode - 1] += RMS(func)
                                 }
-                                algo.`Gradient Monte Carlo algorithm`(func, trans)
+                                algo.`Gradient Monte Carlo algorithm`(func)
                                 runChan.send(_errors)
                             }
                         val errors = DoubleArray(episodes)
@@ -375,19 +370,18 @@ class `Test Function Approximation` {
             val alpha = 1e-4
             val numOfTilings = 32
 
-            val feature = SuttonTileCoding(5, numOfTilings)
-            val trans = { s: State -> tuple2(doubleArrayOf((s as IndexedState)[0] * 5.0 / num_states), intArrayOf()) }
+            val feature = SuttonTileCoding(5, numOfTilings) { (s) -> tuple2(doubleArrayOf((s as IndexedState)[0] * 5.0 / num_states), intArrayOf()) }
 
             val func = LinearFunc(feature)
             val algo2 = FunctionApprox(prob, PI)
             algo2.episodes = 100000
             algo2.α = alpha / numOfTilings
-            algo2.`Gradient Monte Carlo algorithm`(func, trans)
+            algo2.`Gradient Monte Carlo algorithm`(func)
             prob.apply {
                 val line = line("Tile Coding")
                 for (s in states) {
-                    println("${s[0]}=${func(trans(s)).format(2)} ")
-                    line[s[0]] = func(trans(s))
+                    println("${s[0]}=${func(s).format(2)} ")
+                    line[s[0]] = func(s)
                 }
                 chart += line
             }
@@ -406,11 +400,11 @@ class `Test Function Approximation` {
             algo.episodes = 100000
             val V = algo.prediction()
 
-            fun <E> RMS(f: ApproximateFunction<E>, trans: (State) -> E): Double {
+            fun <E> RMS(f: ApproximateFunction<E>): Double {
                 var result = 0.0
                 for (s in prob.states) {
                     if (s.isTerminal()) continue
-                    result += pow(V[s] - f(trans(s)), 2)
+                    result += pow(V[s] - f(s), 2)
                 }
                 result /= prob.states.size
                 return sqrt(result)
@@ -423,7 +417,6 @@ class `Test Function Approximation` {
             val alpha = 1e-4
             val numOfTilings = intArrayOf(4, 32)
             val outerChan = Channel<Boolean>(numOfTilings.size)
-            val trans = { s: State -> ((s as IndexedState)[0] - 1).toDouble() }
             runBlocking {
                 val numOfTiling = 1
                 val runChan = Channel<DoubleArray>(runs)
@@ -435,12 +428,12 @@ class `Test Function Approximation` {
                         val func = LinearFunc(SimpleTileCoding(numOfTiling,
                                                                5,
                                                                ceil(prob.states.size / 5.0).toInt(),
-                                                               4.0))
+                                                               4.0) { (s) -> ((s as IndexedState)[0] - 1).toDouble() })
                         algo.α = alpha / numOfTiling
                         algo.episodeListener = { episode, _ ->
-                            _errors[episode - 1] += RMS(func, trans)
+                            _errors[episode - 1] += RMS(func)
                         }
-                        algo.`Gradient Monte Carlo algorithm`(func, trans)
+                        algo.`Gradient Monte Carlo algorithm`(func)
                         runChan.send(_errors)
                     }
                 val errors = DoubleArray(episodes) { 0.0 }
@@ -460,7 +453,6 @@ class `Test Function Approximation` {
             }
 
             runBlocking {
-                val trans = { s: State -> tuple2(doubleArrayOf((s as IndexedState)[0] * 5.0 / num_states), intArrayOf()) }
                 for (numOfTiling in numOfTilings)
                     launch {
                         val runChan = Channel<DoubleArray>(runs)
@@ -470,12 +462,12 @@ class `Test Function Approximation` {
                                 algo.episodes = episodes
                                 val _errors = DoubleArray(episodes) { 0.0 }
                                 val func = LinearFunc(SuttonTileCoding(5,
-                                                                       numOfTiling))
+                                                                       numOfTiling) { (s) -> tuple2(doubleArrayOf((s as IndexedState)[0] * 5.0 / num_states), intArrayOf()) })
                                 algo.α = alpha / numOfTiling
                                 algo.episodeListener = { episode, _ ->
-                                    _errors[episode - 1] += RMS(func, trans)
+                                    _errors[episode - 1] += RMS(func)
                                 }
-                                algo.`Gradient Monte Carlo algorithm`(func, trans)
+                                algo.`Gradient Monte Carlo algorithm`(func)
                                 runChan.send(_errors)
                             }
                         val errors = DoubleArray(episodes) { 0.0 }
@@ -513,16 +505,15 @@ class `Test Function Approximation` {
             for (featureWidth in featureWidths) {
                 val line = line("feature width: ${featureWidth.format(1)}")
                 val feature = SimpleCoarseCoding(featureWidth,
-                                                 domain, 50)
-                val trans = { s: State -> (s as WaveState).x }
+                                                 domain, 50) { (s) -> (s as WaveState).x }
                 val func = LinearFunc(feature)
                 repeat(numOfSample) {
                     val (s, y) = sample()
-                    func.w += alpha / feature.features.sumBy { if (it.contains(trans(s))) 1 else 0 } * (y - func(trans(s))) * func.`▽`(trans(s))
+                    func.w += alpha / feature.features.sumBy { if (it.contains(feature.converter(arrayOf(s)))) 1 else 0 } * (y - func(s)) * func.`▽`(s)
                 }
                 for (i in 0 until maxResolution) {
                     val s = WaveState(i * 2.0 / maxResolution)
-                    val y = func(trans(s))
+                    val y = func(s)
                     line[i * 2.0 / maxResolution] = y
                 }
                 chart += line
@@ -536,17 +527,17 @@ class `Test Function Approximation` {
         @Test
         fun `Episodic Semi-gradient Sarsa control`() {
             val mdp = MountainCar.make()
-            val feature = SuttonTileCoding(511, 8)
-            val func = LinearFunc(feature)
-            print(feature.numTilings)
-            val positionScale = feature.numTilings / (POSITION_MAX - POSITION_MIN)
-            val velocityScale = feature.numTilings / (VELOCITY_MAX - VELOCITY_MIN)
-            val trans = { s: State, a: Action<State> ->
+            val positionScale = 8 / (POSITION_MAX - POSITION_MIN)
+            val velocityScale = 8 / (VELOCITY_MAX - VELOCITY_MIN)
+            val feature = SuttonTileCoding(511, 8) { (s, a) ->
                 s as CarState
                 a as DefaultAction<Int, CarState>
                 tuple2(doubleArrayOf(positionScale * s.position, velocityScale * s.velocity), intArrayOf(a.value))
             }
-            val π = `ε-greedy function policy`(func, trans, 0.0)
+            val func = LinearFunc(feature)
+            print(feature.numTilings)
+
+            val π = `ε-greedy function policy`(func, 0.0)
             val algo = FunctionApprox(mdp, π)
             algo.episodes = 9000
             val alpha = 0.3
@@ -555,7 +546,11 @@ class `Test Function Approximation` {
             title = "The Mountain Car task"
             algo.episodeListener = { episode, _ ->
                 if (episode in episodes) {
-                    val _feature = SuttonTileCoding(511, 8)
+                    val _feature = SuttonTileCoding(511, 8) { (s, a) ->
+                        s as CarState
+                        a as DefaultAction<Int, CarState>
+                        tuple2(doubleArrayOf(positionScale * s.position, velocityScale * s.velocity), intArrayOf(a.value))
+                    }
                     _feature.data.putAll(feature.data)
                     val _func = LinearFunc(_feature)
                     _func.w `=` func.w
@@ -567,13 +562,13 @@ class `Test Function Approximation` {
                         if (x !in POSITION_MIN..POSITION_MAX || y !in VELOCITY_MIN..VELOCITY_MAX)
                             return@D3DChart Double.NaN
                         val f = doubleArrayOf(positionScale * x, velocityScale * y)
-                        val cost = -lab.mars.rl.util.math.max(-1..1) { _func(tuple2(f, intArrayOf(it))) }
+                        val cost = -max(-1..1) { _func._invoke(tuple2(f, intArrayOf(it))) }
                         cost
                     }
                     charts += chart
                 }
             }
-            algo.`Episodic semi-gradient Sarsa control`(func, trans)
+            algo.`Episodic semi-gradient Sarsa control`(func)
 
             Application.launch(D3DChartUI::class.java)
         }
@@ -598,15 +593,13 @@ class `Test Function Approximation` {
                         val runChan = Channel<IntArray>(runs)
                         repeat(runs) {
                             async {
-                                val feature = SuttonTileCoding(511, numTilings)
-                                val func = LinearFunc(feature)
-
-                                val trans = { s: State, a: Action<State> ->
+                                val feature = SuttonTileCoding(511, numTilings) { (s, a) ->
                                     s as CarState
                                     a as DefaultAction<Int, CarState>
                                     tuple2(doubleArrayOf(positionScale * s.position, velocityScale * s.velocity), intArrayOf(a.value))
                                 }
-                                val π = `ε-greedy function policy`(func, trans, 0.0)
+                                val func = LinearFunc(feature)
+                                val π = `ε-greedy function policy`(func, 0.0)
                                 val algo = FunctionApprox(mdp, π)
                                 algo.episodes = episodes
                                 algo.α = alpha / numTilings
@@ -614,7 +607,7 @@ class `Test Function Approximation` {
                                 algo.episodeListener = { episode, step ->
                                     steps[episode - 1] += step
                                 }
-                                algo.`Episodic semi-gradient Sarsa control`(func, trans)
+                                algo.`Episodic semi-gradient Sarsa control`(func)
                                 runChan.send(steps)
                             }
                         }
@@ -663,15 +656,13 @@ class `Test Function Approximation` {
                         val runChan = Channel<IntArray>(runs)
                         repeat(runs) {
                             async {
-                                val feature = SuttonTileCoding(511, numTilings)
-                                val func = LinearFunc(feature)
-
-                                val trans = { s: State, a: Action<State> ->
+                                val feature = SuttonTileCoding(511, numTilings) { (s, a) ->
                                     s as CarState
                                     a as DefaultAction<Int, CarState>
                                     tuple2(doubleArrayOf(positionScale * s.position, velocityScale * s.velocity), intArrayOf(a.value))
                                 }
-                                val π = `ε-greedy function policy`(func, trans, 0.0)
+                                val func = LinearFunc(feature)
+                                val π = `ε-greedy function policy`(func, 0.0)
                                 val algo = FunctionApprox(mdp, π)
                                 algo.episodes = episodes
                                 algo.α = alphas[i] / numTilings
@@ -679,7 +670,7 @@ class `Test Function Approximation` {
                                 algo.episodeListener = { episode, step ->
                                     steps[episode - 1] += step
                                 }
-                                algo.`Episodic semi-gradient n-step Sarsa control`(func, trans, n)
+                                algo.`Episodic semi-gradient n-step Sarsa control`(func, n)
                                 runChan.send(steps)
                             }
                         }
@@ -719,7 +710,7 @@ class `Test Function Approximation` {
         val velocityScale = numTilings / (VELOCITY_MAX - VELOCITY_MIN)
         val episodes = 50
         val runs = 5
-        val alphas = DoubleArray(100) { 0.1 + it * 0.014 }
+        val alphas = DoubleArray(10) { 0.1 + it * 0.14 }
         val nSteps = listOf(1, 2, 4, 8, 16)
 
         val chart = chart("Effect of the α and n on early performance",
@@ -733,21 +724,20 @@ class `Test Function Approximation` {
                 }
                 var step = 0
                 for (run in 1..runs) {
-                    val feature = SuttonTileCoding(511, numTilings)
-                    val func = LinearFunc(feature)
-                    val trans = { s: State, a: Action<State> ->
+                    val feature = SuttonTileCoding(511, numTilings) { (s, a) ->
                         s as CarState
                         a as DefaultAction<Int, CarState>
                         tuple2(doubleArrayOf(positionScale * s.position, velocityScale * s.velocity), intArrayOf(a.value))
                     }
-                    val π = `ε-greedy function policy`(func, trans, 0.0)
+                    val func = LinearFunc(feature)
+                    val π = `ε-greedy function policy`(func, 0.0)
                     val algo = FunctionApprox(mdp, π)
                     algo.episodes = episodes
                     algo.α = alpha / numTilings
                     algo.episodeListener = { _, _step ->
                         step += _step
                     }
-                    algo.`Episodic semi-gradient n-step Sarsa control`(func, trans, n)
+                    algo.`Episodic semi-gradient n-step Sarsa control`(func, n)
                     println("alpha=$alpha n=$n run:$run")
                 }
                 val s = step / (runs * episodes).toDouble()

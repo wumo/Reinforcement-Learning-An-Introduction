@@ -6,9 +6,9 @@ import lab.mars.rl.util.collection.CompactNSet.Cell
 import lab.mars.rl.util.collection.CompactNSet.SubTree
 import lab.mars.rl.util.collection.cnsetOf
 import lab.mars.rl.util.dimension.*
-import org.junit.jupiter.api.Assertions.assertEquals
-import org.junit.jupiter.api.Assertions.assertTrue
-import org.junit.jupiter.api.Test
+import org.junit.Assert.assertEquals
+import org.junit.Assert.assertTrue
+import org.junit.Test
 import java.util.*
 
 /**

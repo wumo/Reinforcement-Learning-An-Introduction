@@ -4,8 +4,8 @@ import lab.mars.rl.algo.dp.PolicyIteration
 import lab.mars.rl.algo.dp.ValueIteration
 import lab.mars.rl.model.isNotTerminal
 import lab.mars.rl.problem.*
-import org.junit.jupiter.api.Assertions.assertEquals
-import org.junit.jupiter.api.Test
+import org.junit.Assert.assertEquals
+import org.junit.Test
 
 class `Test DP` {
     @Test
@@ -47,7 +47,6 @@ class `Test DP` {
             val prob = CarRental.make(false)
             val algo = PolicyIteration(prob)
             val (_, V, _) = algo.v_iteration()
-            val result = StringBuilder()
             var i = 0
             for (a in CarRental.max_car downTo 0)
                 for (b in 0..CarRental.max_car)

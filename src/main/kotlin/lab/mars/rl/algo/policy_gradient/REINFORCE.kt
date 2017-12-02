@@ -10,12 +10,12 @@ import lab.mars.rl.util.math.rand
 import lab.mars.rl.util.matrix.times
 import lab.mars.rl.util.matrix.Σ
 
-fun <E> FunctionApprox.REINFORCE(π: ApproximateFunction<E>, trans: (State, Action<State>) -> E) {
+fun <E> FunctionApprox.REINFORCE(π: ApproximateFunction<E>) {
     for (episode in 1..episodes) {
         log.debug { "$episode/$episodes" }
         var step = 0
         val s = started()
-        var a = rand(s.actions) { π(trans(s, it)) }
+        var a = rand(s.actions) { π(s, it) }
         val S = newBuf<State>()
         val A = newBuf<Action<State>>()
         val R = newBuf<Double>()
@@ -35,15 +35,15 @@ fun <E> FunctionApprox.REINFORCE(π: ApproximateFunction<E>, trans: (State, Acti
                 T = step
                 break
             }
-            a = rand(s.actions) { π(trans(s, it)) }
+            a = rand(s.actions) { π(s, it) }
         }
         var γ_t = 1.0
         for (t in 0 until T) {
             val G = accu - R[t]
             val `▽` = if (π is LinearFunc)
-                π.x(trans(S[t], A[t])) - Σ(S[t].actions) { π(trans(S[t], it)) * π.x(trans(S[t], it)) }
+                π.x(S[t], A[t]) - Σ(S[t].actions) { π(S[t], it) * π.x(S[t], it) }
             else
-                π.`▽`(trans(S[t], A[t])) / π(trans(S[t], A[t]))
+                π.`▽`(S[t], A[t]) / π(S[t], A[t])
             π.w += α * γ_t * G * `▽`
             γ_t *= γ
         }

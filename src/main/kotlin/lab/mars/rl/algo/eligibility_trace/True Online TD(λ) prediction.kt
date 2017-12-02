@@ -8,7 +8,7 @@ import lab.mars.rl.model.isNotTerminal
 import lab.mars.rl.util.log.debug
 import lab.mars.rl.util.matrix.*
 
-fun <E> FunctionApprox.`True Online TD(λ) prediction`(vFunc: LinearFunc<E>, trans: (State) -> E, λ: Double) {
+fun <E> FunctionApprox.`True Online TD(λ) prediction`(vFunc: LinearFunc<E>, λ: Double) {
     val X = vFunc.x
     val w = vFunc.w
     val d = X.numOfComponents
@@ -18,12 +18,12 @@ fun <E> FunctionApprox.`True Online TD(λ) prediction`(vFunc: LinearFunc<E>, tra
         log.debug { "$episode/$episodes" }
         var step = 0
         var s = started()
-        var x = X(trans(s))
+        var x = X(s)
         while (s.isNotTerminal()) {
             step++
             val a = π(s)
             val (s_next, reward) = a.sample()
-            val _x = X(trans(s_next))
+            val _x = X(s_next)
             val V = (w.T * x).asScalar()
             val _V = (w.T * _x).asScalar()
             val δ = reward + γ * _V - V

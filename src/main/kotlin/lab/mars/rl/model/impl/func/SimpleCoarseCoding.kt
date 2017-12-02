@@ -6,7 +6,7 @@ val ClosedRange<Double>.size: Double
     get() = endInclusive - start
 
 class SimpleCoarseCoding(featureWidth: Double, domain: ClosedRange<Double>,
-                         override val numOfComponents: Int) : Feature<Double> {
+                         override val numOfComponents: Int, converter: (Array<out Any>) -> Double) : Feature<Double>(converter) {
     val features: Array<ClosedRange<Double>>
 
     init {
@@ -17,7 +17,7 @@ class SimpleCoarseCoding(featureWidth: Double, domain: ClosedRange<Double>,
         }
     }
 
-    override fun invoke(s: Double) = Matrix.column(numOfComponents) {
+    override fun _invoke(s: Double) = Matrix.column(numOfComponents) {
         if (features[it].contains(s)) 1.0 //quantize the interval
         else 0.0
     }
