@@ -45,7 +45,7 @@ class `Tile Coding` {
     val numOfTilings = 50
     val feature = SimpleTileCoding(numOfTilings,
                                    5,
-                                   FastMath.ceil(`1000-state RandomWalk`.num_states / 5.0).toInt(),
+                                   ceil(`1000-state RandomWalk`.num_states / 5.0).toInt(),
                                    4.0) { (s) -> ((s as IndexedState)[0] - 1).toDouble() }
     val func = LinearFunc(feature)
     val algo2 = FunctionApprox(prob, PI)
@@ -215,7 +215,7 @@ class `Tile Coding` {
           val func = LinearFunc(
             SimpleTileCoding(numOfTiling,
                              5,
-                             FastMath.ceil(prob.states.size / 5.0).toInt(),
+                             ceil(prob.states.size / 5.0).toInt(),
                              4.0) { (s) -> ((s as IndexedState)[0] - 1).toDouble() }
           )
           algo.α = alpha / numOfTiling
