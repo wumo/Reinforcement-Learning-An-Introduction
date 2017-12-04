@@ -1,3 +1,5 @@
+@file:Suppress("NAME_SHADOWING")
+
 package lab.mars.rl.algo.func_approx.prediction
 
 import ch.qos.logback.classic.Level

@@ -1,3 +1,5 @@
+@file:Suppress("UNCHECKED_CAST")
+
 package lab.mars.rl.algo.func_approx.on_policy
 
 import ch.qos.logback.classic.Level
