@@ -8,16 +8,16 @@ class SimpleTileCoding(val numOfTilings: Int,
                        _tilingSize: Int,
                        val tileWidth: Int,
                        val tilingOffset: Double, conv: (Array<out Any>) -> Double) : Feature<Double>(conv) {
-    val tilingSize = _tilingSize + 1
-    override val numOfComponents = numOfTilings * tilingSize
+  val tilingSize = _tilingSize + 1
+  override val numOfComponents = numOfTilings * tilingSize
 
-    override fun _invoke(s: Double): Matrix {
-        return Matrix.column(numOfComponents) {
-            val tilingIdx = it / tilingSize
-            val tileIdx = it % tilingSize
-            val start = -tileWidth + tilingIdx * tilingOffset + tileIdx * tileWidth
-            if (start <= s && s < start + tileWidth) 1.0 else 0.0
-        }
+  override fun _invoke(s: Double): Matrix {
+    return Matrix.column(numOfComponents) {
+      val tilingIdx = it / tilingSize
+      val tileIdx = it % tilingSize
+      val start = -tileWidth + tilingIdx * tilingOffset + tileIdx * tileWidth
+      if (start <= s && s < start + tileWidth) 1.0 else 0.0
     }
+  }
 
 }

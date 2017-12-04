@@ -45,10 +45,10 @@ On-policy Prediction with Function Approximation
 * [Least-Squares TD](src/main/kotlin/lab/mars/rl/algo/func_approx/prediction/LSTD.kt) (p.186)
 
 On-policy Control with Function Approximation
-* [Episodic semi-gradient Sarsa](src/main/kotlin/lab/mars/rl/algo/func_approx/on_policy_control/Episodic%20semi-gradient%20n-step%20Sarsa.kt) (p.198)
-* [Episodic semi-gradient n-step Sarsa](src/main/kotlin/lab/mars/rl/algo/func_approx/on_policy_control/Episodic%20semi-gradient%20n-step%20Sarsa.kt) (p.200)
-* [Differential semi-gradient Sarsa](src/main/kotlin/lab/mars/rl/algo/func_approx/on_policy_control/Differential%20semi-gradient%20Sarsa.kt) (p.203)
-* [Differential semi-gradient n-step Sarsa](src/main/kotlin/lab/mars/rl/algo/func_approx/on_policy_control/Differential%20semi-gradient%20n-step%20Sarsa.kt) (p.206)
+* [Episodic semi-gradient Sarsa](src/main/kotlin/lab/mars/rl/algo/func_approx/on_policy/Episodic%20semi-gradient%20n-step%20Sarsa.kt) (p.198)
+* [Episodic semi-gradient n-step Sarsa](src/main/kotlin/lab/mars/rl/algo/func_approx/on_policy/Episodic%20semi-gradient%20n-step%20Sarsa.kt) (p.200)
+* [Differential semi-gradient Sarsa](src/main/kotlin/lab/mars/rl/algo/func_approx/on_policy/Differential%20semi-gradient%20Sarsa.kt) (p.203)
+* [Differential semi-gradient n-step Sarsa](src/main/kotlin/lab/mars/rl/algo/func_approx/on_policy/Differential%20semi-gradient%20n-step%20Sarsa.kt) (p.206)
 
 Off-policy Methods with Approximation
 * [Semi-gradient off-policy TD(0)](src/main/kotlin/lab/mars/rl/algo/func_approx/off_policy/Semi-gradient%20off-policy%20TD(0).kt) (p.210)

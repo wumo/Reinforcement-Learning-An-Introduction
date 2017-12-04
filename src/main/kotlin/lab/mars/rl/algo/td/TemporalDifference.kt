@@ -11,14 +11,14 @@ import org.slf4j.LoggerFactory
  * @author wumo
  */
 class TemporalDifference(val indexedMdp: IndexedMDP, var initial_policy: IndexedPolicy = null_policy) {
-    companion object {
-        val log = LoggerFactory.getLogger(this::class.java)!!
-    }
+  companion object {
+    val log = LoggerFactory.getLogger(this::class.java)!!
+  }
 
-    val started = indexedMdp.started
-    val states = indexedMdp.states
-    var episodes = 10000
-    val γ = indexedMdp.γ
-    var α = 0.1
-    var ε = 0.1
+  val started = indexedMdp.started
+  val states = indexedMdp.states
+  var episodes = 10000
+  val γ = indexedMdp.γ
+  var α = 0.1
+  var ε = 0.1
 }

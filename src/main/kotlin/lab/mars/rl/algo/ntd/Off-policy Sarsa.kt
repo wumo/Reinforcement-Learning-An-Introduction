@@ -14,59 +14,59 @@ import org.apache.commons.math3.util.FastMath.min
 import org.apache.commons.math3.util.FastMath.pow
 
 fun NStepTemporalDifference.`off-policy sarsa`(α: (IndexedState, IndexedAction) -> Double = { _, _ -> this.α }): OptimalSolution {
-    val b = indexedMdp.equiprobablePolicy()
-    val π = indexedMdp.equiprobablePolicy()
+  val b = indexedMdp.equiprobablePolicy()
+  val π = indexedMdp.equiprobablePolicy()
 
-    val Q = indexedMdp.QFunc { 0.0 }
-    val _R = newBuf<Double>(min(n, MAX_N))
-    val _S = newBuf<IndexedState>(min(n, MAX_N))
-    val _A = newBuf<IndexedAction>(min(n, MAX_N))
+  val Q = indexedMdp.QFunc { 0.0 }
+  val _R = newBuf<Double>(min(n, MAX_N))
+  val _S = newBuf<IndexedState>(min(n, MAX_N))
+  val _A = newBuf<IndexedAction>(min(n, MAX_N))
 
-    for (episode in 1..episodes) {
-        log.debug { "$episode/$episodes" }
-        var n = n
-        var T = Int.MAX_VALUE
-        var t = 0
-        var s = started()
-        var a = b(s)
-        _R.clear();_R.append(0.0)
-        _S.clear();_S.append(s)
-        _A.clear();_A.append(a)
-        do {
-            if (t >= n) {//最多存储n个
-                _R.removeFirst()
-                _S.removeFirst()
-                _A.removeFirst()
-            }
-            if (t < T) {
-                val (s_next, reward) = a.sample()
-                _R.append(reward)
-                _S.append(s_next)
-                s = s_next
-                if (s.isTerminal()) {
-                    T = t + 1
-                    val _t = t - n + 1
-                    if (_t < 0) n = T //n is too large, normalize it
-                } else {
+  for (episode in 1..episodes) {
+    log.debug { "$episode/$episodes" }
+    var n = n
+    var T = Int.MAX_VALUE
+    var t = 0
+    var s = started()
+    var a = b(s)
+    _R.clear();_R.append(0.0)
+    _S.clear();_S.append(s)
+    _A.clear();_A.append(a)
+    do {
+      if (t >= n) {//最多存储n个
+        _R.removeFirst()
+        _S.removeFirst()
+        _A.removeFirst()
+      }
+      if (t < T) {
+        val (s_next, reward) = a.sample()
+        _R.append(reward)
+        _S.append(s_next)
+        s = s_next
+        if (s.isTerminal()) {
+          T = t + 1
+          val _t = t - n + 1
+          if (_t < 0) n = T //n is too large, normalize it
+        } else {
 //                        updatePolicy(s, Q, pi)
-                    a = b(s)
-                    _A.append(a)
-                }
-            }
-            val τ = t - n + 1
-            if (τ >= 0) {
-                val ρ = Π(1..min(n - 1, T - 1 - τ)) { π[_S[it], _A[it]] / b[_S[it], _A[it]] }
-                var G = Σ(1..min(n, T - τ)) { pow(γ, it - 1) * _R[it] }
-                if (τ + n < T) G += pow(γ, n) * Q[_S[n], _A[n]]
-                Q[_S[0], _A[0]] += α(_S[0], _A[0]) * ρ * (G - Q[_S[0], _A[0]])
-                `ε-greedy`(_S[0], Q, π, ε)
-            }
-            t++
-        } while (τ < T - 1)
-        log.debug { "n=$n,T=$T" }
-    }
-    val V = indexedMdp.VFunc { 0.0 }
-    val result = tuple3(π, V, Q)
-    V_from_Q(states, result)
-    return result
+          a = b(s)
+          _A.append(a)
+        }
+      }
+      val τ = t - n + 1
+      if (τ >= 0) {
+        val ρ = Π(1..min(n - 1, T - 1 - τ)) { π[_S[it], _A[it]] / b[_S[it], _A[it]] }
+        var G = Σ(1..min(n, T - τ)) { pow(γ, it - 1) * _R[it] }
+        if (τ + n < T) G += pow(γ, n) * Q[_S[n], _A[n]]
+        Q[_S[0], _A[0]] += α(_S[0], _A[0]) * ρ * (G - Q[_S[0], _A[0]])
+        `ε-greedy`(_S[0], Q, π, ε)
+      }
+      t++
+    } while (τ < T - 1)
+    log.debug { "n=$n,T=$T" }
+  }
+  val V = indexedMdp.VFunc { 0.0 }
+  val result = tuple3(π, V, Q)
+  V_from_Q(states, result)
+  return result
 }

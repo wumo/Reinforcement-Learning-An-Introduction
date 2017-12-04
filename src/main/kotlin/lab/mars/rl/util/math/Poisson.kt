@@ -21,16 +21,16 @@ import org.apache.commons.math3.util.FastMath
 import org.apache.commons.math3.util.MathUtils
 
 fun poisson(mean: Double, n: Int): Double {
-    //        if (n > 11) return 0;
-    //        return exp(-mean) * pow(mean, n) / CombinatoricsUtils.factorial(n);
-    val ret: Double
-    if (n < 0 || n == Int.MAX_VALUE)
-        ret = Double.NEGATIVE_INFINITY
-    else if (n == 0)
-        ret = -mean
-    else
-        ret = -getStirlingError(n.toDouble()) - getDeviancePart(n.toDouble(), mean) - 0.5 * FastMath.log(MathUtils.TWO_PI) - 0.5 * FastMath.log(n.toDouble())
-    return if (ret == Double.NEGATIVE_INFINITY) 0.0 else FastMath.exp(ret)
+  //        if (n > 11) return 0;
+  //        return exp(-mean) * pow(mean, n) / CombinatoricsUtils.factorial(n);
+  val ret: Double
+  if (n < 0 || n == Int.MAX_VALUE)
+    ret = Double.NEGATIVE_INFINITY
+  else if (n == 0)
+    ret = -mean
+  else
+    ret = -getStirlingError(n.toDouble()) - getDeviancePart(n.toDouble(), mean) - 0.5 * FastMath.log(MathUtils.TWO_PI) - 0.5 * FastMath.log(n.toDouble())
+  return if (ret == Double.NEGATIVE_INFINITY) 0.0 else FastMath.exp(ret)
 }
 
 /** 1/2 * log(2 &#960;).  */
@@ -82,19 +82,19 @@ private val EXACT_STIRLING_ERRORS = doubleArrayOf(0.0, /* 0.0 */
  * @return the Striling'asSet series error.
  */
 fun getStirlingError(z: Double): Double {
-    val ret: Double
-    ret = if (z < 15.0) {
-        val z2 = 2.0 * z
-        if (FastMath.floor(z2) == z2) {
-            EXACT_STIRLING_ERRORS[z2.toInt()]
-        } else {
-            Gamma.logGamma(z + 1.0) - (z + 0.5) * FastMath.log(z) + z - HALF_LOG_2_PI
-        }
+  val ret: Double
+  ret = if (z < 15.0) {
+    val z2 = 2.0 * z
+    if (FastMath.floor(z2) == z2) {
+      EXACT_STIRLING_ERRORS[z2.toInt()]
     } else {
-        val z2 = z * z
-        (0.083333333333333333333 - (0.00277777777777777777778 - (0.00079365079365079365079365 - (0.000595238095238095238095238 - 0.0008417508417508417508417508 / z2) / z2) / z2) / z2) / z
+      Gamma.logGamma(z + 1.0) - (z + 0.5) * FastMath.log(z) + z - HALF_LOG_2_PI
     }
-    return ret
+  } else {
+    val z2 = z * z
+    (0.083333333333333333333 - (0.00277777777777777777778 - (0.00079365079365079365079365 - (0.000595238095238095238095238 - 0.0008417508417508417508417508 / z2) / z2) / z2) / z2) / z
+  }
+  return ret
 }
 
 /**
@@ -113,24 +113,24 @@ fun getStirlingError(z: Double): Double {
  * @return a part nsetFrom the deviance.
  */
 fun getDeviancePart(x: Double, mu: Double): Double {
-    val ret: Double
-    if (FastMath.abs(x - mu) < 0.1 * (x + mu)) {
-        val d = x - mu
-        var v = d / (x + mu)
-        var s1 = v * d
-        var s = Double.NaN
-        var ej = 2.0 * x * v
-        v *= v
-        var j = 1
-        while (s1 != s) {
-            s = s1
-            ej *= v
-            s1 = s + ej / (j * 2 + 1)
-            ++j
-        }
-        ret = s1
-    } else {
-        ret = x * FastMath.log(x / mu) + mu - x
+  val ret: Double
+  if (FastMath.abs(x - mu) < 0.1 * (x + mu)) {
+    val d = x - mu
+    var v = d / (x + mu)
+    var s1 = v * d
+    var s = Double.NaN
+    var ej = 2.0 * x * v
+    v *= v
+    var j = 1
+    while (s1 != s) {
+      s = s1
+      ej *= v
+      s1 = s + ej / (j * 2 + 1)
+      ++j
     }
-    return ret
+    ret = s1
+  } else {
+    ret = x * FastMath.log(x / mu) + mu - x
+  }
+  return ret
 }

@@ -13,61 +13,61 @@ import lab.mars.rl.util.math.argmax
 import lab.mars.rl.util.tuples.tuple3
 
 fun MonteCarlo.`Optimal Exploring Starts`(): OptimalSolution {
-    if (π == null_policy) π = IndexedPolicy(indexedMdp.QFunc { 1.0 })
-    val Q = indexedMdp.QFunc { 0.0 }
-    val tmpQ = indexedMdp.QFunc { Double.NaN }
-    val count = indexedMdp.QFunc { 0 }
-    val tmpS = newBuf<IndexedState>(states.size)
+  if (π == null_policy) π = IndexedPolicy(indexedMdp.QFunc { 1.0 })
+  val Q = indexedMdp.QFunc { 0.0 }
+  val tmpQ = indexedMdp.QFunc { Double.NaN }
+  val count = indexedMdp.QFunc { 0 }
+  val tmpS = newBuf<IndexedState>(states.size)
 
-    for (episode in 1..episodes) {
-        log.debug { "$episode/$episodes" }
-        var s = started()
-        var a = s.actions.rand()//Exploring Starts
+  for (episode in 1..episodes) {
+    log.debug { "$episode/$episodes" }
+    var s = started()
+    var a = s.actions.rand()//Exploring Starts
 
-        var accumulate = 0.0
-        do {
-            val (s_next, reward) = a.sample()
-            if (tmpQ[s, a].isNaN())
-                tmpQ[s, a] = accumulate
-            accumulate += reward
-            s = s_next
-        } while (s.isNotTerminal().apply { if (this) a = π(s) })
+    var accumulate = 0.0
+    do {
+      val (s_next, reward) = a.sample()
+      if (tmpQ[s, a].isNaN())
+        tmpQ[s, a] = accumulate
+      accumulate += reward
+      s = s_next
+    } while (s.isNotTerminal().apply { if (this) a = π(s) })
 
-        tmpS.clear()
-        for (s in states) {
-            if (s.isTerminal()) continue
-            for (a in s.actions) {
-                val value = tmpQ[s, a]
-                if (!value.isNaN()) {
-                    Q[s, a] += accumulate - value
-                    count[s, a] += 1
-                    tmpS.append(s)
-                    tmpQ[s, a] = Double.NaN
-                }
-            }
+    tmpS.clear()
+    for (s in states) {
+      if (s.isTerminal()) continue
+      for (a in s.actions) {
+        val value = tmpQ[s, a]
+        if (!value.isNaN()) {
+          Q[s, a] += accumulate - value
+          count[s, a] += 1
+          tmpS.append(s)
+          tmpQ[s, a] = Double.NaN
         }
-        for (s in tmpS) {
-            val a_greedy = argmax(s.actions) {
-                val n = count[s, it]
-                if (n > 0)
-                    Q[s, it] / n
-                else
-                    Q[s, it]
-            }
-            for (a in s.actions)
-                π[s, a] = if (a === a_greedy) 1.0 else 0.0
-        }
+      }
     }
-
-    Q.set { idx, value ->
-        val n = count[idx]
+    for (s in tmpS) {
+      val a_greedy = argmax(s.actions) {
+        val n = count[s, it]
         if (n > 0)
-            value / n
+          Q[s, it] / n
         else
-            value
+          Q[s, it]
+      }
+      for (a in s.actions)
+        π[s, a] = if (a === a_greedy) 1.0 else 0.0
     }
-    val V = indexedMdp.VFunc { 0.0 }
-    val result = tuple3(π, V, Q)
-    V_from_Q(states, result)
-    return result
+  }
+
+  Q.set { idx, value ->
+    val n = count[idx]
+    if (n > 0)
+      value / n
+    else
+      value
+  }
+  val V = indexedMdp.VFunc { 0.0 }
+  val result = tuple3(π, V, Q)
+  V_from_Q(states, result)
+  return result
 }

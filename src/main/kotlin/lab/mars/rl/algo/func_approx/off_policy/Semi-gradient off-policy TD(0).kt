@@ -7,33 +7,33 @@ import lab.mars.rl.util.log.debug
 import lab.mars.rl.util.matrix.times
 
 fun <E> FunctionApprox.`Semi-gradient off-policy TD(0) episodic`(v: ApproximateFunction<E>, b: Policy) {
-    for (episode in 1..episodes) {
-        log.debug { "$episode/$episodes" }
-        var step = 0
-        var s = started()
-        while (s.isNotTerminal()) {
-            step++
-            val a = b(s)
-            val (s_next, reward) = a.sample()
-            val ρ = π[s, a] / b[s, a]
-            val δ = reward + γ * v(s_next) - v(s)
-            v.w += α * ρ * δ * v.`▽`(s)
-            s = s_next
-        }
-        episodeListener(episode, step)
+  for (episode in 1..episodes) {
+    log.debug { "$episode/$episodes" }
+    var step = 0
+    var s = started()
+    while (s.isNotTerminal()) {
+      step++
+      val a = b(s)
+      val (s_next, reward) = a.sample()
+      val ρ = π[s, a] / b[s, a]
+      val δ = reward + γ * v(s_next) - v(s)
+      v.w += α * ρ * δ * v.`▽`(s)
+      s = s_next
     }
+    episodeListener(episode, step)
+  }
 }
 
 fun <E> FunctionApprox.`Semi-gradient off-policy TD(0) continuing`(v: ApproximateFunction<E>, b: Policy, β: Double) {
-    var average_reward = 0.0
-    var s = started()
-    while (true) {
-        val a = b(s)
-        val (s_next, reward) = a.sample()
-        val ρ = π[s, a] / b[s, a]
-        val δ = reward - average_reward + v(s_next) - v(s)
-        v.w += α * ρ * δ * v.`▽`(s)
-        average_reward += β * δ
-        s = s_next
-    }
+  var average_reward = 0.0
+  var s = started()
+  while (true) {
+    val a = b(s)
+    val (s_next, reward) = a.sample()
+    val ρ = π[s, a] / b[s, a]
+    val δ = reward - average_reward + v(s_next) - v(s)
+    v.w += α * ρ * δ * v.`▽`(s)
+    average_reward += β * δ
+    s = s_next
+  }
 }

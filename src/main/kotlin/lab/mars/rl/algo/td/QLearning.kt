@@ -10,22 +10,22 @@ import lab.mars.rl.util.math.max
 import lab.mars.rl.util.tuples.tuple3
 
 fun TemporalDifference.QLearning(α: (IndexedState, IndexedAction) -> Double = { _, _ -> this.α }): OptimalSolution {
-    val π = IndexedPolicy(indexedMdp.QFunc { 0.0 })
-    val Q = indexedMdp.QFunc { 0.0 }
+  val π = IndexedPolicy(indexedMdp.QFunc { 0.0 })
+  val Q = indexedMdp.QFunc { 0.0 }
 
-    for (episode in 1..episodes) {
-        log.debug { "$episode/$episodes" }
-        var s = started()
-        while (s.isNotTerminal()) {
-            `ε-greedy`(s, Q, π, ε)
-            val a = π(s)
-            val (s_next, reward) = a.sample()
-            Q[s, a] += α(s, a) * (reward + γ * max(s_next.actions, 0.0) { Q[s_next, it] } - Q[s, a])
-            s = s_next
-        }
+  for (episode in 1..episodes) {
+    log.debug { "$episode/$episodes" }
+    var s = started()
+    while (s.isNotTerminal()) {
+      `ε-greedy`(s, Q, π, ε)
+      val a = π(s)
+      val (s_next, reward) = a.sample()
+      Q[s, a] += α(s, a) * (reward + γ * max(s_next.actions, 0.0) { Q[s_next, it] } - Q[s, a])
+      s = s_next
     }
-    val V = indexedMdp.VFunc { 0.0 }
-    val result = tuple3(π, V, Q)
-    V_from_Q(states, result)
-    return result
+  }
+  val V = indexedMdp.VFunc { 0.0 }
+  val result = tuple3(π, V, Q)
+  V_from_Q(states, result)
+  return result
 }

@@ -15,25 +15,25 @@ import lab.mars.rl.util.collection.emptyNSet
  */
 
 interface MDP {
-    val γ: Double
-    val started: () -> State
+  val γ: Double
+  val started: () -> State
 }
 
 interface Policy {
-    /**sample action when in state [s]*/
-    operator fun invoke(s: State): Action<State>
+  /**sample action when in state [s]*/
+  operator fun invoke(s: State): Action<State>
 
-    /**probability of taking action [a] when in state [s]*/
-    operator fun get(s: State, a: Action<State>): Double
+  /**probability of taking action [a] when in state [s]*/
+  operator fun get(s: State, a: Action<State>): Double
 }
 
 interface RandomIterable<out E> : Iterable<E> {
-    fun rand(): E
-    val size: Int
+  fun rand(): E
+  val size: Int
 }
 
 interface State {
-    val actions: RandomIterable<Action<State>>
+  val actions: RandomIterable<Action<State>>
 }
 
 inline fun State.isTerminal() = !isNotTerminal()
@@ -41,12 +41,12 @@ inline fun State.isTerminal() = !isNotTerminal()
 inline fun State.isNotTerminal() = actions.any()
 
 interface Action<out S : State> {
-    val sample: () -> Possible<S>
+  val sample: () -> Possible<S>
 }
 
 open class Possible<out S : State>(val next: S, val reward: Double) {
-    open operator fun component1() = next
-    open operator fun component2() = reward
+  open operator fun component1() = next
+  open operator fun component2() = reward
 }
 
 val null_index = DefaultIntBuf.of(-1)

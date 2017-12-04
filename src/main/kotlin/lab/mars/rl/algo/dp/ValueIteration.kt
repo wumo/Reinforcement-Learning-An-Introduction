@@ -17,33 +17,33 @@ import org.slf4j.LoggerFactory
  * @author wumo
  */
 class ValueIteration(private val indexedMdp: IndexedMDP) {
-    companion object {
-        val log = LoggerFactory.getLogger(this::class.java)!!
-    }
+  companion object {
+    val log = LoggerFactory.getLogger(this::class.java)!!
+  }
 
-    val θ = 1e-6
-    val states = indexedMdp.states
-    val γ = indexedMdp.γ
-    fun iteration(): StateValueFunction {
-        val V = indexedMdp.VFunc { 0.0 }
-        val PI = indexedMdp.VFunc { null_action }
-        //value iteration
-        do {
-            var Δ = 0.0
-            for (s in states) {
-                s.actions.ifAny {
-                    val v = V[s]
-                    V[s] = max(it) { Σ(possibles) { probability * (reward + γ * V[next]) } }
-                    Δ = max(Δ, abs(v - V[s]))
-                }
-            }
-            log.debug { "Δ=$Δ" }
-        } while (Δ >= θ)
-        //policy generation
-        for (s in states)
-            s.actions.ifAny {
-                PI[s] = argmax(s.actions) { Σ(possibles) { probability * (reward + γ * V[next]) } }
-            }
-        return V
-    }
+  val θ = 1e-6
+  val states = indexedMdp.states
+  val γ = indexedMdp.γ
+  fun iteration(): StateValueFunction {
+    val V = indexedMdp.VFunc { 0.0 }
+    val PI = indexedMdp.VFunc { null_action }
+    //value iteration
+    do {
+      var Δ = 0.0
+      for (s in states) {
+        s.actions.ifAny {
+          val v = V[s]
+          V[s] = max(it) { Σ(possibles) { probability * (reward + γ * V[next]) } }
+          Δ = max(Δ, abs(v - V[s]))
+        }
+      }
+      log.debug { "Δ=$Δ" }
+    } while (Δ >= θ)
+    //policy generation
+    for (s in states)
+      s.actions.ifAny {
+        PI[s] = argmax(s.actions) { Σ(possibles) { probability * (reward + γ * V[next]) } }
+      }
+    return V
+  }
 }

@@ -23,14 +23,14 @@ import java.util.*
  * @receiver 表示index的数组链表
  */
 fun MutableIntBuf.increment(dim: IntArray) {
-    val offset = lastIndex - dim.size + 1
-    for (idx in dim.lastIndex downTo 0) {
-        val this_idx = offset + idx
-        this[this_idx]++
-        if (this[this_idx] < dim[idx])
-            break
-        this[this_idx] = 0
-    }
+  val offset = lastIndex - dim.size + 1
+  for (idx in dim.lastIndex downTo 0) {
+    val this_idx = offset + idx
+    this[this_idx]++
+    if (this[this_idx] < dim[idx])
+      break
+    this[this_idx] = 0
+  }
 }
 
 /**
@@ -55,185 +55,185 @@ inline fun <E : Any> emptyNSet(): NSet<E> = emptyNSet as NSet<E>
  * @param root 根节点一维数组
  */
 class NSet<E : Any>(private val dim: IntArray, private val stride: IntArray, private val root: Array<Any>) :
-    ExtendableRAC<E> {
-    override fun <T : Any> copycat(element_maker: (Index) -> T): IndexedCollection<T> {
-        val index = DefaultIntBuf.zero(dim.size)
-        return NSet(dim, stride, Array(root.size) {
-            copycat(root[it], index, element_maker)
-                .apply { index.increment(dim) }
-        })
+  ExtendableRAC<E> {
+  override fun <T : Any> copycat(element_maker: (Index) -> T): IndexedCollection<T> {
+    val index = DefaultIntBuf.zero(dim.size)
+    return NSet(dim, stride, Array(root.size) {
+      copycat(root[it], index, element_maker)
+        .apply { index.increment(dim) }
+    })
+  }
+
+  private fun <T : Any> copycat(prototype: Any, index: DefaultIntBuf, element_maker: (IntBuf) -> T): Any =
+    when (prototype) {
+      is NSet<*> -> {
+        index.append(prototype.dim.size, 0)
+        NSet<T>(prototype.dim, prototype.stride, Array(prototype.root.size) {
+          copycat(prototype.root[it], index, element_maker)
+            .apply { index.increment(prototype.dim) }
+        }).apply { index.removeLast(prototype.dim.size) }
+      }
+      else -> element_maker(index)
     }
 
-    private fun <T : Any> copycat(prototype: Any, index: DefaultIntBuf, element_maker: (IntBuf) -> T): Any =
-        when (prototype) {
-            is NSet<*> -> {
-                index.append(prototype.dim.size, 0)
-                NSet<T>(prototype.dim, prototype.stride, Array(prototype.root.size) {
-                    copycat(prototype.root[it], index, element_maker)
-                        .apply { index.increment(prototype.dim) }
-                }).apply { index.removeLast(prototype.dim.size) }
-            }
-            else -> element_maker(index)
+  override fun <T : Any> raw_set(element_maker: (Index, E) -> T) {
+    val index = DefaultIntBuf.new()
+    reset(this, index, element_maker)
+  }
+
+  private fun <T : Any> reset(sub: NSet<E>, index: DefaultIntBuf, element_maker: (IntBuf, E) -> T) {
+    index.append(sub.dim.size, 0)
+    for (a in 0 until sub.root.size) {
+      val tmp = sub.root[a] as? NSet<E>
+      if (tmp == null)
+        sub.root[a] = element_maker(index, sub.root[a] as E)
+      else
+        reset(tmp, index, element_maker)
+      index.increment(sub.dim)
+    }
+    index.removeLast(sub.dim.size)
+  }
+
+  private fun <T : Any> get_or_set(idxIter: Iterator<Int>, op: (Any) -> Any): T {
+    var offset = 0
+    for (a in 0 until dim.size) {
+      if (!idxIter.hasNext())
+        throw IndexOutOfDimensionException()
+      val value = idxIter.next()
+      if (value < 0 || value > dim[a])
+        throw IndexOutOfDimensionException()
+      offset += value * stride[a]
+    }
+
+    return if (!idxIter.hasNext()) {
+      root[offset] = op(root[offset])
+      root[offset] as T
+    } else {
+      val sub = root[offset] as? NSet<T> ?: throw IndexOutOfDimensionException()
+      sub.get_or_set(idxIter, op)
+    }
+  }
+
+  override fun ifAny(block: IndexedCollection<E>.(IndexedCollection<E>) -> Unit) {
+    if (!root.isEmpty()) block(this, this)
+  }
+
+  override fun isEmpty() = root.isEmpty()
+
+  override fun get(dim: Index): E = _get(dim)
+
+  override fun set(dim: Index, s: E) {
+    _set(dim, s)
+  }
+
+  override fun set(subset_dim: Index, s: IndexedCollection<E>) {
+    _set(subset_dim, s)
+  }
+
+  override fun invoke(subset_dim: Index): IndexedCollection<E> = _get(subset_dim)
+
+  private fun <T : Any> _get(idx: Index): T = get_or_set(idx.iterator()) { it }
+
+  private fun <T : Any> _set(idx: Index, s: T) {
+    get_or_set<T>(idx.iterator()) { s }
+  }
+
+  override fun toString(): String {
+    val sb = StringBuilder()
+    for ((idx, value) in withIndices())
+      sb.append("$idx=$value").append("\n")
+    return sb.toString()
+  }
+
+  override fun iterator() = GeneralIterator<E>().apply { traverser = Traverser(this, {}, {}, {}, { it }) }
+
+  override fun indices() = GeneralIterator<Index>().apply {
+    val index = DefaultIntBuf.zero(this.set.dim.size).apply { this[lastIndex] = -1 }
+    traverser = Traverser(this,
+                          forward = {
+                            index.apply {
+                              append(current.set.dim.size, 0)
+                              this[lastIndex] = -1
+                            }
+                          },
+                          backward = { index.removeLast(current.set.dim.size) },
+                          translate = { index.increment(current.set.dim) },
+                          visitor = { index })
+  }
+
+  override fun withIndices(): Iterator<tuple2<out Index, E>> = GeneralIterator<tuple2<out IntBuf, E>>().apply {
+    val index = DefaultIntBuf.zero(this.set.dim.size).apply { this[lastIndex] = -1 }
+    var tuple2: tuple2<out IntBuf, E>? = null
+    traverser = Traverser(this,
+                          forward = {
+                            index.apply {
+                              append(current.set.dim.size, 0)
+                              this[lastIndex] = -1
+                            }
+                          },
+                          backward = { index.removeLast(current.set.dim.size) },
+                          translate = { index.increment(current.set.dim) },
+                          visitor = {
+                            val tmp = tuple2 ?: tuple2(index, it)
+                            tuple2 = tmp
+                            tmp._2 = it
+                            tmp
+                          })
+  }
+
+  inner class GeneralIterator<out T> : Iterator<T> {
+    /**
+     * @param current 当前正待着的节点
+     * @param forward 移到了未探索过的更深的节点
+     * @param backward 正要从当前节点退回去到[parent]
+     * @param translate 当前节点进行宽度范围内的下一个搜索
+     * @param visitor 获取当前非子树元素的值
+     */
+    inner class Traverser(var current: GeneralIterator<T>,
+                          val forward: Traverser.() -> Unit,
+                          val backward: Traverser.() -> Unit,
+                          val translate: Traverser.() -> Unit,
+                          val visitor: Traverser.(E) -> T)
+
+    internal lateinit var traverser: Traverser
+    private var visited = -1
+    internal val set = this@NSet
+    private var parent: GeneralIterator<T> = this
+
+    override fun hasNext() = dfs({ true }, { false })
+
+    override fun next() =
+      dfs({ traverser.current.increment();traverser.visitor(traverser, it) }, { throw NoSuchElementException() })
+
+    private inline fun increment(): Int {
+      traverser.translate(traverser)
+      return visited++
+    }
+
+    private inline fun <T> dfs(element: (E) -> T, nomore: () -> T): T {
+      while (true) {
+        while (traverser.current.visited + 1 < traverser.current.set.root.size) {
+          val tmp = traverser.current
+          val next = tmp.set.root[tmp.visited + 1]
+          tmp.inspect_next_type(next) ?: return element(next as E)
         }
-
-    override fun <T : Any> raw_set(element_maker: (Index, E) -> T) {
-        val index = DefaultIntBuf.new()
-        reset(this, index, element_maker)
+        if (traverser.current === this) return nomore()
+        traverser.backward(traverser)
+        traverser.current = traverser.current.parent
+      }
     }
 
-    private fun <T : Any> reset(sub: NSet<E>, index: DefaultIntBuf, element_maker: (IntBuf, E) -> T) {
-        index.append(sub.dim.size, 0)
-        for (a in 0 until sub.root.size) {
-            val tmp = sub.root[a] as? NSet<E>
-            if (tmp == null)
-                sub.root[a] = element_maker(index, sub.root[a] as E)
-            else
-                reset(tmp, index, element_maker)
-            index.increment(sub.dim)
-        }
-        index.removeLast(sub.dim.size)
+    private inline fun inspect_next_type(next: Any?): NSet<E>? {
+      val next_type = next as? NSet<E>
+      next_type?.apply {
+        val new = this.GeneralIterator<T>()
+        new.traverser = traverser
+        new.parent = traverser.current
+        new.parent.increment()
+        traverser.current = new
+        traverser.forward(traverser)
+      }
+      return next_type
     }
-
-    private fun <T : Any> get_or_set(idxIter: Iterator<Int>, op: (Any) -> Any): T {
-        var offset = 0
-        for (a in 0 until dim.size) {
-            if (!idxIter.hasNext())
-                throw IndexOutOfDimensionException()
-            val value = idxIter.next()
-            if (value < 0 || value > dim[a])
-                throw IndexOutOfDimensionException()
-            offset += value * stride[a]
-        }
-
-        return if (!idxIter.hasNext()) {
-            root[offset] = op(root[offset])
-            root[offset] as T
-        } else {
-            val sub = root[offset] as? NSet<T> ?: throw IndexOutOfDimensionException()
-            sub.get_or_set(idxIter, op)
-        }
-    }
-
-    override fun ifAny(block: IndexedCollection<E>.(IndexedCollection<E>) -> Unit) {
-        if (!root.isEmpty()) block(this, this)
-    }
-
-    override fun isEmpty() = root.isEmpty()
-
-    override fun get(dim: Index): E = _get(dim)
-
-    override fun set(dim: Index, s: E) {
-        _set(dim, s)
-    }
-
-    override fun set(subset_dim: Index, s: IndexedCollection<E>) {
-        _set(subset_dim, s)
-    }
-
-    override fun invoke(subset_dim: Index): IndexedCollection<E> = _get(subset_dim)
-
-    private fun <T : Any> _get(idx: Index): T = get_or_set(idx.iterator()) { it }
-
-    private fun <T : Any> _set(idx: Index, s: T) {
-        get_or_set<T>(idx.iterator()) { s }
-    }
-
-    override fun toString(): String {
-        val sb = StringBuilder()
-        for ((idx, value) in withIndices())
-            sb.append("$idx=$value").append("\n")
-        return sb.toString()
-    }
-
-    override fun iterator() = GeneralIterator<E>().apply { traverser = Traverser(this, {}, {}, {}, { it }) }
-
-    override fun indices() = GeneralIterator<Index>().apply {
-        val index = DefaultIntBuf.zero(this.set.dim.size).apply { this[lastIndex] = -1 }
-        traverser = Traverser(this,
-                              forward = {
-                                  index.apply {
-                                      append(current.set.dim.size, 0)
-                                      this[lastIndex] = -1
-                                  }
-                              },
-                              backward = { index.removeLast(current.set.dim.size) },
-                              translate = { index.increment(current.set.dim) },
-                              visitor = { index })
-    }
-
-    override fun withIndices(): Iterator<tuple2<out Index, E>> = GeneralIterator<tuple2<out IntBuf, E>>().apply {
-        val index = DefaultIntBuf.zero(this.set.dim.size).apply { this[lastIndex] = -1 }
-        var tuple2: tuple2<out IntBuf, E>? = null
-        traverser = Traverser(this,
-                              forward = {
-                                  index.apply {
-                                      append(current.set.dim.size, 0)
-                                      this[lastIndex] = -1
-                                  }
-                              },
-                              backward = { index.removeLast(current.set.dim.size) },
-                              translate = { index.increment(current.set.dim) },
-                              visitor = {
-                                  val tmp = tuple2 ?: tuple2(index, it)
-                                  tuple2 = tmp
-                                  tmp._2 = it
-                                  tmp
-                              })
-    }
-
-    inner class GeneralIterator<out T> : Iterator<T> {
-        /**
-         * @param current 当前正待着的节点
-         * @param forward 移到了未探索过的更深的节点
-         * @param backward 正要从当前节点退回去到[parent]
-         * @param translate 当前节点进行宽度范围内的下一个搜索
-         * @param visitor 获取当前非子树元素的值
-         */
-        inner class Traverser(var current: GeneralIterator<T>,
-                              val forward: Traverser.() -> Unit,
-                              val backward: Traverser.() -> Unit,
-                              val translate: Traverser.() -> Unit,
-                              val visitor: Traverser.(E) -> T)
-
-        internal lateinit var traverser: Traverser
-        private var visited = -1
-        internal val set = this@NSet
-        private var parent: GeneralIterator<T> = this
-
-        override fun hasNext() = dfs({ true }, { false })
-
-        override fun next() =
-            dfs({ traverser.current.increment();traverser.visitor(traverser, it) }, { throw NoSuchElementException() })
-
-        private inline fun increment(): Int {
-            traverser.translate(traverser)
-            return visited++
-        }
-
-        private inline fun <T> dfs(element: (E) -> T, nomore: () -> T): T {
-            while (true) {
-                while (traverser.current.visited + 1 < traverser.current.set.root.size) {
-                    val tmp = traverser.current
-                    val next = tmp.set.root[tmp.visited + 1]
-                    tmp.inspect_next_type(next) ?: return element(next as E)
-                }
-                if (traverser.current === this) return nomore()
-                traverser.backward(traverser)
-                traverser.current = traverser.current.parent
-            }
-        }
-
-        private inline fun inspect_next_type(next: Any?): NSet<E>? {
-            val next_type = next as? NSet<E>
-            next_type?.apply {
-                val new = this.GeneralIterator<T>()
-                new.traverser = traverser
-                new.parent = traverser.current
-                new.parent.increment()
-                traverser.current = new
-                traverser.forward(traverser)
-            }
-            return next_type
-        }
-    }
+  }
 }

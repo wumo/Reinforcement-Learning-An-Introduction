@@ -8,9 +8,9 @@ package lab.mars.rl.util.buf
  * @author wumo
  */
 abstract class IntBuf : Index() {
-    /** [end]>=[start] */
-    abstract operator fun get(start: Int, end: Int): IntBuf
+  /** [end]>=[start] */
+  abstract operator fun get(start: Int, end: Int): IntBuf
 
-    abstract fun toIntArray(): IntArray
-    abstract fun copy(): IntBuf
+  abstract fun toIntArray(): IntArray
+  abstract fun copy(): IntBuf
 }
