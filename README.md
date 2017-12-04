@@ -85,7 +85,7 @@ Policy Gradient Methods
 Built with [Maven](https://maven.apache.org/) 
 
 ## Test cases
-Try [Testcases](src/test/kotlin/lab/mars/rl/model/impl)
+Try [Testcases](src/test/kotlin/lab/mars/rl/algo)
 
 ![Figure 10.1](src/test/resources/Figure%2010.1.PNG)
 
