@@ -9,10 +9,10 @@ import lab.mars.rl.util.collection.IndexedCollection
 import lab.mars.rl.util.collection.emptyNSet
 
 class IndexedState(val index: IntBuf) : Index(), State {
-    inline override val size: Int
-        get() = index.size
+  inline override val size: Int
+    get() = index.size
 
-    inline override operator fun get(idx: Int) = index[idx]
+  inline override operator fun get(idx: Int) = index[idx]
 
-    override var actions: IndexedCollection<IndexedAction> = emptyNSet()
+  override var actions: IndexedCollection<IndexedAction> = emptyNSet()
 }

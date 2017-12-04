@@ -20,8 +20,8 @@ import lab.mars.rl.util.dimension.*
  * @return 所有状态维度相同和动作维度相同的MDP实例
  */
 inline fun NSetMDP(gamma: Double, state_dim: Any, action_dim: Any): IndexedMDP {
-    val a_dim = action_dim.toDim()
-    return NSetMDP(gamma, state_dim.toDim(), { a_dim })
+  val a_dim = action_dim.toDim()
+  return NSetMDP(gamma, state_dim.toDim(), { a_dim })
 }
 
 /**
@@ -31,15 +31,15 @@ inline fun NSetMDP(gamma: Double, state_dim: Any, action_dim: Any): IndexedMDP {
  * @return 统一状态维度而动作维度异构的MDP实例
  */
 fun NSetMDP(gamma: Double, state_dim: Any, action_dim: (IntBuf) -> Any): IndexedMDP {
-    val s_dim = state_dim.toDim() as GeneralDimension
-    val s_a_dim = s_dim.copy() x action_dim
-    return IndexedMDP(
-        γ = gamma,
-        states = nsetFrom(s_dim) {
-            IndexedState(it.copy()).apply { actions = nsetFrom(action_dim(it).toDim()) { IndexedAction(it.copy()) } }
-        },
-        state_function = { element_maker -> nsetFrom(s_dim, element_maker) },
-        state_action_function = { element_maker -> nsetFrom(s_a_dim, element_maker) })
+  val s_dim = state_dim.toDim() as GeneralDimension
+  val s_a_dim = s_dim.copy() x action_dim
+  return IndexedMDP(
+    γ = gamma,
+    states = nsetFrom(s_dim) {
+      IndexedState(it.copy()).apply { actions = nsetFrom(action_dim(it).toDim()) { IndexedAction(it.copy()) } }
+    },
+    state_function = { element_maker -> nsetFrom(s_dim, element_maker) },
+    state_action_function = { element_maker -> nsetFrom(s_a_dim, element_maker) })
 }
 
 /**
@@ -50,8 +50,8 @@ fun NSetMDP(gamma: Double, state_dim: Any, action_dim: (IntBuf) -> Any): Indexed
  * @return 所有状态维度相同和动作维度相同的MDP实例
  */
 inline fun CNSetMDP(gamma: Double, state_dim: Any, action_dim: Any): IndexedMDP {
-    val a_dim = action_dim.toDim() as GeneralDimension
-    return CNSetMDP(gamma, state_dim.toDim(), { a_dim })
+  val a_dim = action_dim.toDim() as GeneralDimension
+  return CNSetMDP(gamma, state_dim.toDim(), { a_dim })
 }
 
 /**
@@ -62,20 +62,20 @@ inline fun CNSetMDP(gamma: Double, state_dim: Any, action_dim: Any): IndexedMDP 
  * @return 统一状态维度而动作维度异构的MDP实例
  */
 fun CNSetMDP(gamma: Double, state_dim: Any, action_dim: (IntBuf) -> Any): IndexedMDP {
-    val s_dim = state_dim.toDim() as GeneralDimension
-    val states = cnsetFrom(s_dim) {
-        IndexedState(it.copy()).apply { actions = cnsetFrom(action_dim(it).toDim()) { IndexedAction(it.copy()) } }
-    }
-    val s_a_dim = s_dim.copy() x action_dim
-    return IndexedMDP(
-        γ = gamma,
-        states = states,
-        state_function = { element_maker -> states.copycat(element_maker) },
-        state_action_function = { element_maker -> cnsetFrom(s_a_dim, element_maker) })
+  val s_dim = state_dim.toDim() as GeneralDimension
+  val states = cnsetFrom(s_dim) {
+    IndexedState(it.copy()).apply { actions = cnsetFrom(action_dim(it).toDim()) { IndexedAction(it.copy()) } }
+  }
+  val s_a_dim = s_dim.copy() x action_dim
+  return IndexedMDP(
+    γ = gamma,
+    states = states,
+    state_function = { element_maker -> states.copycat(element_maker) },
+    state_action_function = { element_maker -> cnsetFrom(s_a_dim, element_maker) })
 }
 
 inline fun mdpOf(gamma: Double, state_dim: Any, action_dim: Any)
-    = CNSetMDP(gamma, state_dim, action_dim)
+  = CNSetMDP(gamma, state_dim, action_dim)
 
 inline fun mdpOf(gamma: Double, state_dim: Any, noinline action_dim: (IntBuf) -> Any)
-    = CNSetMDP(gamma, state_dim, action_dim)
+  = CNSetMDP(gamma, state_dim, action_dim)
