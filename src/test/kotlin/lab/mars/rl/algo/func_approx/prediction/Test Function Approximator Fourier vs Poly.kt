@@ -4,8 +4,8 @@ package lab.mars.rl.algo.func_approx.prediction
 
 import ch.qos.logback.classic.Level
 import javafx.application.Application
+import kotlinx.coroutines.experimental.async
 import kotlinx.coroutines.experimental.channels.Channel
-import kotlinx.coroutines.experimental.launch
 import kotlinx.coroutines.experimental.runBlocking
 import lab.mars.rl.algo.func_approx.FunctionApprox
 import lab.mars.rl.algo.td.TemporalDifference
@@ -52,10 +52,10 @@ class Test {
     runBlocking {
       for (func_id in 0..1)
         for (order in orders) {
-          launch {
+          async {
             val runChan = Channel<DoubleArray>(runs)
             for (run in 1..runs)
-              launch {
+              async {
                 val algo = FunctionApprox(prob, PI)
                 algo.episodes = episodes
                 algo.α = alphas[func_id]

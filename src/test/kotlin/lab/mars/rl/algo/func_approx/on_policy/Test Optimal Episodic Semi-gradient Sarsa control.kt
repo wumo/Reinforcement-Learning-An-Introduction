@@ -4,8 +4,9 @@ package lab.mars.rl.algo.func_approx.on_policy
 
 import ch.qos.logback.classic.Level
 import javafx.application.Application
-import kotlinx.coroutines.experimental.*
+import kotlinx.coroutines.experimental.async
 import kotlinx.coroutines.experimental.channels.Channel
+import kotlinx.coroutines.experimental.runBlocking
 import lab.mars.rl.algo.func_approx.FunctionApprox
 import lab.mars.rl.model.impl.func.LinearFunc
 import lab.mars.rl.model.impl.func.SuttonTileCoding
@@ -86,7 +87,7 @@ class `Test Optimal Episodic Semi-gradient Sarsa control` {
     val outerChan = Channel<Boolean>(alphas.size)
     runBlocking {
       for (alpha in alphas)
-        launch {
+        async {
           val runChan = Channel<IntArray>(runs)
           repeat(runs) {
             async {

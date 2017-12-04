@@ -4,8 +4,8 @@ package lab.mars.rl.algo.func_approx.prediction
 
 import ch.qos.logback.classic.Level
 import javafx.application.Application
+import kotlinx.coroutines.experimental.async
 import kotlinx.coroutines.experimental.channels.Channel
-import kotlinx.coroutines.experimental.launch
 import kotlinx.coroutines.experimental.runBlocking
 import lab.mars.rl.algo.func_approx.FunctionApprox
 import lab.mars.rl.algo.td.TemporalDifference
@@ -20,6 +20,7 @@ import lab.mars.rl.util.logLevel
 import lab.mars.rl.util.tuples.tuple2
 import lab.mars.rl.util.ui.*
 import org.apache.commons.math3.util.FastMath
+import org.apache.commons.math3.util.FastMath.*
 import org.junit.Test
 
 class `Tile Coding` {
@@ -90,14 +91,17 @@ class `Tile Coding` {
     val outerChan = Channel<Boolean>(numOfTilings.size)
     runBlocking {
       for (numOfTiling in numOfTilings)
-        launch {
+        async {
           val runChan = Channel<DoubleArray>(runs)
           for (run in 1..runs)
-            launch {
-              val func = LinearFunc(SimpleTileCoding(numOfTiling,
-                                                     5,
-                                                     FastMath.ceil(prob.states.size / 5.0).toInt(),
-                                                     4.0) { (s) -> ((s as IndexedState)[0] - 1).toDouble() })
+            async {
+              val func = LinearFunc(
+                SimpleTileCoding(
+                  numOfTiling,
+                  5,
+                  ceil(prob.states.size / 5.0).toInt(),
+                  4.0) { (s) -> ((s as IndexedState)[0] - 1).toDouble() }
+              )
               val algo = FunctionApprox(prob, PI)
               algo.α = alpha / numOfTiling
               algo.episodes = episodes
@@ -151,7 +155,9 @@ class `Tile Coding` {
     val alpha = 1e-4
     val numOfTilings = 32
 
-    val feature = SuttonTileCoding(5, numOfTilings) { (s) -> tuple2(doubleArrayOf((s as IndexedState)[0] * 5.0 / `1000-state RandomWalk`.num_states), intArrayOf()) }
+    val feature = SuttonTileCoding(5, numOfTilings) { (s) ->
+      tuple2(doubleArrayOf((s as IndexedState)[0] * 5.0 / `1000-state RandomWalk`.num_states), intArrayOf())
+    }
 
     val func = LinearFunc(feature)
     val algo2 = FunctionApprox(prob, PI)
@@ -185,10 +191,10 @@ class `Tile Coding` {
       var result = 0.0
       for (s in prob.states) {
         if (s.isTerminal()) continue
-        result += FastMath.pow(V[s] - f(s), 2)
+        result += pow(V[s] - f(s), 2)
       }
       result /= prob.states.size
-      return FastMath.sqrt(result)
+      return sqrt(result)
     }
 
     val chart = chart("RMS", "episode", "RMS")
@@ -202,14 +208,16 @@ class `Tile Coding` {
       val numOfTiling = 1
       val runChan = Channel<DoubleArray>(runs)
       for (run in 1..runs)
-        launch {
+        async {
           val algo = FunctionApprox(prob, PI)
           algo.episodes = episodes
           val _errors = DoubleArray(episodes) { 0.0 }
-          val func = LinearFunc(SimpleTileCoding(numOfTiling,
-                                                 5,
-                                                 FastMath.ceil(prob.states.size / 5.0).toInt(),
-                                                 4.0) { (s) -> ((s as IndexedState)[0] - 1).toDouble() })
+          val func = LinearFunc(
+            SimpleTileCoding(numOfTiling,
+                             5,
+                             FastMath.ceil(prob.states.size / 5.0).toInt(),
+                             4.0) { (s) -> ((s as IndexedState)[0] - 1).toDouble() }
+          )
           algo.α = alpha / numOfTiling
           algo.episodeListener = { episode, _ ->
             _errors[episode - 1] += RMS(func)
@@ -235,15 +243,17 @@ class `Tile Coding` {
 
     runBlocking {
       for (numOfTiling in numOfTilings)
-        launch {
+        async {
           val runChan = Channel<DoubleArray>(runs)
           for (run in 1..runs)
-            launch {
+            async {
               val algo = FunctionApprox(prob, PI)
               algo.episodes = episodes
               val _errors = DoubleArray(episodes) { 0.0 }
-              val func = LinearFunc(SuttonTileCoding(5,
-                                                     numOfTiling) { (s) -> tuple2(doubleArrayOf((s as IndexedState)[0] * 5.0 / `1000-state RandomWalk`.num_states), intArrayOf()) })
+              val func = LinearFunc(
+                SuttonTileCoding(5,
+                                 numOfTiling) { (s) -> tuple2(doubleArrayOf((s as IndexedState)[0] * 5.0 / `1000-state RandomWalk`.num_states), intArrayOf()) }
+              )
               algo.α = alpha / numOfTiling
               algo.episodeListener = { episode, _ ->
                 _errors[episode - 1] += RMS(func)
