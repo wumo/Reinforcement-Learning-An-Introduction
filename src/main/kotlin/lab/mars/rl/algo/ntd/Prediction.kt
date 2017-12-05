@@ -11,13 +11,14 @@ import org.apache.commons.math3.util.FastMath.min
 import org.apache.commons.math3.util.FastMath.pow
 
 fun NStepTemporalDifference.prediction(): StateValueFunction {
-  var n = n
   val V = indexedMdp.VFunc { 0.0 }
   val _R = newBuf<Double>(min(n, MAX_N))
   val _S = newBuf<IndexedState>(min(n, MAX_N))
+
   for (episode in 1..episodes) {
     log.debug { "$episode/$episodes" }
     var T = Int.MAX_VALUE
+    var n = n
     var t = 0
     var s = started()
     _R.clear();_R.append(0.0)
@@ -29,7 +30,7 @@ fun NStepTemporalDifference.prediction(): StateValueFunction {
         _S.removeFirst(1)
       }
       if (t < T) {
-        val a = initial_policy(s)
+        val a = π(s)
         val (s_next, reward) = a.sample()
         _R.append(reward)
         _S.append(s_next)
@@ -41,7 +42,6 @@ fun NStepTemporalDifference.prediction(): StateValueFunction {
         }
       }
       val τ = t - n + 1
-
       if (τ >= 0) {
         var G = Σ(1..min(n, T - τ)) { pow(γ, it - 1) * _R[it] }
         if (τ + n < T) G += pow(γ, n) * V[_S[n]]
@@ -50,6 +50,7 @@ fun NStepTemporalDifference.prediction(): StateValueFunction {
       t++
     } while (τ < T - 1)
     log.debug { "n=$n,T=$T" }
+    episodeListener(episode, V)
   }
   return V
 }

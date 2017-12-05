@@ -19,9 +19,9 @@ object RandomWalk {
       states[6].actions = emptyNSet()
       started = { states(3).rand() }
       for (a in 1..5) {
-        states[a].actions.apply {
-          this[0].possibles = cnsetOf(IndexedPossible(states[a - 1], 0.0, 0.5),
-                                      IndexedPossible(states[a + 1], if (a == 5) 1.0 else 0.0, 0.5))
+        states[a].actions[0].apply {
+          possibles = cnsetOf(IndexedPossible(states[a - 1], 0.0, 0.5),
+                              IndexedPossible(states[a + 1], if (a == 5) 1.0 else 0.0, 0.5))
         }
       }
     }

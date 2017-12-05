@@ -1,6 +1,7 @@
 package lab.mars.rl.algo.ntd
 
 import lab.mars.rl.model.impl.mdp.*
+import lab.mars.rl.util.collection.IndexedCollection
 import org.slf4j.LoggerFactory
 
 const val MAX_N = 1024
@@ -12,7 +13,7 @@ const val MAX_N = 1024
  *
  * @author wumo
  */
-class NStepTemporalDifference(val indexedMdp: IndexedMDP, val n: Int, var initial_policy: IndexedPolicy = null_policy) {
+class NStepTemporalDifference(val indexedMdp: IndexedMDP, val n: Int, var π: IndexedPolicy = null_policy) {
   companion object {
     val log = LoggerFactory.getLogger(this::class.java)!!
   }
@@ -24,4 +25,6 @@ class NStepTemporalDifference(val indexedMdp: IndexedMDP, val n: Int, var initia
   var α = 0.1
   var ε = 0.1
   var σ: (Int) -> Int = { 0 }
+
+  var episodeListener: (Int, IndexedCollection<Double>) -> Unit = { _, _ -> }
 }

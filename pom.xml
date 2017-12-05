@@ -30,7 +30,7 @@
         <maven.compiler.plugin.version>3.7.0</maven.compiler.plugin.version>
         <maven.source.plugin.version>3.0.1</maven.source.plugin.version>
         <kotlin.version>1.2.0</kotlin.version>
-        <kotlin.coroutines>0.19.3</kotlin.coroutines>
+        <kotlin.coroutines>0.20</kotlin.coroutines>
     </properties>
 
     <dependencies>
