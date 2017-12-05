@@ -96,3 +96,8 @@ during one run
 
 Figure 10.4: Effect of the α and n on early performance of n-step semi-gradient Sarsa and tile-coding function
 approximation on the Mountain Car task
+
+![Figure 7.2](src/test/resources/Figure%207.2.PNG)
+
+Performance of n-step TD methods as a function of α, for various values of n, on a 19-state random
+walk task
