@@ -92,13 +92,18 @@ Try [Testcases](src/test/kotlin/lab/mars/rl/algo)
 Figure 7.2: Performance of n-step TD methods as a function of α, for various values of n, on a 19-state random
 walk task
 
+---
+
 ![Figure 10.1](src/test/resources/Figure%2010.1.PNG)
 
 Figure 10.1: The Mountain Car task and the cost-to-go function learned
 during one run
+
+---
 
 ![Figure 10.4](src/test/resources/Figure%2010.4.PNG)
 
 Figure 10.4: Effect of the α and n on early performance of n-step semi-gradient Sarsa and tile-coding function
 approximation on the Mountain Car task
 
+---
