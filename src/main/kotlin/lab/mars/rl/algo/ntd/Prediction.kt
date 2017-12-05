@@ -12,28 +12,28 @@ import org.apache.commons.math3.util.FastMath.pow
 
 fun NStepTemporalDifference.prediction(): StateValueFunction {
   val V = indexedMdp.VFunc { 0.0 }
-  val _R = newBuf<Double>(min(n, MAX_N))
-  val _S = newBuf<IndexedState>(min(n, MAX_N))
-
+  val R = newBuf<Double>(min(n, MAX_N))
+  val S = newBuf<IndexedState>(min(n, MAX_N))
+  
   for (episode in 1..episodes) {
     log.debug { "$episode/$episodes" }
     var T = Int.MAX_VALUE
     var n = n
     var t = 0
     var s = started()
-    _R.clear();_R.append(0.0)
-    _S.clear();_S.append(s)
-
+    R.clear();R.append(0.0)
+    S.clear();S.append(s)
+    
     do {
       if (t >= n) {//最多存储n个
-        _R.removeFirst(1)
-        _S.removeFirst(1)
+        R.removeFirst(1)
+        S.removeFirst(1)
       }
       if (t < T) {
         val a = π(s)
         val (s_next, reward) = a.sample()
-        _R.append(reward)
-        _S.append(s_next)
+        S.append(s_next)
+        R.append(reward)
         s = s_next
         if (s.isTerminal()) {
           T = t + 1
@@ -43,9 +43,9 @@ fun NStepTemporalDifference.prediction(): StateValueFunction {
       }
       val τ = t - n + 1
       if (τ >= 0) {
-        var G = Σ(1..min(n, T - τ)) { pow(γ, it - 1) * _R[it] }
-        if (τ + n < T) G += pow(γ, n) * V[_S[n]]
-        V[_S[0]] += α * (G - V[_S[0]])
+        var G = Σ(1..min(n, T - τ)) { pow(γ, it - 1) * R[it] }
+        if (τ + n < T) G += pow(γ, n) * V[S[n]]
+        V[S[0]] += α * (G - V[S[0]])
       }
       t++
     } while (τ < T - 1)

@@ -33,12 +33,13 @@ class D2DChart : View() {
             isAutoRanging = true
             label = chart.yAxisLabel
           }
-          for (line in chart.lines) {
+          val lines=chart.lines.toTypedArray()
+          lines.sortBy { it.description }
+          for (line in lines)
             series(line.description) {
               for ((k, v) in line.data)
                 data(k, v)
             }
-          }
           createSymbols = false
         }
       }
