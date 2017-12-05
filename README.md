@@ -57,9 +57,7 @@ Off-policy Methods with Approximation
 * [n-step semi-gradient off-policy Q(σ)](src/main/kotlin/lab/mars/rl/algo/func_approx/off_policy/n-step%20semi-gradient%20off-policy%20Q(σ).kt) (p.211)
 
 Eligibility Traces
-* [Off-line λ-return](src/main/kotlin/lab/mars/rl/algo/eligibility_trace/Off-line%20λ-return.kt) (p.238)
-* [Semi-gradient TD(λ) prediction](src/main/kotlin/lab/mars/rl/algo/eligibility_trace/Semi-gradient%20TD(λ)%20prediction.kt) (p.240)
-* [True Online TD(λ) prediction](src/main/kotlin/lab/mars/rl/algo/eligibility_trace/True%20Online%20TD(λ)%20prediction.kt) (p.246)
+* [Off-line λ-return](src/main/kotlin/lab/mars/rl/algo/eligibility_trace/prediction/Off-line%20λ-return.kt) (p.238)
 * [Semi-gradient TD(λ) prediction](src/main/kotlin/lab/mars/rl/algo/eligibility_trace/prediction/Semi-gradient%20TD(λ)%20prediction.kt) (p.240)
 * [True Online TD(λ) prediction](src/main/kotlin/lab/mars/rl/algo/eligibility_trace/prediction/True%20Online%20TD(λ)%20prediction.kt) (p.246)
 
