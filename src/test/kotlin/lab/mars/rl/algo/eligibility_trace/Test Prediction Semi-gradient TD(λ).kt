@@ -3,6 +3,7 @@ package lab.mars.rl.algo.eligibility_trace
 import ch.qos.logback.classic.Level
 import javafx.application.Application
 import kotlinx.coroutines.experimental.runBlocking
+import lab.mars.rl.algo.eligibility_trace.prediction.`Semi-gradient TD(λ) prediction`
 import lab.mars.rl.algo.func_approx.FunctionApprox
 import lab.mars.rl.model.impl.func.*
 import lab.mars.rl.model.impl.mdp.IndexedState

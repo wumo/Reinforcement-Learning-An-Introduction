@@ -3,6 +3,7 @@ package lab.mars.rl.algo.eligibility_trace
 import ch.qos.logback.classic.Level
 import javafx.application.Application
 import kotlinx.coroutines.experimental.runBlocking
+import lab.mars.rl.algo.eligibility_trace.prediction.`Off-line λ-return`
 import lab.mars.rl.algo.func_approx.FunctionApprox
 import lab.mars.rl.model.impl.func.*
 import lab.mars.rl.model.impl.mdp.IndexedState
@@ -10,7 +11,6 @@ import lab.mars.rl.problem.`19-state RandomWalk`
 import lab.mars.rl.util.*
 import lab.mars.rl.util.tuples.tuple2
 import lab.mars.rl.util.ui.*
-import org.apache.commons.math3.util.FastMath
 import org.apache.commons.math3.util.FastMath.pow
 import org.apache.commons.math3.util.FastMath.sqrt
 import org.junit.Test

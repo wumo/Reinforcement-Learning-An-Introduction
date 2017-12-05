@@ -1,4 +1,4 @@
-package lab.mars.rl.algo.eligibility_trace
+package lab.mars.rl.algo.eligibility_trace.prediction
 
 import lab.mars.rl.algo.func_approx.FunctionApprox
 import lab.mars.rl.algo.func_approx.FunctionApprox.Companion.log
