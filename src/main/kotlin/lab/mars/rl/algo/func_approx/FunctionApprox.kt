@@ -11,7 +11,6 @@ class FunctionApprox(val mdp: MDP, var π: Policy) {
 
   val started = mdp.started
   var episodes = 10000
-  var maxSteps = 10000
   val γ = mdp.γ
   var α = 1.0
   var ε = 0.1

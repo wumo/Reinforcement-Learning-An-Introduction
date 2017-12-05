@@ -1,4 +1,4 @@
-@file:Suppress("UNCHECKED_CAST")
+@file:Suppress("UNCHECKED_CAST", "NAME_SHADOWING")
 
 package lab.mars.rl.algo.func_approx.on_policy
 
@@ -14,7 +14,7 @@ import lab.mars.rl.model.impl.mdp.DefaultAction
 import lab.mars.rl.model.impl.mdp.`ε-greedy function policy`
 import lab.mars.rl.problem.CarState
 import lab.mars.rl.problem.MountainCar
-import lab.mars.rl.util.logLevel
+import lab.mars.rl.util.*
 import lab.mars.rl.util.math.max
 import lab.mars.rl.util.tuples.tuple2
 import lab.mars.rl.util.ui.*
@@ -84,50 +84,38 @@ class `Test Optimal Episodic Semi-gradient Sarsa control` {
     val alphas = listOf(0.1, 0.2, 0.5)
 
     val chart = chart("Learning curves", "episode", "steps per episode")
-    val outerChan = Channel<Boolean>(alphas.size)
     runBlocking {
-      for (alpha in alphas)
-        async {
-          val runChan = Channel<IntArray>(runs)
-          repeat(runs) {
-            async {
-              val feature = SuttonTileCoding(511, numTilings) { (s, a) ->
-                s as CarState
-                a as DefaultAction<Int, CarState>
-                tuple2(doubleArrayOf(positionScale * s.position, velocityScale * s.velocity), intArrayOf(a.value))
-              }
-              val func = LinearFunc(feature)
-              val π = `ε-greedy function policy`(func, 0.0)
-              val algo = FunctionApprox(mdp, π)
-              algo.episodes = episodes
-              algo.α = alpha / numTilings
-              val steps = IntArray(episodes)
-              algo.episodeListener = { episode, step ->
-                steps[episode - 1] += step
-              }
-              algo.`Episodic semi-gradient Sarsa control`(func)
-              runChan.send(steps)
-            }
+      asyncs(alphas) { alpha ->
+        val steps = IntArray(episodes)
+        asyncs(runs) {
+          val feature = SuttonTileCoding(511, numTilings) { (s, a) ->
+            s as CarState
+            a as DefaultAction<Int, CarState>
+            tuple2(doubleArrayOf(positionScale * s.position, velocityScale * s.velocity), intArrayOf(a.value))
           }
+          val func = LinearFunc(feature)
+          val π = `ε-greedy function policy`(func, 0.0)
+          val algo = FunctionApprox(mdp, π)
+          algo.episodes = episodes
+          algo.α = alpha / numTilings
           val steps = IntArray(episodes)
-          repeat(runs) {
-            val _steps = runChan.receive()
-            _steps.forEachIndexed { episode, s ->
-              steps[episode] += s
-            }
-            println("finish alpha ($alpha ) run: 1")
+          algo.episodeListener = { episode, step ->
+            steps[episode - 1] += step
           }
-          val line = line("MountainCar episodic sarsa ($alpha) ")
-          for (episode in 1..episodes) {
-            line[episode] = steps[episode - 1] / runs.toDouble()
+          algo.`Episodic semi-gradient Sarsa control`(func)
+          steps
+        }.await {
+          it.forEachIndexed { episode, s ->
+            steps[episode] += s
           }
-          chart += line
-          println("finish MountainCar episodic sarsa ($alpha)")
-          outerChan.send(true)
+          println("finish alpha ($alpha ) run: 1")
         }
-      repeat(alphas.size) {
-        outerChan.receive()
-      }
+        val line = line("MountainCar episodic sarsa ($alpha) ")
+        for (episode in 1..episodes)
+          line[episode] = steps[episode - 1] / runs.toDouble()
+        chart += line
+        println("finish MountainCar episodic sarsa ($alpha)")
+      }.await()
     }
     D2DChart.charts += chart
     Application.launch(ChartApp::class.java)

@@ -15,8 +15,7 @@ import lab.mars.rl.model.impl.func.*
 import lab.mars.rl.model.impl.mdp.IndexedState
 import lab.mars.rl.model.isTerminal
 import lab.mars.rl.problem.`1000-state RandomWalk`
-import lab.mars.rl.util.format
-import lab.mars.rl.util.logLevel
+import lab.mars.rl.util.*
 import lab.mars.rl.util.tuples.tuple2
 import lab.mars.rl.util.ui.*
 import org.apache.commons.math3.util.FastMath
@@ -87,50 +86,40 @@ class `Tile Coding` {
     val episodes = 10000
     val runs = 5
     val alpha = 1e-4
-    val numOfTilings = intArrayOf(1, 50)
-    val outerChan = Channel<Boolean>(numOfTilings.size)
+    val numOfTilings = listOf(1, 50)
     runBlocking {
-      for (numOfTiling in numOfTilings)
-        async {
-          val runChan = Channel<DoubleArray>(runs)
-          for (run in 1..runs)
-            async {
-              val func = LinearFunc(
-                SimpleTileCoding(
-                  numOfTiling,
-                  5,
-                  ceil(prob.states.size / 5.0).toInt(),
-                  4.0) { (s) -> ((s as IndexedState)[0] - 1).toDouble() }
-              )
-              val algo = FunctionApprox(prob, PI)
-              algo.α = alpha / numOfTiling
-              algo.episodes = episodes
-              val _errors = DoubleArray(episodes)
-              algo.episodeListener = { episode, _ ->
-                _errors[episode - 1] += RMS(func)
-              }
-              algo.`Gradient Monte Carlo algorithm`(func)
-              runChan.send(_errors)
-            }
-          val errors = DoubleArray(episodes)
-          repeat(runs) {
-            val _errors = runChan.receive()
-            _errors.forEachIndexed { episode, e ->
-              errors[episode] += e
-            }
-            println("finish Tile coding ($numOfTiling tilings) run: 1")
+      asyncs(numOfTilings) { numOfTiling ->
+        val errors = DoubleArray(episodes)
+        asyncs(runs) {
+          val func = LinearFunc(
+            SimpleTileCoding(
+              numOfTiling,
+              5,
+              ceil(prob.states.size / 5.0).toInt(),
+              4.0) { (s) -> ((s as IndexedState)[0] - 1).toDouble() }
+          )
+          val algo = FunctionApprox(prob, PI)
+          algo.α = alpha / numOfTiling
+          algo.episodes = episodes
+          val _errors = DoubleArray(episodes)
+          algo.episodeListener = { episode, _ ->
+            _errors[episode - 1] += RMS(func)
           }
-          val line = line("Tile coding ($numOfTiling tilings) ")
-          for (episode in 1..episodes) {
-            line[episode] = errors[episode - 1] / runs
+          algo.`Gradient Monte Carlo algorithm`(func)
+          _errors
+        }.await {
+          it.forEachIndexed { episode, e ->
+            errors[episode] += e
           }
-          chart += line
-          println("finish Tile coding ($numOfTiling tilings)")
-          outerChan.send(true)
+          println("finish Tile coding ($numOfTiling tilings) run: 1")
         }
-      repeat(numOfTilings.size) {
-        outerChan.receive()
-      }
+        val line = line("Tile coding ($numOfTiling tilings) ")
+        for (episode in 1..episodes) {
+          line[episode] = errors[episode - 1] / runs
+        }
+        chart += line
+        println("finish Tile coding ($numOfTiling tilings)")
+      }.await()
     }
     D2DChart.charts += chart
     Application.launch(ChartApp::class.java)
@@ -202,37 +191,34 @@ class `Tile Coding` {
     val episodes = 10000
     val runs = 5
     val alpha = 1e-4
-    val numOfTilings = intArrayOf(4, 32)
+    val numOfTilings = listOf(4, 32)
     val outerChan = Channel<Boolean>(numOfTilings.size)
     runBlocking {
       val numOfTiling = 1
-      val runChan = Channel<DoubleArray>(runs)
-      for (run in 1..runs)
-        async {
-          val algo = FunctionApprox(prob, PI)
-          algo.episodes = episodes
-          val _errors = DoubleArray(episodes) { 0.0 }
-          val func = LinearFunc(
-            SimpleTileCoding(numOfTiling,
-                             5,
-                             ceil(prob.states.size / 5.0).toInt(),
-                             4.0) { (s) -> ((s as IndexedState)[0] - 1).toDouble() }
-          )
-          algo.α = alpha / numOfTiling
-          algo.episodeListener = { episode, _ ->
-            _errors[episode - 1] += RMS(func)
-          }
-          algo.`Gradient Monte Carlo algorithm`(func)
-          runChan.send(_errors)
-        }
       val errors = DoubleArray(episodes) { 0.0 }
-      repeat(runs) {
-        val _errors = runChan.receive()
-        _errors.forEachIndexed { episode, e ->
+      asyncs(runs) {
+        val algo = FunctionApprox(prob, PI)
+        algo.episodes = episodes
+        val _errors = DoubleArray(episodes) { 0.0 }
+        val func = LinearFunc(
+          SimpleTileCoding(numOfTiling,
+                           5,
+                           ceil(prob.states.size / 5.0).toInt(),
+                           4.0) { (s) -> ((s as IndexedState)[0] - 1).toDouble() }
+        )
+        algo.α = alpha / numOfTiling
+        algo.episodeListener = { episode, _ ->
+          _errors[episode - 1] += RMS(func)
+        }
+        algo.`Gradient Monte Carlo algorithm`(func)
+        _errors
+      }.await {
+        it.forEachIndexed { episode, e ->
           errors[episode] += e
         }
         println("finish Tile coding ($numOfTiling tilings) run: 1")
       }
+
       val line = line("Tile coding ($numOfTiling tilings) ")
       for (episode in 1..episodes) {
         line[episode] = errors[episode - 1] / runs
@@ -242,44 +228,35 @@ class `Tile Coding` {
     }
 
     runBlocking {
-      for (numOfTiling in numOfTilings)
-        async {
-          val runChan = Channel<DoubleArray>(runs)
-          for (run in 1..runs)
-            async {
-              val algo = FunctionApprox(prob, PI)
-              algo.episodes = episodes
-              val _errors = DoubleArray(episodes) { 0.0 }
-              val func = LinearFunc(
-                SuttonTileCoding(5,
-                                 numOfTiling) { (s) -> tuple2(doubleArrayOf((s as IndexedState)[0] * 5.0 / `1000-state RandomWalk`.num_states), intArrayOf()) }
-              )
-              algo.α = alpha / numOfTiling
-              algo.episodeListener = { episode, _ ->
-                _errors[episode - 1] += RMS(func)
-              }
-              algo.`Gradient Monte Carlo algorithm`(func)
-              runChan.send(_errors)
-            }
-          val errors = DoubleArray(episodes) { 0.0 }
-          repeat(runs) {
-            val _errors = runChan.receive()
-            _errors.forEachIndexed { episode, e ->
-              errors[episode] += e
-            }
-            println("finish Tile coding ($numOfTiling tilings) run: 1")
+      asyncs(numOfTilings) { numOfTiling ->
+        val errors = DoubleArray(episodes) { 0.0 }
+        asyncs(runs) {
+          val algo = FunctionApprox(prob, PI)
+          algo.episodes = episodes
+          val _errors = DoubleArray(episodes) { 0.0 }
+          val func = LinearFunc(
+            SuttonTileCoding(5,
+                             numOfTiling) { (s) -> tuple2(doubleArrayOf((s as IndexedState)[0] * 5.0 / `1000-state RandomWalk`.num_states), intArrayOf()) }
+          )
+          algo.α = alpha / numOfTiling
+          algo.episodeListener = { episode, _ ->
+            _errors[episode - 1] += RMS(func)
           }
-          val line = line("Tile coding ($numOfTiling tilings) ")
-          for (episode in 1..episodes) {
-            line[episode] = errors[episode - 1] / runs
+          algo.`Gradient Monte Carlo algorithm`(func)
+          _errors
+        }.await {
+          it.forEachIndexed { episode, e ->
+            errors[episode] += e
           }
-          chart += line
-          println("finish Tile coding ($numOfTiling tilings)")
-          outerChan.send(true)
+          println("finish Tile coding ($numOfTiling tilings) run: 1")
         }
-      repeat(numOfTilings.size) {
-        outerChan.receive()
-      }
+
+        val line = line("Tile coding ($numOfTiling tilings) ")
+        for (episode in 1..episodes)
+          line[episode] = errors[episode - 1] / runs
+        chart += line
+        println("finish Tile coding ($numOfTiling tilings)")
+      }.await()
     }
     D2DChart.charts += chart
     Application.launch(ChartApp::class.java)

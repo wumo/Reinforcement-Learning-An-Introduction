@@ -14,10 +14,6 @@ fun <E> FunctionApprox.`Episodic semi-gradient Sarsa control`(q: ApproximateFunc
     var s = started()
     var a = π(s)
     while (true) {
-      if (step >= maxSteps) {
-        log.debug("episode terminated due to exceeding max steps")
-        break
-      }
       step++
       val (s_next, reward) = a.sample()
       if (s_next.isNotTerminal()) {
