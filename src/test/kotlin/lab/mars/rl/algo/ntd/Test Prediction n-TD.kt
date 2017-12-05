@@ -45,7 +45,7 @@ class `Test Prediction n-TD` {
     realV[20] = 0.0
     
     val ns = listOf(10) { pow(2.0, it).toInt() }
-    val αs = listOf(10) { it * 0.1 }
+    val αs = listOf(110) { it * 0.01 }
     
     val episodes = 10
     val runs = 100

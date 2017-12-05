@@ -9,7 +9,7 @@ import lab.mars.rl.util.math.Σ
 import lab.mars.rl.util.matrix.times
 import org.apache.commons.math3.util.FastMath.pow
 
-fun <E> FunctionApprox.`Off-line λ-return`(v: ApproximateFunction<E>, λ: Double) {
+fun <E> FunctionApprox.`Off-line λ-return`(V: ApproximateFunction<E>, λ: Double) {
   val R = newBuf<Double>()
   val S = newBuf<State>()
   for (episode in 1..episodes) {
@@ -29,12 +29,12 @@ fun <E> FunctionApprox.`Off-line λ-return`(v: ApproximateFunction<E>, λ: Doubl
     
     fun Gt(t: Int, n: Int)
         = Σ(1..n) { pow(γ, it - 1) * R[t + it] } +
-          if (t + n < T) pow(γ, n) * v(S[t + n]) else 0.0
+          if (t + n < T) pow(γ, n) * V(S[t + n]) else 0.0
     
     for (t in 0 until T) {
       val Gtλ = (1 - λ) * Σ(1..T - t - 1) { pow(λ, it - 1) * Gt(t, it) } +
                 pow(λ, T - t - 1) * Gt(t, T - t)
-      v.w += α * (Gtλ - v(S[t])) * v.`▽`(S[t])
+      V.w += α * (Gtλ - V(S[t])) * V.`▽`(S[t])
     }
     episodeListener(episode, T)
   }

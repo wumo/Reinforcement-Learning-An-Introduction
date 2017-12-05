@@ -11,11 +11,9 @@ import lab.mars.rl.util.*
 import lab.mars.rl.util.tuples.tuple2
 import lab.mars.rl.util.ui.*
 import org.apache.commons.math3.util.FastMath
-import org.apache.commons.math3.util.FastMath.pow
-import org.apache.commons.math3.util.FastMath.sqrt
 import org.junit.Test
 
-class `Test Prediction Off-line λ-return` {
+class `Test Prediction Semi-gradient TDλ` {
   @Test
   fun `Performance`() {
     logLevel(Level.ERROR)
@@ -30,9 +28,9 @@ class `Test Prediction Off-line λ-return` {
     
     val episodes = 10
     val runs = 100
-    val truncateValue = 0.55
+    val truncateValue = 0.6
     
-    val chart = chart("Off-line λ-return", "α", "Average RMS")
+    val chart = chart("Semi-gradient TD(λ)", "α", "Average RMS")
     runBlocking {
       for (λ in λs) {
         val line = line("λ=$λ")
@@ -40,7 +38,6 @@ class `Test Prediction Off-line λ-return` {
         asyncs(αs) { α ->
           var rms_sum = 0.0
           asyncs(runs) { run ->
-            //            val func = StateAggregation(prob.states.size, prob.states.size) { (s) -> (s as IndexedState)[0] }
             val func = LinearFunc(
                 SimpleTileCoding(1,
                                  prob.states.size,
@@ -54,12 +51,12 @@ class `Test Prediction Off-line λ-return` {
             algo.episodeListener = { _, _ ->
               var error = 0.0
               for (s in prob.states)
-                error += pow(func(s) - realV[s[0]], 2)
+                error += FastMath.pow(func(s) - realV[s[0]], 2)
               error /= prob.states.size
-              rms += sqrt(error)
+              rms += FastMath.sqrt(error)
             }
-            algo.`Off-line λ-return`(func, λ)
-            println("finish λ=$λ α=$α run=$run")
+            algo.`Semi-gradient TD(λ) prediction`(func, λ)
+            println("finish λ=${λ.format(2)} α=$α run=$run")
             rms
           }.await { rms_sum += it }
           println("finish λ=$λ α=$α")
@@ -74,5 +71,4 @@ class `Test Prediction Off-line λ-return` {
     D2DChart.charts += chart
     Application.launch(ChartApp::class.java)
   }
-  
 }
