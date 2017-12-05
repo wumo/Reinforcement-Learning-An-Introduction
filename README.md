@@ -76,6 +76,7 @@ Policy Gradient Methods
 * [Windy Gridworld and King's Moves](src/main/kotlin/lab/mars/rl/problem/WindyGridworld.kt) (p.106)
 * [Cliff Walking](src/main/kotlin/lab/mars/rl/problem/CliffWalking.kt) (p.108)
 * [Maximization Bias Example](src/main/kotlin/lab/mars/rl/problem/MaximizationBias.kt) (p.110)
+* [19-state Random Walk](src/main/kotlin/lab/mars/rl/problem/19-state%20RandomWalk.kt) (p.118)
 * [Dyna Maze](src/main/kotlin/lab/mars/rl/problem/DynaMaze.kt) (p.136)
 * [Rod Maneuvering](src/main/kotlin/lab/mars/rl/problem/RodManeuvering.kt) (p.141)
 * [1000-state Random Walk](src/main/kotlin/lab/mars/rl/problem/1000-state%20RandomWalk.kt) (p.166)
