@@ -15,7 +15,7 @@ Model-based (Dynamic Programming):
 * [Value Iteration](src/main/kotlin/lab/mars/rl/algo/dp/ValueIteration.kt)  (p.67)
 
 Monte Carlo (episode backup):
-* [First-visit MC prediction](src/main/kotlin/lab/mars/rl/algo/mc/First visit Monte Carlo Prediction.kt) (p.76)
+* [First-visit MC prediction](src/main/kotlin/lab/mars/rl/algo/mc/First%20visit%20Monte%20Carlo%20Prediction.kt) (p.76)
 * [Monte Carlo Exploring Starts](src/main/kotlin/lab/mars/rl/algo/mc/ExploringStarts.kt) (p.81)
 * [On-Policy first-visit MC control](src/main/kotlin/lab/mars/rl/algo/mc/On-Policy%20Optimal.kt) (p.83)
 * [Off-policy MC prediction](src/main/kotlin/lab/mars/rl/algo/mc/Off-Policy%20Prediction.kt) (p.90)
@@ -29,11 +29,11 @@ Temporal Difference (one-step backup):
 * [Double Q-Learning](src/main/kotlin/lab/mars/rl/algo/td/DoubleQLearning.kt) (p.111)
 
 n-step Temporal Difference (unify MC and TD):
-* [n-step TD prediction](src/main/kotlin/lab/mars/rl/algo/ntd/N-step TD prediction.kt) (p.117)
-* [n-step Sarsa](src/main/kotlin/lab/mars/rl/algo/ntd/N-step Sarsa.kt) (p.120)
-* [Off-policy n-step Sarsa](src/main/kotlin/lab/mars/rl/algo/ntd/Off-policy%20Sarsa.kt) (p.122)
-* [n-step Tree Backup](src/main/kotlin/lab/mars/rl/algo/ntd/N-step Treebackup.kt) (p.125)
-* [Off-policy n-step Q(σ)](src/main/kotlin/lab/mars/rl/algo/ntd/Off-policy%20Q%20sigma.kt) (p.128)
+* [n-step TD prediction](src/main/kotlin/lab/mars/rl/algo/ntd/N-step%20TD%20prediction.kt) (p.117)
+* [n-step Sarsa](src/main/kotlin/lab/mars/rl/algo/ntd/N-step%20Sarsa.kt) (p.120)
+* [Off-policy n-step Sarsa](src/main/kotlin/lab/mars/rl/algo/ntd/N-step%20Off-policy%20Sarsa.kt) (p.122)
+* [n-step Tree Backup](src/main/kotlin/lab/mars/rl/algo/ntd/N-step%20Treebackup.kt) (p.125)
+* [Off-policy n-step Q(σ)](src/main/kotlin/lab/mars/rl/algo/ntd/N-step%20Off-policy%20n-step%20Q(σ).kt) (p.128)
 
 Dyna (Integrate Planning, Acting, and Learning):
 * [Random-sample one-step tabular Q-planning](src/main/kotlin/lab/mars/rl/algo/dyna/RandomSampleOneStepTabularQLearning.kt) (p.133)
