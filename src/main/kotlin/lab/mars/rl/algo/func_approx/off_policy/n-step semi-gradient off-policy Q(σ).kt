@@ -44,7 +44,7 @@ fun <E> MDP.`N-step off-policy n-step Q(σ) episodic`(
     
     do {
       step++
-      if (t >= n) {//最多存储n个
+      if (t >= n) {
         _Q.removeFirst()
         _π.removeFirst()
         ρ.removeFirst()
@@ -61,7 +61,7 @@ fun <E> MDP.`N-step off-policy n-step Q(σ) episodic`(
           δ.append(reward - _Q.last)
           T = t + 1
           val _t = t - n + 1
-          if (_t < 0) n = T //n is too large, normalize it
+          if (_t < 0) n = T //n is too large
         } else {
           a = b(s);_A.append(a)
           val tmp_σ = σ(t + 1)

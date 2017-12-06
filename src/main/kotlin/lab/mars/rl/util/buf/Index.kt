@@ -12,7 +12,7 @@ abstract class Index: Iterable<Int> {
     get() = size - 1
   
   /**
-   * 获取指定维度[idx]上的数值
+   * get value at the specific [idx]
    */
   abstract operator fun get(idx: Int): Int
   

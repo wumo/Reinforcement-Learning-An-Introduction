@@ -34,7 +34,7 @@ fun <E> MDP.`n-step semi-gradient off-policy sarsa episodic`(
     _A.clear();_A.append(a)
     do {
       step++
-      if (t >= n) {//最多存储n个
+      if (t >= n) {
         _R.removeFirst()
         _S.removeFirst()
         _A.removeFirst()
@@ -47,7 +47,7 @@ fun <E> MDP.`n-step semi-gradient off-policy sarsa episodic`(
         if (s.isTerminal) {
           T = t + 1
           val _t = t - n + 1
-          if (_t < 0) n = T //n is too large, normalize it
+          if (_t < 0) n = T //n is too large
         } else {
           a = b(s)
           _A.append(a)

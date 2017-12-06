@@ -41,7 +41,7 @@ fun IndexedMDP.`N-step Treebackup`(
     _A.clear(); _A.append(a)
     
     do {
-      if (t >= n) {//最多存储n个
+      if (t >= n) {
         _Q.removeFirst()
         _π.removeFirst()
         δ.removeFirst()
@@ -56,7 +56,7 @@ fun IndexedMDP.`N-step Treebackup`(
           δ.append(reward - _Q.last)
           T = t + 1
           val _t = t - n + 1
-          if (_t < 0) n = T //n is too large, normalize it
+          if (_t < 0) n = T //n is too large
         } else {
           δ.append(reward + γ * Σ(s.actions) { π[s, it] * Q[s, it] } - _Q.last)
           a = s.actions.rand()

@@ -33,7 +33,7 @@ fun <E> MDP.`Episodic semi-gradient n-step Sarsa control`(
     _A.clear();_A.append(a)
     do {
       step++
-      if (t >= n) {//最多存储n个
+      if (t >= n) {
         _R.removeFirst()
         _S.removeFirst()
         _A.removeFirst()
@@ -46,7 +46,7 @@ fun <E> MDP.`Episodic semi-gradient n-step Sarsa control`(
         if (s.isTerminal) {
           T = t + 1
           val _t = t - n + 1
-          if (_t < 0) n = T //n is too large, normalize it
+          if (_t < 0) n = T //n is too large
         } else {
           a = π(s)
           _A.append(a)

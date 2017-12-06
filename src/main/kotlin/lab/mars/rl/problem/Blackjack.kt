@@ -60,7 +60,7 @@ object Blackjack {
   private fun IndexedMDP.sticks(s: IndexedState) = {
     var dealer = s[dealer_idx] + dealer_offset
     var usableAceDealer = dealer == 1
-    //前两张牌决定是否是Ace
+    //first two card determines usable Ace
     if (usableAceDealer)
       dealer += 10
     else {

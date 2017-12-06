@@ -32,7 +32,7 @@ fun IndexedMDP.`N-step TD prediction`(
     S.clear();S.append(s)
     
     do {
-      if (t >= n) {//最多存储n个
+      if (t >= n) {
         R.removeFirst(1)
         S.removeFirst(1)
       }
@@ -45,7 +45,7 @@ fun IndexedMDP.`N-step TD prediction`(
         if (s.isTerminal) {
           T = t + 1
           val _t = t - n + 1
-          if (_t < 0) n = T //n is too large, normalize it
+          if (_t < 0) n = T //n is too large
         }
       }
       val τ = t - n + 1

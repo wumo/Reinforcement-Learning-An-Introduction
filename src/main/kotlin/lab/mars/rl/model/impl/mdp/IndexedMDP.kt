@@ -9,10 +9,10 @@ import lab.mars.rl.util.collection.IndexedCollection
 
 /**
  *
- * @property states 状态集
- * @property γ 衰减因子
- * @property state_function 状态V函数的构造器（不同的[states]实现对应着不同的[state_function]）
- * @property state_action_function 状态动作Q函数的构造器（不同的[states]和[IndexedAction]实现实现对应着不同的[state_action_function]）
+ * @property states state set
+ * @property γ decay factor
+ * @property state_function [state_function] generator
+ * @property state_action_function [state_action_function] generator
  */
 class IndexedMDP(
     override val γ: Double,
@@ -21,7 +21,6 @@ class IndexedMDP(
     private val state_action_function: ((Index) -> Any) -> IndexedCollection<Any>): MDP {
   override var started = { states.rand() }
   /**
-   * 创建由[IndexedState]索引的state function
    *
    * create state function indexed by [IndexedState]
    */
@@ -29,7 +28,6 @@ class IndexedMDP(
       state_function(element_maker) as IndexedCollection<T>
   
   /**
-   * 创建由[IndexedState]和[IndexedAction]索引的state action function
    *
    * create state action function indexed by [IndexedState] and [IndexedAction]
    */

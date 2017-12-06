@@ -14,10 +14,10 @@ import lab.mars.rl.util.dimension.*
  */
 
 /**
- * @param gamma `γ` 衰减因子
- * @param state_dim 统一的状态维度，V函数与状态集一致
- * @param action_dim 统一的动作维度，Q函数与状态集和动作集一致
- * @return 所有状态维度相同和动作维度相同的MDP实例
+ * @param gamma `γ` decay
+ * @param state_dim state dimension
+ * @param action_dim action dimension
+ * @return mdp with same state dimension and same action dimension
  */
 inline fun NSetMDP(gamma: Double, state_dim: Any, action_dim: Any): IndexedMDP {
   val a_dim = action_dim.toDim()
@@ -25,10 +25,10 @@ inline fun NSetMDP(gamma: Double, state_dim: Any, action_dim: Any): IndexedMDP {
 }
 
 /**
- * @param gamma  `γ` 衰减因子
- * @param state_dim 统一的状态维度，V函数与状态集一致
- * @param action_dim 依据状态索引确定动作维度，Q函数与状态集和动作集一致
- * @return 统一状态维度而动作维度异构的MDP实例
+ * @param gamma  `γ` decay factor
+ * @param state_dim state dimension
+ * @param action_dim different action dimension according to specific state
+ * @return mdp with same state dimension but different action dimension
  */
 fun NSetMDP(gamma: Double, state_dim: Any, action_dim: (IntBuf) -> Any): IndexedMDP {
   val s_dim = state_dim.toDim() as GeneralDimension
@@ -43,11 +43,11 @@ fun NSetMDP(gamma: Double, state_dim: Any, action_dim: (IntBuf) -> Any): Indexed
 }
 
 /**
- *  注意：维度不能为0，如果需要为0，则需要在构建完成后，手动设定`emptyNSet()`
- * @param gamma `γ` 衰减因子
- * @param state_dim 统一的状态维度，V函数与状态集一致
- * @param action_dim 统一的动作维度，Q函数与状态集和动作集一致
- * @return 所有状态维度相同和动作维度相同的MDP实例
+ *  Note that: dimension shouldn't be 0. It it needs to be 0, then you can set `emptyNSet()` after the construction.
+ * @param gamma `γ` decay factor
+ * @param state_dim state dimension
+ * @param action_dim action dimension
+ * @return mdp with same state dimension and same action dimension
  */
 inline fun CNSetMDP(gamma: Double, state_dim: Any, action_dim: Any): IndexedMDP {
   val a_dim = action_dim.toDim() as GeneralDimension
@@ -55,11 +55,11 @@ inline fun CNSetMDP(gamma: Double, state_dim: Any, action_dim: Any): IndexedMDP 
 }
 
 /**
- * 注意：维度不能为0，如果需要为0，则需要在构建完成后，手动设定`emptyNSet()`
- * @param gamma  `γ` 衰减因子
- * @param state_dim 统一的状态维度，V函数与状态集一致
- * @param action_dim 依据状态索引确定动作维度，Q函数与状态集和动作集一致
- * @return 统一状态维度而动作维度异构的MDP实例
+ * Note that: dimension shouldn't be 0. It it needs to be 0, then you can set `emptyNSet()` after the construction.
+ * @param gamma  `γ`  decay factor
+ * @param state_dim state dimension
+ * @param action_dim different action dimension according to specific state
+ * @return mdp with same state dimension but different action dimension
  */
 fun CNSetMDP(gamma: Double, state_dim: Any, action_dim: (IntBuf) -> Any): IndexedMDP {
   val s_dim = state_dim.toDim() as GeneralDimension

@@ -49,8 +49,8 @@ object CarRental {
   }
   
   private fun max_move(num_L1: Int, num_L2: Int): Int {
-    val max_L1_to_L2 = num_L1 - max(0, num_L1 - max_move)//L1最多能移动的数量
-    val accept_L1_to_L2 = min(max_car, num_L2 + max_move) - num_L2//L2最多能接受的数量，超过20无增益。
+    val max_L1_to_L2 = num_L1 - max(0, num_L1 - max_move)//max move for Location 1
+    val accept_L1_to_L2 = min(max_car, num_L2 + max_move) - num_L2//max move for Location 2. more is useless
     return min(max_L1_to_L2, accept_L1_to_L2)
   }
   

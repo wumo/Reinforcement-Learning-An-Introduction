@@ -16,7 +16,7 @@ import java.util.*
  */
 
 /**
- * 直接使用[elements]构建[NSet]的全部内容
+ * build a [NSet] using [elements]
  */
 fun <T: Any> cnsetOf(vararg elements: T): CompactNSet<T> {
   val set = CompactNSet<T>(Array<Any>(elements.size) { elements[it] }.buf(0, 0))
@@ -40,10 +40,9 @@ constructor(internal val data: MutableBuf<Any>, val rootOffset: Int = 0, val sub
     get() = size - 1
   
   /**
-   * 不存在[subtrees]为空的情况，如果[subtrees]为空，则必须将此
-   * [Cell]替换为[value]
-   * @param subtrees 此[Cell]中包含的子树集
-   * @param value 此[Cell]存储的值
+   * [subtrees] shouldn't be empty. If so we should use [value] instead of [Cell]
+   * @param subtrees the subtree of the [Cell]
+   * @param value the value of the [Cell]
    */
   class Cell<E: Any>(val subtrees: MutableBuf<SubTree>, var value: E) {
     inline operator fun get(idx: Int): SubTree {
@@ -143,10 +142,10 @@ constructor(internal val data: MutableBuf<Any>, val rootOffset: Int = 0, val sub
                   visit: (MutableIntBuf, Int) -> Unit) {
     val cell = data[offset] as? Cell<E> ?: return visit(slot, offset)
     val subtrees = cell.subtrees
-    //防止遍历过程中改变，并且只会增多，不会减少
+    //prevent the size from changing. It should only increase.
     val subtrees_size = subtrees.size
     slot.append(subtrees_size, 0)
-    visit(slot, offset)//访问叶子结点
+    visit(slot, offset)//access the leaf node
     for (level in subtrees_size - 1 downTo end) {
       slot.removeLast(1)
       val subtree = subtrees[level]
@@ -161,7 +160,7 @@ constructor(internal val data: MutableBuf<Any>, val rootOffset: Int = 0, val sub
   }
   
   /**
-   * 扩展[offset]位置上的leaf node为[size]branch node
+   * expand the leaf at [offset] to branch node of [size]
    */
   internal fun expand(offset: Int, size: Int): SubTree {
     val tmp = data[offset] as? Cell<E>

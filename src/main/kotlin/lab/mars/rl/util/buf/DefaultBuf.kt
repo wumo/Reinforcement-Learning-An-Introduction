@@ -28,17 +28,17 @@ open class DefaultBuf<T: Any>(private var ring: Array<Any>, private var offset: 
   companion object {
     val MAX_ARRAY_SIZE = Integer.MAX_VALUE - 8
     /**
-     * @param s 用枚举的参数构成初始的[DefaultIntBuf]
+     * @param s build one [DefaultIntBuf] with these initial elements
      */
     inline fun <T: Any> of(vararg s: T) = DefaultBuf<T>(s as Array<Any>, 0, s.size)
     
     /**
-     * @param num 初始化[num]长度、初值为0的[DefaultIntBuf]
+     * @param num init size=[num] all element are 0
      */
     inline fun <T: Any> zero(num: Int) = new<T>(num, num)
     
     /**
-     *仅这里的[start]和[end]可以不满足[end]>=[start]的约束，表示环型数组的部分，其他方法则必须满足[end]>=[start]的约束
+     *Note that: if [start]>=[end], then this is a ring array.
      */
     fun <T: Any> reuse(array: Array<Any>,
                        start: Int = 0,

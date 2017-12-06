@@ -65,7 +65,7 @@ sealed class Dimension {
   abstract fun sum(slot: MutableIntBuf = DefaultIntBuf.new(), successors: levelsIterator = emptyLevelsIterator): Int
   
   /**
-   * DFS的构建方式
+   * construction using DFS
    */
   abstract fun <E: Any> CNSet(set: CompactNSet<E>, offset: Int,
                               slot: MutableIntBuf = DefaultIntBuf.new(),

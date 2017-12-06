@@ -27,7 +27,7 @@ interface Buf<T: Any>: Iterable<T> {
     get() = get(lastIndex)
   
   /**
-   * 获取指定维度[idx]上的数值
+   * get value at the specific [idx]
    */
   operator fun get(idx: Int): T
   

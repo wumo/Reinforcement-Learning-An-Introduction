@@ -25,7 +25,7 @@ fun <E> MDP.`Differential semi-gradient n-step Sarsa`(
   _S.clear();_S.append(s)
   _A.clear();_A.append(a)
   while (true) {
-    if (t >= n) {//最多存储n个
+    if (t >= n) {
       _R.removeFirst()
       _S.removeFirst()
       _A.removeFirst()

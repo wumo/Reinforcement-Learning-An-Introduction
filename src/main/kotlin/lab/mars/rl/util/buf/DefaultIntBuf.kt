@@ -12,7 +12,7 @@ package lab.mars.rl.util.buf
 fun IntArray.buf(start: Int, end: Int): DefaultIntBuf = DefaultIntBuf.reuse(this, start, end)
 
 /**
- * @param num 初始化[num]长度、初值为0的[DefaultIntBuf]
+ * @param num init size=[num] all element are 0
  */
 inline fun zeroIntBuf(num: Int) = DefaultIntBuf.new(num, num)
 
@@ -25,17 +25,17 @@ open class DefaultIntBuf(private var ring: IntArray, private var offset: Int, si
   companion object {
     val MAX_ARRAY_SIZE = Integer.MAX_VALUE - 8
     /**
-     * @param s 用枚举的参数构成初始的[DefaultIntBuf] /
+     * @param s build one [DefaultIntBuf] with these initial elements
      */
     inline fun of(vararg s: Int) = DefaultIntBuf(s, 0, s.size)
     
     /**
-     * @param num 初始化[num]长度、初值为0的[DefaultIntBuf]
+     * @param num init size=[num] all element are 0
      */
     inline fun zero(num: Int) = new(num, num)
     
     /**
-     *仅这里的[start]和[end]可以不满足[end]>=[start]的约束，表示环型数组的部分，其他方法则必须满足[end]>=[start]的约束
+     *Note that: if [start]>=[end], then this is a ring array.
      */
     fun reuse(array: IntArray, start: Int = 0, end: Int = array.lastIndex, cap: Int = array.size): DefaultIntBuf {
       var size = end - start + 1

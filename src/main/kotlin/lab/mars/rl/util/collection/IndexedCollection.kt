@@ -17,7 +17,7 @@ val emptyIter: Iterator<Any> = object: Iterator<Any> {
 
 interface IndexedCollection<E: Any>: RandomIterable<E>, Gettable<Index, E> {
   /**
-   * 构造一个与此集合相同形状的[IndexedCollection]（维度、树深度都相同）
+   * make a collection with same shape (both dimension and depth will be the same)
    */
   fun <T: Any> copycat(element_maker: (Index) -> T): IndexedCollection<T>
   
@@ -60,8 +60,9 @@ interface IndexedCollection<E: Any>: RandomIterable<E>, Gettable<Index, E> {
   operator fun get(vararg dim: Index): E = get(MultiIndex(dim as Array<Index>))
   
   /**
-   * 对应位置元素为[IndexedCollection<E>]，则可以使用invoke操作符进行部分获取，
-   * 由于获取的是子集，索引维度将要去掉前缀长度，如：原来通过`[0,0,0]`来索引，`invoke(0)`之后，则只能通过`[0,0]`来获取
+   * If the element at the [subset_dim] is a [IndexedCollection], then the result
+   * will a subset at the position. And because it is a subset, the index prefix will be trimmed.
+   * for example, [0,0,0] will be `[0,0]` after `invoke(0)`
    */
   operator fun invoke(subset_dim: Index): IndexedCollection<E>
   
@@ -72,7 +73,7 @@ interface IndexedCollection<E: Any>: RandomIterable<E>, Gettable<Index, E> {
   operator fun invoke(vararg subset_dim: Index): IndexedCollection<E> = invoke(MultiIndex(subset_dim as Array<Index>))
   
   /**
-   * 返回第[idx]个元素，这里的元素顺序与[iterator()]的顺序一致
+   * return the element at [idx]. the order here is same with [iterator]
    */
   fun at(idx: Int): E {
     var i = 0
@@ -82,16 +83,15 @@ interface IndexedCollection<E: Any>: RandomIterable<E>, Gettable<Index, E> {
   }
   
   /**
-   * 以等概率获取随意的一个元素
+   * get one element with equal probability.
    */
   override fun rand() = at(Rand().nextInt(size))
   
   /**
-   * 如果此集合内的元素是[Index]类型，则可以提供概率分布[prob]，以此概
-   * 率分布随机获取到元素
-   * @throws ClassCastException 如果此集合内的元素不是[Index]类型
-   * @throws IllegalArgumentException  如果提供的参数不是合法的概率分布
-   * @throws NoSuchElementException 如果集合为空
+   * get an element according to the probability distribution
+   * @throws ClassCastException the element is not [Index] type
+   * @throws IllegalArgumentException  if the [prob] is not a valid probability distribution
+   * @throws NoSuchElementException if the set is empty
    */
   fun rand(prob: (E) -> Double): E {
     if (isEmpty()) throw NoSuchElementException()
@@ -114,7 +114,7 @@ interface IndexedCollection<E: Any>: RandomIterable<E>, Gettable<Index, E> {
   }
   
   /**
-   * 如果集合不为空，则执行[block]
+   * if the set is not empty then execute [block]
    */
   fun ifAny(block: IndexedCollection<E>.(IndexedCollection<E>) -> Unit) {
     for (element in this) return block(this, this)

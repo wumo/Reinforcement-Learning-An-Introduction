@@ -34,7 +34,7 @@ fun MutableIntBuf.increment(dim: IntArray) {
 }
 
 /**
- * 直接使用[elements]构建[NSet]的全部内容
+ * build [NSet] using [elements]
  */
 inline fun <T: Any> nsetOf(vararg elements: T) = NSet<T>(intArrayOf(elements.size), intArrayOf(1), Array(elements.size) { elements[it] })
 
@@ -42,17 +42,17 @@ val emptyNSet = NSet<Any>(IntArray(0), IntArray(0), Array(0) {})
 inline fun <E: Any> emptyNSet(): NSet<E> = emptyNSet as NSet<E>
 
 /**
- * 1. 可以定义任意维的多维数组，并使用`[]`进行取值赋值
- *如: `val a=Nset(2 x 3)`定义了一个2x3的矩阵，可以使用`a[0,0]=0`这样的用法
+ * define Multi-dimensional Array and get using `[]`.
+ * For example, `val a=Nset(2 x 3)` define a 2x3 matrix, you can use `a[0,0]=0` to set value.
  *
- * 2. 可以嵌套使用[NSet]，定义不规则形状的树形结构
- * 如: `val a=Nset(2), a[0]=Nset(1), a[1]=Nset(2)`定义了一个不规则的结构，
- * 第一个元素长度为1第二个元素长度为2；同样可以通过`[]`来进行取值赋值，
- * 如`a[0,0]=0, a[1, 1]`，但`a[0,1]`和`a[1,2]`就会导致[ArrayIndexOutOfBoundsException]
+ * you can also define nested [NSet] so as to define irregular tree structure.
+ * For example, `val a=Nset(2), a[0]=Nset(1), a[1]=Nset(2)` will define a tree.
+ * The first element's length is 1. The second element's length is 2. you can
+ * index the element using `a[0,0]=0, a[1, 1]`, but `a[0,1]` and `a[1,2]` will result in [ArrayIndexOutOfBoundsException].
  *
- * @param dim 根节点的维度定义
- * @param stride 各维度在一维数组上的跨度
- * @param root 根节点一维数组
+ * @param dim dimension of the root element
+ * @param stride stride of each dimension in a one-dimensional array.
+ * @param root a one-dimensional array
  */
 class NSet<E: Any>(private val dim: IntArray, private val stride: IntArray, private val root: Array<Any>):
     ExtendableRAC<E> {
@@ -183,11 +183,11 @@ class NSet<E: Any>(private val dim: IntArray, private val stride: IntArray, priv
   
   inner class GeneralIterator<out T>: Iterator<T> {
     /**
-     * @param current 当前正待着的节点
-     * @param forward 移到了未探索过的更深的节点
-     * @param backward 正要从当前节点退回去到[parent]
-     * @param translate 当前节点进行宽度范围内的下一个搜索
-     * @param visitor 获取当前非子树元素的值
+     * @param current current visiting node
+     * @param forward traverse to a unvisited node
+     * @param backward backtrack to [parent]
+     * @param translate translate in the length of current dimension
+     * @param visitor get element value
      */
     inner class Traverser(var current: GeneralIterator<T>,
                           val forward: Traverser.() -> Unit,

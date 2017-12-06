@@ -37,7 +37,7 @@ fun IndexedMDP.`N-step Sarsa`(
     _S.clear();_S.append(s)
     _A.clear();_A.append(a)
     do {
-      if (t >= n) {//最多存储n个
+      if (t >= n) {
         _R.removeFirst()
         _S.removeFirst()
         _A.removeFirst()
@@ -50,7 +50,7 @@ fun IndexedMDP.`N-step Sarsa`(
         if (s.isTerminal) {
           T = t + 1
           val _t = t - n + 1
-          if (_t < 0) n = T //n is too large, normalize it
+          if (_t < 0) n = T //n is too large
         } else {
           `ε-greedy`(s, Q, π, ε)
           a = π(s)
