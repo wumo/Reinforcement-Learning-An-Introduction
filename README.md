@@ -5,6 +5,9 @@
 Inspired by [ShangtongZhang/reinforcement-learning-an-introduction (Python)](https://github.com/ShangtongZhang/reinforcement-learning-an-introduction)
 and [idsc-frazzoli/subare (Java 8)](https://github.com/idsc-frazzoli/subare)
 
+Features:
+* Algorithms and problems are separated. So you can experiment with various combination of <algorithm, problem> or <algorithm,function approximator, problem>
+* Implementation is very close to the pseudo code in the book. So reading source code will help you understand the original algorithm.
 ## Implemented algorithms:
 Model-based (Dynamic Programming):
 * [Policy Iteration (Action-Value Iteration)](src/main/kotlin/lab/mars/rl/algo/dp/PolicyIteration.kt) (p.65)
