@@ -10,7 +10,7 @@ import org.slf4j.LoggerFactory
  *
  * @author wumo
  */
-class TemporalDifference(val indexedMdp: IndexedMDP, var initial_policy: IndexedPolicy = null_policy) {
+class TemporalDifference(val indexedMdp: IndexedMDP, var π: IndexedPolicy = null_policy) {
   companion object {
     val log = LoggerFactory.getLogger(this::class.java)!!
   }

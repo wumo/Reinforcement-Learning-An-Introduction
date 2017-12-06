@@ -11,7 +11,7 @@ fun TemporalDifference.`Tabular TD(0)`(): StateValueFunction {
     log.debug { "$episode/$episodes" }
     var s = started()
     while (s.isNotTerminal) {
-      val a = initial_policy(s)
+      val a = π(s)
       val (s_next, reward) = a.sample()
       V[s] += α * (reward + γ * V[s_next] - V[s])
       s = s_next
