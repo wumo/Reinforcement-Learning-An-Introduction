@@ -8,6 +8,7 @@ and [idsc-frazzoli/subare (Java 8)](https://github.com/idsc-frazzoli/subare)
 Features:
 * Algorithms and problems are separated. So you can experiment with various combination of <algorithm, problem> or <algorithm,function approximator, problem>
 * Implementation is very close to the pseudo code in the book. So reading source code will help you understand the original algorithm.
+
 ## Implemented algorithms:
 Model-based (Dynamic Programming):
 * [Policy Iteration (Action-Value Iteration)](src/main/kotlin/lab/mars/rl/algo/dp/PolicyIteration.kt) (p.65)
@@ -21,7 +22,7 @@ Monte Carlo (episode backup):
 * [Off-policy MC control](src/main/kotlin/lab/mars/rl/algo/mc/Off-policy%20Optimal.kt) (p.91)
 
 Temporal Difference (one-step backup):
-* [Tabular TD(0)](src/main/kotlin/lab/mars/rl/algo/td/Tabular TD(0).kt) (p.98)
+* [Tabular TD(0)](src/main/kotlin/lab/mars/rl/algo/td/Tabular%20TD(0).kt) (p.98)
 * [Sarsa](src/main/kotlin/lab/mars/rl/algo/td/Sarsa.kt) (p.106)
 * [Q-learning](src/main/kotlin/lab/mars/rl/algo/td/QLearning.kt) (p.107)
 * [Expected Sarsa](src/main/kotlin/lab/mars/rl/algo/td/ExpectedSarsa.kt) (p.109)
