@@ -18,8 +18,9 @@ import org.apache.commons.math3.util.FastMath.*
  *
  * @author wumo
  */
+val θ = 1e-6
+
 fun IndexedMDP.`Policy Iteration V`(): OptimalSolution {
-  val θ = 1e-6
   val V = VFunc { 0.0 }
   val π = IndexedPolicy(QFunc { 1.0 })
   val Q = QFunc { 0.0 }
@@ -53,7 +54,6 @@ fun IndexedMDP.`Policy Iteration V`(): OptimalSolution {
 }
 
 fun IndexedMDP.`Policy Iteration Q`(): OptimalSolution {
-  val θ = 1e-6
   val V = VFunc { 0.0 }
   val π = IndexedPolicy(QFunc { 1.0 })
   val Q = QFunc { 0.0 }

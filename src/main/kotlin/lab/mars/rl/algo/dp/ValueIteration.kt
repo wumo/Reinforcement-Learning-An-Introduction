@@ -15,7 +15,6 @@ import org.apache.commons.math3.util.FastMath.*
  * @author wumo
  */
 fun IndexedMDP.ValueIteration(): StateValueFunction {
-  val θ = 1e-6
   val V = VFunc { 0.0 }
   val PI = VFunc { null_action }
   //value iteration
