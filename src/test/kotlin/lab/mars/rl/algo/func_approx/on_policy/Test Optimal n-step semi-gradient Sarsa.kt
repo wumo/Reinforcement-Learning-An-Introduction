@@ -109,13 +109,13 @@ class `Test Optimal n-step semi-gradient Sarsa` {
                 episodeListener = { _, _step ->
                   step += _step
                 })
-            println("finish n=$n α=$α run=$run step=$step")
+            println("finish n=$n α=${α.format(2)} run=$run step=$step")
             step
           }.await {
             totalStep += it
           }
           totalStep /= (runs * episodes)
-          println("finish n=$n α=$α total=$totalStep")
+          println("finish n=$n α=${α.format(2)} total=$totalStep")
           tuple2(α, totalStep)
         }.await { (alpha, step) ->
           if (step < truncateStep)

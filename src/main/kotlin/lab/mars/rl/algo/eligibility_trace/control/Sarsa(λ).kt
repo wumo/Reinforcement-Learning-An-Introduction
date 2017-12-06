@@ -3,9 +3,11 @@ package lab.mars.rl.algo.eligibility_trace.control
 import lab.mars.rl.model.*
 import lab.mars.rl.model.impl.func.LinearFunc
 import lab.mars.rl.util.log.debug
+import lab.mars.rl.util.math.max
 import lab.mars.rl.util.matrix.*
 import lab.mars.rl.util.matrix.Matrix.Companion.column
 import lab.mars.rl.util.matrix.Matrix.Companion.one
+import kotlin.Int.Companion
 
 fun <E> MDP.`Sarsa(λ) accumulating trace`(
     Q: ApproximateFunction<E>,
@@ -13,6 +15,7 @@ fun <E> MDP.`Sarsa(λ) accumulating trace`(
     λ: Double,
     α: Double,
     episodes: Int,
+    maxStep: Int = Int.MAX_VALUE,
     episodeListener: (Int, Int) -> Unit = { _, _ -> }) {
   val w = Q.w
   val d = w.size
@@ -37,6 +40,8 @@ fun <E> MDP.`Sarsa(λ) accumulating trace`(
         break
       }
       step++
+      if (step >= maxStep)
+        break
     }
     episodeListener(episode, step)
   }
@@ -48,10 +53,11 @@ inline fun <E> MDP.`Sarsa(λ) dutch trace`(
     λ: Double,
     α: Double,
     episodes: Int,
+    maxStep: Int = Int.MAX_VALUE,
     crossinline episodeListener: (Int, Int) -> Unit = { _, _ -> }) {
   `Sarsa(λ) linear trace`({ z, x, _, _ ->
                             z `=` (γ * λ * z + (1.0 - α * γ * λ * z.T * x) * x)
-                          }, Q, π, λ, α, episodes, { e, s -> episodeListener(e, s) })
+                          }, Q, π, α, episodes, maxStep, { e, s -> episodeListener(e, s) })
 }
 
 inline fun <E> MDP.`Sarsa(λ) replacing trace`(
@@ -60,11 +66,12 @@ inline fun <E> MDP.`Sarsa(λ) replacing trace`(
     λ: Double,
     α: Double,
     episodes: Int,
+    maxStep: Int = Int.MAX_VALUE,
     crossinline episodeListener: (Int, Int) -> Unit = { _, _ -> }) {
   val one = one(Q.w.size)
   `Sarsa(λ) linear trace`({ z, x, _, _ ->
                             z `=` (((one - x) o (γ * λ * z)) + x)
-                          }, Q, π, λ, α, episodes, { e, s -> episodeListener(e, s) })
+                          }, Q, π, α, episodes, maxStep, { e, s -> episodeListener(e, s) })
 }
 
 inline fun <E> MDP.`Sarsa(λ) replacing trace with clearing`(
@@ -73,6 +80,7 @@ inline fun <E> MDP.`Sarsa(λ) replacing trace with clearing`(
     λ: Double,
     α: Double,
     episodes: Int,
+    maxStep: Int = Int.MAX_VALUE,
     crossinline episodeListener: (Int, Int) -> Unit = { _, _ -> }) {
   val X = Q.x
   val one = one(Q.w.size)
@@ -83,16 +91,16 @@ inline fun <E> MDP.`Sarsa(λ) replacing trace with clearing`(
                               if (_a !== a)
                                 z `o=` (one - X(s, _a))
                             z += x
-                          }, Q, π, λ, α, episodes, { e, s -> episodeListener(e, s) })
+                          }, Q, π, α, episodes, maxStep, { e, s -> episodeListener(e, s) })
 }
 
 fun <E> MDP.`Sarsa(λ) linear trace`(
     traceOp: (Matrix, Matrix, State, Action<*>) -> Unit,
     Q: LinearFunc<E>,
     π: Policy,
-    λ: Double,
     α: Double,
     episodes: Int,
+    maxStep: Int = Int.MAX_VALUE,
     episodeListener: (Int, Int) -> Unit = { _, _ -> }) {
   val X = Q.x
   val w = Q.w
@@ -120,6 +128,7 @@ fun <E> MDP.`Sarsa(λ) linear trace`(
         break
       }
       step++
+      if (step >= maxStep) break
     }
     episodeListener(episode, step)
   }

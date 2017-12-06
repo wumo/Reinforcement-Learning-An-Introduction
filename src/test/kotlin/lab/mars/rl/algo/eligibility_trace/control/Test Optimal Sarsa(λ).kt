@@ -28,10 +28,10 @@ class `Test Optimal Sarsa λ` {
     val velocityScale = numTilings / (MountainCar.VELOCITY_MAX - MountainCar.VELOCITY_MIN)
     val episodes = 50
     val runs = 30
-    val αs = listOf(10) { 0.1 + it * 0.14 }
+    val αs = listOf(1 until 8) { it / 4.0 }
     val λs = listOf(0.0, 0.68, 0.84, 0.92, 0.96, 0.98, 0.99)
     
-    val chart = chart("Effect of the α and n on early performance",
+    val chart = chart("Early performance on the Mountain Car task of Sarsa(λ)",
                       "α x number of tilings (8)", "steps per episode")
     val truncateStep = 300.0
     runBlocking {
@@ -39,7 +39,7 @@ class `Test Optimal Sarsa λ` {
         val line = line("λ=$λ ")
         asyncs(αs) { α ->
           var totalStep = 0.0
-          asyncs(runs) {run->
+          asyncs(runs) { run ->
             val feature = SuttonTileCoding(511, numTilings) { (s, a) ->
               s as CarState
               a as DefaultAction<Int, CarState>
@@ -53,16 +53,17 @@ class `Test Optimal Sarsa λ` {
                 λ = λ,
                 α = α / numTilings,
                 episodes = episodes,
+                maxStep = 20000,
                 episodeListener = { _, _step ->
                   step += _step
                 })
-            println("finish λ=$λ α=$α run=$run step=$step")
+            println("finish λ=$λ α=${α.format(2)} run=$run step=$step")
             step
           }.await {
             totalStep += it
           }
           totalStep /= (runs * episodes)
-          println("finish λ=$λ α=$α total=$totalStep")
+          println("finish λ=$λ α=${α.format(2)} total=$totalStep")
           tuple2(α, totalStep)
         }.await { (alpha, step) ->
           if (step < truncateStep)
