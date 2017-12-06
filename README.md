@@ -64,6 +64,7 @@ Eligibility Traces
 * [Off-line λ-return](src/main/kotlin/lab/mars/rl/algo/eligibility_trace/prediction/Off-line%20λ-return.kt) (p.238)
 * [Semi-gradient TD(λ) prediction](src/main/kotlin/lab/mars/rl/algo/eligibility_trace/prediction/Semi-gradient%20TD(λ)%20prediction.kt) (p.240)
 * [True Online TD(λ) prediction](src/main/kotlin/lab/mars/rl/algo/eligibility_trace/prediction/True%20Online%20TD(λ)%20prediction.kt) (p.246)
+* [Sarsa(λ)](src/main/kotlin/lab/mars/rl/algo/eligibility_trace/control/Sarsa(λ).kt) (p.250)
 * [True Online Sarsa(λ)](src/main/kotlin/lab/mars/rl/algo/eligibility_trace/control/True%20Online%20Sarsa(λ).kt) (p.252)
 
 Policy Gradient Methods
