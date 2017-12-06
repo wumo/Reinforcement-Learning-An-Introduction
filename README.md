@@ -15,7 +15,7 @@ Model-based (Dynamic Programming):
 * [Value Iteration](src/main/kotlin/lab/mars/rl/algo/dp/ValueIteration.kt)  (p.67)
 
 Monte Carlo (episode backup):
-* [First-visit MC prediction](src/main/kotlin/lab/mars/rl/algo/mc/Monte Carlo Prediction.kt) (p.76)
+* [First-visit MC prediction](src/main/kotlin/lab/mars/rl/algo/mc/First visit Monte Carlo Prediction.kt) (p.76)
 * [Monte Carlo Exploring Starts](src/main/kotlin/lab/mars/rl/algo/mc/ExploringStarts.kt) (p.81)
 * [On-Policy first-visit MC control](src/main/kotlin/lab/mars/rl/algo/mc/On-Policy%20Optimal.kt) (p.83)
 * [Off-policy MC prediction](src/main/kotlin/lab/mars/rl/algo/mc/Off-Policy%20Prediction.kt) (p.90)
