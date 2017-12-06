@@ -35,7 +35,7 @@ fun NStepTemporalDifference.prediction(): StateValueFunction {
         S.append(s_next)
         R.append(reward)
         s = s_next
-        if (s.isTerminal()) {
+        if (s.isTerminal) {
           T = t + 1
           val _t = t - n + 1
           if (_t < 0) n = T //n is too large, normalize it

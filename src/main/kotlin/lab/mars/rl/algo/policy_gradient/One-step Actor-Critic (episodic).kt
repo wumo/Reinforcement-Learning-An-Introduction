@@ -17,11 +17,11 @@ fun <E> FunctionApprox.`One-step Actor-Critic (episodic)`(
     var step = 0
     var s = started()
     var γ_t = 1.0
-    while (s.isNotTerminal()) {
+    while (s.isNotTerminal) {
       step++
       val a = rand(s.actions) { π(s, it) }
       val (s_next, reward) = a.sample()
-      val δ = reward + γ * if (s_next.isTerminal()) 0.0 else v(s_next) - v(s)
+      val δ = reward + γ * if (s_next.isTerminal) 0.0 else v(s_next) - v(s)
       v.w += α_w * γ_t * δ * v.`▽`(s)
       val `▽` = if (π is LinearFunc)
         π.x(s, a) - Σ(s.actions) { π(s, it) * π.x(s, it) }

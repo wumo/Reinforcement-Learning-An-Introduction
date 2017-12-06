@@ -42,7 +42,7 @@ class `Dyna-Q+`(val indexedMdp: IndexedMDP) {
     for (episode in 1..episodes) {
       log.debug { "$episode/$episodes" }
       var s = started()
-      while (s.isNotTerminal()) {
+      while (s.isNotTerminal) {
         V_from_Q(states, result)
         stepListener(V, s)
         time++

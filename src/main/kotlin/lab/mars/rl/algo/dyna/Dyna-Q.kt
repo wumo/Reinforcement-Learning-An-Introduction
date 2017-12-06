@@ -40,7 +40,7 @@ class DynaQ(val indexedMdp: IndexedMDP) {
       log.debug { "$episode/$episodes" }
       var step = 0
       var s = started()
-      while (s.isNotTerminal()) {
+      while (s.isNotTerminal) {
         V_from_Q(states, result)
         stepListener(V, s)
         step++

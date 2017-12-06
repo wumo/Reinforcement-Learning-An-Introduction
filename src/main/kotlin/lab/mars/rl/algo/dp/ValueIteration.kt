@@ -2,6 +2,7 @@ package lab.mars.rl.algo.dp
 
 import lab.mars.rl.model.impl.mdp.IndexedMDP
 import lab.mars.rl.model.impl.mdp.StateValueFunction
+import lab.mars.rl.model.isNotTerminal
 import lab.mars.rl.model.null_action
 import lab.mars.rl.util.log.debug
 import lab.mars.rl.util.math.*
@@ -20,7 +21,7 @@ class ValueIteration(private val indexedMdp: IndexedMDP) {
   companion object {
     val log = LoggerFactory.getLogger(this::class.java)!!
   }
-
+  
   val θ = 1e-6
   val states = indexedMdp.states
   val γ = indexedMdp.γ
@@ -30,20 +31,18 @@ class ValueIteration(private val indexedMdp: IndexedMDP) {
     //value iteration
     do {
       var Δ = 0.0
-      for (s in states) {
-        s.actions.ifAny {
+      for (s in states)
+        if (s.isNotTerminal) {
           val v = V[s]
-          V[s] = max(it) { Σ(possibles) { probability * (reward + γ * V[next]) } }
+          V[s] = max(s.actions) { Σ(possibles) { probability * (reward + γ * V[next]) } }
           Δ = max(Δ, abs(v - V[s]))
         }
-      }
       log.debug { "Δ=$Δ" }
     } while (Δ >= θ)
     //policy generation
     for (s in states)
-      s.actions.ifAny {
+      if (s.isNotTerminal)
         PI[s] = argmax(s.actions) { Σ(possibles) { probability * (reward + γ * V[next]) } }
-      }
     return V
   }
 }

@@ -19,7 +19,7 @@ fun <E> FunctionApprox.`Gradient Monte Carlo algorithm`(v: ApproximateFunction<E
     _S.append(s); _R.append(0.0)
     var T = 0
     var accum = 0.0
-    while (s.isNotTerminal()) {
+    while (s.isNotTerminal) {
       step++
       val a = π(s)
       val (s_next, reward) = a.sample()

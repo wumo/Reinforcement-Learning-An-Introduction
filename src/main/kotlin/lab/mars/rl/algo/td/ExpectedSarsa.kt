@@ -16,7 +16,7 @@ fun TemporalDifference.expectedSarsa(α: (IndexedState, IndexedAction) -> Double
   for (episode in 1..episodes) {
     log.debug { "$episode/$episodes" }
     var s = started()
-    while (s.isNotTerminal()) {
+    while (s.isNotTerminal) {
       `ε-greedy`(s, Q, π, ε)
       val a = π(s)
       val (s_next, reward) = a.sample()

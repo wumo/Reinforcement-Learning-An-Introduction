@@ -31,11 +31,11 @@ fun MonteCarlo.`Optimal Exploring Starts`(): OptimalSolution {
         tmpQ[s, a] = accumulate
       accumulate += reward
       s = s_next
-    } while (s.isNotTerminal().apply { if (this) a = π(s) })
+    } while (s.isNotTerminal.apply { if (this) a = π(s) })
 
     tmpS.clear()
     for (s in states) {
-      if (s.isTerminal()) continue
+      if (s.isTerminal) continue
       for (a in s.actions) {
         val value = tmpQ[s, a]
         if (!value.isNaN()) {

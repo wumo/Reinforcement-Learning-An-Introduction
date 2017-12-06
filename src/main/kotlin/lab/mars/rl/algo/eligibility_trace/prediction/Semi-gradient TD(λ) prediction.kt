@@ -14,7 +14,7 @@ fun <E> FunctionApprox.`Semi-gradient TD(λ) prediction`(V: ApproximateFunction<
     log.debug { "$episode/$episodes" }
     var step = 0
     var s = started()
-    while (s.isNotTerminal()) {
+    while (s.isNotTerminal) {
       val a = π(s)
       val (s_next, reward) = a.sample()
       z = γ * λ * z + V.`▽`(s)

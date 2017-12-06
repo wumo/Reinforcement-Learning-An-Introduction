@@ -22,12 +22,12 @@ interface MDP {
 interface Policy {
   /**sample action when in state [s]*/
   operator fun invoke(s: State): Action<State>
-
+  
   /**probability of taking action [a] when in state [s]*/
   operator fun get(s: State, a: Action<State>): Double
 }
 
-interface RandomIterable<out E> : Iterable<E> {
+interface RandomIterable<out E>: Iterable<E> {
   fun rand(): E
   val size: Int
 }
@@ -36,15 +36,17 @@ interface State {
   val actions: RandomIterable<Action<State>>
 }
 
-inline fun State.isTerminal() = !isNotTerminal()
+inline val State.isTerminal
+  get() = !isNotTerminal
 
-inline fun State.isNotTerminal() = actions.any()
+inline val State.isNotTerminal
+  get() = actions.any()
 
-interface Action<out S : State> {
+interface Action<out S: State> {
   val sample: () -> Possible<S>
 }
 
-open class Possible<out S : State>(val next: S, val reward: Double) {
+open class Possible<out S: State>(val next: S, val reward: Double) {
   open operator fun component1() = next
   open operator fun component2() = reward
 }

@@ -18,7 +18,7 @@ fun <E> FunctionApprox.`True Online TD(λ) prediction`(Vfunc: LinearFunc<E>, λ:
     var step = 0
     var s = started()
     var x = X(s)
-    while (s.isNotTerminal()) {
+    while (s.isNotTerminal) {
       val a = π(s)
       val (s_next, reward) = a.sample()
       val `x'` = X(s_next)

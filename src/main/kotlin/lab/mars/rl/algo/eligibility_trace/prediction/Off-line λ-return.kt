@@ -18,7 +18,7 @@ fun <E> FunctionApprox.`Off-line λ-return`(V: ApproximateFunction<E>, λ: Doubl
     S.clear();S.append(s)
     R.clear();R.append(0.0)
     var T = 0
-    while (s.isNotTerminal()) {
+    while (s.isNotTerminal) {
       val a = π(s)
       val (s_next, reward) = a.sample()
       S.append(s_next)

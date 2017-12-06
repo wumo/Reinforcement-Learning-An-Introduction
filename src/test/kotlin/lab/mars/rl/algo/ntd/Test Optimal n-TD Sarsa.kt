@@ -38,7 +38,7 @@ class `Test Optimal n-TD Sarsa` {
     var s = prob.started()
     var sum = 0.0
     print(s)
-    while (s.isNotTerminal()) {
+    while (s.isNotTerminal) {
       val a = argmax(s.actions) { PI[s, it] }
       val possible = a.sample()
       s = possible.next

@@ -26,7 +26,7 @@ fun TemporalDifference.DoubleQLearning(α: (IndexedState, IndexedAction) -> Doub
         Q1 = Q2
         Q2 = tmp
       }
-      if (s_next.isNotTerminal()) {
+      if (s_next.isNotTerminal) {
         Q1[s, a] += α(s, a) * (reward + γ * Q2[s_next, argmax(s_next.actions) { Q1[s_next, it] }] - Q1[s, a])
         s = s_next
       } else {

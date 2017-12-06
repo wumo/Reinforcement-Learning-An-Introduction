@@ -18,11 +18,11 @@ fun <E> FunctionApprox.LSTD(vFunc: LinearFunc<E>, ε: Double) {
     var step = 0
     var s = started()
     var x = xFeature(s)
-    while (s.isNotTerminal()) {
+    while (s.isNotTerminal) {
       step++
       val a = π(s)
       val (s_next, reward) = a.sample()
-      val _x = if (s_next.isTerminal()) Matrix.column(d) else xFeature(s_next)
+      val _x = if (s_next.isTerminal) Matrix.column(d) else xFeature(s_next)
 
       val v = A_.T * (x - γ * _x)
       A_ -= (A_ * x) * v.T / (1.0 + v.T * x)

@@ -13,7 +13,7 @@ fun <E> FunctionApprox.`Semi-gradient Expected Sarsa`(q: ApproximateFunction<E>)
     log.debug { "$episode/$episodes" }
     var step = 0
     var s = started()
-    while (s.isNotTerminal()) {
+    while (s.isNotTerminal) {
       step++
       val a = π(s)
       val (s_next, reward) = a.sample()

@@ -54,7 +54,7 @@ fun NStepTemporalDifference.`off-policy n-step Q(σ)`(α: (IndexedState, Indexed
         val (s_next, reward) = a.sample()
         _S.append(s_next)
         s = s_next
-        if (s.isTerminal()) {
+        if (s.isTerminal) {
           δ.append(reward - _Q.last)
           T = t + 1
           val _t = t - n + 1

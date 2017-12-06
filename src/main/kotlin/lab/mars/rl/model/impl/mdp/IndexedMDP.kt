@@ -42,7 +42,7 @@ class IndexedMDP(
   fun equiprobablePolicy(): IndexedPolicy {
     val policy = QFunc { 0.0 }
     for (s in states) {
-      if (s.isTerminal()) continue
+      if (s.isTerminal) continue
       val prob = 1.0 / s.actions.size
       for (a in s.actions)
         policy[s, a] = prob

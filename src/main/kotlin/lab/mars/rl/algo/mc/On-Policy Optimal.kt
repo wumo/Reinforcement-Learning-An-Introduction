@@ -25,7 +25,7 @@ fun MonteCarlo.`On-policy first-visit MC control`(): OptimalSolution {
     log.debug { "$episode/$episodes" }
     var s = started()
     var accumulate = 0.0
-    while (s.isNotTerminal()) {
+    while (s.isNotTerminal) {
       val a = π(s)
       val (s_next, reward) = a.sample()
       if (tmpQ[s, a].isNaN())
@@ -35,7 +35,7 @@ fun MonteCarlo.`On-policy first-visit MC control`(): OptimalSolution {
     }
     tmpS.clear()
     for (s in states) {
-      if (s.isTerminal()) continue
+      if (s.isTerminal) continue
       for (a in s.actions) {
         val value = tmpQ[s, a]
         if (!value.isNaN()) {

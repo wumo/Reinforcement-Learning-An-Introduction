@@ -32,7 +32,7 @@ class RandomSampleOneStepTabularQLearning(val indexedMdp: IndexedMDP) {
     }
     val π = IndexedPolicy(indexedMdp.QFunc { 0.0 })
     for (s in states) {
-      if (s.isTerminal()) continue
+      if (s.isTerminal) continue
       `ε-greedy`(s, Q, π, ε)
     }
     val V = indexedMdp.VFunc { 0.0 }

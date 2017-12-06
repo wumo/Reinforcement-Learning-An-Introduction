@@ -14,7 +14,7 @@ fun MonteCarlo.prediction(): StateValueFunction {
     log.debug { "$episode/$episodes" }
     var s = started()
     var accumulate = 0.0
-    while (s.isNotTerminal()) {
+    while (s.isNotTerminal) {
       val a = π(s)
       val (s_next, reward) = a.sample()
       if (preReturn[s].isNaN())

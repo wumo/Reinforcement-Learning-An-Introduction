@@ -32,7 +32,7 @@ class Test {
     fun RMS(f: ApproximateFunction<Double>): Double {
       var result = 0.0
       for (s in prob.states) {
-        if (s.isTerminal()) continue
+        if (s.isTerminal) continue
         result += FastMath.pow(V[s] - f(s), 2)
       }
       result /= prob.states.size

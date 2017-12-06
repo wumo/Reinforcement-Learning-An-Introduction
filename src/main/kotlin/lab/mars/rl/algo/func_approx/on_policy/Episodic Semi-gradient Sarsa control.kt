@@ -16,7 +16,7 @@ fun <E> FunctionApprox.`Episodic semi-gradient Sarsa control`(q: ApproximateFunc
     while (true) {
       step++
       val (s_next, reward) = a.sample()
-      if (s_next.isNotTerminal()) {
+      if (s_next.isNotTerminal) {
         val a_next = π(s_next)
         q.w += α * (reward + γ * q(s_next, a_next) - q(s, a)) * q.`▽`(s, a)
         s = s_next

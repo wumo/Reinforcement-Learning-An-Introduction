@@ -45,7 +45,7 @@ class `Dyna-Q-OnPolicy`(val indexedMdp: IndexedMDP) {
       var stat = 0
       var s = started()
       startedStates.compute(s) { _, v -> (v ?: 0) + 1 }//record the total visits of each state
-      while (s.isNotTerminal()) {
+      while (s.isNotTerminal) {
         V_from_Q(states, result)
         stepListener(V, s)
         step++
@@ -57,7 +57,7 @@ class `Dyna-Q-OnPolicy`(val indexedMdp: IndexedMDP) {
         Q[s, a] += α(s, a) * (reward + γ * max(s_next.actions, 0.0) { Q[s_next, it] } - Q[s, a])
 
         var _s = startedStates.rand(episode)
-        lab.mars.rl.util.math.repeat(n, { _s.isNotTerminal() }) {
+        lab.mars.rl.util.math.repeat(n, { _s.isNotTerminal }) {
           `ε-greedy (tie broken randomly)`(_s, Q, π, ε)//using on-policy to distribute computation
           val a = π(_s)
           if (Model[_s, a].isEmpty()) return@repeat

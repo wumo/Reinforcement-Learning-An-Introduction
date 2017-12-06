@@ -17,11 +17,11 @@ fun <E> FunctionApprox.`Actor-Critic with Eligibility Traces (continuing)`(
     var z_θ = Matrix.column(π.w.size)
     var z_w = Matrix.column(v.w.size)
     var averageR = 0.0
-    while (s.isNotTerminal()) {
+    while (s.isNotTerminal) {
       step++
       val a = rand(s.actions) { π(s, it) }
       val (s_next, reward) = a.sample()
-      val δ = reward - averageR + γ * if (s_next.isTerminal()) 0.0 else v(s_next) - v(s)
+      val δ = reward - averageR + γ * if (s_next.isTerminal) 0.0 else v(s_next) - v(s)
       averageR += η * δ
       z_w = λ_w * z_w + v.`▽`(s)
       val `▽` = if (π is LinearFunc)

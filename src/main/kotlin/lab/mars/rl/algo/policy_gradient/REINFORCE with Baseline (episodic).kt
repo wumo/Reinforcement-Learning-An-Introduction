@@ -33,7 +33,7 @@ fun <E> FunctionApprox.`REINFORCE with Baseline (episodic)`(
       accu += reward
       R.append(accu)
       S.append(s_next)
-      if (s_next.isTerminal()) {
+      if (s_next.isTerminal) {
         T = step
         break
       }

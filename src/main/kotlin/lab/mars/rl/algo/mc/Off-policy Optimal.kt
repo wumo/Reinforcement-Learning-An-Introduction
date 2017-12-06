@@ -15,7 +15,7 @@ fun MonteCarlo.`Off-policy MC Optimal`(): OptimalSolution {
   val C = indexedMdp.QFunc { 0.0 }
   val b = IndexedPolicy(indexedMdp.QFunc { 1.0 })
   for (s in states) {
-    if (s.isTerminal()) continue
+    if (s.isTerminal) continue
     val prob = 1.0 / s.actions.size
     for (a in s.actions)
       b[s, a] = prob
@@ -33,7 +33,7 @@ fun MonteCarlo.`Off-policy MC Optimal`(): OptimalSolution {
     R.clear();R.append(0.0)
     A.clear()
     var T = 0
-    while (s.isNotTerminal()) {
+    while (s.isNotTerminal) {
       val a = b(s)
       A.append(a)
       val (s_next, reward) = a.sample()

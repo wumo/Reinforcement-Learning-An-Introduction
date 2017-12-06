@@ -19,7 +19,7 @@ fun TemporalDifference.sarsa(α: (IndexedState, IndexedAction) -> Double = { _, 
     var a = π(s)
     while (true) {
       val (s_next, reward) = a.sample()
-      if (s_next.isNotTerminal()) {
+      if (s_next.isNotTerminal) {
         `ε-greedy`(s_next, Q, π, ε)
         val a_next = π(s_next)
         Q[s, a] += α(s, a) * (reward + γ * Q[s_next, a_next] - Q[s, a])

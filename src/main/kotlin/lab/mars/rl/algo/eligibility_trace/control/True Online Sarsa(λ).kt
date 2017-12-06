@@ -19,7 +19,7 @@ fun <E> FunctionApprox.`True Online Sarsa(λ)`(Qfunc: LinearFunc<E>, λ: Double)
     var s = started()
     var a = π(s)
     var x = X(s, a)
-    while (s.isNotTerminal()) {
+    while (s.isNotTerminal) {
       val (s_next, reward) = a.sample()
       val a_next = π(s_next)
       val `x'` = X(s_next, a_next)

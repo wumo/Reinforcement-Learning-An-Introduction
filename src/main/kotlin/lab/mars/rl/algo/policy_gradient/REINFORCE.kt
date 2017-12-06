@@ -31,7 +31,7 @@ fun <E> FunctionApprox.REINFORCE(π: ApproximateFunction<E>) {
       accu += reward
       R.append(accu)
       S.append(s_next)
-      if (s_next.isTerminal()) {
+      if (s_next.isTerminal) {
         T = step
         break
       }

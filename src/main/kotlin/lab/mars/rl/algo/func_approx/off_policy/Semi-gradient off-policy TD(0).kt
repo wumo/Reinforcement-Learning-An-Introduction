@@ -11,7 +11,7 @@ fun <E> FunctionApprox.`Semi-gradient off-policy TD(0) episodic`(v: ApproximateF
     log.debug { "$episode/$episodes" }
     var step = 0
     var s = started()
-    while (s.isNotTerminal()) {
+    while (s.isNotTerminal) {
       step++
       val a = b(s)
       val (s_next, reward) = a.sample()

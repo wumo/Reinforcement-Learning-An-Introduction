@@ -75,7 +75,7 @@ class `Tile Coding` {
     fun RMS(f: ApproximateFunction<Double>): Double {
       var result = 0.0
       for (s in prob.states) {
-        if (s.isTerminal()) continue
+        if (s.isTerminal) continue
         result += FastMath.pow(V[s] - f(s), 2)
       }
       result /= prob.states.size
@@ -179,7 +179,7 @@ class `Tile Coding` {
     fun <E> RMS(f: ApproximateFunction<E>): Double {
       var result = 0.0
       for (s in prob.states) {
-        if (s.isTerminal()) continue
+        if (s.isTerminal) continue
         result += pow(V[s] - f(s), 2)
       }
       result /= prob.states.size
@@ -192,7 +192,6 @@ class `Tile Coding` {
     val runs = 5
     val alpha = 1e-4
     val numOfTilings = listOf(4, 32)
-    val outerChan = Channel<Boolean>(numOfTilings.size)
     runBlocking {
       val numOfTiling = 1
       val errors = DoubleArray(episodes) { 0.0 }

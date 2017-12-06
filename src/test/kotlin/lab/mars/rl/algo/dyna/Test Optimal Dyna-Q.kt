@@ -33,7 +33,7 @@ class `Test Optimal Dyna-Q` {
     var s = prob.started()
     var count = 0
     print(s)
-    while (s.isNotTerminal()) {
+    while (s.isNotTerminal) {
       val a = argmax(s.actions) { PI[s, it] }
       val possible = a.sample()
       s = possible.next
@@ -60,7 +60,7 @@ class `Test Optimal Dyna-Q` {
       var s = prob.started()
       var count = 0
       print(s)
-      while (s.isNotTerminal()) {
+      while (s.isNotTerminal) {
         val a = argmax(s.actions) { PI[s, it] }
         val possible = a.sample()
         s = possible.next

@@ -71,7 +71,7 @@ class `Test Policy Iteration` {
     var s = prob.started()
     var count = 0
     print(s)
-    while (s.isNotTerminal()) {
+    while (s.isNotTerminal) {
       val a = PI(s)
       val possible = a.sample()
       s = possible.next
@@ -89,7 +89,7 @@ class `Test Policy Iteration` {
     var s = prob.started()
     var count = 0
     print(s)
-    while (s.isNotTerminal()) {
+    while (s.isNotTerminal) {
       val a = PI(s)
       val possible = a.sample()
       s = possible.next

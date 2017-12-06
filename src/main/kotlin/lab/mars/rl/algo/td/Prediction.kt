@@ -10,7 +10,7 @@ fun TemporalDifference.prediction(): StateValueFunction {
   for (episode in 1..episodes) {
     log.debug { "$episode/$episodes" }
     var s = started()
-    while (s.isNotTerminal()) {
+    while (s.isNotTerminal) {
       val a = initial_policy(s)
       val (s_next, reward) = a.sample()
       V[s] += α * (reward + γ * V[s_next] - V[s])

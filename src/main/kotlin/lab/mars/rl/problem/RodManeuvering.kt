@@ -133,7 +133,7 @@ object RodManeuvering {
         }
       }
       for (s in states) {
-        if (s.isTerminal()) continue
+        if (s.isTerminal) continue
         val (x, y, rotation) = currentStatus(s)
         s.actions.apply {
           fun IndexedAction.assign(nx: Int, ny: Int, r: Int) {
@@ -141,7 +141,7 @@ object RodManeuvering {
             if (nx in 0 until resolution
                 && ny in 0 until resolution) {
               s_next = states[nx, ny, (r + rotation_resolution) % rotation_resolution]
-              if (s_next.isTerminal() && s_next !== goal)
+              if (s_next.isTerminal && s_next !== goal)
                 s_next = s
             } else
               s_next = s

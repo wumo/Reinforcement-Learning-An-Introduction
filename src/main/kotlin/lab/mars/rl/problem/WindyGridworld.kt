@@ -37,7 +37,7 @@ object WindyGridworld {
       goal.actions = emptyNSet()
       started = { states(0, 3).rand() }
       for (s in states) {
-        if (s.isTerminal()) continue
+        if (s.isTerminal) continue
         for (a in s.actions) {
           val m = (if (KingMove) kingMove else move)[a[0]]
           val x = (s[0] + m[0]).coerceIn(0, world_width - 1)
