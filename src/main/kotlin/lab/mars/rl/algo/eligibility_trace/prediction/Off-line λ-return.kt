@@ -33,7 +33,7 @@ fun <E> MDP.`Off-line λ-return`(
     
     fun Gt(t: Int, n: Int)
         = Σ(1..n) { pow(γ, it - 1) * R[t + it] } +
-          if (t + n < T) pow(γ, n) * V(S[t + n]) else 0.0
+          (if (t + n < T) pow(γ, n) * V(S[t + n]) else 0.0)
     
     for (t in 0 until T) {
       val Gtλ = (1 - λ) * Σ(1..T - t - 1) { pow(λ, it - 1) * Gt(t, it) } +

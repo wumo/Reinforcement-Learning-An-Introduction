@@ -29,23 +29,27 @@ class Matrix(val rows: Int, val cols: Int = rows) {
   val size = cols * rows
   
   companion object {
-    fun identity(d: Int): Matrix {
+    inline fun identity(d: Int): Matrix {
       val m = Matrix(d)
       for (i in 0 until d)
         m[i, i] = 1.0
       return m
     }
     
+    inline fun one(d: Int) = column(d, 1.0)
+    
     inline fun column(d: Int) = Matrix(d, 1)
     
-    fun column(value: DoubleArray): Matrix {
+    inline fun column(d: Int, value: Double) = Matrix.column(d) { value }
+    
+    inline fun column(value: DoubleArray): Matrix {
       val m = column(value.size)
       for (a in 0 until m.rows)
         m[a, 0] = value[a]
       return m
     }
     
-    fun column(d: Int, init: (Int) -> Double): Matrix {
+    inline fun column(d: Int, init: (Int) -> Double): Matrix {
       val m = column(d)
       for (a in 0 until m.rows)
         m[a, 0] = init(a)
@@ -144,8 +148,31 @@ class Matrix(val rows: Int, val cols: Int = rows) {
       raw[i] += m.raw[i]
   }
   
-  fun asScalar(): Double {
+  val toScalar: Double
+    get() {
+      require(rows == 1 && cols == 1)
+      return raw[0]
+    }
+  
+  operator fun minus(scalar: Double): Double {
     require(rows == 1 && cols == 1)
-    return raw[0]
+    return raw[0] - scalar
+  }
+  
+  operator fun plus(scalar: Double): Double {
+    require(rows == 1 && cols == 1)
+    return raw[0] + scalar
+  }
+  
+  infix fun o(m: Matrix): Matrix {
+    val result = copy()
+    result `o=` m
+    return result
+  }
+  
+  infix fun `o=`(m: Matrix) {
+    require(rows == m.rows && cols == m.cols)
+    for (i in 0..raw.lastIndex)
+      raw[i] *= m.raw[i]
   }
 }

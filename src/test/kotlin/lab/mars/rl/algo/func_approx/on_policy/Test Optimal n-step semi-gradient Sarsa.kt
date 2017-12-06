@@ -72,14 +72,14 @@ class `Test Optimal n-step semi-gradient Sarsa` {
   @Test
   fun `Effect of the α and n on early performance`() {
     logLevel(Level.ERROR)
-    val mdp = MountainCar.make()
+    val prob = MountainCar.make()
     
     val numTilings = 8
     val positionScale = numTilings / (MountainCar.POSITION_MAX - MountainCar.POSITION_MIN)
     val velocityScale = numTilings / (MountainCar.VELOCITY_MAX - MountainCar.VELOCITY_MIN)
     val episodes = 50
     val runs = 5
-    val alphas = listOf(10) { 0.1 + it * 0.14 }
+    val αs = listOf(10) { 0.1 + it * 0.14 }
     val nSteps = listOf(1, 2, 4, 8, 16)
     
     val chart = chart("Effect of the α and n on early performance",
@@ -88,11 +88,11 @@ class `Test Optimal n-step semi-gradient Sarsa` {
     runBlocking {
       for (n in nSteps) {
         val line = line("n=$n ")
-        asyncs(alphas) { alpha ->
-          if ((n == 8 && alpha > 1) || (n == 16 && alpha > 0.75))
-            return@asyncs tuple2(alpha, truncateStep)
-          var step = 0.0
-          asyncs(runs) {
+        asyncs(αs) { α ->
+          if ((n == 8 && α > 1) || (n == 16 && α > 0.75))
+            return@asyncs tuple2(α, truncateStep)
+          var totalStep = 0.0
+          asyncs(runs) { run ->
             val feature = SuttonTileCoding(511, numTilings) { (s, a) ->
               s as CarState
               a as DefaultAction<Int, CarState>
@@ -100,20 +100,23 @@ class `Test Optimal n-step semi-gradient Sarsa` {
             }
             val func = LinearFunc(feature)
             var step = 0
-            mdp.`Episodic semi-gradient n-step Sarsa control`(
+            prob.`Episodic semi-gradient n-step Sarsa control`(
                 q = func,
                 π = `ε-greedy function policy`(func, 0.0),
                 n = n,
-                α = alpha / numTilings,
+                α = α / numTilings,
                 episodes = episodes,
                 episodeListener = { _, _step ->
                   step += _step
                 })
+            println("finish n=$n α=$α run=$run step=$step")
             step
           }.await {
-            step += it
+            totalStep += it
           }
-          tuple2(alpha, step / (runs * episodes))
+          totalStep /= (runs * episodes)
+          println("finish n=$n α=$α total=$totalStep")
+          tuple2(α, totalStep)
         }.await { (alpha, step) ->
           if (step < truncateStep)
             line[alpha] = step

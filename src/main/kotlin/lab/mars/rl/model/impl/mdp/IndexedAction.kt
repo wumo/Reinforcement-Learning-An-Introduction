@@ -6,6 +6,7 @@ import lab.mars.rl.model.Action
 import lab.mars.rl.util.buf.Index
 import lab.mars.rl.util.buf.IntBuf
 import lab.mars.rl.util.collection.emptyNSet
+import lab.mars.rl.util.exception.NoMoreElementsException
 import lab.mars.rl.util.math.Rand
 
 class IndexedAction(val index: IntBuf): Index(), Action<IndexedState> {
@@ -17,7 +18,7 @@ class IndexedAction(val index: IntBuf): Index(), Action<IndexedState> {
   var possibles: PossibleSet = emptyNSet()
   
   override var sample = outer@ {
-    if (possibles.isEmpty()) throw NoSuchElementException()
+    if (possibles.isEmpty()) throw NoMoreElementsException()
     val p = Rand().nextDouble()
     var acc = 0.0
     for (possible in possibles) {

@@ -12,16 +12,18 @@ fun <E> MDP.`Semi-gradient TD(λ) prediction`(
     α: Double,
     episodes: Int,
     episodeListener: (Int, Int) -> Unit = { _, _ -> }) {
-  var z = Matrix.column(V.w.size)
+  val w = V.w
+  val d = w.size
   for (episode in 1..episodes) {
     log.debug { "$episode/$episodes" }
     var step = 0
     var s = started()
+    var z = Matrix.column(d)
     while (s.isNotTerminal) {
       val a = π(s)
       val (s_next, reward) = a.sample()
       z = γ * λ * z + V.`▽`(s)
-      val δ = reward + γ * V(s_next) - V(s)
+      val δ = reward + γ * (if (s_next.isTerminal) 0.0 else V(s_next)) - V(s)
       V.w += α * δ * z
       s = s_next
       step++

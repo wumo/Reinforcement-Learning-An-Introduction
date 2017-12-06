@@ -36,5 +36,5 @@ class LinearFunc<E>(val x: Feature<E>): ApproximateFunction<E>(x.conv) {
   
   override val w = Matrix.column(x.numOfComponents)
   
-  override fun _invoke(input: E) = (w.T * x._invoke(input)).asScalar()
+  override fun _invoke(input: E) = (w.T * x._invoke(input)).toScalar
 }

@@ -1,9 +1,8 @@
-package lab.mars.rl.algo.eligibility_trace
+package lab.mars.rl.algo.eligibility_trace.prediction
 
 import ch.qos.logback.classic.Level
 import javafx.application.Application
 import kotlinx.coroutines.experimental.runBlocking
-import lab.mars.rl.algo.eligibility_trace.prediction.`True Online TD(λ) prediction`
 import lab.mars.rl.model.impl.func.LinearFunc
 import lab.mars.rl.model.impl.func.SimpleTileCoding
 import lab.mars.rl.model.impl.mdp.IndexedState
@@ -25,7 +24,7 @@ class `Test Prediction True Online TDλ` {
     realV[20] = 0.0
     
     val λs = listOf(0.0, 0.4, 0.8, 0.9, 0.95, 0.975, 0.99, 1.0)
-    val αs = listOf(10) { it * 0.1 }
+    val αs = listOf(100) { it * 0.01 }
     
     val episodes = 10
     val runs = 100
