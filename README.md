@@ -21,7 +21,7 @@ Monte Carlo (episode backup):
 * [Off-policy MC control](src/main/kotlin/lab/mars/rl/algo/mc/Off-policy%20Optimal.kt) (p.91)
 
 Temporal Difference (one-step backup):
-* [Tabular TD(0)](src/main/kotlin/lab/mars/rl/algo/td/Prediction.kt) (p.98)
+* [Tabular TD(0)](src/main/kotlin/lab/mars/rl/algo/td/Tabular TD(0).kt) (p.98)
 * [Sarsa](src/main/kotlin/lab/mars/rl/algo/td/Sarsa.kt) (p.106)
 * [Q-learning](src/main/kotlin/lab/mars/rl/algo/td/QLearning.kt) (p.107)
 * [Expected Sarsa](src/main/kotlin/lab/mars/rl/algo/td/ExpectedSarsa.kt) (p.109)

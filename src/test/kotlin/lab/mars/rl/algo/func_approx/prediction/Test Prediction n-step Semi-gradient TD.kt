@@ -2,8 +2,7 @@ package lab.mars.rl.algo.func_approx.prediction
 
 import javafx.application.Application
 import lab.mars.rl.algo.func_approx.FunctionApprox
-import lab.mars.rl.algo.td.TemporalDifference
-import lab.mars.rl.algo.td.prediction
+import lab.mars.rl.algo.td.*
 import lab.mars.rl.model.impl.func.StateAggregation
 import lab.mars.rl.model.impl.mdp.IndexedState
 import lab.mars.rl.problem.`1000-state RandomWalk`
@@ -18,7 +17,7 @@ class `Test Prediction n-step Semi-gradient TD` {
     val (prob, PI) = `1000-state RandomWalk`.make()
     val algo = TemporalDifference(prob, PI)
     algo.episodes = 100000
-    val V = algo.prediction()
+    val V = algo.`Tabular TD(0)`()
     prob.apply {
       val line = line("TD")
       for (s in states) {

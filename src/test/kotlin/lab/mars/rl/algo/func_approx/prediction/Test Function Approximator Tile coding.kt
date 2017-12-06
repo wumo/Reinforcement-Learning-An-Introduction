@@ -9,7 +9,7 @@ import kotlinx.coroutines.experimental.channels.Channel
 import kotlinx.coroutines.experimental.runBlocking
 import lab.mars.rl.algo.func_approx.FunctionApprox
 import lab.mars.rl.algo.td.TemporalDifference
-import lab.mars.rl.algo.td.prediction
+import lab.mars.rl.algo.td.`Tabular TD(0)`
 import lab.mars.rl.model.ApproximateFunction
 import lab.mars.rl.model.impl.func.*
 import lab.mars.rl.model.impl.mdp.IndexedState
@@ -30,7 +30,7 @@ class `Tile Coding` {
     val (prob, PI) = `1000-state RandomWalk`.make()
     val algo = TemporalDifference(prob, PI)
     algo.episodes = 100000
-    val V = algo.prediction()
+    val V = algo.`Tabular TD(0)`()
     prob.apply {
       val line = line("TD")
       for (s in states) {
@@ -70,7 +70,7 @@ class `Tile Coding` {
     val (prob, PI) = `1000-state RandomWalk`.make()
     val algo = TemporalDifference(prob, PI)
     algo.episodes = 100000
-    val V = algo.prediction()
+    val V = algo.`Tabular TD(0)`()
 
     fun RMS(f: ApproximateFunction<Double>): Double {
       var result = 0.0
@@ -131,7 +131,7 @@ class `Tile Coding` {
     val (prob, PI) = `1000-state RandomWalk`.make()
     val algo = TemporalDifference(prob, PI)
     algo.episodes = 100000
-    val V = algo.prediction()
+    val V = algo.`Tabular TD(0)`()
     prob.apply {
       val line = line("TD")
       for (s in states) {
@@ -174,7 +174,7 @@ class `Tile Coding` {
     val (prob, PI) = `1000-state RandomWalk`.make()
     val algo = TemporalDifference(prob, PI)
     algo.episodes = 100000
-    val V = algo.prediction()
+    val V = algo.`Tabular TD(0)`()
 
     fun <E> RMS(f: ApproximateFunction<E>): Double {
       var result = 0.0
