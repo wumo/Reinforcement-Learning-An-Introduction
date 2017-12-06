@@ -10,7 +10,7 @@ import lab.mars.rl.util.log.debug
 import lab.mars.rl.util.math.argmax
 import lab.mars.rl.util.tuples.tuple3
 
-fun IndexedMDP.`Optimal Exploring Starts`(π: IndexedPolicy = null_policy, episodes: Int): OptimalSolution {
+fun IndexedMDP.`Monte Carlo Exploring Starts`(π: IndexedPolicy = null_policy, episodes: Int): OptimalSolution {
   val π = if (π == null_policy) IndexedPolicy(QFunc { 1.0 }) else π
   val Q = QFunc { 0.0 }
   val tmpQ = QFunc { Double.NaN }
