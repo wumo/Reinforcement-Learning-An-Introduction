@@ -1,15 +1,17 @@
 package lab.mars.rl.algo.eligibility_trace.prediction
 
-import lab.mars.rl.algo.func_approx.FunctionApprox
-import lab.mars.rl.algo.func_approx.FunctionApprox.Companion.log
 import lab.mars.rl.model.*
 import lab.mars.rl.util.buf.newBuf
 import lab.mars.rl.util.log.debug
 import lab.mars.rl.util.math.Σ
 import lab.mars.rl.util.matrix.times
-import org.apache.commons.math3.util.FastMath.pow
+import org.apache.commons.math3.util.FastMath.*
 
-fun <E> FunctionApprox.`Off-line λ-return`(V: ApproximateFunction<E>, λ: Double) {
+fun <E> MDP.`Off-line λ-return`(V: ApproximateFunction<E>, λ: Double,
+                                π: Policy,
+                                α: Double = 1.0,
+                                episodes: Int = 10000,
+                                episodeListener: (Int, Int) -> Unit = { _, _ -> }) {
   val R = newBuf<Double>()
   val S = newBuf<State>()
   for (episode in 1..episodes) {

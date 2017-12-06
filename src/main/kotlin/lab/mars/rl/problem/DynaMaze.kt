@@ -9,15 +9,15 @@ import lab.mars.rl.util.dimension.x
 
 object DynaMaze {
   private val move = arrayOf(
-    intArrayOf(-1, 0), //left
-    intArrayOf(1, 0), //right
-    intArrayOf(0, 1), //up
-    intArrayOf(0, -1)//down
+      intArrayOf(-1, 0), //left
+      intArrayOf(1, 0), //right
+      intArrayOf(0, 1), //up
+      intArrayOf(0, -1)//down
   )
   val desc_move = arrayOf("←", "→", " ↑", " ↓")
   val wall = hashSetOf<IntBuf>()
   val obstacle = hashSetOf<IntBuf>()
-
+  
   init {
     for (x in -1..9) {
       wall += DefaultIntBuf.of(x, -1)
@@ -30,16 +30,16 @@ object DynaMaze {
     obstacle += DefaultIntBuf.of(2, 2)
     obstacle += DefaultIntBuf.of(2, 3)
     obstacle += DefaultIntBuf.of(2, 4)
-
+    
     obstacle += DefaultIntBuf.of(5, 1)
-
+    
     obstacle += DefaultIntBuf.of(7, 3)
     obstacle += DefaultIntBuf.of(7, 4)
     obstacle += DefaultIntBuf.of(7, 5)
-
+    
     wall += obstacle
   }
-
+  
   fun make(): IndexedMDP {
     val mdp = CNSetMDP(gamma = 0.95,
                        state_dim = 9 x 6,
@@ -56,13 +56,13 @@ object DynaMaze {
           }
           val reward = if (tmp[0] == 8 && tmp[1] == 5) 1.0 else 0.0
           action.possibles = cnsetOf(IndexedPossible(states[tmp], reward, 1.0))
-
+          
         }
       states[8, 5].actions = emptyNSet()
       for (o in obstacle)
         states[o].actions = emptyNSet()
       started = { states(0, 3).rand() }
     }
-
+    
   }
 }

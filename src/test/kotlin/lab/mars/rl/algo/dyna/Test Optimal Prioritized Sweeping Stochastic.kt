@@ -1,7 +1,7 @@
 package lab.mars.rl.algo.dyna
 
 import javafx.application.Application
-import lab.mars.rl.algo.average_alpha
+import lab.mars.rl.algo.average_α
 import lab.mars.rl.model.isNotTerminal
 import lab.mars.rl.problem.Blackjack
 import lab.mars.rl.problem.DynaMaze
@@ -15,33 +15,32 @@ import kotlin.concurrent.thread
 class `Test Optimal Prioritized Sweeping Stochastic` {
   @Test
   fun `Blackjack`() {
-    val (prob, _) = Blackjack.make()
-    val algo = PrioritizedSweepingStochasticEnv(prob)
-    algo.episodes = 100000
-    algo.n = 10
-    val (PI, V, _) = algo.optimal(average_alpha(prob))
-    printBlackjack(prob, PI, V)
+    val (prob) = Blackjack.make()
+    val (π, V) = prob.PrioritizedSweepingStochasticEnv(
+        α = average_α(prob),
+        episodes = 100000,
+        n = 10)
+    printBlackjack(prob, π, V)
   }
-
+  
   @Test
   fun `Dyna Maze UI`() {
     val prob = DynaMaze.make()
-    val algo = PrioritizedSweepingStochasticEnv(prob)
-    algo.episodes = 1000
-    algo.n = 10
     val latch = CountDownLatch(1)
-
+    
     thread {
       latch.await()
-      algo.stepListener = { V, s ->
-        GridWorldUI.render(V, s)
-      }
-      val (PI, _, _) = algo.optimal()
+      val (π) = prob.PrioritizedSweepingStochasticEnv(
+          episodes = 1000,
+          n = 10,
+          stepListener = { V, s ->
+            GridWorldUI.render(V, s)
+          })
       var s = prob.started()
       var count = 0
       print(s)
       while (s.isNotTerminal) {
-        val a = argmax(s.actions) { PI[s, it] }
+        val a = argmax(s.actions) { π[s, it] }
         val possible = a.sample()
         s = possible.next
         count++

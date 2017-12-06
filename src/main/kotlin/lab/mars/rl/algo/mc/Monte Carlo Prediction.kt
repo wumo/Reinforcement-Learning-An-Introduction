@@ -1,15 +1,15 @@
 package lab.mars.rl.algo.mc
 
-import lab.mars.rl.algo.mc.MonteCarlo.Companion.log
-import lab.mars.rl.model.impl.mdp.StateValueFunction
+import lab.mars.rl.model.impl.mdp.*
 import lab.mars.rl.model.isNotTerminal
+import lab.mars.rl.model.log
 import lab.mars.rl.util.log.debug
 
-fun MonteCarlo.prediction(): StateValueFunction {
-  val V = indexedMdp.VFunc { 0.0 }
-  val preReturn = indexedMdp.VFunc { Double.NaN }
-  val count = indexedMdp.VFunc { 0 }
-
+fun IndexedMDP.`Monte Carlo Prediction`(π: IndexedPolicy, episodes: Int): StateValueFunction {
+  val V = VFunc { 0.0 }
+  val preReturn = VFunc { Double.NaN }
+  val count = VFunc { 0 }
+  
   for (episode in 1..episodes) {
     log.debug { "$episode/$episodes" }
     var s = started()

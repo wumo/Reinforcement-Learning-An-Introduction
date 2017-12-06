@@ -1,8 +1,6 @@
 package lab.mars.rl.algo.func_approx.prediction
 
 import javafx.application.Application
-import lab.mars.rl.algo.func_approx.FunctionApprox
-import lab.mars.rl.algo.td.TemporalDifference
 import lab.mars.rl.algo.td.`Tabular TD(0)`
 import lab.mars.rl.model.impl.func.StateAggregation
 import lab.mars.rl.model.impl.mdp.IndexedState
@@ -15,10 +13,8 @@ class `Test Prediction Gradient MC` {
   @Test
   fun `1000-state Random walk`() {
     val chart = chart("V", "state", "value")
-    val (prob, PI) = `1000-state RandomWalk`.make()
-    val algo = TemporalDifference(prob, PI)
-    algo.episodes = 100000
-    val V = algo.`Tabular TD(0)`()
+    val (prob, π) = `1000-state RandomWalk`.make()
+    val V = prob.`Tabular TD(0)`(π = π, episodes = 100000, α = 0.1)
     prob.apply {
       val line = line("TD")
       for (s in states) {
@@ -27,12 +23,12 @@ class `Test Prediction Gradient MC` {
       }
       chart += line
     }
-
-    val algo2 = FunctionApprox(prob, PI)
-    algo2.episodes = 100000
-    algo2.α = 2e-5
+    
     val func = StateAggregation(`1000-state RandomWalk`.num_states + 2, 10) { (s) -> (s as IndexedState)[0] }
-    algo2.`Gradient Monte Carlo algorithm`(func)
+    prob.`Gradient Monte Carlo algorithm`(
+        v = func, π = π,
+        episodes = 100000,
+        α = 2e-5)
     prob.apply {
       val line = line("gradient MC")
       for (s in states) {
@@ -44,5 +40,5 @@ class `Test Prediction Gradient MC` {
     D2DChart.charts += chart
     Application.launch(ChartApp::class.java)
   }
-
+  
 }

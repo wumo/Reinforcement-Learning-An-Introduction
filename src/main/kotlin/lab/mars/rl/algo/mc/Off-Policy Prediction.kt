@@ -1,29 +1,27 @@
 package lab.mars.rl.algo.mc
 
 import lab.mars.rl.algo.V_from_Q
-import lab.mars.rl.algo.mc.MonteCarlo.Companion.log
+import lab.mars.rl.model.*
 import lab.mars.rl.model.impl.mdp.*
-import lab.mars.rl.model.isNotTerminal
-import lab.mars.rl.model.isTerminal
 import lab.mars.rl.util.buf.newBuf
 import lab.mars.rl.util.log.debug
 import lab.mars.rl.util.tuples.tuple3
 
-fun MonteCarlo.`Off-policy MC prediction`(): StateValueFunction {
-  val Q = indexedMdp.QFunc { 0.0 }
-  val C = indexedMdp.QFunc { 0.0 }
-  val b = IndexedPolicy(indexedMdp.QFunc { 1.0 })
+fun IndexedMDP.`Off-policy MC prediction`(π: IndexedPolicy, episodes: Int): StateValueFunction {
+  val Q = QFunc { 0.0 }
+  val C = QFunc { 0.0 }
+  val b = IndexedPolicy(QFunc { 1.0 })
   for (s in states) {
     if (s.isTerminal) continue
     val prob = 1.0 / s.actions.size
     for (a in s.actions)
       b[s, a] = prob
   }
-
+  
   val R = newBuf<Double>()
   val S = newBuf<IndexedState>()
   val A = newBuf<IndexedAction>()
-
+  
   for (episode in 1..episodes) {
     log.debug { "$episode/$episodes" }
     var s = started()
@@ -52,7 +50,7 @@ fun MonteCarlo.`Off-policy MC prediction`(): StateValueFunction {
       if (W == 0.0) break
     }
   }
-  val V = indexedMdp.VFunc { 0.0 }
+  val V = VFunc { 0.0 }
   val result = tuple3(π, V, Q)
   V_from_Q(states, result)
   return V

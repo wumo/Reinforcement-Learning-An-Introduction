@@ -20,53 +20,53 @@ class TestNSet {
   fun `empty set`() {
     val set = nsetFrom(0) { throw Exception() }
   }
-
+  
   @Test
   fun `terminal set`() {
     val set = nsetFrom(0(!3, !3, 2 x 3)) { println(it);0 }
     val expected = arrayOf(
-      DefaultIntBuf.of(0),
-      DefaultIntBuf.of(1),
-      DefaultIntBuf.of(2),
-      DefaultIntBuf.of(3),
-      DefaultIntBuf.of(4),
-      DefaultIntBuf.of(5),
-      DefaultIntBuf.of(6, 0, 0),
-      DefaultIntBuf.of(6, 0, 1),
-      DefaultIntBuf.of(6, 0, 2),
-      DefaultIntBuf.of(6, 1, 0),
-      DefaultIntBuf.of(6, 1, 1),
-      DefaultIntBuf.of(6, 1, 2))
+        DefaultIntBuf.of(0),
+        DefaultIntBuf.of(1),
+        DefaultIntBuf.of(2),
+        DefaultIntBuf.of(3),
+        DefaultIntBuf.of(4),
+        DefaultIntBuf.of(5),
+        DefaultIntBuf.of(6, 0, 0),
+        DefaultIntBuf.of(6, 0, 1),
+        DefaultIntBuf.of(6, 0, 2),
+        DefaultIntBuf.of(6, 1, 0),
+        DefaultIntBuf.of(6, 1, 1),
+        DefaultIntBuf.of(6, 1, 2))
     var i = 0
     for (index in set.indices()) {
       assertTrue(index.equals(expected[i++]))
     }
   }
-
+  
   @Test
   fun `enumerate`() {
     val set = nsetFrom(2(3, 4)) { println(it);0 }
     val expected = arrayOf(
-      DefaultIntBuf.of(0, 0, 0),
-      DefaultIntBuf.of(0, 0, 1),
-      DefaultIntBuf.of(0, 0, 2),
-      DefaultIntBuf.of(0, 1, 0),
-      DefaultIntBuf.of(0, 1, 1),
-      DefaultIntBuf.of(0, 1, 2),
-      DefaultIntBuf.of(0, 1, 3),
-      DefaultIntBuf.of(1, 0, 0),
-      DefaultIntBuf.of(1, 0, 1),
-      DefaultIntBuf.of(1, 0, 2),
-      DefaultIntBuf.of(1, 1, 0),
-      DefaultIntBuf.of(1, 1, 1),
-      DefaultIntBuf.of(1, 1, 2),
-      DefaultIntBuf.of(1, 1, 3))
+        DefaultIntBuf.of(0, 0, 0),
+        DefaultIntBuf.of(0, 0, 1),
+        DefaultIntBuf.of(0, 0, 2),
+        DefaultIntBuf.of(0, 1, 0),
+        DefaultIntBuf.of(0, 1, 1),
+        DefaultIntBuf.of(0, 1, 2),
+        DefaultIntBuf.of(0, 1, 3),
+        DefaultIntBuf.of(1, 0, 0),
+        DefaultIntBuf.of(1, 0, 1),
+        DefaultIntBuf.of(1, 0, 2),
+        DefaultIntBuf.of(1, 1, 0),
+        DefaultIntBuf.of(1, 1, 1),
+        DefaultIntBuf.of(1, 1, 2),
+        DefaultIntBuf.of(1, 1, 3))
     var i = 0
     for (index in set.indices()) {
       assertTrue(index.equals(expected[i++]))
     }
   }
-
+  
   @Test
   fun `make nset using dim2`() {
     val r1 = mutableListOf<IntArray>()
@@ -78,25 +78,25 @@ class TestNSet {
     r1.forEach { println(it.asList()) }
     assertArrayEquals(r1.toTypedArray(), r2.toTypedArray())
   }
-
+  
   @Test
   fun `make nset using dim 3`() {
     val r1 = mutableListOf<IntArray>()
     val r2 = mutableListOf<IntArray>()
     val dim =
-      0(
-        2,
-        2,
-        2,
         0(
-          2,
-          2 x 3 x 4,
-          (2 x 3)(
             2,
-            3 x 4
-          )
+            2,
+            2,
+            0(
+                2,
+                2 x 3 x 4,
+                (2 x 3)(
+                    2,
+                    3 x 4
+                )
+            )
         )
-      )
     val set = nsetFrom(dim) { r1.add(it.toIntArray());0 }
     for (index in set.indices()) {
       println(index)
@@ -109,16 +109,16 @@ class TestNSet {
     }
     assertArrayEquals(r1.toTypedArray(), r2.toTypedArray())
   }
-
+  
   @Test
   fun `make using dimension and {}`() {
     val dim =
-      (2 x { 3 x 4 } x 4 x { 4 } x 2(3, 3))(2, 3 x 4 x { 1 }, 4)
+        (2 x { 3 x 4 } x 4 x { 4 } x 2(3, 3))(2, 3 x 4 x { 1 }, 4)
     val dim2 = 2 x 2(3)
     val dim3 = 2 x 0(3, 4, 5)
     val set = nsetFrom(dim) { println(it); 0 }
   }
-
+  
   @Test
   fun `make nset`() {
     val set = nsetOf(1, 2, 3)
@@ -126,7 +126,7 @@ class TestNSet {
       println(i)
     }
   }
-
+  
   @Test
   fun `test general shape`() {
     var i = 0
@@ -138,7 +138,7 @@ class TestNSet {
     assertEquals(1, set[1, 1])
     assertEquals(2, set[0, 0, 0])
   }
-
+  
   @Test
   fun `get sub set`() {
     var i = 0
@@ -146,13 +146,13 @@ class TestNSet {
     for (withIndex in set.withIndices()) {
       println(withIndex)
     }
-
+    
     for (withIndex in set(1).withIndices()) {
       println(withIndex)
     }
-
+    
   }
-
+  
   @Test
   fun `one level iterate`() {
     var i = 0
@@ -163,7 +163,7 @@ class TestNSet {
       assertEquals(i++, a)
     }
   }
-
+  
   @Test
   fun `two level iterate`() {
     var i = 0
@@ -180,20 +180,20 @@ class TestNSet {
       println("$idx=$s")
     }
   }
-
+  
   @Test
   fun `test copycat`() {
     var i = 0
     val set = nsetFrom(3 x 3 x { it[it.lastIndex] + 1 }) { i++ }
     val set2 = set.copycat { println(it); it.toString() }
   }
-
+  
   @Test
   fun `test null`() {
     val set = nsetFrom(2 x 2) { 0 }
     val result: Int? = set[0, 0]
   }
-
+  
   @Test
   fun `inti raw with correct index and 0`() {
     var i = 0
@@ -234,23 +234,23 @@ class TestNSet {
     }
     set[0, 0, 0, 0]
   }
-
+  
   @Test
   fun `reset`() {
     val dim =
-      0(
-        2,
-        2,
-        2,
         0(
-          2,
-          2 x 3 x 4,
-          (2 x 3)(
             2,
-            3 x 4
-          )
+            2,
+            2,
+            0(
+                2,
+                2 x 3 x 4,
+                (2 x 3)(
+                    2,
+                    3 x 4
+                )
+            )
         )
-      )
     val set = nsetFrom<Int>(dim) { 0 }
     for (withIndex in set.withIndices()) {
       println(withIndex)

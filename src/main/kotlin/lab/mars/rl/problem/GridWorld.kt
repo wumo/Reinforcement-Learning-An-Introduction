@@ -16,10 +16,10 @@ object GridWorld {
   private const val n = 4
   private const val m = 4
   private val move = arrayOf(
-    intArrayOf(-1, 0), //up
-    intArrayOf(1, 0), //down
-    intArrayOf(0, 1), //right
-    intArrayOf(0, -1)//left
+      intArrayOf(-1, 0), //up
+      intArrayOf(1, 0), //down
+      intArrayOf(0, 1), //right
+      intArrayOf(0, -1)//left
   )
   val desc_move = arrayOf(" ↑", " ↓", "→", "←")
   fun make(): IndexedMDP {
@@ -40,7 +40,7 @@ object GridWorld {
       states[0, 0].actions = emptyNSet()
       states[n - 1, n - 1].actions = emptyNSet()
     }
-
+    
     return mdp
   }
 }

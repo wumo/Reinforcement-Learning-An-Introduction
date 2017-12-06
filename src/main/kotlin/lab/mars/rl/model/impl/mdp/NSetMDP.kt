@@ -34,12 +34,12 @@ fun NSetMDP(gamma: Double, state_dim: Any, action_dim: (IntBuf) -> Any): Indexed
   val s_dim = state_dim.toDim() as GeneralDimension
   val s_a_dim = s_dim.copy() x action_dim
   return IndexedMDP(
-    γ = gamma,
-    states = nsetFrom(s_dim) {
-      IndexedState(it.copy()).apply { actions = nsetFrom(action_dim(it).toDim()) { IndexedAction(it.copy()) } }
-    },
-    state_function = { element_maker -> nsetFrom(s_dim, element_maker) },
-    state_action_function = { element_maker -> nsetFrom(s_a_dim, element_maker) })
+      γ = gamma,
+      states = nsetFrom(s_dim) {
+        IndexedState(it.copy()).apply { actions = nsetFrom(action_dim(it).toDim()) { IndexedAction(it.copy()) } }
+      },
+      state_function = { element_maker -> nsetFrom(s_dim, element_maker) },
+      state_action_function = { element_maker -> nsetFrom(s_a_dim, element_maker) })
 }
 
 /**
@@ -68,14 +68,14 @@ fun CNSetMDP(gamma: Double, state_dim: Any, action_dim: (IntBuf) -> Any): Indexe
   }
   val s_a_dim = s_dim.copy() x action_dim
   return IndexedMDP(
-    γ = gamma,
-    states = states,
-    state_function = { element_maker -> states.copycat(element_maker) },
-    state_action_function = { element_maker -> cnsetFrom(s_a_dim, element_maker) })
+      γ = gamma,
+      states = states,
+      state_function = { element_maker -> states.copycat(element_maker) },
+      state_action_function = { element_maker -> cnsetFrom(s_a_dim, element_maker) })
 }
 
 inline fun mdpOf(gamma: Double, state_dim: Any, action_dim: Any)
-  = CNSetMDP(gamma, state_dim, action_dim)
+    = CNSetMDP(gamma, state_dim, action_dim)
 
 inline fun mdpOf(gamma: Double, state_dim: Any, noinline action_dim: (IntBuf) -> Any)
-  = CNSetMDP(gamma, state_dim, action_dim)
+    = CNSetMDP(gamma, state_dim, action_dim)

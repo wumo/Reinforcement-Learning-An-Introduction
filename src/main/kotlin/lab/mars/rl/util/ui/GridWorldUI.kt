@@ -10,9 +10,9 @@ import javafx.stage.Stage
 import lab.mars.rl.model.impl.mdp.*
 import java.util.concurrent.CyclicBarrier
 
-class GridWorldUI : Application() {
+class GridWorldUI: Application() {
   lateinit var canvas: Canvas
-
+  
   companion object {
     var after: () -> Unit = {}
     var render: (ActionValueFunction, IndexedState) -> Unit = { _, _ -> }
@@ -21,7 +21,7 @@ class GridWorldUI : Application() {
     var grid_x = 9
     var grid_y = 6
   }
-
+  
   override fun start(ps: Stage?) {
     val primaryStage = ps!!
     primaryStage.title = "Drawing Operations Test"
@@ -33,7 +33,7 @@ class GridWorldUI : Application() {
     render = this::render
     after()
   }
-
+  
   val barrier = CyclicBarrier(2)
   var max = 1.0
   var min = 0.0
@@ -69,5 +69,5 @@ class GridWorldUI : Application() {
     }
     barrier.await()
   }
-
+  
 }

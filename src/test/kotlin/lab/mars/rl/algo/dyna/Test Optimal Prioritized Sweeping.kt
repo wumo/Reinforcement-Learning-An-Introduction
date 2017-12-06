@@ -14,22 +14,21 @@ class `Test Optimal Prioritized Sweeping` {
   @Test
   fun `Dyna Maze UI`() {
     val prob = DynaMaze.make()
-    val algo = PrioritizedSweeping(prob)
-    algo.episodes = 1000
-    algo.n = 10
     val latch = CountDownLatch(1)
-
+    
     thread {
       latch.await()
-      algo.stepListener = { V, s ->
-        GridWorldUI.render(V, s)
-      }
-      val (PI, _, _) = algo.optimal()
+      val (π) = prob.PrioritizedSweeping(
+          episodes = 1000,
+          n = 10,
+          stepListener = { V, s ->
+            GridWorldUI.render(V, s)
+          })
       var s = prob.started()
       var count = 0
       print(s)
       while (s.isNotTerminal) {
-        val a = argmax(s.actions) { PI[s, it] }
+        val a = argmax(s.actions) { π[s, it] }
         val possible = a.sample()
         s = possible.next
         count++
@@ -40,19 +39,18 @@ class `Test Optimal Prioritized Sweeping` {
     GridWorldUI.after = { latch.countDown() }
     Application.launch(GridWorldUI::class.java)
   }
-
+  
   @Test
   fun `WindyGridworld`() {
     val prob = WindyGridworld.make()
-    val algo = PrioritizedSweeping(prob)
-    algo.α = 0.5
-    algo.episodes = 1000
-    val (PI, _, _) = algo.optimal()
+    val (π) = prob.PrioritizedSweeping(
+        α = { _, _ -> 0.5 },
+        episodes = 1000)
     var s = prob.started()
     var sum = 0.0
     print(s)
     while (s.isNotTerminal) {
-      val a = argmax(s.actions) { PI[s, it] }
+      val a = argmax(s.actions) { π[s, it] }
       val possible = a.sample()
       s = possible.next
       sum += possible.reward
@@ -60,19 +58,17 @@ class `Test Optimal Prioritized Sweeping` {
     }
     println("\nreturn=$sum")//optimal=-14
   }
-
+  
   @Test
   fun `Cliff Walking`() {
     val prob = CliffWalking.make()
-    val algo = PrioritizedSweeping(prob)
-    algo.α = 0.5
-    algo.episodes = 1000
-    val (PI, _, _) = algo.optimal()
+    val (π) = prob.PrioritizedSweeping(α = { _, _ -> 0.5 },
+                                       episodes = 1000)
     var s = prob.started()
     var sum = 0.0
     print(s)
     while (s.isNotTerminal) {
-      val a = argmax(s.actions) { PI[s, it] }
+      val a = argmax(s.actions) { π[s, it] }
       val possible = a.sample()
       s = possible.next
       sum += possible.reward
@@ -80,26 +76,24 @@ class `Test Optimal Prioritized Sweeping` {
     }
     println("\nreturn=$sum")//optimal=-12
   }
-
+  
   @Test
   fun `Rod Maneuvering UI`() {
     val prob = RodManeuvering.make()
-    val algo = PrioritizedSweeping(prob)
-    algo.episodes = 1000
-    algo.n = 10
     val latch = CountDownLatch(1)
-
+    
     thread {
       latch.await()
-      algo.stepListener = { V, s ->
-        RodManeuveringUI.render(V, s)
-      }
-      val (PI, _, _) = algo.optimal()
+      val (π) = prob.PrioritizedSweeping(episodes = 1000,
+                                         n = 10,
+                                         stepListener = { V, s ->
+                                           RodManeuveringUI.render(V, s)
+                                         })
       var s = prob.started()
       var count = 0
       print(s)
       while (s.isNotTerminal) {
-        val a = argmax(s.actions) { PI[s, it] }
+        val a = argmax(s.actions) { π[s, it] }
         val possible = a.sample()
         s = possible.next
         count++
@@ -110,5 +104,5 @@ class `Test Optimal Prioritized Sweeping` {
     RodManeuveringUI.after = { latch.countDown() }
     Application.launch(RodManeuveringUI::class.java)
   }
-
+  
 }

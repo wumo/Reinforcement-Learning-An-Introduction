@@ -4,8 +4,8 @@ import ch.qos.logback.classic.Level
 import javafx.application.Application
 import kotlinx.coroutines.experimental.runBlocking
 import lab.mars.rl.algo.eligibility_trace.prediction.`Semi-gradient TD(λ) prediction`
-import lab.mars.rl.algo.func_approx.FunctionApprox
-import lab.mars.rl.model.impl.func.*
+import lab.mars.rl.model.impl.func.LinearFunc
+import lab.mars.rl.model.impl.func.SimpleTileCoding
 import lab.mars.rl.model.impl.mdp.IndexedState
 import lab.mars.rl.problem.`19-state RandomWalk`
 import lab.mars.rl.util.*
@@ -45,18 +45,18 @@ class `Test Prediction Semi-gradient TDλ` {
                                  1,
                                  0.0) { (s) -> (s as IndexedState)[0].toDouble() }
             )
-            val algo = FunctionApprox(prob, π)
-            algo.episodes = episodes
-            algo.α = α
             var rms = 0.0
-            algo.episodeListener = { _, _ ->
-              var error = 0.0
-              for (s in prob.states)
-                error += FastMath.pow(func(s) - realV[s[0]], 2)
-              error /= prob.states.size
-              rms += FastMath.sqrt(error)
-            }
-            algo.`Semi-gradient TD(λ) prediction`(func, λ)
+            prob.`Semi-gradient TD(λ) prediction`(
+                V = func, π = π,
+                α = α, λ = λ,
+                episodes = episodes,
+                episodeListener = { _, _ ->
+                  var error = 0.0
+                  for (s in prob.states)
+                    error += FastMath.pow(func(s) - realV[s[0]], 2)
+                  error /= prob.states.size
+                  rms += FastMath.sqrt(error)
+                })
             println("finish λ=${λ.format(2)} α=$α run=$run")
             rms
           }.await { rms_sum += it }

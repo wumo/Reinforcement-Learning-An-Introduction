@@ -1,8 +1,7 @@
 package lab.mars.rl.algo.func_approx.prediction
 
 import javafx.application.Application
-import lab.mars.rl.algo.func_approx.FunctionApprox
-import lab.mars.rl.algo.td.*
+import lab.mars.rl.algo.td.`Tabular TD(0)`
 import lab.mars.rl.model.impl.func.StateAggregation
 import lab.mars.rl.model.impl.mdp.IndexedState
 import lab.mars.rl.problem.`1000-state RandomWalk`
@@ -14,10 +13,8 @@ class `Test Prediction Semi-gradient TD(0)` {
   @Test
   fun `1000-state Random walk`() {
     val chart = chart("V", "state", "value")
-    val (prob, PI) = `1000-state RandomWalk`.make()
-    val algo = TemporalDifference(prob, PI)
-    algo.episodes = 100000
-    val V = algo.`Tabular TD(0)`()
+    val (prob, π) = `1000-state RandomWalk`.make()
+    val V = prob.`Tabular TD(0)`(π = π, episodes = 100000, α = 0.1)
     prob.apply {
       val line = line("TD")
       for (s in states) {
@@ -26,12 +23,10 @@ class `Test Prediction Semi-gradient TD(0)` {
       }
       chart += line
     }
-
-    val algo2 = FunctionApprox(prob, PI)
-    algo2.episodes = 100000
-    algo2.α = 2e-4
-    val func = StateAggregation(`1000-state RandomWalk`.num_states + 2, 10) { (s) -> (s as IndexedState)[0] }
-    algo2.`Semi-gradient TD(0)`(func)
+    
+    val func = StateAggregation(`1000-state RandomWalk`.num_states + 2,
+                                10) { (s) -> (s as IndexedState)[0] }
+    prob.`Semi-gradient TD(0)`(v = func, π = π, episodes = 100000, α = 2e-4)
     prob.apply {
       val line = line("Semi-gradient TD(0)")
       for (s in states) {

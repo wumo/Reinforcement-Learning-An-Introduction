@@ -8,26 +8,26 @@ import lab.mars.rl.problem.`19-state RandomWalk`
 import lab.mars.rl.util.*
 import lab.mars.rl.util.tuples.tuple2
 import lab.mars.rl.util.ui.*
-import org.apache.commons.math3.util.FastMath.pow
-import org.apache.commons.math3.util.FastMath.sqrt
+import org.apache.commons.math3.util.FastMath.*
 import org.junit.Test
 
 class `Test Prediction n-TD` {
   @Test
   fun `Blackjack`() {
     val (prob, π) = Blackjack.make()
-    val algo = NStepTemporalDifference(prob, 102400, π)
-    algo.episodes = 500000
-    val V = algo.prediction()
+    val V = prob.`N-step TD prediction`(
+        n = 102400, π = π,
+        episodes = 500000,
+        α = 0.1)
     printBlackjack(prob, π, V)
   }
   
   @Test
   fun `RandomWalk`() {
     val (prob, π) = `19-state RandomWalk`.make()
-    val algo = NStepTemporalDifference(prob, 8, π)
-    algo.episodes = 1000
-    val V = algo.prediction()
+    val V = prob.`N-step TD prediction`(
+        n = 8, π = π,
+        episodes = 1000, α = 0.1)
     prob.apply {
       for (s in states) {
         println("${V[s].format(2)} ")
@@ -59,18 +59,18 @@ class `Test Prediction n-TD` {
         asyncs(αs) { α ->
           var rms_sum = 0.0
           asyncs(runs) {
-            val algo = NStepTemporalDifference(prob, n, π)
-            algo.episodes = episodes
-            algo.α = α
             var rms = 0.0
-            algo.episodeListener = { _, V ->
-              var error = 0.0
-              for (s in prob.states)
-                error += pow(V[s] - realV[s[0]], 2)
-              error /= prob.states.size
-              rms += sqrt(error)
-            }
-            algo.prediction()
+            prob.`N-step TD prediction`(
+                n = n, π = π,
+                episodes = episodes,
+                α = α,
+                episodeListener = { _, V ->
+                  var error = 0.0
+                  for (s in prob.states)
+                    error += pow(V[s] - realV[s[0]], 2)
+                  error /= prob.states.size
+                  rms += sqrt(error)
+                })
             rms
           }.await { rms_sum += it }
           tuple2(α, rms_sum / (episodes * runs))

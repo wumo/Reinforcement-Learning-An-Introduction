@@ -14,11 +14,11 @@ class chart(val title: String, val xAxisLabel: String, val yAxisLabel: String, v
   }
 }
 
-class D2DChart : View() {
+class D2DChart: View() {
   companion object {
     val charts = mutableListOf<chart>()
   }
-
+  
   override val root = stackpane {
     flowpane {
       for (chart in charts) {
@@ -33,8 +33,8 @@ class D2DChart : View() {
             isAutoRanging = true
             label = chart.yAxisLabel
           }
-          val lines=chart.lines.toTypedArray()
-          lines.sortBy { it.description }
+          val lines = chart.lines.toTypedArray()
+//          lines.sortBy { it.description }
           for (line in lines)
             series(line.description) {
               for ((k, v) in line.data)
@@ -47,4 +47,4 @@ class D2DChart : View() {
   }
 }
 
-class ChartApp : App(D2DChart::class)
+class ChartApp: App(D2DChart::class)

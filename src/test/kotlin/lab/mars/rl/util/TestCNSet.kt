@@ -33,19 +33,19 @@ class TestCNSet {
     val data = arrayOf(Cell(arrayOf(SubTree(2, 1, 4), SubTree(3, 2, 4)).buf(), 1), 5, 2, Cell(arrayOf(SubTree(2, 4, 4)).buf(), 3), 4)
     val set = CompactNSet<Int>(data.buf())
     val slots = arrayOf(
-      DefaultIntBuf.of(0, 0),
-      DefaultIntBuf.of(0, 1),
-      DefaultIntBuf.of(0, 2, 0),
-      DefaultIntBuf.of(0, 2, 1),
-      DefaultIntBuf.of(1)
+        DefaultIntBuf.of(0, 0),
+        DefaultIntBuf.of(0, 1),
+        DefaultIntBuf.of(0, 2, 0),
+        DefaultIntBuf.of(0, 2, 1),
+        DefaultIntBuf.of(1)
     )
     val values = arrayOf(
-      1, 2, 3, 4, 5
+        1, 2, 3, 4, 5
     )
     assertSetEquals(PlainSet(slots, values), set)
 //        set.dfs(0) { idx, value -> println("$idx=$value") }
   }
-
+  
   @Test
   fun `subset`() {
     val data = arrayOf(Cell(arrayOf(SubTree(2, 4, 4), SubTree(3, 1, 3)).buf(), 1), 2, Cell(arrayOf(SubTree(2, 3, 3)).buf(), 3), 4, 5)
@@ -55,80 +55,80 @@ class TestCNSet {
     print(subset)
     println(subset[0])
   }
-
+  
   @Test
   fun `test cnsetOf 1`() {
     val set = cnsetOf(1)
     val expected = PlainSet(
-      slots = arrayOf(
-        DefaultIntBuf.of(0)
-      ),
-      values = arrayOf(
-        1
-      )
+        slots = arrayOf(
+            DefaultIntBuf.of(0)
+        ),
+        values = arrayOf(
+            1
+        )
     )
-
+    
     assertSetEquals(expected, set)
   }
-
+  
   @Test
   fun `test cnsetOf`() {
     val set = cnsetOf(1, 2, 3)
     val expected = PlainSet(
-      slots = arrayOf(
-        DefaultIntBuf.of(0),
-        DefaultIntBuf.of(1),
-        DefaultIntBuf.of(2)
-      ),
-      values = arrayOf(
-        1, 2, 3
-      )
+        slots = arrayOf(
+            DefaultIntBuf.of(0),
+            DefaultIntBuf.of(1),
+            DefaultIntBuf.of(2)
+        ),
+        values = arrayOf(
+            1, 2, 3
+        )
     )
-
+    
     assertSetEquals(expected, set)
   }
-
+  
   @Test
   fun `make using GeneralDimension 3`() {
     var i = 0
     val set = cnsetFrom(3) { i++ }
     assertEquals(3, set.size)
     val expected = PlainSet(
-      slots = arrayOf(
-        DefaultIntBuf.of(0),
-        DefaultIntBuf.of(1),
-        DefaultIntBuf.of(2)
-      ),
-      values = arrayOf(
-        0, 1, 2
-      )
+        slots = arrayOf(
+            DefaultIntBuf.of(0),
+            DefaultIntBuf.of(1),
+            DefaultIntBuf.of(2)
+        ),
+        values = arrayOf(
+            0, 1, 2
+        )
     )
-
+    
     assertSetEquals(expected, set)
   }
-
+  
   @Test
   fun `make using GeneralDimension 2 x 3`() {
     var i = 0
     val set = cnsetFrom(2 x 3) { i++ }
     val expected = PlainSet(
-      slots = arrayOf(
-        DefaultIntBuf.of(0, 0),
-        DefaultIntBuf.of(0, 1),
-        DefaultIntBuf.of(0, 2),
-        DefaultIntBuf.of(1, 0),
-        DefaultIntBuf.of(1, 1),
-        DefaultIntBuf.of(1, 2)
-      ),
-      values = arrayOf(
-        0, 1, 2, 3, 4, 5
-      )
+        slots = arrayOf(
+            DefaultIntBuf.of(0, 0),
+            DefaultIntBuf.of(0, 1),
+            DefaultIntBuf.of(0, 2),
+            DefaultIntBuf.of(1, 0),
+            DefaultIntBuf.of(1, 1),
+            DefaultIntBuf.of(1, 2)
+        ),
+        values = arrayOf(
+            0, 1, 2, 3, 4, 5
+        )
     )
-
+    
     assertSetEquals(expected, set)
-
+    
   }
-
+  
   @Test
   fun `make using GeneralDimension 2 x 3 x 4`() {
     var i = 0
@@ -142,15 +142,15 @@ class TestCNSet {
           slotList.add(DefaultIntBuf.of(a, b, c))
           valuesList.add(i++)
         }
-
+    
     val expected = PlainSet(
-      slotList.toTypedArray(),
-      valuesList.toTypedArray()
+        slotList.toTypedArray(),
+        valuesList.toTypedArray()
     )
-
+    
     assertSetEquals(expected, set)
   }
-
+  
   @Test
   fun `make using GeneralDimension 2 x 3 x 3`() {
     var i = 0
@@ -164,166 +164,166 @@ class TestCNSet {
           slotList.add(DefaultIntBuf.of(a, b, c))
           valuesList.add(i++)
         }
-
+    
     val expected = PlainSet(
-      slotList.toTypedArray(),
-      valuesList.toTypedArray()
+        slotList.toTypedArray(),
+        valuesList.toTypedArray()
     )
-
+    
     assertSetEquals(expected, set)
     val set2 = set(0)
     println(set2.size)
   }
-
+  
   @Test
   fun `make using GeneralDimension 0(3, 2 x 2)`() {
     var i = 0
     val set = cnsetFrom(0(3, 2 x 2)) { i++ }
     print(set)
     val expected = PlainSet(
-      slots = arrayOf(
-        DefaultIntBuf.of(0, 0),
-        DefaultIntBuf.of(0, 1),
-        DefaultIntBuf.of(0, 2),
-        DefaultIntBuf.of(1, 0, 0),
-        DefaultIntBuf.of(1, 0, 1),
-        DefaultIntBuf.of(1, 1, 0),
-        DefaultIntBuf.of(1, 1, 1)
-      ),
-      values = arrayOf(
-        0, 1, 2, 3, 4, 5, 6
-      )
+        slots = arrayOf(
+            DefaultIntBuf.of(0, 0),
+            DefaultIntBuf.of(0, 1),
+            DefaultIntBuf.of(0, 2),
+            DefaultIntBuf.of(1, 0, 0),
+            DefaultIntBuf.of(1, 0, 1),
+            DefaultIntBuf.of(1, 1, 0),
+            DefaultIntBuf.of(1, 1, 1)
+        ),
+        values = arrayOf(
+            0, 1, 2, 3, 4, 5, 6
+        )
     )
-
+    
     assertSetEquals(expected, set)
   }
-
+  
   @Test
   fun `make using GeneralDimension 2 x { it+1 }`() {
     var i = 0
     val set = cnsetFrom(2 x { it[0] + 1 }) { i++ }
-
+    
     val expected = PlainSet(
-      slots = arrayOf(
-        DefaultIntBuf.of(0, 0),
-        DefaultIntBuf.of(1, 0),
-        DefaultIntBuf.of(1, 1)
-      ),
-      values = arrayOf(
-        0, 1, 2
-      )
+        slots = arrayOf(
+            DefaultIntBuf.of(0, 0),
+            DefaultIntBuf.of(1, 0),
+            DefaultIntBuf.of(1, 1)
+        ),
+        values = arrayOf(
+            0, 1, 2
+        )
     )
-
+    
     assertSetEquals(expected, set)
   }
-
+  
   @Test
   fun `make using Enumerated 0(!3) `() {
     var i = 0
     val set = cnsetFrom(0(!3)) { i++ }
     val expected = PlainSet(
-      slots = arrayOf(
-        DefaultIntBuf.of(0),
-        DefaultIntBuf.of(1),
-        DefaultIntBuf.of(2)
-      ),
-      values = arrayOf(
-        0, 1, 2
-      )
+        slots = arrayOf(
+            DefaultIntBuf.of(0),
+            DefaultIntBuf.of(1),
+            DefaultIntBuf.of(2)
+        ),
+        values = arrayOf(
+            0, 1, 2
+        )
     )
-
+    
     assertSetEquals(expected, set)
   }
-
+  
   @Test
   fun `make using Enumerated 0(!3,!3) `() {
     var i = 0
     val set = cnsetFrom(0(!3, !3)) { i++ }
     val expected = PlainSet(
-      slots = arrayOf(
-        DefaultIntBuf.of(0),
-        DefaultIntBuf.of(1),
-        DefaultIntBuf.of(2),
-        DefaultIntBuf.of(3),
-        DefaultIntBuf.of(4),
-        DefaultIntBuf.of(5)
-      ),
-      values = arrayOf(
-        0, 1, 2, 3, 4, 5
-      )
+        slots = arrayOf(
+            DefaultIntBuf.of(0),
+            DefaultIntBuf.of(1),
+            DefaultIntBuf.of(2),
+            DefaultIntBuf.of(3),
+            DefaultIntBuf.of(4),
+            DefaultIntBuf.of(5)
+        ),
+        values = arrayOf(
+            0, 1, 2, 3, 4, 5
+        )
     )
-
+    
     assertSetEquals(expected, set)
   }
-
+  
   @Test
   fun `make using GeneralDimension 0(!3, !3, 2 x 3) `() {
     var i = 0
     val set = cnsetFrom(0(!3, !3, 2 x 3)) { i++ }
     val expected = PlainSet(
-      slots = arrayOf(
-        DefaultIntBuf.of(0),
-        DefaultIntBuf.of(1),
-        DefaultIntBuf.of(2),
-        DefaultIntBuf.of(3),
-        DefaultIntBuf.of(4),
-        DefaultIntBuf.of(5),
-        DefaultIntBuf.of(6, 0, 0),
-        DefaultIntBuf.of(6, 0, 1),
-        DefaultIntBuf.of(6, 0, 2),
-        DefaultIntBuf.of(6, 1, 0),
-        DefaultIntBuf.of(6, 1, 1),
-        DefaultIntBuf.of(6, 1, 2)
-      ),
-      values = arrayOf(
-        0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11
-      )
+        slots = arrayOf(
+            DefaultIntBuf.of(0),
+            DefaultIntBuf.of(1),
+            DefaultIntBuf.of(2),
+            DefaultIntBuf.of(3),
+            DefaultIntBuf.of(4),
+            DefaultIntBuf.of(5),
+            DefaultIntBuf.of(6, 0, 0),
+            DefaultIntBuf.of(6, 0, 1),
+            DefaultIntBuf.of(6, 0, 2),
+            DefaultIntBuf.of(6, 1, 0),
+            DefaultIntBuf.of(6, 1, 1),
+            DefaultIntBuf.of(6, 1, 2)
+        ),
+        values = arrayOf(
+            0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11
+        )
     )
-
+    
     assertSetEquals(expected, set)
-
+    
   }
-
+  
   @Test
   fun `nset test`() {
     val dim =
-      0(
-        2,
-        2,
-        2,
         0(
-          2,
-          2 x 3 x 4,
-          (2 x 3)(
             2,
-            3 x 4
-          )
+            2,
+            2,
+            0(
+                2,
+                2 x 3 x 4,
+                (2 x 3)(
+                    2,
+                    3 x 4
+                )
+            )
         )
-      )
     compareNSet(dim)
   }
-
+  
   @Test
   fun `nset test2`() {
     val dim = (1 x { 1 x 2 })(1 x 1)
     compareNSet(dim)
   }
-
+  
   @Test
   fun `nset test3`() {
     val dim = (2 x { 3 x 4 } x 4 x { 4 } x 2(3, 3))(2, 3 x 4 x { 1 }, 4)
     compareNSet(dim)
   }
-
-  class PlainSet<T : Any>(
-    val slots: Array<out IntBuf>,
-    val values: Array<T>
+  
+  class PlainSet<T: Any>(
+      val slots: Array<out IntBuf>,
+      val values: Array<T>
   ) {
     val randomValues = values.toMutableList().apply {
       Collections.shuffle(this)
     }
   }
-
+  
   private fun compareNSet(dim: Dimension) {
     var i = 0
     val set = nsetFrom(dim) { i++ }
@@ -341,8 +341,8 @@ class TestCNSet {
                             valueLIst.toTypedArray())
     assertSetEquals(expected, set2)
   }
-
-  private fun <T : Any> assertSetEquals(expected: PlainSet<T>, set: CompactNSet<T>, testCopycat: Boolean = true) {
+  
+  private fun <T: Any> assertSetEquals(expected: PlainSet<T>, set: CompactNSet<T>, testCopycat: Boolean = true) {
     println(set)
     expected.apply {
       assertEquals(values.size, set.size)
@@ -372,7 +372,7 @@ class TestCNSet {
         assertTrue(hashValues.contains(value))
       }
       //test dfs
-
+      
       //test subset
       for (a in 0..slots.lastIndex) {
         val slot = slots[a]

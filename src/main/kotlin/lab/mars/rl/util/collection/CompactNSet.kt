@@ -18,7 +18,7 @@ import java.util.*
 /**
  * 直接使用[elements]构建[NSet]的全部内容
  */
-fun <T : Any> cnsetOf(vararg elements: T): CompactNSet<T> {
+fun <T: Any> cnsetOf(vararg elements: T): CompactNSet<T> {
   val set = CompactNSet<T>(Array<Any>(elements.size) { elements[it] }.buf(0, 0))
   val subtree = set.expand(0, elements.size)
   subtree.offsetEnd = set.data.writePtr - 1
@@ -27,36 +27,36 @@ fun <T : Any> cnsetOf(vararg elements: T): CompactNSet<T> {
 }
 
 val emptyCNSet = CompactNSet<Any>(Array<Any>(1) {}.buf(0, -1))
-inline fun <E : Any> emptyCNSet(): CompactNSet<E> = emptyCNSet as CompactNSet<E>
+inline fun <E: Any> emptyCNSet(): CompactNSet<E> = emptyCNSet as CompactNSet<E>
 
-class CompactNSet<E : Any>
+class CompactNSet<E: Any>
 constructor(internal val data: MutableBuf<Any>, val rootOffset: Int = 0, val subLevel: Int = 0)
   : IndexedCollection<E> {
   private var _size = -1
-
+  
   class SubTree(val size: Int, val offset2nd: Int, var offsetEnd: Int = -1)
-
+  
   val SubTree.lastIndex: Int
     get() = size - 1
-
+  
   /**
    * 不存在[subtrees]为空的情况，如果[subtrees]为空，则必须将此
    * [Cell]替换为[value]
    * @param subtrees 此[Cell]中包含的子树集
    * @param value 此[Cell]存储的值
    */
-  class Cell<E : Any>(val subtrees: MutableBuf<SubTree>, var value: E) {
+  class Cell<E: Any>(val subtrees: MutableBuf<SubTree>, var value: E) {
     inline operator fun get(idx: Int): SubTree {
       if (idx < 0 || idx >= subtrees.size)
         throw IndexOutOfDimensionException()
       return subtrees[idx]
     }
-
+    
     fun copy() = Cell(subtrees, value)
   }
-
-  override fun <T : Any> copycat(element_maker: (Index) -> T)
-    : IndexedCollection<T> {
+  
+  override fun <T: Any> copycat(element_maker: (Index) -> T)
+      : IndexedCollection<T> {
     val new_data = DefaultBuf.new<Any>(data.cap)
     for (a in 0..data.lastIndex)
       new_data.append((data[a] as? Cell<E>)?.copy() ?: data[a])
@@ -67,8 +67,8 @@ constructor(internal val data: MutableBuf<Any>, val rootOffset: Int = 0, val sub
       size
     }
   }
-
-  private inline fun <R : Any> operation(idx: Iterator<Int>, op: (Int, Int) -> R): R {
+  
+  private inline fun <R: Any> operation(idx: Iterator<Int>, op: (Int, Int) -> R): R {
     var offset = rootOffset
     var level = subLevel
     while (true) {
@@ -87,18 +87,18 @@ constructor(internal val data: MutableBuf<Any>, val rootOffset: Int = 0, val sub
     }
     return op(offset, level)
   }
-
-  private inline fun <R : Any> rootElement(d: Int, idx: Iterator<Int>,
-                                           op: () -> R): R {
+  
+  private inline fun <R: Any> rootElement(d: Int, idx: Iterator<Int>,
+                                          op: () -> R): R {
     if (d == 0 && !idx.hasNext())
       return op()
     else
       throw IndexOutOfDimensionException()
   }
-
+  
   fun location(idx: Index): Int =
-    operation(idx.iterator()) { offset, _ -> offset }
-
+      operation(idx.iterator()) { offset, _ -> offset }
+  
   fun _get(idx: Int): E {
     val tmp = data[idx]
     return when (tmp) {
@@ -106,19 +106,19 @@ constructor(internal val data: MutableBuf<Any>, val rootOffset: Int = 0, val sub
       else -> tmp
     } as E
   }
-
+  
   fun _set(idx: Int, s: E) {
     val tmp = data[idx] as? Cell<E>
     if (tmp != null) tmp.value = s
     else data[idx] = s
   }
-
+  
   override fun invoke(subset_dim: Index): IndexedCollection<E> {
     return operation(subset_dim.iterator()) { offset, level ->
       CompactNSet<E>(data, offset, level).apply { size }
     }
   }
-
+  
   override fun at(idx: Int): E {
     require(idx in 0 until _size)
     val tmp = data[rootOffset] as? Cell<E> ?: return data[rootOffset] as E
@@ -126,19 +126,19 @@ constructor(internal val data: MutableBuf<Any>, val rootOffset: Int = 0, val sub
     val subtree = tmp[subLevel]
     return _get(subtree.offset2nd + idx - 1)
   }
-
+  
   override fun get(dim: Index): E =
-    operation(dim.iterator()) { offset, _ -> _get(offset) }
-
+      operation(dim.iterator()) { offset, _ -> _get(offset) }
+  
   override fun set(dim: Index, s: E) =
-    operation(dim.iterator()) { offset, _ -> _set(offset, s) }
-
+      operation(dim.iterator()) { offset, _ -> _set(offset, s) }
+  
   override fun set(element_maker: (Index, E) -> E) {
     dfs(rootOffset, subLevel) { slot, offset ->
       _set(offset, element_maker(slot, _get(offset)))
     }
   }
-
+  
   private fun dfs(offset: Int, end: Int = 0, slot: MutableIntBuf = DefaultIntBuf.new(),
                   visit: (MutableIntBuf, Int) -> Unit) {
     val cell = data[offset] as? Cell<E> ?: return visit(slot, offset)
@@ -159,7 +159,7 @@ constructor(internal val data: MutableBuf<Any>, val rootOffset: Int = 0, val sub
     }
     slot.removeLast(end)
   }
-
+  
   /**
    * 扩展[offset]位置上的leaf node为[size]branch node
    */
@@ -173,9 +173,9 @@ constructor(internal val data: MutableBuf<Any>, val rootOffset: Int = 0, val sub
     data.unfold(size - 1)
     return subtree
   }
-
+  
   override fun indices() = Itr { slot, _ -> slot }
-
+  
   override fun withIndices(): Iterator<tuple2<out IntBuf, E>> {
     var idxElement: tuple2<out IntBuf, E>? = null
     return Itr { slot, e ->
@@ -183,17 +183,17 @@ constructor(internal val data: MutableBuf<Any>, val rootOffset: Int = 0, val sub
       ?: tuple2(slot, e).apply { idxElement = this }
     }
   }
-
+  
   inner class Itr<T>(
-    private val visitor: (IntBuf, E) -> T
-  ) : Iterator<T> {
+      private val visitor: (IntBuf, E) -> T
+  ): Iterator<T> {
     private var offset = rootOffset
     private var visited = 0
     private val stack = LinkedList<tuple2<SubTree, Int>>()
     private val slot = DefaultIntBuf.new()
-
+    
     override fun hasNext() = visited < _size
-
+    
     override fun next(): T {
       //correct the slot
       if (stack.isEmpty())
@@ -215,7 +215,7 @@ constructor(internal val data: MutableBuf<Any>, val rootOffset: Int = 0, val sub
       val e = _get(offset)
       return visitor(slot, e)
     }
-
+    
     private fun deepDown(level: Int = 0) {
       val cell = data[offset] as? Cell<E>
       if (cell != null) {
@@ -227,7 +227,7 @@ constructor(internal val data: MutableBuf<Any>, val rootOffset: Int = 0, val sub
       }
     }
   }
-
+  
   override val size: Int
     get():Int {
       if (_size < 0) {
@@ -246,25 +246,25 @@ constructor(internal val data: MutableBuf<Any>, val rootOffset: Int = 0, val sub
       }
       return _size
     }
-
-  override fun iterator() = object : Iterator<E> {
+  
+  override fun iterator() = object: Iterator<E> {
     val offset2nd: Int
-
+    
     init {
       offset2nd =
-        if (_size <= 1) 0
-        else {
-          val subtree = (data[rootOffset] as Cell<E>)[subLevel]
-          subtree.offset2nd
-        }
+          if (_size <= 1) 0
+          else {
+            val subtree = (data[rootOffset] as Cell<E>)[subLevel]
+            subtree.offset2nd
+          }
     }
-
+    
     var a = 0
     override fun hasNext() = a < _size
-
+    
     override fun next() = _get(if (a == 0) rootOffset else offset2nd + a - 1).apply { a++ }
   }
-
+  
   override fun toString(): String {
     val sb = StringBuilder()
     for ((idx, value) in withIndices()) {

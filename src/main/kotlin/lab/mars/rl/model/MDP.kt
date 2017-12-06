@@ -5,6 +5,7 @@ package lab.mars.rl.model
 import lab.mars.rl.model.impl.mdp.*
 import lab.mars.rl.util.buf.DefaultIntBuf
 import lab.mars.rl.util.collection.emptyNSet
+import org.slf4j.LoggerFactory
 
 /**
  * <p>
@@ -51,6 +52,7 @@ open class Possible<out S: State>(val next: S, val reward: Double) {
   open operator fun component2() = reward
 }
 
+val log = LoggerFactory.getLogger(MDP::class.java)!!
 val null_index = DefaultIntBuf.of(-1)
 val null_state = IndexedState(null_index)
 val null_action = IndexedAction(null_index)

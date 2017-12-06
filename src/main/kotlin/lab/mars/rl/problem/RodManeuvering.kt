@@ -24,7 +24,7 @@ object RodManeuvering {
       }
       return true
     }
-
+    
     fun intersect(p1: Point2D, p2: Point2D): Boolean {
       for (n in 0..v.lastIndex) {
         val a = v[n]
@@ -34,7 +34,7 @@ object RodManeuvering {
       }
       return false
     }
-
+    
     /**
      * implementation of http://www.dcs.gla.ac.uk/~pat/52233/slides/Geometry1x1.pdf
      */
@@ -52,24 +52,24 @@ object RodManeuvering {
       }
       return o1 != o2 && o3 != o4
     }
-
+    
     fun orientation(v1: Point2D, v2: Point2D, v3: Point2D): Double {
       val ori = (v2.y - v1.y) * (v3.x - v2.x) - (v3.y - v2.y) * (v2.x - v1.x)
       return signum(ori)
     }
-
+    
     fun range(a: Double, b: Double) = if (a < b) a..b else b..a
     fun intersect(a: ClosedRange<Double>, b: ClosedRange<Double>)
-      = a.start in b || a.endInclusive in b || b.start in a || b.endInclusive in a
+        = a.start in b || a.endInclusive in b || b.start in a || b.endInclusive in a
   }
-
+  
   val rodLength = 100.0
   val rodWidth = 5.0
-
+  
   val rodEdges = DefaultBuf.new<tuple2<Point2D, Point2D>>(4)
-
+  
   val obstacles = DefaultBuf.new<Obstacle>(8)
-
+  
   val width = 400.0
   val height = 400.0
   val resolution = 20
@@ -77,7 +77,7 @@ object RodManeuvering {
   val unit_x = width / resolution
   val unit_y = height / resolution
   val unit_rotation = Math.PI / rotation_resolution
-
+  
   init {
     rodEdges.apply {
       append(tuple2(Point2D(-rodWidth / 2, -rodLength / 2), Point2D(rodWidth / 2, -rodLength / 2)))
@@ -85,7 +85,7 @@ object RodManeuvering {
       append(tuple2(Point2D(rodWidth / 2, rodLength / 2), Point2D(-rodWidth / 2, rodLength / 2)))
       append(tuple2(Point2D(-rodWidth / 2, rodLength / 2), Point2D(-rodWidth / 2, -rodLength / 2)))
     }
-
+    
     obstacles.apply {
       append(Obstacle(Point2D(82.0, 273.0), Point2D(86.0, 187.0), Point2D(157.0, 238.0), Point2D(153.0, 326.0)))
       append(Obstacle(Point2D(87.0, 156.0), Point2D(36.0, 122.0), Point2D(97.0, 135.0), Point2D(150.0, 170.0)))
@@ -102,7 +102,7 @@ object RodManeuvering {
       append(Obstacle(Point2D(-10.0, 400.0), Point2D(410.0, 400.0), Point2D(410.0, 410.0), Point2D(-10.0, 410.0)))
     }
   }
-
+  
   fun intersect(x: Double, y: Double, rotation: Double): Boolean {
     for (obstacle in obstacles) {
       if (obstacle.contains(x, y))
@@ -116,10 +116,10 @@ object RodManeuvering {
     }
     return false
   }
-
+  
   fun Point2D.rotate(angleRad: Double)
-    = Point2D(x * cos(angleRad) - y * sin(angleRad), x * sin(angleRad) + y * cos(angleRad))
-
+      = Point2D(x * cos(angleRad) - y * sin(angleRad), x * sin(angleRad) + y * cos(angleRad))
+  
   fun make(): IndexedMDP {
     val mdp = mdpOf(gamma = 0.95, state_dim = resolution x resolution x rotation_resolution, action_dim = 6)
     return mdp.apply {
@@ -146,28 +146,28 @@ object RodManeuvering {
             } else
               s_next = s
             possibles = cnsetOf(
-              if (s_next === goal) IndexedPossible(s_next, 1.0, 1.0)
-              else IndexedPossible(s_next, 0.0, 1.0))
+                if (s_next === goal) IndexedPossible(s_next, 1.0, 1.0)
+                else IndexedPossible(s_next, 0.0, 1.0))
           }
-
+          
           this[0].assign(s[0], s[1], s[2] - 1)//turn clockwise
           this[1].assign(s[0], s[1], s[2] + 1)//turn counter-clockwise
-
+          
           var nextPos = Point2D(x, y).add(Point2D(0.0, unit_y).rotate(rotation))
           var nx = floor(nextPos.x / unit_x).toInt()
           var ny = floor(nextPos.y / unit_y).toInt()
           this[2].assign(nx, ny, s[2])//move forward along the long axis
-
+          
           nextPos = Point2D(x, y).add(Point2D(0.0, -unit_y).rotate(rotation))
           nx = floor(nextPos.x / unit_x).toInt()
           ny = floor(nextPos.y / unit_y).toInt()
           this[3].assign(nx, ny, s[2])//move backward along the long axis
-
+          
           nextPos = Point2D(x, y).add(Point2D(unit_x, 0.0).rotate(rotation))
           nx = floor(nextPos.x / unit_x).toInt()
           ny = floor(nextPos.y / unit_y).toInt()
           this[4].assign(nx, ny, s[2])//move forward perpendicular to the long axis
-
+          
           nextPos = Point2D(x, y).add(Point2D(-unit_x, 0.0).rotate(rotation))
           nx = floor(nextPos.x / unit_x).toInt()
           ny = floor(nextPos.y / unit_y).toInt()
@@ -177,7 +177,7 @@ object RodManeuvering {
       started = { states(3, 13, 0).rand() }
     }
   }
-
+  
   fun currentStatus(s: IndexedState): Triple<Double, Double, Double> {
     val x = unit_x * (s[0] + 0.5)
     val y = unit_y * (s[1] + 0.5)

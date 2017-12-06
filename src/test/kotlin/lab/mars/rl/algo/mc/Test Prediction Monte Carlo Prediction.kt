@@ -6,22 +6,18 @@ import lab.mars.rl.util.format
 import lab.mars.rl.util.printBlackjack
 import org.junit.Test
 
-class `Test Prediction MC` {
+class `Test Prediction Monte Carlo Prediction` {
   @Test
   fun `Blackjack`() {
-    val (prob, PI) = Blackjack.make()
-    val algo = MonteCarlo(prob, PI)
-    algo.episodes = 500000
-    val V = algo.prediction()
-    printBlackjack(prob, PI, V)
+    val (prob, π) = Blackjack.make()
+    val V = prob.`Monte Carlo Prediction`(π, 500000)
+    printBlackjack(prob, π, V)
   }
-
+  
   @Test
   fun `RandomWalk`() {
-    val (prob, PI) = RandomWalk.make()
-    val algo = MonteCarlo(prob, PI)
-    algo.episodes = 1000
-    val V = algo.prediction()
+    val (prob, π) = RandomWalk.make()
+    val V = prob.`Monte Carlo Prediction`(π, 1000)
     prob.apply {
       for (s in states) {
         println("${V[s].format(2)} ")

@@ -36,10 +36,10 @@ fun MutableIntBuf.increment(dim: IntArray) {
 /**
  * 直接使用[elements]构建[NSet]的全部内容
  */
-inline fun <T : Any> nsetOf(vararg elements: T) = NSet<T>(intArrayOf(elements.size), intArrayOf(1), Array(elements.size) { elements[it] })
+inline fun <T: Any> nsetOf(vararg elements: T) = NSet<T>(intArrayOf(elements.size), intArrayOf(1), Array(elements.size) { elements[it] })
 
 val emptyNSet = NSet<Any>(IntArray(0), IntArray(0), Array(0) {})
-inline fun <E : Any> emptyNSet(): NSet<E> = emptyNSet as NSet<E>
+inline fun <E: Any> emptyNSet(): NSet<E> = emptyNSet as NSet<E>
 
 /**
  * 1. 可以定义任意维的多维数组，并使用`[]`进行取值赋值
@@ -54,34 +54,34 @@ inline fun <E : Any> emptyNSet(): NSet<E> = emptyNSet as NSet<E>
  * @param stride 各维度在一维数组上的跨度
  * @param root 根节点一维数组
  */
-class NSet<E : Any>(private val dim: IntArray, private val stride: IntArray, private val root: Array<Any>) :
-  ExtendableRAC<E> {
-  override fun <T : Any> copycat(element_maker: (Index) -> T): IndexedCollection<T> {
+class NSet<E: Any>(private val dim: IntArray, private val stride: IntArray, private val root: Array<Any>):
+    ExtendableRAC<E> {
+  override fun <T: Any> copycat(element_maker: (Index) -> T): IndexedCollection<T> {
     val index = DefaultIntBuf.zero(dim.size)
     return NSet(dim, stride, Array(root.size) {
       copycat(root[it], index, element_maker)
-        .apply { index.increment(dim) }
+          .apply { index.increment(dim) }
     })
   }
-
-  private fun <T : Any> copycat(prototype: Any, index: DefaultIntBuf, element_maker: (IntBuf) -> T): Any =
-    when (prototype) {
-      is NSet<*> -> {
-        index.append(prototype.dim.size, 0)
-        NSet<T>(prototype.dim, prototype.stride, Array(prototype.root.size) {
-          copycat(prototype.root[it], index, element_maker)
-            .apply { index.increment(prototype.dim) }
-        }).apply { index.removeLast(prototype.dim.size) }
+  
+  private fun <T: Any> copycat(prototype: Any, index: DefaultIntBuf, element_maker: (IntBuf) -> T): Any =
+      when (prototype) {
+        is NSet<*> -> {
+          index.append(prototype.dim.size, 0)
+          NSet<T>(prototype.dim, prototype.stride, Array(prototype.root.size) {
+            copycat(prototype.root[it], index, element_maker)
+                .apply { index.increment(prototype.dim) }
+          }).apply { index.removeLast(prototype.dim.size) }
+        }
+        else -> element_maker(index)
       }
-      else -> element_maker(index)
-    }
-
-  override fun <T : Any> raw_set(element_maker: (Index, E) -> T) {
+  
+  override fun <T: Any> raw_set(element_maker: (Index, E) -> T) {
     val index = DefaultIntBuf.new()
     reset(this, index, element_maker)
   }
-
-  private fun <T : Any> reset(sub: NSet<E>, index: DefaultIntBuf, element_maker: (IntBuf, E) -> T) {
+  
+  private fun <T: Any> reset(sub: NSet<E>, index: DefaultIntBuf, element_maker: (IntBuf, E) -> T) {
     index.append(sub.dim.size, 0)
     for (a in 0 until sub.root.size) {
       val tmp = sub.root[a] as? NSet<E>
@@ -93,8 +93,8 @@ class NSet<E : Any>(private val dim: IntArray, private val stride: IntArray, pri
     }
     index.removeLast(sub.dim.size)
   }
-
-  private fun <T : Any> get_or_set(idxIter: Iterator<Int>, op: (Any) -> Any): T {
+  
+  private fun <T: Any> get_or_set(idxIter: Iterator<Int>, op: (Any) -> Any): T {
     var offset = 0
     for (a in 0 until dim.size) {
       if (!idxIter.hasNext())
@@ -104,7 +104,7 @@ class NSet<E : Any>(private val dim: IntArray, private val stride: IntArray, pri
         throw IndexOutOfDimensionException()
       offset += value * stride[a]
     }
-
+    
     return if (!idxIter.hasNext()) {
       root[offset] = op(root[offset])
       root[offset] as T
@@ -113,40 +113,40 @@ class NSet<E : Any>(private val dim: IntArray, private val stride: IntArray, pri
       sub.get_or_set(idxIter, op)
     }
   }
-
+  
   override fun ifAny(block: IndexedCollection<E>.(IndexedCollection<E>) -> Unit) {
     if (!root.isEmpty()) block(this, this)
   }
-
+  
   override fun isEmpty() = root.isEmpty()
-
+  
   override fun get(dim: Index): E = _get(dim)
-
+  
   override fun set(dim: Index, s: E) {
     _set(dim, s)
   }
-
+  
   override fun set(subset_dim: Index, s: IndexedCollection<E>) {
     _set(subset_dim, s)
   }
-
+  
   override fun invoke(subset_dim: Index): IndexedCollection<E> = _get(subset_dim)
-
-  private fun <T : Any> _get(idx: Index): T = get_or_set(idx.iterator()) { it }
-
-  private fun <T : Any> _set(idx: Index, s: T) {
+  
+  private fun <T: Any> _get(idx: Index): T = get_or_set(idx.iterator()) { it }
+  
+  private fun <T: Any> _set(idx: Index, s: T) {
     get_or_set<T>(idx.iterator()) { s }
   }
-
+  
   override fun toString(): String {
     val sb = StringBuilder()
     for ((idx, value) in withIndices())
       sb.append("$idx=$value").append("\n")
     return sb.toString()
   }
-
+  
   override fun iterator() = GeneralIterator<E>().apply { traverser = Traverser(this, {}, {}, {}, { it }) }
-
+  
   override fun indices() = GeneralIterator<Index>().apply {
     val index = DefaultIntBuf.zero(this.set.dim.size).apply { this[lastIndex] = -1 }
     traverser = Traverser(this,
@@ -160,7 +160,7 @@ class NSet<E : Any>(private val dim: IntArray, private val stride: IntArray, pri
                           translate = { index.increment(current.set.dim) },
                           visitor = { index })
   }
-
+  
   override fun withIndices(): Iterator<tuple2<out Index, E>> = GeneralIterator<tuple2<out IntBuf, E>>().apply {
     val index = DefaultIntBuf.zero(this.set.dim.size).apply { this[lastIndex] = -1 }
     var tuple2: tuple2<out IntBuf, E>? = null
@@ -180,8 +180,8 @@ class NSet<E : Any>(private val dim: IntArray, private val stride: IntArray, pri
                             tmp
                           })
   }
-
-  inner class GeneralIterator<out T> : Iterator<T> {
+  
+  inner class GeneralIterator<out T>: Iterator<T> {
     /**
      * @param current 当前正待着的节点
      * @param forward 移到了未探索过的更深的节点
@@ -194,22 +194,22 @@ class NSet<E : Any>(private val dim: IntArray, private val stride: IntArray, pri
                           val backward: Traverser.() -> Unit,
                           val translate: Traverser.() -> Unit,
                           val visitor: Traverser.(E) -> T)
-
+    
     internal lateinit var traverser: Traverser
     private var visited = -1
     internal val set = this@NSet
     private var parent: GeneralIterator<T> = this
-
+    
     override fun hasNext() = dfs({ true }, { false })
-
+    
     override fun next() =
-      dfs({ traverser.current.increment();traverser.visitor(traverser, it) }, { throw NoSuchElementException() })
-
+        dfs({ traverser.current.increment();traverser.visitor(traverser, it) }, { throw NoSuchElementException() })
+    
     private inline fun increment(): Int {
       traverser.translate(traverser)
       return visited++
     }
-
+    
     private inline fun <T> dfs(element: (E) -> T, nomore: () -> T): T {
       while (true) {
         while (traverser.current.visited + 1 < traverser.current.set.root.size) {
@@ -222,7 +222,7 @@ class NSet<E : Any>(private val dim: IntArray, private val stride: IntArray, pri
         traverser.current = traverser.current.parent
       }
     }
-
+    
     private inline fun inspect_next_type(next: Any?): NSet<E>? {
       val next_type = next as? NSet<E>
       next_type?.apply {

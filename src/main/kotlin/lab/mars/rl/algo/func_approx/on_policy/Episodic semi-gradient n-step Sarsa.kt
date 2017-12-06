@@ -2,22 +2,23 @@
 
 package lab.mars.rl.algo.func_approx.on_policy
 
-import lab.mars.rl.algo.func_approx.FunctionApprox
-import lab.mars.rl.algo.func_approx.FunctionApprox.Companion.log
 import lab.mars.rl.algo.ntd.MAX_N
 import lab.mars.rl.model.*
 import lab.mars.rl.util.buf.newBuf
 import lab.mars.rl.util.log.debug
 import lab.mars.rl.util.math.Σ
 import lab.mars.rl.util.matrix.times
-import org.apache.commons.math3.util.FastMath.min
-import org.apache.commons.math3.util.FastMath.pow
+import org.apache.commons.math3.util.FastMath.*
 
-fun <E> FunctionApprox.`Episodic semi-gradient n-step Sarsa control`(q: ApproximateFunction<E>, n: Int) {
+fun <E> MDP.`Episodic semi-gradient n-step Sarsa control`(q: ApproximateFunction<E>, π: Policy,
+                                                          n: Int,
+                                                          α: Double,
+                                                          episodes: Int = 10000,
+                                                          episodeListener: (Int, Int) -> Unit = { _, _ -> }) {
   val _R = newBuf<Double>(min(n + 1, MAX_N))
   val _S = newBuf<State>(min(n + 1, MAX_N))
   val _A = newBuf<Action<State>>(min(n + 1, MAX_N))
-
+  
   for (episode in 1..episodes) {
     log.debug { "$episode/$episodes" }
     var step = 0

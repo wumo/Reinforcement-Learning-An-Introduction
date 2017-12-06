@@ -13,22 +13,21 @@ class `Test Optimal Dyna-Q+` {
   @Test
   fun `Dyna Maze`() {
     val prob = DynaMaze.make()
-    val algo = `Dyna-Q+`(prob)
-    algo.episodes = 1000
-    algo.n = 10
     val latch = CountDownLatch(1)
-
+    
     thread {
       latch.await()
-      algo.stepListener = { V, s ->
-        GridWorldUI.render(V, s)
-      }
-      val (PI, _, _) = algo.optimal()
+      val (π) = prob.`Dyna-Q+`(
+          episodes = 1000,
+          n = 10,
+          stepListener = { V, s ->
+            GridWorldUI.render(V, s)
+          })
       var s = prob.started()
       var count = 0
       print(s)
       while (s.isNotTerminal) {
-        val a = argmax(s.actions) { PI[s, it] }
+        val a = argmax(s.actions) { π[s, it] }
         val possible = a.sample()
         s = possible.next
         count++

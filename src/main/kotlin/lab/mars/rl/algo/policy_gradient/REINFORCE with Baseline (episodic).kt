@@ -1,7 +1,5 @@
 package lab.mars.rl.algo.policy_gradient
 
-import lab.mars.rl.algo.func_approx.FunctionApprox
-import lab.mars.rl.algo.func_approx.FunctionApprox.Companion.log
 import lab.mars.rl.model.*
 import lab.mars.rl.model.impl.func.LinearFunc
 import lab.mars.rl.util.buf.newBuf
@@ -10,9 +8,10 @@ import lab.mars.rl.util.math.rand
 import lab.mars.rl.util.matrix.times
 import lab.mars.rl.util.matrix.Σ
 
-fun <E> FunctionApprox.`REINFORCE with Baseline (episodic)`(
-  π: ApproximateFunction<E>, α_θ: Double,
-  v: ApproximateFunction<E>, α_w: Double) {
+fun <E> MDP.`REINFORCE with Baseline (episodic)`(
+    π: ApproximateFunction<E>, α_θ: Double,
+    v: ApproximateFunction<E>, α_w: Double,
+    episodes: Int) {
   for (episode in 1..episodes) {
     log.debug { "$episode/$episodes" }
     var step = 0
@@ -21,7 +20,7 @@ fun <E> FunctionApprox.`REINFORCE with Baseline (episodic)`(
     val S = newBuf<State>()
     val A = newBuf<Action<State>>()
     val R = newBuf<Double>()
-
+    
     S.append(s)
     R.append(0.0)
     var accu = 0.0

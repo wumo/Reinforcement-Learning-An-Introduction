@@ -4,15 +4,14 @@ import ch.qos.logback.classic.Level
 import javafx.application.Application
 import kotlinx.coroutines.experimental.runBlocking
 import lab.mars.rl.algo.eligibility_trace.prediction.`Off-line λ-return`
-import lab.mars.rl.algo.func_approx.FunctionApprox
-import lab.mars.rl.model.impl.func.*
+import lab.mars.rl.model.impl.func.LinearFunc
+import lab.mars.rl.model.impl.func.SimpleTileCoding
 import lab.mars.rl.model.impl.mdp.IndexedState
 import lab.mars.rl.problem.`19-state RandomWalk`
 import lab.mars.rl.util.*
 import lab.mars.rl.util.tuples.tuple2
 import lab.mars.rl.util.ui.*
-import org.apache.commons.math3.util.FastMath.pow
-import org.apache.commons.math3.util.FastMath.sqrt
+import org.apache.commons.math3.util.FastMath.*
 import org.junit.Test
 
 class `Test Prediction Off-line λ-return` {
@@ -26,7 +25,7 @@ class `Test Prediction Off-line λ-return` {
     realV[20] = 0.0
     
     val λs = listOf(0.0, 0.4, 0.8, 0.9, 0.95, 0.975, 0.99, 1.0)
-    val αs = listOf(110) { it * 0.01 }
+    val αs = listOf(10) { it * 0.1 }
     
     val episodes = 10
     val runs = 100
@@ -45,20 +44,19 @@ class `Test Prediction Off-line λ-return` {
                 SimpleTileCoding(1,
                                  prob.states.size,
                                  1,
-                                 0.0) { (s) -> (s as IndexedState)[0].toDouble() }
-            )
-            val algo = FunctionApprox(prob, π)
-            algo.episodes = episodes
-            algo.α = α
+                                 0.0) { (s) -> (s as IndexedState)[0].toDouble() })
             var rms = 0.0
-            algo.episodeListener = { _, _ ->
-              var error = 0.0
-              for (s in prob.states)
-                error += pow(func(s) - realV[s[0]], 2)
-              error /= prob.states.size
-              rms += sqrt(error)
-            }
-            algo.`Off-line λ-return`(func, λ)
+            prob.`Off-line λ-return`(
+                V = func, π = π,
+                α = α, λ = λ,
+                episodes = episodes,
+                episodeListener = { _, _ ->
+                  var error = 0.0
+                  for (s in prob.states)
+                    error += pow(func(s) - realV[s[0]], 2)
+                  error /= prob.states.size
+                  rms += sqrt(error)
+                })
             println("finish λ=$λ α=$α run=$run")
             rms
           }.await { rms_sum += it }

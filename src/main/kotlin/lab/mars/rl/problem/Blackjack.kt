@@ -20,17 +20,17 @@ object Blackjack {
   private lateinit var win: IndexedState
   private lateinit var draw: IndexedState
   private lateinit var lose: IndexedState
-
+  
   private const val reward_win = 1.0
   private const val reward_draw = 0.0
   private const val reward_lose = -1.0
-
+  
   private const val ace_idx = 1
   private const val dealer_idx = 2
   private const val player_idx = 3
   private const val player_offset = 12
   private const val dealer_offset = 1
-
+  
   fun make(): IndexedProblem {
     val mdp = CNSetMDP(gamma = 1.0, state_dim = 0(3, 2 x 10 x 10), action_dim = { if (it[0] == 0) 1 else 2 })
     mdp.apply {
@@ -56,7 +56,7 @@ object Blackjack {
         policy1[s, s.actions[1]] = 1.0
     return Pair(mdp, IndexedPolicy(policy1))
   }
-
+  
   private fun IndexedMDP.sticks(s: IndexedState) = {
     var dealer = s[dealer_idx] + dealer_offset
     var usableAceDealer = dealer == 1
@@ -90,7 +90,7 @@ object Blackjack {
     } else//deal goes bust
       IndexedPossible(win, reward_win, 1.0)
   }
-
+  
   private fun IndexedMDP.hits(s: IndexedState) = {
     var player = s[player_idx] + player_offset
     val card = drawCard()
@@ -111,7 +111,7 @@ object Blackjack {
       }
     }
   }
-
+  
   private fun drawCard(): Int {
     val index = Rand().nextInt(playingCard.size)
     val card = playingCard[index]

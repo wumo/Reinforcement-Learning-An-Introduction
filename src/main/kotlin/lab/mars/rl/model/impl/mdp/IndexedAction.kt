@@ -8,14 +8,14 @@ import lab.mars.rl.util.buf.IntBuf
 import lab.mars.rl.util.collection.emptyNSet
 import lab.mars.rl.util.math.Rand
 
-class IndexedAction(val index: IntBuf) : Index(), Action<IndexedState> {
+class IndexedAction(val index: IntBuf): Index(), Action<IndexedState> {
   inline override val size: Int
     get() = index.size
-
+  
   inline override operator fun get(idx: Int) = index[idx]
-
+  
   var possibles: PossibleSet = emptyNSet()
-
+  
   override var sample = outer@ {
     if (possibles.isEmpty()) throw NoSuchElementException()
     val p = Rand().nextDouble()

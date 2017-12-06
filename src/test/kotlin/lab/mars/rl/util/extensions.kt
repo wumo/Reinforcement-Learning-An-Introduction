@@ -31,7 +31,7 @@ fun <R> asyncs(size: Int, init: suspend (Int) -> R): ArrayList<Deferred<R>> {
     list += async {
       init(i)
     }
-
+  
   return list
 }
 
@@ -41,7 +41,7 @@ fun <I, R> asyncs(iter: Iterable<I>, init: suspend (I) -> R): ArrayList<Deferred
     list += async {
       init(i)
     }
-
+  
   return list
 }
 

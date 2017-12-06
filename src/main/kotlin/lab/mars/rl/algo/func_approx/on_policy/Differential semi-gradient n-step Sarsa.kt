@@ -2,20 +2,21 @@
 
 package lab.mars.rl.algo.func_approx.on_policy
 
-import lab.mars.rl.algo.func_approx.FunctionApprox
 import lab.mars.rl.algo.ntd.MAX_N
 import lab.mars.rl.model.*
 import lab.mars.rl.util.buf.newBuf
 import lab.mars.rl.util.math.Σ
 import lab.mars.rl.util.matrix.times
-import org.apache.commons.math3.util.FastMath.min
+import org.apache.commons.math3.util.FastMath.*
 
-fun <E> FunctionApprox.`Differential semi-gradient n-step Sarsa`(q: ApproximateFunction<E>, n: Int, β: Double) {
+fun <E> MDP.`Differential semi-gradient n-step Sarsa`(q: ApproximateFunction<E>, π: Policy,
+                                                      n: Int,
+                                                      α: Double, β: Double) {
   var average_reward = 0.0
   val _R = newBuf<Double>(min(n, MAX_N))
   val _S = newBuf<State>(min(n, MAX_N))
   val _A = newBuf<Action<State>>(min(n, MAX_N))
-
+  
   var t = 0
   val s = started()
   var a = π(s)

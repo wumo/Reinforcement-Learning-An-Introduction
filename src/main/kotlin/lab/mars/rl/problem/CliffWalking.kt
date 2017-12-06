@@ -10,10 +10,10 @@ object CliffWalking {
   val world_height = 4
   val world_width = 12
   val move = arrayOf(
-    intArrayOf(0, 1), //up
-    intArrayOf(0, -1), //down
-    intArrayOf(-1, 0), //left
-    intArrayOf(1, 0)//right
+      intArrayOf(0, 1), //up
+      intArrayOf(0, -1), //down
+      intArrayOf(-1, 0), //left
+      intArrayOf(1, 0)//right
   )
   val desc_move = arrayOf(" ↑", " ↓", "←", "→")
   fun make(): IndexedMDP {
@@ -25,11 +25,11 @@ object CliffWalking {
       goal.actions = emptyNSet()
       started = { states(0, 0).rand() }
       val startedState = states[0, 0]
-
+      
       //cliff
       for (x in 1 until world_width - 1)
         states[x, 0].actions = emptyNSet()
-
+      
       for (s in states) {
         if (s.isTerminal) continue
         for (a in s.actions) {
@@ -55,7 +55,7 @@ object CliffWalking {
           a.possibles = cnsetOf(IndexedPossible(next, if (next === startedState) -100.0 else -1.0, 1.0))
         }
       }
-
+      
     }
   }
 }

@@ -6,8 +6,6 @@ import ch.qos.logback.classic.Level
 import javafx.application.Application
 import kotlinx.coroutines.experimental.channels.Channel
 import kotlinx.coroutines.experimental.runBlocking
-import lab.mars.rl.algo.func_approx.FunctionApprox
-import lab.mars.rl.algo.td.TemporalDifference
 import lab.mars.rl.algo.td.`Tabular TD(0)`
 import lab.mars.rl.model.ApproximateFunction
 import lab.mars.rl.model.impl.func.*
@@ -16,29 +14,27 @@ import lab.mars.rl.model.isTerminal
 import lab.mars.rl.problem.`1000-state RandomWalk`
 import lab.mars.rl.util.*
 import lab.mars.rl.util.ui.*
-import org.apache.commons.math3.util.FastMath
+import org.apache.commons.math3.util.FastMath.*
 import org.junit.Test
 
 class Test {
   @Test
   fun `Fourier basis vs polynomials`() {
     logLevel(Level.ERROR)
-
-    val (prob, PI) = `1000-state RandomWalk`.make()
-    val algo = TemporalDifference(prob, PI)
-    algo.episodes = 100000
-    val V = algo.`Tabular TD(0)`()
-
+    
+    val (prob, π) = `1000-state RandomWalk`.make()
+    val V = prob.`Tabular TD(0)`(π = π, episodes = 100000, α = 0.1)
+    
     fun RMS(f: ApproximateFunction<Double>): Double {
       var result = 0.0
       for (s in prob.states) {
         if (s.isTerminal) continue
-        result += FastMath.pow(V[s] - f(s), 2)
+        result += pow(V[s] - f(s), 2)
       }
       result /= prob.states.size
-      return FastMath.sqrt(result)
+      return sqrt(result)
     }
-
+    
     val chart = chart("RMS", "episode", "RMS")
     val episodes = 5000
     val runs = 5
@@ -52,15 +48,15 @@ class Test {
       asyncs(0..1, orders) { func_id, order ->
         val errors = DoubleArray(episodes) { 0.0 }
         asyncs(runs) {
-          val algo = FunctionApprox(prob, PI)
-          algo.episodes = episodes
-          algo.α = alphas[func_id]
           val _errors = DoubleArray(episodes) { 0.0 }
           val func = LinearFunc(func_maker[func_id](order))
-          algo.episodeListener = { episode, _ ->
-            _errors[episode - 1] += RMS(func)
-          }
-          algo.`Gradient Monte Carlo algorithm`(func)
+          prob.`Gradient Monte Carlo algorithm`(
+              v = func, π = π,
+              episodes = episodes,
+              α = alphas[func_id],
+              episodeListener = { episode, _ ->
+                _errors[episode - 1] += RMS(func)
+              })
           _errors
         }.await {
           it.forEachIndexed { episode, e ->

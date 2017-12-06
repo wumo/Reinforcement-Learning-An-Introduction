@@ -22,14 +22,14 @@ import lab.mars.rl.problem.RodManeuvering.width
 import lab.mars.rl.util.math.max
 import java.util.concurrent.CyclicBarrier
 
-class RodManeuveringUI : Application() {
+class RodManeuveringUI: Application() {
   lateinit var canvas: Canvas
-
+  
   companion object {
     var after: () -> Unit = {}
     var render: (StateValueFunction, IndexedState) -> Unit = { _, _ -> }
   }
-
+  
   override fun start(ps: Stage?) {
     val primaryStage = ps!!
     primaryStage.title = "Drawing Operations Test"
@@ -42,7 +42,7 @@ class RodManeuveringUI : Application() {
     render = this::render
     after()
   }
-
+  
   fun drawMap() {
     val gc = canvas.graphicsContext2D
     gc.stroke = Color.BLACK
@@ -55,7 +55,7 @@ class RodManeuveringUI : Application() {
       }
     }
   }
-
+  
   val barrier = CyclicBarrier(2)
   var max = 1.0
   var min = 0.0
@@ -80,11 +80,11 @@ class RodManeuveringUI : Application() {
         val p2 = edge._2.rotate(rotation).add(x, y)
         gc.strokeLine(p1.x, p1.y, p2.x, p2.y)
       }
-
+      
       drawMap()
       barrier.await()
     }
     barrier.await()
   }
-
+  
 }

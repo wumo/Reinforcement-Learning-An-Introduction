@@ -7,10 +7,8 @@ import org.junit.Test
 class `Test Optimal MC Exploring Starts` {
   @Test
   fun `Blackjack`() {
-    val (prob, policy1) = Blackjack.make()
-    val algo = MonteCarlo(prob, policy1)
-    algo.episodes = 1000000
-    val (PI, V, _) = algo.`Optimal Exploring Starts`()
+    val (prob, π) = Blackjack.make()
+    val (PI, V) = prob.`Optimal Exploring Starts`(π, 1000000)
     printBlackjack(prob, PI, V)
   }
 }

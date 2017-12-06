@@ -1,21 +1,23 @@
+@file:Suppress("NAME_SHADOWING")
+
 package lab.mars.rl.algo.ntd
 
 import lab.mars.rl.algo.V_from_Q
 import lab.mars.rl.algo.`ε-greedy`
-import lab.mars.rl.algo.ntd.NStepTemporalDifference.Companion.log
 import lab.mars.rl.model.impl.mdp.*
 import lab.mars.rl.model.isTerminal
+import lab.mars.rl.model.log
 import lab.mars.rl.util.buf.newBuf
 import lab.mars.rl.util.log.debug
 import lab.mars.rl.util.math.Σ
 import lab.mars.rl.util.tuples.tuple3
-import org.apache.commons.math3.util.FastMath.min
+import org.apache.commons.math3.util.FastMath.*
 
-fun NStepTemporalDifference.`off-policy n-step Q(σ)`(α: (IndexedState, IndexedAction) -> Double = { _, _ -> this.α }): OptimalSolution {
-  val b = indexedMdp.equiprobablePolicy()
-  val π = indexedMdp.equiprobablePolicy()
-  val Q = indexedMdp.QFunc { 0.0 }
-
+fun IndexedMDP.`N-step off-policy n-step Q(σ)`(n: Int, σ: (Int) -> Int, ε: Double, episodes: Int, α: (IndexedState, IndexedAction) -> Double): OptimalSolution {
+  val b = equiprobablePolicy()
+  val π = equiprobablePolicy()
+  val Q = QFunc { 0.0 }
+  
   val _Q = newBuf<Double>(min(n, MAX_N))
   val _π = newBuf<Double>(min(n, MAX_N))
   val ρ = newBuf<Double>(min(n, MAX_N))
@@ -23,7 +25,7 @@ fun NStepTemporalDifference.`off-policy n-step Q(σ)`(α: (IndexedState, Indexed
   val δ = newBuf<Double>(min(n, MAX_N))
   val _S = newBuf<IndexedState>(min(n, MAX_N))
   val _A = newBuf<IndexedAction>(min(n, MAX_N))
-
+  
   for (episode in 1..episodes) {
     log.debug { "$episode/$episodes" }
     var n = n
@@ -31,7 +33,7 @@ fun NStepTemporalDifference.`off-policy n-step Q(σ)`(α: (IndexedState, Indexed
     var t = 0
     var s = started()
     var a = b(s)
-
+    
     _Q.clear(); _Q.append(0.0)
     _π.clear(); _π.append(π[s, a])
     ρ.clear();ρ.append(π[s, a] / b[s, a])
@@ -39,7 +41,7 @@ fun NStepTemporalDifference.`off-policy n-step Q(σ)`(α: (IndexedState, Indexed
     δ.clear()
     _S.clear();_S.append(s)
     _A.clear();_A.append(a)
-
+    
     do {
       if (t >= n) {//最多存储n个
         _Q.removeFirst()
@@ -87,7 +89,7 @@ fun NStepTemporalDifference.`off-policy n-step Q(σ)`(α: (IndexedState, Indexed
     } while (τ < T - 1)
     log.debug { "n=$n,T=$T" }
   }
-  val V = indexedMdp.VFunc { 0.0 }
+  val V = VFunc { 0.0 }
   val result = tuple3(π, V, Q)
   V_from_Q(states, result)
   return result

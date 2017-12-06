@@ -1,14 +1,14 @@
 package lab.mars.rl.algo.func_approx.off_policy
 
-import lab.mars.rl.algo.func_approx.FunctionApprox
-import lab.mars.rl.algo.func_approx.FunctionApprox.Companion.log
-import lab.mars.rl.model.ApproximateFunction
-import lab.mars.rl.model.isNotTerminal
+import lab.mars.rl.model.*
 import lab.mars.rl.util.log.debug
 import lab.mars.rl.util.math.Σ
 import lab.mars.rl.util.matrix.times
 
-fun <E> FunctionApprox.`Semi-gradient Expected Sarsa`(q: ApproximateFunction<E>) {
+fun <E> MDP.`Semi-gradient Expected Sarsa`(q: ApproximateFunction<E>, π: Policy,
+                                           α: Double,
+                                           episodes: Int = 10000,
+                                           episodeListener: (Int, Int) -> Unit = { _, _ -> }) {
   for (episode in 1..episodes) {
     log.debug { "$episode/$episodes" }
     var step = 0
@@ -25,7 +25,8 @@ fun <E> FunctionApprox.`Semi-gradient Expected Sarsa`(q: ApproximateFunction<E>)
   }
 }
 
-fun <E> FunctionApprox.`Semi-gradient Expected Sarsa`(q: ApproximateFunction<E>, β: Double) {
+fun <E> MDP.`Semi-gradient Expected Sarsa`(q: ApproximateFunction<E>, π: Policy,
+                                           α: Double, β: Double) {
   var average_reward = 0.0
   var s = started()
   while (true) {

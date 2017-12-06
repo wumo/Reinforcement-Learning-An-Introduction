@@ -21,12 +21,12 @@ import lab.mars.rl.util.ui.D3DChartUI.Companion.charts
 import tornadofx.plusAssign
 import java.lang.Math.sin
 
-class D3DChartUI : Application() {
+class D3DChartUI: Application() {
   companion object {
     val charts = mutableListOf<D3DChart>()
     var title: String = ""
   }
-
+  
   class D3DChart(val title: String, val xAxisLabel: String, val yAxisLabel: String, val zAxisLabel: String,
                  val xSample: Int, val ySample: Int,
                  val xRange: ClosedRange<Double>, val yRange: ClosedRange<Double>,
@@ -35,19 +35,19 @@ class D3DChartUI : Application() {
                  val height: Double = 10.0,
                  val depth: Double = 5.0,
                  val value: (Double, Double) -> Double)
-
+  
   /**
    * Creates a surface chart for the demo.
    *
    * @return A surface chart.
    */
   private fun createChart(c: D3DChart): SubScene {
-
+    
     val chart = Chart3DFactory.createSurfaceChart(
-      "",
-      c.title,
-      c.value, c.xAxisLabel, c.zAxisLabel, c.yAxisLabel)
-
+        "",
+        c.title,
+        c.value, c.xAxisLabel, c.zAxisLabel, c.yAxisLabel)
+    
     val plot = chart.plot as XYZPlot
     plot.dimensions = Dimension3D(c.width, c.depth, c.height)
     val xAxis = plot.xAxis
@@ -61,18 +61,18 @@ class D3DChartUI : Application() {
     renderer.colorScale = RainbowScale(Range(c.zRange.start, c.zRange.endInclusive))
     chart.setLegendPosition(LegendAnchor.BOTTOM_RIGHT, Orientation.VERTICAL)
     return SubScene(
-      StackPane(Chart3DViewer(chart)),
-      400.0, 400.0,
-      true,
-      SceneAntialiasing.BALANCED
+        StackPane(Chart3DViewer(chart)),
+        400.0, 400.0,
+        true,
+        SceneAntialiasing.BALANCED
     )
   }
-
+  
   override fun start(stage: Stage?) {
     val flowPane = FlowPane()
     for (chart in charts)
       flowPane += createChart(chart)
-
+    
     val scene = Scene(flowPane, 800.0, 800.0)
     stage!!.scene = scene
     stage.title = title

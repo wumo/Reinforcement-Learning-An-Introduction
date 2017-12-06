@@ -2,8 +2,6 @@
 
 package lab.mars.rl.algo.func_approx.off_policy
 
-import lab.mars.rl.algo.func_approx.FunctionApprox
-import lab.mars.rl.algo.func_approx.FunctionApprox.Companion.log
 import lab.mars.rl.algo.ntd.MAX_N
 import lab.mars.rl.model.*
 import lab.mars.rl.util.buf.newBuf
@@ -11,14 +9,17 @@ import lab.mars.rl.util.log.debug
 import lab.mars.rl.util.math.Π
 import lab.mars.rl.util.math.Σ
 import lab.mars.rl.util.matrix.times
-import org.apache.commons.math3.util.FastMath.min
-import org.apache.commons.math3.util.FastMath.pow
+import org.apache.commons.math3.util.FastMath.*
 
-fun <E> FunctionApprox.`n-step semi-gradient off-policy sarsa episodic`(n: Int, b: Policy, q: ApproximateFunction<E>) {
+fun <E> MDP.`n-step semi-gradient off-policy sarsa episodic`(q: ApproximateFunction<E>, π: Policy, b: Policy,
+                                                             n: Int,
+                                                             α: Double = 1.0,
+                                                             episodes: Int = 10000,
+                                                             episodeListener: (Int, Int) -> Unit = { _, _ -> }) {
   val _R = newBuf<Double>(min(n, MAX_N))
   val _S = newBuf<State>(min(n, MAX_N))
   val _A = newBuf<Action<State>>(min(n, MAX_N))
-
+  
   for (episode in 1..episodes) {
     log.debug { "$episode/$episodes" }
     var step = 0
@@ -65,12 +66,14 @@ fun <E> FunctionApprox.`n-step semi-gradient off-policy sarsa episodic`(n: Int, 
   }
 }
 
-fun <E> FunctionApprox.`n-step semi-gradient off-policy sarsa continuing`(n: Int, b: Policy, β: Double, q: ApproximateFunction<E>) {
+fun <E> MDP.`n-step semi-gradient off-policy sarsa continuing`(q: ApproximateFunction<E>, π: Policy, b: Policy,
+                                                               n: Int,
+                                                               α: Double = 1.0, β: Double) {
   var average_reward = 0.0
   val _R = newBuf<Double>(min(n, MAX_N))
   val _S = newBuf<State>(min(n, MAX_N))
   val _A = newBuf<Action<State>>(min(n, MAX_N))
-
+  
   var t = 0
   val s = started()
   var a = b(s)
@@ -88,7 +91,7 @@ fun <E> FunctionApprox.`n-step semi-gradient off-policy sarsa continuing`(n: Int
     _S.append(s_next)
     a = b(s)
     _A.append(a)
-
+    
     val τ = t - n + 1
     if (τ >= 0) {
       val ρ = Π(1..n) { π[_S[it], _A[it]] / b[_S[it], _A[it]] }

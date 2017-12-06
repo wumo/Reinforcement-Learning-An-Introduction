@@ -2,7 +2,7 @@
 
 package lab.mars.rl.util.buf
 
-abstract class Index : Iterable<Int> {
+abstract class Index: Iterable<Int> {
   val isEmpty: Boolean
     get() = size == 0
   val isNotEmpty: Boolean
@@ -10,24 +10,24 @@ abstract class Index : Iterable<Int> {
   abstract val size: Int
   val lastIndex: Int
     get() = size - 1
-
+  
   /**
    * 获取指定维度[idx]上的数值
    */
   abstract operator fun get(idx: Int): Int
-
+  
   open fun forEach(start: Int = 0, end: Int = lastIndex, block: (Int, Int) -> Unit) {
     for (i in start..end)
       block(i, get(i))
   }
-
-  override fun iterator() = object : Iterator<Int> {
+  
+  override fun iterator() = object: Iterator<Int> {
     var a = 0
     override fun hasNext() = a < size
-
+    
     override fun next() = get(a++)
   }
-
+  
   override fun toString(): String {
     val sb = StringBuilder()
     sb.append("[")
@@ -39,7 +39,7 @@ abstract class Index : Iterable<Int> {
     sb.append("]")
     return sb.toString()
   }
-
+  
   override fun equals(other: Any?): Boolean {
     if (this === other) return true
     if (other !is Index) return false
@@ -48,7 +48,7 @@ abstract class Index : Iterable<Int> {
       if (get(a) != other[a]) return false
     return true
   }
-
+  
   override fun hashCode(): Int {
     if (isEmpty) return 0
     var result = get(0)
@@ -58,13 +58,13 @@ abstract class Index : Iterable<Int> {
   }
 }
 
-class MultiIndex(internal val indices: Array<Index>) : Index() {
+class MultiIndex(internal val indices: Array<Index>): Index() {
   override fun forEach(start: Int, end: Int, block: (Int, Int) -> Unit) {
     var start_index = -1
     var start_index_offset = 0
     var end_index = -1
     var end_index_offset = 0
-
+    
     locate(start) { idx, dim ->
       start_index = idx; start_index_offset = dim
     }
@@ -89,7 +89,7 @@ class MultiIndex(internal val indices: Array<Index>) : Index() {
       }
     }
   }
-
+  
   private inline fun locate(dim: Int, start_Idx: Int = 0, block: (Int, Int) -> Unit) {
     var _dim = dim
     for (i in start_Idx until indices.size) {
@@ -101,7 +101,7 @@ class MultiIndex(internal val indices: Array<Index>) : Index() {
     }
     throw IndexOutOfBoundsException()
   }
-
+  
   private inline fun iterate(start: Int, count: Int, idx: Int, start_offset: Int, end_offset: Int = Int.MAX_VALUE, block: (Int, Int) -> Unit): Int {
     var _count = count
     val index = indices[idx]
@@ -109,14 +109,14 @@ class MultiIndex(internal val indices: Array<Index>) : Index() {
       block(start + _count++, index[i])
     return _count
   }
-
+  
   override val size: Int = indices.sumBy { it.size }
-
-  override fun iterator() = object : Iterator<Int> {
+  
+  override fun iterator() = object: Iterator<Int> {
     var a = 0
     var b = 0
     override fun hasNext() = a < indices.size && b < indices[a].size
-
+    
     override fun next(): Int {
       val result = indices[a][b]
       b++
@@ -126,9 +126,9 @@ class MultiIndex(internal val indices: Array<Index>) : Index() {
       }
       return result
     }
-
+    
   }
-
+  
   override fun get(idx: Int): Int {
     var _dim = idx
     for (index in indices)

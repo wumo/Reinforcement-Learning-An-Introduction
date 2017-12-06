@@ -2,18 +2,20 @@
 
 package lab.mars.rl.algo.func_approx.off_policy
 
-import lab.mars.rl.algo.func_approx.FunctionApprox
 import lab.mars.rl.algo.ntd.MAX_N
-import lab.mars.rl.algo.ntd.NStepTemporalDifference.Companion.log
 import lab.mars.rl.model.*
 import lab.mars.rl.util.buf.newBuf
 import lab.mars.rl.util.log.debug
 import lab.mars.rl.util.math.Σ
 import lab.mars.rl.util.matrix.times
-import org.apache.commons.math3.util.FastMath.min
+import org.apache.commons.math3.util.FastMath.*
 
-fun <E> FunctionApprox.`off-policy n-step Q(σ) episodic`(n: Int, b: Policy, σ: (Int) -> Int = { 0 },
-                                                         q: ApproximateFunction<E>) {
+fun <E> MDP.`N-step off-policy n-step Q(σ) episodic`(q: ApproximateFunction<E>, π: Policy, b: Policy,
+                                                     n: Int,
+                                                     σ: (Int) -> Int = { 0 },
+                                                     α: Double = 1.0,
+                                                     episodes: Int = 10000,
+                                                     episodeListener: (Int, Int) -> Unit = { _, _ -> }) {
   val _Q = newBuf<Double>(min(n, MAX_N))
   val _π = newBuf<Double>(min(n, MAX_N))
   val ρ = newBuf<Double>(min(n, MAX_N))
@@ -21,7 +23,7 @@ fun <E> FunctionApprox.`off-policy n-step Q(σ) episodic`(n: Int, b: Policy, σ:
   val δ = newBuf<Double>(min(n, MAX_N))
   val _S = newBuf<State>(min(n, MAX_N))
   val _A = newBuf<Action<State>>(min(n, MAX_N))
-
+  
   for (episode in 1..episodes) {
     log.debug { "$episode/$episodes" }
     var step = 0
@@ -30,7 +32,7 @@ fun <E> FunctionApprox.`off-policy n-step Q(σ) episodic`(n: Int, b: Policy, σ:
     var t = 0
     var s = started()
     var a = b(s)
-
+    
     _Q.clear(); _Q.append(0.0)
     _π.clear(); _π.append(π[s, a])
     ρ.clear();ρ.append(π[s, a] / b[s, a])
@@ -38,7 +40,7 @@ fun <E> FunctionApprox.`off-policy n-step Q(σ) episodic`(n: Int, b: Policy, σ:
     δ.clear()
     _S.clear();_S.append(s)
     _A.clear();_A.append(a)
-
+    
     do {
       step++
       if (t >= n) {//最多存储n个
@@ -89,8 +91,10 @@ fun <E> FunctionApprox.`off-policy n-step Q(σ) episodic`(n: Int, b: Policy, σ:
   }
 }
 
-fun <E> FunctionApprox.`off-policy n-step Q(σ) continuing`(n: Int, b: Policy, σ: (Int) -> Int = { 0 }, β: Double
-                                                           , q: ApproximateFunction<E>) {
+fun <E> MDP.`N-step off-policy n-step Q(σ) continuing`(q: ApproximateFunction<E>, π: Policy, b: Policy,
+                                                       n: Int,
+                                                       σ: (Int) -> Int = { 0 },
+                                                       α: Double = 1.0, β: Double) {
   var average_reward = 0.0
   val _Q = newBuf<Double>(min(n, MAX_N))
   val _π = newBuf<Double>(min(n, MAX_N))
@@ -99,11 +103,11 @@ fun <E> FunctionApprox.`off-policy n-step Q(σ) continuing`(n: Int, b: Policy, �
   val δ = newBuf<Double>(min(n, MAX_N))
   val _S = newBuf<State>(min(n, MAX_N))
   val _A = newBuf<Action<State>>(min(n, MAX_N))
-
+  
   var t = 0
   var s = started()
   var a = b(s)
-
+  
   _Q.clear(); _Q.append(0.0)
   _π.clear(); _π.append(π[s, a])
   ρ.clear();ρ.append(π[s, a] / b[s, a])
@@ -111,7 +115,7 @@ fun <E> FunctionApprox.`off-policy n-step Q(σ) continuing`(n: Int, b: Policy, �
   δ.clear()
   _S.clear();_S.append(s)
   _A.clear();_A.append(a)
-
+  
   while (true) {
     if (t >= n) {//最多存储n个
       _Q.removeFirst()

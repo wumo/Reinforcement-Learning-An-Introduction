@@ -1,13 +1,13 @@
 package lab.mars.rl.algo.func_approx.on_policy
 
-import lab.mars.rl.algo.func_approx.FunctionApprox
-import lab.mars.rl.algo.func_approx.FunctionApprox.Companion.log
-import lab.mars.rl.model.ApproximateFunction
-import lab.mars.rl.model.isNotTerminal
+import lab.mars.rl.model.*
 import lab.mars.rl.util.log.debug
 import lab.mars.rl.util.matrix.times
 
-fun <E> FunctionApprox.`Episodic semi-gradient Sarsa control`(q: ApproximateFunction<E>) {
+fun <E> MDP.`Episodic semi-gradient Sarsa control`(q: ApproximateFunction<E>, π: Policy,
+                                                   episodes: Int,
+                                                   α: Double,
+                                                   episodeListener: (Int, Int) -> Unit = { _, _ -> }) {
   for (episode in 1..episodes) {
     log.debug { "$episode/$episodes" }
     var step = 0

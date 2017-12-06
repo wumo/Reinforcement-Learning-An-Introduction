@@ -2,12 +2,11 @@ package lab.mars.rl.model.impl.func
 
 import lab.mars.rl.util.matrix.Matrix
 import lab.mars.rl.util.tuples.tuple2
-import org.apache.commons.math3.util.FastMath.ceil
-import org.apache.commons.math3.util.FastMath.floor
+import org.apache.commons.math3.util.FastMath.*
 
 val MAXIMUM_CAPACITY = 1 shl 30
 
-class SuttonTileCoding(numTilesOfEachTiling: Int, _numTilings: Int, conv: (Array<out Any>) -> tuple2<DoubleArray, IntArray>) : Feature<tuple2<DoubleArray, IntArray>>(conv) {
+class SuttonTileCoding(numTilesOfEachTiling: Int, _numTilings: Int, conv: (Array<out Any>) -> tuple2<DoubleArray, IntArray>): Feature<tuple2<DoubleArray, IntArray>>(conv) {
   val numTilings = tableSizeFor(_numTilings)
   override val numOfComponents = numTilings * (numTilesOfEachTiling + 1)
   override fun _invoke(s: tuple2<DoubleArray, IntArray>): Matrix {

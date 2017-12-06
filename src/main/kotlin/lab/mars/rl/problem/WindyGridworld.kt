@@ -11,20 +11,20 @@ object WindyGridworld {
   val world_width = 10
   val wind = intArrayOf(0, 0, 0, 1, 1, 1, 2, 2, 1, 0)//wind strength for each column
   val move = arrayOf(
-    intArrayOf(0, 1), //up
-    intArrayOf(0, -1), //down
-    intArrayOf(-1, 0), //left
-    intArrayOf(1, 0)//right
+      intArrayOf(0, 1), //up
+      intArrayOf(0, -1), //down
+      intArrayOf(-1, 0), //left
+      intArrayOf(1, 0)//right
   )
   val kingMove = arrayOf(
-    intArrayOf(0, 1), //up
-    intArrayOf(0, -1), //down
-    intArrayOf(-1, 0), //left
-    intArrayOf(1, 0),//right
-    intArrayOf(-1, 1), //up
-    intArrayOf(1, 1), //down
-    intArrayOf(1, -1), //left
-    intArrayOf(-1, -1)//right
+      intArrayOf(0, 1), //up
+      intArrayOf(0, -1), //down
+      intArrayOf(-1, 0), //left
+      intArrayOf(1, 0),//right
+      intArrayOf(-1, 1), //up
+      intArrayOf(1, 1), //down
+      intArrayOf(1, -1), //left
+      intArrayOf(-1, -1)//right
   )
   val desc_move = arrayOf(" ↑", " ↓", "←", "→")
   val desc_king_move = arrayOf(" ↑", " ↓", "←", "→", "↖", "↗", "↘", "↙")

@@ -2,16 +2,19 @@ package lab.mars.rl.algo.td
 
 import lab.mars.rl.algo.V_from_Q
 import lab.mars.rl.algo.`ε-greedy`
-import lab.mars.rl.algo.td.TemporalDifference.Companion.log
 import lab.mars.rl.model.impl.mdp.*
 import lab.mars.rl.model.isNotTerminal
+import lab.mars.rl.model.log
 import lab.mars.rl.util.log.debug
 import lab.mars.rl.util.tuples.tuple3
 
-fun TemporalDifference.sarsa(α: (IndexedState, IndexedAction) -> Double = { _, _ -> this.α }): OptimalSolution {
-  val π = IndexedPolicy(indexedMdp.QFunc { 0.0 })
-  val Q = indexedMdp.QFunc { 0.0 }
-
+fun IndexedMDP.sarsa(
+    ε: Double,
+    episodes: Int,
+    α: (IndexedState, IndexedAction) -> Double): OptimalSolution {
+  val π = IndexedPolicy(QFunc { 0.0 })
+  val Q = QFunc { 0.0 }
+  
   for (episode in 1..episodes) {
     log.debug { "$episode/$episodes" }
     var s = started()
@@ -31,7 +34,7 @@ fun TemporalDifference.sarsa(α: (IndexedState, IndexedAction) -> Double = { _, 
       }
     }
   }
-  val V = indexedMdp.VFunc { 0.0 }
+  val V = VFunc { 0.0 }
   val result = tuple3(π, V, Q)
   V_from_Q(states, result)
   return result

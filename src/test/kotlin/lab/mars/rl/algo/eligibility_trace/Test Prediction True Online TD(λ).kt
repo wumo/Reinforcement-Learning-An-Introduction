@@ -4,15 +4,14 @@ import ch.qos.logback.classic.Level
 import javafx.application.Application
 import kotlinx.coroutines.experimental.runBlocking
 import lab.mars.rl.algo.eligibility_trace.prediction.`True Online TD(λ) prediction`
-import lab.mars.rl.algo.func_approx.FunctionApprox
-import lab.mars.rl.model.impl.func.*
+import lab.mars.rl.model.impl.func.LinearFunc
+import lab.mars.rl.model.impl.func.SimpleTileCoding
 import lab.mars.rl.model.impl.mdp.IndexedState
 import lab.mars.rl.problem.`19-state RandomWalk`
 import lab.mars.rl.util.*
 import lab.mars.rl.util.tuples.tuple2
 import lab.mars.rl.util.ui.*
-import org.apache.commons.math3.util.FastMath.pow
-import org.apache.commons.math3.util.FastMath.sqrt
+import org.apache.commons.math3.util.FastMath.*
 import org.junit.Test
 
 class `Test Prediction True Online TDλ` {
@@ -46,18 +45,18 @@ class `Test Prediction True Online TDλ` {
                                  1,
                                  0.0) { (s) -> (s as IndexedState)[0].toDouble() }
             )
-            val algo = FunctionApprox(prob, π)
-            algo.episodes = episodes
-            algo.α = α
             var rms = 0.0
-            algo.episodeListener = { _, _ ->
-              var error = 0.0
-              for (s in prob.states)
-                error += pow(func(s) - realV[s[0]], 2)
-              error /= prob.states.size
-              rms += sqrt(error)
-            }
-            algo.`True Online TD(λ) prediction`(func, λ)
+            prob.`True Online TD(λ) prediction`(
+                Vfunc = func, π = π,
+                α = α, λ = λ,
+                episodes = episodes,
+                episodeListener = { _, _ ->
+                  var error = 0.0
+                  for (s in prob.states)
+                    error += pow(func(s) - realV[s[0]], 2)
+                  error /= prob.states.size
+                  rms += sqrt(error)
+                })
             println("finish λ=$λ α=$α run=$run")
             rms
           }.await { rms_sum += it }

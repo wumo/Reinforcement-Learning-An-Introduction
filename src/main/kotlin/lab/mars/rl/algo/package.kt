@@ -29,7 +29,7 @@ fun Q_from_V(gamma: Double, states: StateSet, pvq: OptimalSolution) {
     Q[s, a] = Σ(a.possibles) { probability * (reward + gamma * V[next]) }
 }
 
-fun average_alpha(indexedMdp: IndexedMDP): (IndexedState, IndexedAction) -> Double {
+fun average_α(indexedMdp: IndexedMDP): (IndexedState, IndexedAction) -> Double {
   val N = indexedMdp.QFunc { 0 }
   return { s, a ->
     N[s, a]++
@@ -37,44 +37,44 @@ fun average_alpha(indexedMdp: IndexedMDP): (IndexedState, IndexedAction) -> Doub
   }
 }
 
-fun `ε-greedy`(s: IndexedState, Q: ActionValueFunction, policy: IndexedPolicy, ε: Double) {
+fun `ε-greedy`(s: IndexedState, Q: ActionValueFunction, π: IndexedPolicy, ε: Double) {
   val a_opt = argmax(s.actions) { Q[s, it] }
   val size = s.actions.size
   for (a in s.actions) {
-    policy[s, a] = when {
+    π[s, a] = when {
       a === a_opt -> 1 - ε + ε / size
       else -> ε / size
     }
   }
 }
 
-fun `ε-greedy`(s: IndexedState, evaluate: Gettable<Action<State>, Double>, q: IndexedPolicy, ε: Double) {
+fun `ε-greedy`(s: IndexedState, evaluate: Gettable<Action<State>, Double>, π: IndexedPolicy, ε: Double) {
   val a_opt = argmax(s.actions) { evaluate[it] }
   val size = s.actions.size
   for (a in s.actions) {
-    q[s, a] = when {
+    π[s, a] = when {
       a === a_opt -> 1 - ε + ε / size
       else -> ε / size
     }
   }
 }
 
-fun <E> `ε-greedy`(s: IndexedState, Q: ApproximateFunction<E>, policy: IndexedPolicy, ε: Double) {
+fun <E> `ε-greedy`(s: IndexedState, Q: ApproximateFunction<E>, π: IndexedPolicy, ε: Double) {
   val a_opt = argmax(s.actions) { Q(s, it) }
   val size = s.actions.size
   for (a in s.actions) {
-    policy[s, a] = when {
+    π[s, a] = when {
       a === a_opt -> 1 - ε + ε / size
       else -> ε / size
     }
   }
 }
 
-fun `ε-greedy (tie broken randomly)`(s: IndexedState, Q: ActionValueFunction, policy: IndexedPolicy, ε: Double) {
+fun `ε-greedy (tie broken randomly)`(s: IndexedState, Q: ActionValueFunction, π: IndexedPolicy, ε: Double) {
   val a_opt = argmax_tie_random(s.actions) { Q[s, it] }
   val size = s.actions.size
   for (a in s.actions) {
-    policy[s, a] = when {
+    π[s, a] = when {
       a === a_opt -> 1 - ε + ε / size
       else -> ε / size
     }

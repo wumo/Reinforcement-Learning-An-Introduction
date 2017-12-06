@@ -1,16 +1,17 @@
 package lab.mars.rl.algo.func_approx.prediction
 
-import lab.mars.rl.algo.func_approx.FunctionApprox
-import lab.mars.rl.algo.func_approx.FunctionApprox.Companion.log
 import lab.mars.rl.model.*
 import lab.mars.rl.util.buf.newBuf
 import lab.mars.rl.util.log.debug
 import lab.mars.rl.util.matrix.times
 
-fun <E> FunctionApprox.`Gradient Monte Carlo algorithm`(v: ApproximateFunction<E>) {
+fun <E> MDP.`Gradient Monte Carlo algorithm`(v: ApproximateFunction<E>, π: Policy,
+                                             episodes: Int,
+                                             α: Double,
+                                             episodeListener: (Int, Int) -> Unit = { _, _ -> }) {
   val _S = newBuf<State>()
   val _R = newBuf<Double>()
-
+  
   for (episode in 1..episodes) {
     log.debug { "$episode/$episodes" }
     var step = 0

@@ -2,18 +2,19 @@
 
 package lab.mars.rl.algo.func_approx.prediction
 
-import lab.mars.rl.algo.func_approx.FunctionApprox
-import lab.mars.rl.algo.func_approx.FunctionApprox.Companion.log
 import lab.mars.rl.algo.ntd.MAX_N
 import lab.mars.rl.model.*
 import lab.mars.rl.util.buf.newBuf
 import lab.mars.rl.util.log.debug
 import lab.mars.rl.util.math.Σ
 import lab.mars.rl.util.matrix.times
-import org.apache.commons.math3.util.FastMath.min
-import org.apache.commons.math3.util.FastMath.pow
+import org.apache.commons.math3.util.FastMath.*
 
-fun <E> FunctionApprox.`n-step semi-gradient TD`(n: Int, v: ApproximateFunction<E>) {
+fun <E> MDP.`n-step semi-gradient TD`(v: ApproximateFunction<E>, π: Policy,
+                                      n: Int,
+                                      episodes: Int,
+                                      α: Double,
+                                      episodeListener: (Int, Int) -> Unit = { _, _ -> }) {
   val _R = newBuf<Double>(min(n, MAX_N))
   val _S = newBuf<State>(min(n, MAX_N))
   for (episode in 1..episodes) {
@@ -34,7 +35,7 @@ fun <E> FunctionApprox.`n-step semi-gradient TD`(n: Int, v: ApproximateFunction<
       }
       if (t < T) {
         val (s_next, reward) = a.sample()
-
+        
         _R.append(reward)
         _S.append(s_next)
         s = s_next

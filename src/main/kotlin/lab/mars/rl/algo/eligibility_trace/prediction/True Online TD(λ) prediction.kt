@@ -1,13 +1,15 @@
 package lab.mars.rl.algo.eligibility_trace.prediction
 
-import lab.mars.rl.algo.func_approx.FunctionApprox
-import lab.mars.rl.algo.func_approx.FunctionApprox.Companion.log
+import lab.mars.rl.model.*
 import lab.mars.rl.model.impl.func.LinearFunc
-import lab.mars.rl.model.isNotTerminal
 import lab.mars.rl.util.log.debug
 import lab.mars.rl.util.matrix.*
 
-fun <E> FunctionApprox.`True Online TD(λ) prediction`(Vfunc: LinearFunc<E>, λ: Double) {
+fun <E> MDP.`True Online TD(λ) prediction`(Vfunc: LinearFunc<E>, λ: Double,
+                                           π: Policy,
+                                           α: Double = 1.0,
+                                           episodes: Int = 10000,
+                                           episodeListener: (Int, Int) -> Unit = { _, _ -> }) {
   val X = Vfunc.x
   val w = Vfunc.w
   val d = X.numOfComponents

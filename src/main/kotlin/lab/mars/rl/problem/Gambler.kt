@@ -2,7 +2,7 @@ package lab.mars.rl.problem
 
 import lab.mars.rl.model.impl.mdp.*
 import lab.mars.rl.util.collection.cnsetOf
-import org.apache.commons.math3.util.FastMath.min
+import org.apache.commons.math3.util.FastMath.*
 
 /**
  * <p>
@@ -13,7 +13,7 @@ import org.apache.commons.math3.util.FastMath.min
  */
 object Gambler {
   val goal_coin = 100
-
+  
   fun make(p_head: Double): IndexedMDP {
     val mdp = CNSetMDP(gamma = 1.0,
                        state_dim = goal_coin + 1,

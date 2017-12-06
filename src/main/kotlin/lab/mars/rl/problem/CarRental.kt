@@ -34,26 +34,26 @@ object CarRental {
   private const val num_idx_prob = 4
   private const val idx_normal = 0
   private const val idx_cumulative = 1
-
+  
   init {
     lambda[idx_prob_rent_L1] = mean_for_rent_L1
     lambda[idx_prob_rent_L2] = mean_for_rent_L2
     lambda[idx_prob_return_L1] = mean_for_return_L1
     lambda[idx_prob_return_L2] = mean_for_return_L2
-
+    
     for (L in 0 until num_idx_prob)
       for (k in 0..max_car) {
         prob[L][k][idx_normal] = poisson(lambda[L], k)
         prob[L][k][idx_cumulative] = if (k < 1) 1.0 else prob[L][k - 1][idx_cumulative] - prob[L][k - 1][idx_normal]
       }
   }
-
+  
   private fun max_move(num_L1: Int, num_L2: Int): Int {
     val max_L1_to_L2 = num_L1 - max(0, num_L1 - max_move)//L1最多能移动的数量
     val accept_L1_to_L2 = min(max_car, num_L2 + max_move) - num_L2//L2最多能接受的数量，超过20无增益。
     return min(max_L1_to_L2, accept_L1_to_L2)
   }
-
+  
   fun make(exercise4_4_version: Boolean): IndexedMDP {
     val mdp = CNSetMDP(gamma = 0.9, state_dim = (max_car + 1) x (max_car + 1)) { idx ->
       val max_L1_to_L2 = max_move(idx[0], idx[1])
@@ -99,12 +99,12 @@ object CarRental {
                   possible.probability += _prob2
               }
           }
-
+        
         action.possibles = possibles
       }
     }
-
+    
     return mdp
-
+    
   }
 }

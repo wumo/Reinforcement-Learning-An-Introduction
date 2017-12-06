@@ -4,11 +4,7 @@ package lab.mars.rl.algo.func_approx.prediction
 
 import ch.qos.logback.classic.Level
 import javafx.application.Application
-import kotlinx.coroutines.experimental.async
-import kotlinx.coroutines.experimental.channels.Channel
 import kotlinx.coroutines.experimental.runBlocking
-import lab.mars.rl.algo.func_approx.FunctionApprox
-import lab.mars.rl.algo.td.TemporalDifference
 import lab.mars.rl.algo.td.`Tabular TD(0)`
 import lab.mars.rl.model.ApproximateFunction
 import lab.mars.rl.model.impl.func.*
@@ -23,14 +19,12 @@ import org.apache.commons.math3.util.FastMath.*
 import org.junit.Test
 
 class `Tile Coding` {
-
+  
   @Test
   fun `Tile Coding`() {
     val chart = chart("samples", "state", "value")
-    val (prob, PI) = `1000-state RandomWalk`.make()
-    val algo = TemporalDifference(prob, PI)
-    algo.episodes = 100000
-    val V = algo.`Tabular TD(0)`()
+    val (prob, π) = `1000-state RandomWalk`.make()
+    val V = prob.`Tabular TD(0)`(π = π, episodes = 100000, α = 0.1)
     prob.apply {
       val line = line("TD")
       for (s in states) {
@@ -39,7 +33,7 @@ class `Tile Coding` {
       }
       chart += line
     }
-
+    
     val alpha = 1e-4
     val numOfTilings = 50
     val feature = SimpleTileCoding(numOfTilings,
@@ -47,10 +41,7 @@ class `Tile Coding` {
                                    ceil(`1000-state RandomWalk`.num_states / 5.0).toInt(),
                                    4.0) { (s) -> ((s as IndexedState)[0] - 1).toDouble() }
     val func = LinearFunc(feature)
-    val algo2 = FunctionApprox(prob, PI)
-    algo2.episodes = 100000
-    algo2.α = alpha / numOfTilings
-    algo2.`Gradient Monte Carlo algorithm`(func)
+    prob.`Gradient Monte Carlo algorithm`(func, π = π, episodes = 100000, α = alpha / numOfTilings)
     prob.apply {
       val line = line("Tile Coding")
       for (s in states) {
@@ -62,16 +53,14 @@ class `Tile Coding` {
     D2DChart.charts += chart
     Application.launch(ChartApp::class.java)
   }
-
+  
   @Test
   fun `Tile Coding RMS`() {
     logLevel(Level.ERROR)
-
-    val (prob, PI) = `1000-state RandomWalk`.make()
-    val algo = TemporalDifference(prob, PI)
-    algo.episodes = 100000
-    val V = algo.`Tabular TD(0)`()
-
+    
+    val (prob, π) = `1000-state RandomWalk`.make()
+    val V = prob.`Tabular TD(0)`(π = π, episodes = 100000, α = 0.1)
+    
     fun RMS(f: ApproximateFunction<Double>): Double {
       var result = 0.0
       for (s in prob.states) {
@@ -81,7 +70,7 @@ class `Tile Coding` {
       result /= prob.states.size
       return FastMath.sqrt(result)
     }
-
+    
     val chart = chart("RMS", "episode", "RMS")
     val episodes = 10000
     val runs = 5
@@ -92,20 +81,20 @@ class `Tile Coding` {
         val errors = DoubleArray(episodes)
         asyncs(runs) {
           val func = LinearFunc(
-            SimpleTileCoding(
-              numOfTiling,
-              5,
-              ceil(prob.states.size / 5.0).toInt(),
-              4.0) { (s) -> ((s as IndexedState)[0] - 1).toDouble() }
+              SimpleTileCoding(
+                  numOfTiling,
+                  5,
+                  ceil(prob.states.size / 5.0).toInt(),
+                  4.0) { (s) -> ((s as IndexedState)[0] - 1).toDouble() }
           )
-          val algo = FunctionApprox(prob, PI)
-          algo.α = alpha / numOfTiling
-          algo.episodes = episodes
           val _errors = DoubleArray(episodes)
-          algo.episodeListener = { episode, _ ->
-            _errors[episode - 1] += RMS(func)
-          }
-          algo.`Gradient Monte Carlo algorithm`(func)
+          prob.`Gradient Monte Carlo algorithm`(
+              v = func, π = π,
+              episodes = episodes,
+              α = alpha / numOfTiling,
+              episodeListener = { episode, _ ->
+                _errors[episode - 1] += RMS(func)
+              })
           _errors
         }.await {
           it.forEachIndexed { episode, e ->
@@ -124,14 +113,12 @@ class `Tile Coding` {
     D2DChart.charts += chart
     Application.launch(ChartApp::class.java)
   }
-
+  
   @Test
   fun `Sutton Tile Coding `() {
     val chart = chart("samples", "state", "value")
-    val (prob, PI) = `1000-state RandomWalk`.make()
-    val algo = TemporalDifference(prob, PI)
-    algo.episodes = 100000
-    val V = algo.`Tabular TD(0)`()
+    val (prob, π) = `1000-state RandomWalk`.make()
+    val V = prob.`Tabular TD(0)`(π = π, episodes = 100000, α = 0.1)
     prob.apply {
       val line = line("TD")
       for (s in states) {
@@ -140,19 +127,15 @@ class `Tile Coding` {
       }
       chart += line
     }
-
+    
     val alpha = 1e-4
     val numOfTilings = 32
-
+    
     val feature = SuttonTileCoding(5, numOfTilings) { (s) ->
       tuple2(doubleArrayOf((s as IndexedState)[0] * 5.0 / `1000-state RandomWalk`.num_states), intArrayOf())
     }
-
     val func = LinearFunc(feature)
-    val algo2 = FunctionApprox(prob, PI)
-    algo2.episodes = 100000
-    algo2.α = alpha / numOfTilings
-    algo2.`Gradient Monte Carlo algorithm`(func)
+    prob.`Gradient Monte Carlo algorithm`(v = func, π = π, episodes = 100000, α = alpha / numOfTilings)
     prob.apply {
       val line = line("Tile Coding")
       for (s in states) {
@@ -166,16 +149,14 @@ class `Tile Coding` {
     D2DChart.charts += chart
     Application.launch(ChartApp::class.java)
   }
-
+  
   @Test
   fun `Sutton Tile Coding RMS`() {
     logLevel(Level.ERROR)
-
-    val (prob, PI) = `1000-state RandomWalk`.make()
-    val algo = TemporalDifference(prob, PI)
-    algo.episodes = 100000
-    val V = algo.`Tabular TD(0)`()
-
+    
+    val (prob, π) = `1000-state RandomWalk`.make()
+    val V = prob.`Tabular TD(0)`(π = π, episodes = 100000, α = 0.1)
+    
     fun <E> RMS(f: ApproximateFunction<E>): Double {
       var result = 0.0
       for (s in prob.states) {
@@ -185,9 +166,9 @@ class `Tile Coding` {
       result /= prob.states.size
       return sqrt(result)
     }
-
+    
     val chart = chart("RMS", "episode", "RMS")
-
+    
     val episodes = 10000
     val runs = 5
     val alpha = 1e-4
@@ -196,20 +177,20 @@ class `Tile Coding` {
       val numOfTiling = 1
       val errors = DoubleArray(episodes) { 0.0 }
       asyncs(runs) {
-        val algo = FunctionApprox(prob, PI)
-        algo.episodes = episodes
         val _errors = DoubleArray(episodes) { 0.0 }
         val func = LinearFunc(
-          SimpleTileCoding(numOfTiling,
-                           5,
-                           ceil(prob.states.size / 5.0).toInt(),
-                           4.0) { (s) -> ((s as IndexedState)[0] - 1).toDouble() }
+            SimpleTileCoding(numOfTiling,
+                             5,
+                             ceil(prob.states.size / 5.0).toInt(),
+                             4.0) { (s) -> ((s as IndexedState)[0] - 1).toDouble() }
         )
-        algo.α = alpha / numOfTiling
-        algo.episodeListener = { episode, _ ->
-          _errors[episode - 1] += RMS(func)
-        }
-        algo.`Gradient Monte Carlo algorithm`(func)
+        prob.`Gradient Monte Carlo algorithm`(
+            v = func, π = π,
+            episodes = episodes,
+            α = alpha / numOfTiling,
+            episodeListener = { episode, _ ->
+              _errors[episode - 1] += RMS(func)
+            })
         _errors
       }.await {
         it.forEachIndexed { episode, e ->
@@ -217,7 +198,7 @@ class `Tile Coding` {
         }
         println("finish Tile coding ($numOfTiling tilings) run: 1")
       }
-
+      
       val line = line("Tile coding ($numOfTiling tilings) ")
       for (episode in 1..episodes) {
         line[episode] = errors[episode - 1] / runs
@@ -225,23 +206,24 @@ class `Tile Coding` {
       chart += line
       println("finish Tile coding ($numOfTiling tilings)")
     }
-
+    
     runBlocking {
       asyncs(numOfTilings) { numOfTiling ->
         val errors = DoubleArray(episodes) { 0.0 }
         asyncs(runs) {
-          val algo = FunctionApprox(prob, PI)
-          algo.episodes = episodes
           val _errors = DoubleArray(episodes) { 0.0 }
           val func = LinearFunc(
-            SuttonTileCoding(5,
-                             numOfTiling) { (s) -> tuple2(doubleArrayOf((s as IndexedState)[0] * 5.0 / `1000-state RandomWalk`.num_states), intArrayOf()) }
-          )
-          algo.α = alpha / numOfTiling
-          algo.episodeListener = { episode, _ ->
-            _errors[episode - 1] += RMS(func)
-          }
-          algo.`Gradient Monte Carlo algorithm`(func)
+              SuttonTileCoding(5,
+                               numOfTiling) { (s) ->
+                tuple2(doubleArrayOf((s as IndexedState)[0] * 5.0 / `1000-state RandomWalk`.num_states), intArrayOf())
+              })
+          prob.`Gradient Monte Carlo algorithm`(
+              v = func, π = π,
+              episodes = episodes,
+              α = alpha / numOfTiling,
+              episodeListener = { episode, _ ->
+                _errors[episode - 1] += RMS(func)
+              })
           _errors
         }.await {
           it.forEachIndexed { episode, e ->
@@ -249,7 +231,7 @@ class `Tile Coding` {
           }
           println("finish Tile coding ($numOfTiling tilings) run: 1")
         }
-
+        
         val line = line("Tile coding ($numOfTiling tilings) ")
         for (episode in 1..episodes)
           line[episode] = errors[episode - 1] / runs

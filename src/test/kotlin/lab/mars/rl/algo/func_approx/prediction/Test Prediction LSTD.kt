@@ -1,25 +1,22 @@
 package lab.mars.rl.algo.func_approx.prediction
 
 import javafx.application.Application
-import lab.mars.rl.algo.func_approx.FunctionApprox
-import lab.mars.rl.algo.td.*
+import lab.mars.rl.algo.td.`Tabular TD(0)`
 import lab.mars.rl.model.impl.func.LinearFunc
 import lab.mars.rl.model.impl.func.SimpleTileCoding
 import lab.mars.rl.model.impl.mdp.IndexedState
 import lab.mars.rl.problem.`1000-state RandomWalk`
 import lab.mars.rl.util.format
 import lab.mars.rl.util.ui.*
-import org.apache.commons.math3.util.FastMath.ceil
+import org.apache.commons.math3.util.FastMath.*
 import org.junit.Test
 
 class `Test Prediction LSTD` {
   @Test
   fun `1000-state RandomWalk`() {
     val chart = chart("V", "state", "value")
-    val (prob, PI) = `1000-state RandomWalk`.make()
-    val algo = TemporalDifference(prob, PI)
-    algo.episodes = 100000
-    val V = algo.`Tabular TD(0)`()
+    val (prob, π) = `1000-state RandomWalk`.make()
+    val V = prob.`Tabular TD(0)`(π = π, episodes = 100000, α = 0.1)
     prob.apply {
       val line = line("TD")
       for (s in states) {
@@ -28,16 +25,14 @@ class `Test Prediction LSTD` {
       }
       chart += line
     }
-
-    val algo2 = FunctionApprox(prob, PI)
-    algo2.episodes = 100
+    
     val numOfTilings = 50
     val feature = SimpleTileCoding(numOfTilings,
                                    5,
                                    ceil(`1000-state RandomWalk`.num_states / 5.0).toInt(),
                                    4.0) { (s) -> ((s as IndexedState)[0] - 1).toDouble() }
     val func = LinearFunc(feature)
-    algo2.LSTD(func, 1.0)
+    prob.LSTD(vFunc = func, π = π, ε = 1.0, episodes = 100)
     prob.apply {
       val line = line("LSTD")
       for (s in states) {

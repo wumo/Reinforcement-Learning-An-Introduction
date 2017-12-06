@@ -9,13 +9,13 @@ import lab.mars.rl.util.math.Rand
  *
  * @author wumo
  */
-interface Buf<T : Any> : Iterable<T> {
+interface Buf<T: Any>: Iterable<T> {
   /** [end]>=[start] */
   operator fun get(start: Int, end: Int): Buf<T>
-
+  
   fun toTypedArray(): Array<T>
   fun copy(): Buf<T>
-
+  
   val size: Int
   val isEmpty: Boolean
     get() = size == 0
@@ -25,17 +25,17 @@ interface Buf<T : Any> : Iterable<T> {
     get() = size - 1
   val last: T
     get() = get(lastIndex)
-
+  
   /**
    * 获取指定维度[idx]上的数值
    */
   operator fun get(idx: Int): T
-
+  
   fun forEach(start: Int = 0, end: Int = lastIndex, block: (Int, T) -> Unit) {
     for (i in start..end)
       block(i, get(i))
   }
-
+  
   fun equals(other: Buf<T>): Boolean {
     if (this === other) return true
     if (size != other.size) return false
@@ -43,13 +43,13 @@ interface Buf<T : Any> : Iterable<T> {
       if (get(i) != other[i]) return false
     return true
   }
-
-  override fun iterator() = object : Iterator<T> {
+  
+  override fun iterator() = object: Iterator<T> {
     var a = 0
     override fun hasNext() = a < size
-
+    
     override fun next() = get(a++)
   }
-
+  
   fun rand() = get(Rand().nextInt(size))
 }

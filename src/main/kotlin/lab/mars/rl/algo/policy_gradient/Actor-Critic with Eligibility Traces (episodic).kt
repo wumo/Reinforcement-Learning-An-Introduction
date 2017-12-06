@@ -1,16 +1,15 @@
 package lab.mars.rl.algo.policy_gradient
 
-import lab.mars.rl.algo.func_approx.FunctionApprox
-import lab.mars.rl.algo.func_approx.FunctionApprox.Companion.log
 import lab.mars.rl.model.*
 import lab.mars.rl.model.impl.func.LinearFunc
 import lab.mars.rl.util.log.debug
 import lab.mars.rl.util.math.rand
 import lab.mars.rl.util.matrix.*
 
-fun <E> FunctionApprox.`Actor-Critic with Eligibility Traces (episodic)`(
-  π: ApproximateFunction<E>, α_θ: Double, λ_θ: Double,
-  v: ApproximateFunction<E>, α_w: Double, λ_w: Double) {
+fun <E> MDP.`Actor-Critic with Eligibility Traces (episodic)`(
+    π: ApproximateFunction<E>, α_θ: Double, λ_θ: Double,
+    v: ApproximateFunction<E>, α_w: Double, λ_w: Double,
+    episodes: Int) {
   for (episode in 1..episodes) {
     log.debug { "$episode/$episodes" }
     var step = 0

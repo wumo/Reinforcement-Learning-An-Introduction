@@ -7,10 +7,8 @@ import org.junit.Test
 class `Test Monte Carlo Off-policy prediction` {
   @Test
   fun `Blackjack`() {
-    val (prob, PI) = Blackjack.make()
-    val algo = MonteCarlo(prob, PI)
-    algo.episodes = 500000
-    val V = algo.`Off-policy MC prediction`()
-    printBlackjack(prob, PI, V)
+    val (prob, π) = Blackjack.make()
+    val V = prob.`Off-policy MC prediction`(π, 500000)
+    printBlackjack(prob, π, V)
   }
 }
