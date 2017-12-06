@@ -14,8 +14,8 @@ class `Test Optimal n-TD Q(σ)` {
         n = Int.MAX_VALUE,
         σ = { 0 },//same as treebackup
         ε = 0.1,
-        episodes = 1000000,
-        α = average_α(prob))
+        α = average_α(prob),
+        episodes = 1000000)
     printBlackjack(prob, π, V)
   }
   
@@ -26,8 +26,8 @@ class `Test Optimal n-TD Q(σ)` {
         n = Int.MAX_VALUE,
         σ = { 1 },//like off-policy sarsa
         ε = 0.1,
-        episodes = 1000000,
-        α = average_α(prob))
+        α = average_α(prob),
+        episodes = 1000000)
     printBlackjack(prob, π, V)
   }
   
@@ -38,8 +38,8 @@ class `Test Optimal n-TD Q(σ)` {
         n = Int.MAX_VALUE,
         σ = { it % 2 },
         ε = 0.1,
-        episodes = 1000000,
-        α = average_α(prob))
+        α = average_α(prob),
+        episodes = 1000000)
     printBlackjack(prob, π, V)
   }
   
@@ -50,8 +50,8 @@ class `Test Optimal n-TD Q(σ)` {
         n = Int.MAX_VALUE,
         σ = { Rand().nextInt(2) },
         ε = 0.1,
-        episodes = 1000000,
-        α = average_α(prob))
+        α = average_α(prob),
+        episodes = 1000000)
     printBlackjack(prob, π, V)
   }
 }

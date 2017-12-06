@@ -13,10 +13,11 @@ import lab.mars.rl.util.math.Σ
 import lab.mars.rl.util.tuples.tuple3
 import org.apache.commons.math3.util.FastMath.*
 
-fun IndexedMDP.`N-step Sarsa`(n: Int,
-                              ε: Double,
-                              episodes: Int,
-                              α: (IndexedState, IndexedAction) -> Double): OptimalSolution {
+fun IndexedMDP.`N-step Sarsa`(
+    n: Int,
+    ε: Double,
+    α: (IndexedState, IndexedAction) -> Double,
+    episodes: Int): OptimalSolution {
   val π = IndexedPolicy(QFunc { 0.0 })
   val Q = QFunc { 0.0 }
   val _R = newBuf<Double>(min(n, MAX_N))

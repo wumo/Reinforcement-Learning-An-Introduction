@@ -7,11 +7,13 @@ import lab.mars.rl.util.math.Σ
 import lab.mars.rl.util.matrix.times
 import org.apache.commons.math3.util.FastMath.*
 
-fun <E> MDP.`Off-line λ-return`(V: ApproximateFunction<E>, λ: Double,
-                                π: Policy,
-                                α: Double = 1.0,
-                                episodes: Int = 10000,
-                                episodeListener: (Int, Int) -> Unit = { _, _ -> }) {
+fun <E> MDP.`Off-line λ-return`(
+    V: ApproximateFunction<E>,
+    π: Policy,
+    λ: Double,
+    α: Double,
+    episodes: Int,
+    episodeListener: (Int, Int) -> Unit = { _, _ -> }) {
   val R = newBuf<Double>()
   val S = newBuf<State>()
   for (episode in 1..episodes) {

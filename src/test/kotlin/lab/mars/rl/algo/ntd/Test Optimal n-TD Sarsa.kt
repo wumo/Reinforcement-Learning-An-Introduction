@@ -15,8 +15,8 @@ class `Test Optimal n-TD Sarsa` {
     val (π, V) = prob.`N-step Sarsa`(
         n = Int.MAX_VALUE,
         ε = 0.1,
-        episodes = 1000000,
-        α = { _, _ -> 0.1 })
+        α = { _, _ -> 0.1 },
+        episodes = 1000000)
     printBlackjack(prob, π, V)
   }
   
@@ -26,8 +26,8 @@ class `Test Optimal n-TD Sarsa` {
     val (π, V) = prob.`N-step Sarsa`(
         n = Int.MAX_VALUE,
         ε = 0.1,
-        episodes = 1000000,
-        α = { _, _ -> 0.1 })
+        α = { _, _ -> 0.1 },
+        episodes = 1000000)
     printBlackjack(prob, π, V)
   }
   
@@ -37,9 +37,8 @@ class `Test Optimal n-TD Sarsa` {
     val (π) = prob.`N-step Sarsa`(
         n = 10,
         ε = 0.1,
-        episodes = 1000000,
-        α = average_α(prob)
-    )
+        α = average_α(prob),
+        episodes = 1000000)
     var s = prob.started()
     var sum = 0.0
     print(s)

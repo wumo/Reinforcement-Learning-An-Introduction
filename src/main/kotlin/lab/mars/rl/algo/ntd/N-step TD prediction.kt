@@ -13,10 +13,11 @@ import org.apache.commons.math3.util.FastMath.*
 
 val MAX_N = 1024
 
-fun IndexedMDP.`N-step TD prediction`(n: Int, π: IndexedPolicy,
-                                      episodes: Int,
-                                      α: Double,
-                                      episodeListener: (Int, IndexedCollection<Double>) -> Unit = { _, _ -> }): StateValueFunction {
+fun IndexedMDP.`N-step TD prediction`(
+    n: Int, π: IndexedPolicy,
+    α: Double,
+    episodes: Int,
+    episodeListener: (Int, IndexedCollection<Double>) -> Unit = { _, _ -> }): StateValueFunction {
   val V = VFunc { 0.0 }
   val R = newBuf<Double>(min(n, MAX_N))
   val S = newBuf<IndexedState>(min(n, MAX_N))

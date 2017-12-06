@@ -17,9 +17,10 @@ class `Test Optimal Dyna-Q` {
   fun `Blackjack`() {
     val (prob) = Blackjack.make()
     val (π, V) = prob.DynaQ(
+        n = 10,
+        ε = 0.1,
         α = average_α(prob),
-        episodes = 100000,
-        n = 10)
+        episodes = 100000)
     printBlackjack(prob, π, V)
   }
   
@@ -27,9 +28,10 @@ class `Test Optimal Dyna-Q` {
   fun `Dyna Maze`() {
     val prob = DynaMaze.make()
     val (π) = prob.DynaQ(
+        n = 10,
+        ε = 0.1,
         α = average_α(prob),
-        episodes = 100000,
-        n = 10)
+        episodes = 100000)
     var s = prob.started()
     var count = 0
     print(s)
@@ -52,9 +54,10 @@ class `Test Optimal Dyna-Q` {
     thread {
       latch.await()
       val (π) = prob.DynaQ(
+          n = 10,
+          ε = 0.1,
           α = average_α(prob),
           episodes = 100000,
-          n = 10,
           stepListener = { V, s ->
             GridWorldUI.render(V, s)
           })

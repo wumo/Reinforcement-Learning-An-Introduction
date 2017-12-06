@@ -41,7 +41,7 @@ class `Tile Coding` {
                                    ceil(`1000-state RandomWalk`.num_states / 5.0).toInt(),
                                    4.0) { (s) -> ((s as IndexedState)[0] - 1).toDouble() }
     val func = LinearFunc(feature)
-    prob.`Gradient Monte Carlo algorithm`(func, π = π, episodes = 100000, α = alpha / numOfTilings)
+    prob.`Gradient Monte Carlo algorithm`(func, π = π, α = alpha / numOfTilings, episodes = 100000)
     prob.apply {
       val line = line("Tile Coding")
       for (s in states) {
@@ -90,8 +90,8 @@ class `Tile Coding` {
           val _errors = DoubleArray(episodes)
           prob.`Gradient Monte Carlo algorithm`(
               v = func, π = π,
-              episodes = episodes,
               α = alpha / numOfTiling,
+              episodes = episodes,
               episodeListener = { episode, _ ->
                 _errors[episode - 1] += RMS(func)
               })
@@ -135,7 +135,7 @@ class `Tile Coding` {
       tuple2(doubleArrayOf((s as IndexedState)[0] * 5.0 / `1000-state RandomWalk`.num_states), intArrayOf())
     }
     val func = LinearFunc(feature)
-    prob.`Gradient Monte Carlo algorithm`(v = func, π = π, episodes = 100000, α = alpha / numOfTilings)
+    prob.`Gradient Monte Carlo algorithm`(v = func, π = π, α = alpha / numOfTilings, episodes = 100000)
     prob.apply {
       val line = line("Tile Coding")
       for (s in states) {
@@ -186,8 +186,8 @@ class `Tile Coding` {
         )
         prob.`Gradient Monte Carlo algorithm`(
             v = func, π = π,
-            episodes = episodes,
             α = alpha / numOfTiling,
+            episodes = episodes,
             episodeListener = { episode, _ ->
               _errors[episode - 1] += RMS(func)
             })
@@ -219,8 +219,8 @@ class `Tile Coding` {
               })
           prob.`Gradient Monte Carlo algorithm`(
               v = func, π = π,
-              episodes = episodes,
               α = alpha / numOfTiling,
+              episodes = episodes,
               episodeListener = { episode, _ ->
                 _errors[episode - 1] += RMS(func)
               })

@@ -18,8 +18,11 @@ class `Test Optimal Dyna-Q+` {
     thread {
       latch.await()
       val (π) = prob.`Dyna-Q+`(
-          episodes = 1000,
           n = 10,
+          α = { _, _ -> 0.1 },
+          ε = 0.1,
+          κ = 1e-4,
+          episodes = 1000,
           stepListener = { V, s ->
             GridWorldUI.render(V, s)
           })

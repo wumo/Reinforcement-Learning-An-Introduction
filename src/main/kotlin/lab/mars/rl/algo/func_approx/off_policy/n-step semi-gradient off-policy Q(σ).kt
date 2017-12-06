@@ -10,12 +10,13 @@ import lab.mars.rl.util.math.Σ
 import lab.mars.rl.util.matrix.times
 import org.apache.commons.math3.util.FastMath.*
 
-fun <E> MDP.`N-step off-policy n-step Q(σ) episodic`(q: ApproximateFunction<E>, π: Policy, b: Policy,
-                                                     n: Int,
-                                                     σ: (Int) -> Int = { 0 },
-                                                     α: Double = 1.0,
-                                                     episodes: Int = 10000,
-                                                     episodeListener: (Int, Int) -> Unit = { _, _ -> }) {
+fun <E> MDP.`N-step off-policy n-step Q(σ) episodic`(
+    q: ApproximateFunction<E>, π: Policy, b: Policy,
+    n: Int,
+    σ: (Int) -> Int,
+    α: Double,
+    episodes: Int,
+    episodeListener: (Int, Int) -> Unit = { _, _ -> }) {
   val _Q = newBuf<Double>(min(n, MAX_N))
   val _π = newBuf<Double>(min(n, MAX_N))
   val ρ = newBuf<Double>(min(n, MAX_N))

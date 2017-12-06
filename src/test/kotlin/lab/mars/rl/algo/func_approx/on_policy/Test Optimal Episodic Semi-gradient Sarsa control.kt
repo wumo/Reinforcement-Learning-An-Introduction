@@ -35,8 +35,8 @@ class `Test Optimal Episodic Semi-gradient Sarsa control` {
     prob.`Episodic semi-gradient Sarsa control`(
         q = func,
         π = `ε-greedy function policy`(func, 0.0),
-        episodes = 9000,
         α = 0.3 / 8,
+        episodes = 9000,
         episodeListener = { episode, _ ->
           if (episode in episodes) {
             val _feature = SuttonTileCoding(511, 8) { (s, a) ->
@@ -92,8 +92,8 @@ class `Test Optimal Episodic Semi-gradient Sarsa control` {
           prob.`Episodic semi-gradient Sarsa control`(
               q = func,
               π = `ε-greedy function policy`(func, 0.0),
-              episodes = episodes,
               α = α / numTilings,
+              episodes = episodes,
               episodeListener = { episode, step ->
                 steps[episode - 1] += step
               })

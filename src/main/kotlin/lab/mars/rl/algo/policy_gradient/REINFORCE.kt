@@ -8,7 +8,7 @@ import lab.mars.rl.util.math.rand
 import lab.mars.rl.util.matrix.times
 import lab.mars.rl.util.matrix.Σ
 
-fun <E> MDP.REINFORCE(π: ApproximateFunction<E>, episodes: Int, α: Double) {
+fun <E> MDP.REINFORCE(π: ApproximateFunction<E>, α: Double, episodes: Int) {
   for (episode in 1..episodes) {
     log.debug { "$episode/$episodes" }
     var step = 0

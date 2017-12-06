@@ -26,7 +26,7 @@ class `Test Prediction Semi-gradient TD(0)` {
     
     val func = StateAggregation(`1000-state RandomWalk`.num_states + 2,
                                 10) { (s) -> (s as IndexedState)[0] }
-    prob.`Semi-gradient TD(0)`(v = func, π = π, episodes = 100000, α = 2e-4)
+    prob.`Semi-gradient TD(0)`(v = func, π = π, α = 2e-4, episodes = 100000)
     prob.apply {
       val line = line("Semi-gradient TD(0)")
       for (s in states) {

@@ -14,8 +14,11 @@ import lab.mars.rl.util.math.Σ
 import lab.mars.rl.util.tuples.tuple3
 import org.apache.commons.math3.util.FastMath.*
 
-fun IndexedMDP.`N-step off-policy sarsa`(n: Int, episodes: Int, ε: Double,
-                                         α: (IndexedState, IndexedAction) -> Double): OptimalSolution {
+fun IndexedMDP.`N-step off-policy sarsa`(
+    n: Int,
+    ε: Double,
+    α: (IndexedState, IndexedAction) -> Double,
+    episodes: Int): OptimalSolution {
   val b = equiprobablePolicy()
   val π = equiprobablePolicy()
   

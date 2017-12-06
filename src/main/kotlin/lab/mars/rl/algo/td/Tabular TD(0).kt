@@ -5,7 +5,7 @@ import lab.mars.rl.model.isNotTerminal
 import lab.mars.rl.model.log
 import lab.mars.rl.util.log.debug
 
-fun IndexedMDP.`Tabular TD(0)`(π: IndexedPolicy, episodes: Int, α: Double): StateValueFunction {
+fun IndexedMDP.`Tabular TD(0)`(π: IndexedPolicy, α: Double, episodes: Int): StateValueFunction {
   val V = VFunc { 0.0 }
   for (episode in 1..episodes) {
     log.debug { "$episode/$episodes" }

@@ -14,13 +14,14 @@ import org.apache.commons.math3.util.FastMath.*
 import java.util.*
 
 @Suppress("NAME_SHADOWING")
-fun IndexedMDP.PrioritizedSweepingStochasticEnv(α: (IndexedState, IndexedAction) -> Double = { _, _ -> 0.1 },
-                                                θ: Double = 0.0,
-                                                episodes: Int = 10000,
-                                                ε: Double = 0.1,
-                                                n: Int = 10,
-                                                stepListener: (StateValueFunction, IndexedState) -> Unit = { _, _ -> },
-                                                episodeListener: (StateValueFunction) -> Unit = {}): OptimalSolution {
+fun IndexedMDP.PrioritizedSweepingStochasticEnv(
+    n: Int,
+    θ: Double,
+    ε: Double,
+    α: (IndexedState, IndexedAction) -> Double,
+    episodes: Int,
+    stepListener: (StateValueFunction, IndexedState) -> Unit = { _, _ -> },
+    episodeListener: (StateValueFunction) -> Unit = {}): OptimalSolution {
   val π = IndexedPolicy(QFunc { 0.0 })
   val Q = QFunc { 0.0 }
   val PQueue = PriorityQueue(Q.size, Comparator<tuple3<Double, IndexedState, IndexedAction>> { o1, o2 ->

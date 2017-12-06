@@ -13,12 +13,13 @@ import lab.mars.rl.util.tuples.tuple3
 import java.util.*
 
 @Suppress("NAME_SHADOWING")
-fun IndexedMDP.`Dyna-Q-OnPolicy`(α: (IndexedState, IndexedAction) -> Double = { _, _ -> 0.1 },
-                                 episodes: Int = 10000,
-                                 ε: Double = 0.1,
-                                 n: Int = 10,
-                                 stepListener: (StateValueFunction, IndexedState) -> Unit = { _, _ -> },
-                                 episodeListener: (StateValueFunction) -> Unit = {}): OptimalSolution {
+fun IndexedMDP.`Dyna-Q-OnPolicy`(
+    n: Int,
+    ε: Double,
+    α: (IndexedState, IndexedAction) -> Double,
+    episodes: Int,
+    stepListener: (StateValueFunction, IndexedState) -> Unit = { _, _ -> },
+    episodeListener: (StateValueFunction) -> Unit = {}): OptimalSolution {
   val π = IndexedPolicy(QFunc { 0.0 })
   val Q = QFunc { 0.0 }
   val V = VFunc { 0.0 }

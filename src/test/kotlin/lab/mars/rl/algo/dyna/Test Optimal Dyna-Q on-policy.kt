@@ -17,9 +17,10 @@ class `Test Optimal Dyna-Q on-policy` {
   fun `Blackjack`() {
     val (prob) = Blackjack.make()
     val (π, V) = prob.`Dyna-Q-OnPolicy`(
+        n = 10,
+        ε = 0.1,
         α = average_α(prob),
-        episodes = 1000000,
-        n = 10)
+        episodes = 1000000)
     printBlackjack(prob, π, V)
   }
   
@@ -31,9 +32,10 @@ class `Test Optimal Dyna-Q on-policy` {
     thread {
       latch.await()
       val (π) = prob.`Dyna-Q-OnPolicy`(
+          n = 20,
+          ε = 0.1,
           α = average_α(prob),
           episodes = 1000,
-          n = 20,
           stepListener = { V, s ->
             GridWorldUI.render(V, s)
           })
@@ -61,9 +63,10 @@ class `Test Optimal Dyna-Q on-policy` {
     thread {
       latch.await()
       val (π) = prob.`Dyna-Q-OnPolicy`(
+          n = 20,
+          ε = 0.1,
           α = average_α(prob),
           episodes = 1000,
-          n = 20,
           stepListener = { V, s ->
             RodManeuveringUI.render(V, s)
           })

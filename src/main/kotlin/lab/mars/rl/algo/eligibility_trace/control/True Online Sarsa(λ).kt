@@ -5,11 +5,13 @@ import lab.mars.rl.model.impl.func.LinearFunc
 import lab.mars.rl.util.log.debug
 import lab.mars.rl.util.matrix.*
 
-fun <E> MDP.`True Online Sarsa(λ)`(Qfunc: LinearFunc<E>, λ: Double,
-                                   π: Policy,
-                                   α: Double = 1.0,
-                                   episodes: Int = 10000,
-                                   episodeListener: (Int, Int) -> Unit = { _, _ -> }) {
+fun <E> MDP.`True Online Sarsa(λ)`(
+    Qfunc: LinearFunc<E>,
+    π: Policy,
+    λ: Double,
+    α: Double,
+    episodes: Int,
+    episodeListener: (Int, Int) -> Unit = { _, _ -> }) {
   val X = Qfunc.x
   val w = Qfunc.w
   val d = X.numOfComponents

@@ -10,11 +10,12 @@ import lab.mars.rl.util.math.Σ
 import lab.mars.rl.util.matrix.times
 import org.apache.commons.math3.util.FastMath.*
 
-fun <E> MDP.`n-step semi-gradient TD`(v: ApproximateFunction<E>, π: Policy,
-                                      n: Int,
-                                      episodes: Int,
-                                      α: Double,
-                                      episodeListener: (Int, Int) -> Unit = { _, _ -> }) {
+fun <E> MDP.`n-step semi-gradient TD`(
+    v: ApproximateFunction<E>, π: Policy,
+    n: Int,
+    α: Double,
+    episodes: Int,
+    episodeListener: (Int, Int) -> Unit = { _, _ -> }) {
   val _R = newBuf<Double>(min(n, MAX_N))
   val _S = newBuf<State>(min(n, MAX_N))
   for (episode in 1..episodes) {

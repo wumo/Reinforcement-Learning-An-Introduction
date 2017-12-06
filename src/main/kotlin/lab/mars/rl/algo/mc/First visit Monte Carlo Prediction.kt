@@ -5,7 +5,7 @@ import lab.mars.rl.model.isNotTerminal
 import lab.mars.rl.model.log
 import lab.mars.rl.util.log.debug
 
-fun IndexedMDP.`Monte Carlo Prediction`(π: IndexedPolicy, episodes: Int): StateValueFunction {
+fun IndexedMDP.`First Visit Monte Carlo Prediction`(π: IndexedPolicy, episodes: Int): StateValueFunction {
   val V = VFunc { 0.0 }
   val preReturn = VFunc { Double.NaN }
   val count = VFunc { 0 }

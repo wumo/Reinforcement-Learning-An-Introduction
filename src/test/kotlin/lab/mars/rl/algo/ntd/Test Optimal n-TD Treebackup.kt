@@ -11,8 +11,8 @@ class `Test Optimal n-TD Treebackup` {
     val (prob) = Blackjack.make()
     val (π, V) = prob.`N-step Treebackup`(
         n = 4, ε = 0.1,
-        episodes = 1000000,
-        α = { _, _ -> 0.1 })
+        α = { _, _ -> 0.1 },
+        episodes = 1000000)
     printBlackjack(prob, π, V)
   }
   
@@ -21,8 +21,8 @@ class `Test Optimal n-TD Treebackup` {
     val (prob) = Blackjack.make()
     val (π, V) = prob.`N-step Treebackup`(
         n = Int.MAX_VALUE, ε = 0.1,
-        episodes = 1000000,
-        α = average_α(prob))
+        α = average_α(prob),
+        episodes = 1000000)
     printBlackjack(prob, π, V)
   }
   

@@ -9,9 +9,10 @@ import lab.mars.rl.util.log.debug
 import lab.mars.rl.util.math.max
 import lab.mars.rl.util.tuples.tuple3
 
-fun IndexedMDP.RandomSampleOneStepTabularQLearning(α: (IndexedState, IndexedAction) -> Double = { _, _ -> 0.1 },
-                                                   episodes: Int = 10000,
-                                                   ε: Double = 0.1): OptimalSolution {
+fun IndexedMDP.RandomSampleOneStepTabularQLearning(
+    ε: Double,
+    α: (IndexedState, IndexedAction) -> Double,
+    episodes: Int): OptimalSolution {
   
   val Q = QFunc { 0.0 }
   for (episode in 1..episodes) {

@@ -12,13 +12,14 @@ import lab.mars.rl.util.tuples.tuple3
 import org.apache.commons.math3.util.FastMath.*
 
 @Suppress("NAME_SHADOWING")
-fun IndexedMDP.`Dyna-Q+`(α: (IndexedState, IndexedAction) -> Double = { _, _ -> 0.1 },
-                         episodes: Int = 10000,
-                         ε: Double = 0.1,
-                         κ: Double = 1e-4,
-                         n: Int = 10,
-                         stepListener: (StateValueFunction, IndexedState) -> Unit = { _, _ -> },
-                         episodeListener: (StateValueFunction) -> Unit = {}): OptimalSolution {
+fun IndexedMDP.`Dyna-Q+`(
+    α: (IndexedState, IndexedAction) -> Double,
+    ε: Double,
+    κ: Double,
+    n: Int,
+    episodes: Int,
+    stepListener: (StateValueFunction, IndexedState) -> Unit = { _, _ -> },
+    episodeListener: (StateValueFunction) -> Unit = {}): OptimalSolution {
   val null_tuple3 = tuple3(null_state, Double.NaN, 0)
   val π = IndexedPolicy(QFunc { 0.0 })
   val Q = QFunc { 0.0 }

@@ -5,11 +5,13 @@ import lab.mars.rl.util.log.debug
 import lab.mars.rl.util.matrix.Matrix
 import lab.mars.rl.util.matrix.times
 
-fun <E> MDP.`Semi-gradient TD(λ) prediction`(V: ApproximateFunction<E>, λ: Double,
-                                             π: Policy,
-                                             α: Double = 1.0,
-                                             episodes: Int = 10000,
-                                             episodeListener: (Int, Int) -> Unit = { _, _ -> }) {
+fun <E> MDP.`Semi-gradient TD(λ) prediction`(
+    V: ApproximateFunction<E>,
+    π: Policy,
+    λ: Double,
+    α: Double,
+    episodes: Int,
+    episodeListener: (Int, Int) -> Unit = { _, _ -> }) {
   var z = Matrix.column(V.w.size)
   for (episode in 1..episodes) {
     log.debug { "$episode/$episodes" }

@@ -12,12 +12,13 @@ import lab.mars.rl.util.tuples.tuple2
 import lab.mars.rl.util.tuples.tuple3
 
 @Suppress("NAME_SHADOWING")
-fun IndexedMDP.DynaQ(α: (IndexedState, IndexedAction) -> Double = { _, _ -> 0.1 },
-                     episodes: Int = 10000,
-                     ε: Double = 0.1,
-                     n: Int = 10,
-                     stepListener: (StateValueFunction, IndexedState) -> Unit = { _, _ -> },
-                     episodeListener: (StateValueFunction) -> Unit = {}): OptimalSolution {
+fun IndexedMDP.DynaQ(
+    α: (IndexedState, IndexedAction) -> Double,
+    ε: Double,
+    n: Int,
+    episodes: Int,
+    stepListener: (StateValueFunction, IndexedState) -> Unit = { _, _ -> },
+    episodeListener: (StateValueFunction) -> Unit = {}): OptimalSolution {
   val π = IndexedPolicy(QFunc { 0.0 })
   val Q = QFunc { 0.0 }
   val cachedSA = DefaultBuf.new<tuple2<IndexedState, IndexedAction>>(Q.size)

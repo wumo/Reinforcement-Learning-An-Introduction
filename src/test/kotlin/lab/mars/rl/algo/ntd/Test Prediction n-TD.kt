@@ -17,8 +17,7 @@ class `Test Prediction n-TD` {
     val (prob, π) = Blackjack.make()
     val V = prob.`N-step TD prediction`(
         n = 102400, π = π,
-        episodes = 500000,
-        α = 0.1)
+        α = 0.1, episodes = 500000)
     printBlackjack(prob, π, V)
   }
   
@@ -27,7 +26,8 @@ class `Test Prediction n-TD` {
     val (prob, π) = `19-state RandomWalk`.make()
     val V = prob.`N-step TD prediction`(
         n = 8, π = π,
-        episodes = 1000, α = 0.1)
+        α = 0.1,
+        episodes = 1000)
     prob.apply {
       for (s in states) {
         println("${V[s].format(2)} ")
@@ -62,8 +62,8 @@ class `Test Prediction n-TD` {
             var rms = 0.0
             prob.`N-step TD prediction`(
                 n = n, π = π,
-                episodes = episodes,
                 α = α,
+                episodes = episodes,
                 episodeListener = { _, V ->
                   var error = 0.0
                   for (s in prob.states)

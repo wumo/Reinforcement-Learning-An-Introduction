@@ -10,8 +10,8 @@ import lab.mars.rl.util.tuples.tuple3
 
 fun IndexedMDP.sarsa(
     ε: Double,
-    episodes: Int,
-    α: (IndexedState, IndexedAction) -> Double): OptimalSolution {
+    α: (IndexedState, IndexedAction) -> Double,
+    episodes: Int): OptimalSolution {
   val π = IndexedPolicy(QFunc { 0.0 })
   val Q = QFunc { 0.0 }
   

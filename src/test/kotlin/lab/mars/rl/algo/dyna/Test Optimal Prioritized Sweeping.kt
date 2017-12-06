@@ -19,8 +19,11 @@ class `Test Optimal Prioritized Sweeping` {
     thread {
       latch.await()
       val (π) = prob.PrioritizedSweeping(
-          episodes = 1000,
           n = 10,
+          θ = 0.0,
+          ε = 0.1,
+          α = { _, _ -> 0.1 },
+          episodes = 1000,
           stepListener = { V, s ->
             GridWorldUI.render(V, s)
           })
@@ -44,6 +47,9 @@ class `Test Optimal Prioritized Sweeping` {
   fun `WindyGridworld`() {
     val prob = WindyGridworld.make()
     val (π) = prob.PrioritizedSweeping(
+        n = 10,
+        θ = 0.0,
+        ε = 0.1,
         α = { _, _ -> 0.5 },
         episodes = 1000)
     var s = prob.started()
@@ -62,8 +68,12 @@ class `Test Optimal Prioritized Sweeping` {
   @Test
   fun `Cliff Walking`() {
     val prob = CliffWalking.make()
-    val (π) = prob.PrioritizedSweeping(α = { _, _ -> 0.5 },
-                                       episodes = 1000)
+    val (π) = prob.PrioritizedSweeping(
+        n = 10,
+        θ = 0.0,
+        ε = 0.1,
+        α = { _, _ -> 0.5 },
+        episodes = 1000)
     var s = prob.started()
     var sum = 0.0
     print(s)
@@ -84,11 +94,15 @@ class `Test Optimal Prioritized Sweeping` {
     
     thread {
       latch.await()
-      val (π) = prob.PrioritizedSweeping(episodes = 1000,
-                                         n = 10,
-                                         stepListener = { V, s ->
-                                           RodManeuveringUI.render(V, s)
-                                         })
+      val (π) = prob.PrioritizedSweeping(
+          n = 10,
+          θ = 0.0,
+          ε = 0.1,
+          α = { _, _ -> 0.1 },
+          episodes = 1000,
+          stepListener = { V, s ->
+            RodManeuveringUI.render(V, s)
+          })
       var s = prob.started()
       var count = 0
       print(s)

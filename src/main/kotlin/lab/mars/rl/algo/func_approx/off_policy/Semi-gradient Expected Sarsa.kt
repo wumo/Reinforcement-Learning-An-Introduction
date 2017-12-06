@@ -5,10 +5,11 @@ import lab.mars.rl.util.log.debug
 import lab.mars.rl.util.math.Σ
 import lab.mars.rl.util.matrix.times
 
-fun <E> MDP.`Semi-gradient Expected Sarsa`(q: ApproximateFunction<E>, π: Policy,
-                                           α: Double,
-                                           episodes: Int = 10000,
-                                           episodeListener: (Int, Int) -> Unit = { _, _ -> }) {
+fun <E> MDP.`Semi-gradient Expected Sarsa`(
+    q: ApproximateFunction<E>, π: Policy,
+    α: Double,
+    episodes: Int,
+    episodeListener: (Int, Int) -> Unit = { _, _ -> }) {
   for (episode in 1..episodes) {
     log.debug { "$episode/$episodes" }
     var step = 0

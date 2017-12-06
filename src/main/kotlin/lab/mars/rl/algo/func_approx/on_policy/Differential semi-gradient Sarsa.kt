@@ -3,8 +3,9 @@ package lab.mars.rl.algo.func_approx.on_policy
 import lab.mars.rl.model.*
 import lab.mars.rl.util.matrix.times
 
-fun <E> MDP.`Differential semi-gradient Sarsa`(q: ApproximateFunction<E>, π: Policy,
-                                               α: Double, β: Double) {
+fun <E> MDP.`Differential semi-gradient Sarsa`(
+    q: ApproximateFunction<E>, π: Policy,
+    α: Double, β: Double) {
   var average_reward = 0.0
   var s = started()
   var a = π(s)

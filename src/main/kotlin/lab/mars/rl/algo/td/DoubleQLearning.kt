@@ -9,8 +9,10 @@ import lab.mars.rl.util.math.Rand
 import lab.mars.rl.util.math.argmax
 import lab.mars.rl.util.tuples.tuple3
 
-fun IndexedMDP.DoubleQLearning(ε: Double, episodes: Int,
-                               α: (IndexedState, IndexedAction) -> Double): OptimalSolution {
+fun IndexedMDP.DoubleQLearning(
+    ε: Double,
+    α: (IndexedState, IndexedAction) -> Double,
+    episodes: Int): OptimalSolution {
   fun `ε-greedy`(s: IndexedState, Q1: ActionValueFunction, Q2: ActionValueFunction, π: IndexedPolicy) {
     val a_opt = argmax(s.actions) { Q1[s, it] + Q2[s, it] }
     val size = s.actions.size

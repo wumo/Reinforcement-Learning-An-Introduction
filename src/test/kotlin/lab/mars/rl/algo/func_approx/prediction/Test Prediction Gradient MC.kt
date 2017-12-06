@@ -27,8 +27,9 @@ class `Test Prediction Gradient MC` {
     val func = StateAggregation(`1000-state RandomWalk`.num_states + 2, 10) { (s) -> (s as IndexedState)[0] }
     prob.`Gradient Monte Carlo algorithm`(
         v = func, π = π,
-        episodes = 100000,
-        α = 2e-5)
+        α = 2e-5,
+        episodes = 100000
+    )
     prob.apply {
       val line = line("gradient MC")
       for (s in states) {

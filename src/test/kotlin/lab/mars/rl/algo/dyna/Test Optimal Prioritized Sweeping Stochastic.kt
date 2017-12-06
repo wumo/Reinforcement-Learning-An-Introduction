@@ -17,9 +17,11 @@ class `Test Optimal Prioritized Sweeping Stochastic` {
   fun `Blackjack`() {
     val (prob) = Blackjack.make()
     val (π, V) = prob.PrioritizedSweepingStochasticEnv(
+        n = 10,
+        θ = 0.0,
+        ε = 0.1,
         α = average_α(prob),
-        episodes = 100000,
-        n = 10)
+        episodes = 100000)
     printBlackjack(prob, π, V)
   }
   
@@ -31,8 +33,11 @@ class `Test Optimal Prioritized Sweeping Stochastic` {
     thread {
       latch.await()
       val (π) = prob.PrioritizedSweepingStochasticEnv(
-          episodes = 1000,
           n = 10,
+          θ = 0.0,
+          ε = 0.1,
+          α = { _, _ -> 0.1 },
+          episodes = 1000,
           stepListener = { V, s ->
             GridWorldUI.render(V, s)
           })

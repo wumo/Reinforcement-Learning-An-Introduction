@@ -13,9 +13,10 @@ import lab.mars.rl.util.math.Σ
 import lab.mars.rl.util.tuples.tuple3
 import org.apache.commons.math3.util.FastMath.*
 
-fun IndexedMDP.`N-step Treebackup`(n: Int, ε: Double,
-                                   episodes: Int,
-                                   α: (IndexedState, IndexedAction) -> Double): OptimalSolution {
+fun IndexedMDP.`N-step Treebackup`(
+    n: Int, ε: Double,
+    α: (IndexedState, IndexedAction) -> Double,
+    episodes: Int): OptimalSolution {
   val π = equiprobablePolicy()
   val Q = QFunc { 0.0 }
   

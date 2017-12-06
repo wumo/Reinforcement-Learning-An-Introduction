@@ -52,8 +52,8 @@ class Test {
           val func = LinearFunc(func_maker[func_id](order))
           prob.`Gradient Monte Carlo algorithm`(
               v = func, π = π,
-              episodes = episodes,
               α = alphas[func_id],
+              episodes = episodes,
               episodeListener = { episode, _ ->
                 _errors[episode - 1] += RMS(func)
               })

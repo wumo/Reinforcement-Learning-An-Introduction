@@ -9,8 +9,10 @@ class `Test Optimal RandomSampleOneStepTabularQLearning` {
   @Test
   fun `Blackjack`() {
     val (prob) = Blackjack.make()
-    val (π, V) = prob.RandomSampleOneStepTabularQLearning(α = average_α(prob),
-                                                          episodes = 1000000)
+    val (π, V) = prob.RandomSampleOneStepTabularQLearning(
+        ε = 0.1,
+        α = average_α(prob),
+        episodes = 1000000)
     printBlackjack(prob, π, V)
   }
   

@@ -10,11 +10,12 @@ import lab.mars.rl.util.math.Σ
 import lab.mars.rl.util.matrix.times
 import org.apache.commons.math3.util.FastMath.*
 
-fun <E> MDP.`Episodic semi-gradient n-step Sarsa control`(q: ApproximateFunction<E>, π: Policy,
-                                                          n: Int,
-                                                          α: Double,
-                                                          episodes: Int = 10000,
-                                                          episodeListener: (Int, Int) -> Unit = { _, _ -> }) {
+fun <E> MDP.`Episodic semi-gradient n-step Sarsa control`(
+    q: ApproximateFunction<E>, π: Policy,
+    n: Int,
+    α: Double,
+    episodes: Int,
+    episodeListener: (Int, Int) -> Unit = { _, _ -> }) {
   val _R = newBuf<Double>(min(n + 1, MAX_N))
   val _S = newBuf<State>(min(n + 1, MAX_N))
   val _A = newBuf<Action<State>>(min(n + 1, MAX_N))

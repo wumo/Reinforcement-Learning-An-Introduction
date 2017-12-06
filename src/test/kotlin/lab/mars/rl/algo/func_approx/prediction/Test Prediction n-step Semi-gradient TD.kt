@@ -28,8 +28,8 @@ class `Test Prediction n-step Semi-gradient TD` {
                                 10) { (s) -> (s as IndexedState)[0] }
     prob.`n-step semi-gradient TD`(
         v = func, π = π, n = 10,
-        episodes = 100000,
-        α = 2e-4)
+        α = 2e-4,
+        episodes = 100000)
     prob.apply {
       val line = line("n-step semi-gradient TD")
       for (s in states) {

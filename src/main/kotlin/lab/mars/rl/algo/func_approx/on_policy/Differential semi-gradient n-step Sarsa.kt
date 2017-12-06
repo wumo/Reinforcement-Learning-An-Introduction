@@ -9,9 +9,10 @@ import lab.mars.rl.util.math.Σ
 import lab.mars.rl.util.matrix.times
 import org.apache.commons.math3.util.FastMath.*
 
-fun <E> MDP.`Differential semi-gradient n-step Sarsa`(q: ApproximateFunction<E>, π: Policy,
-                                                      n: Int,
-                                                      α: Double, β: Double) {
+fun <E> MDP.`Differential semi-gradient n-step Sarsa`(
+    q: ApproximateFunction<E>, π: Policy,
+    n: Int,
+    α: Double, β: Double) {
   var average_reward = 0.0
   val _R = newBuf<Double>(min(n, MAX_N))
   val _S = newBuf<State>(min(n, MAX_N))

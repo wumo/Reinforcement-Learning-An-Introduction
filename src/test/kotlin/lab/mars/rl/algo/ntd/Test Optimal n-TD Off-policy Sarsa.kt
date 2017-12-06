@@ -14,9 +14,9 @@ class `Test Optimal n-TD Off-policy Sarsa` {
     val (prob) = Blackjack.make()
     val (π, V) = prob.`N-step off-policy sarsa`(
         n = Int.MAX_VALUE,
-        episodes = 1000000,
         ε = 0.1,
-        α = { _, _ -> 0.1 })
+        α = { _, _ -> 0.1 },
+        episodes = 1000000)
     printBlackjack(prob, π, V)
   }
   
@@ -25,9 +25,9 @@ class `Test Optimal n-TD Off-policy Sarsa` {
     val (prob) = Blackjack.make()
     val (π, V) = prob.`N-step off-policy sarsa`(
         n = Int.MAX_VALUE,
-        episodes = 1000000,
         ε = 0.1,
-        α = average_α(prob))
+        α = average_α(prob),
+        episodes = 1000000)
     printBlackjack(prob, π, V)
   }
   
@@ -36,9 +36,9 @@ class `Test Optimal n-TD Off-policy Sarsa` {
     val prob = CliffWalking.make()
     val (π) = prob.`N-step off-policy sarsa`(
         n = 10,
-        episodes = 10000,
         ε = 0.1,
-        α = { _, _ -> 0.5 })
+        α = { _, _ -> 0.5 },
+        episodes = 10000)
     var s = prob.started()
     var sum = 0.0
     print(s)
