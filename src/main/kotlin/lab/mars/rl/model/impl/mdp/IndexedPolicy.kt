@@ -6,6 +6,7 @@ import lab.mars.rl.util.collection.emptyNSet
 import lab.mars.rl.util.math.argmax
 
 class IndexedPolicy(val p: IndexedCollection<Double>, val ε: Double = 0.1): Policy {
+  
   override fun invoke(s: State): IndexedAction {
     val eval = p(s as IndexedState)
     return s.actions.rand { eval[it] }
@@ -24,8 +25,10 @@ class IndexedPolicy(val p: IndexedCollection<Double>, val ε: Double = 0.1): Pol
     p[s, newaction] = 1.0
   }
   
-  fun greedy(s: State): IndexedAction =
-      argmax(s.actions) { get(s, it) } as IndexedAction
+  override fun greedy(s: State): IndexedAction {
+    s as IndexedState
+    return argmax(s.actions) { get(s, it) }
+  }
 }
 
 val null_policy = IndexedPolicy(emptyNSet())

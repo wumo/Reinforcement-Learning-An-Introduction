@@ -26,6 +26,8 @@ interface Policy {
   
   /**probability of taking action [a] when in state [s]*/
   operator fun get(s: State, a: Action<State>): Double
+  
+  fun greedy(s:State):Action<State>
 }
 
 interface RandomIterable<out E>: Iterable<E> {

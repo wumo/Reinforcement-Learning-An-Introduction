@@ -13,7 +13,9 @@ object AccessControl {
   val reject = 0
   val accept = 1
   fun make(): IndexedMDP {
-    val mdp = CNSetMDP(gamma = 0.9, state_dim = (k + 1) x 4, action_dim = 2)
+    val mdp = CNSetMDP(gamma = 0.9, state_dim = (k + 1) x 4, action_dim = { (fs) ->
+      if (fs == 0) 1 else 2
+    })
     
     return mdp.apply {
       started = { states[k, Rand().nextInt(4)] }

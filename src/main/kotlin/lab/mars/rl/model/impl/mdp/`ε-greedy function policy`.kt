@@ -16,4 +16,5 @@ class `ε-greedy function policy`<E>(val q: ApproximateFunction<E>, val ε: Doub
     return if (q(s, a) == m) (1.0 / c - ε / c - ε / s.actions.size) else ε / s.actions.size
   }
   
+  override fun greedy(s: State) = argmax_tie_random(s.actions) { q(s, it) }
 }

@@ -5,10 +5,11 @@ import lab.mars.rl.util.matrix.times
 
 fun <E> MDP.`Differential semi-gradient Sarsa`(
     q: ApproximateFunction<E>, π: Policy,
-    α: Double, β: Double) {
+    α: Double, β: Double, maxStep: Int) {
   var average_reward = 0.0
   var s = started()
   var a = π(s)
+  var step = 0
   while (true) {
     val (s_next, reward) = a.sample()
     val a_next = π(s_next)
@@ -17,5 +18,7 @@ fun <E> MDP.`Differential semi-gradient Sarsa`(
     q.w += α * δ * q.`▽`(s, a)
     s = s_next
     a = a_next
+    step++
+    if (step >= maxStep) break
   }
 }
