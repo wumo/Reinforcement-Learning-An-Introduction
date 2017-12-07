@@ -1,11 +1,13 @@
 package lab.mars.rl.algo.func_approx.on_policy
 
-import lab.mars.rl.model.impl.func.LinearFunc
-import lab.mars.rl.model.impl.func.SimpleTileCoding
+import javafx.application.Application
+import lab.mars.rl.model.impl.func.*
 import lab.mars.rl.model.impl.mdp.*
 import lab.mars.rl.problem.AccessControl
 import lab.mars.rl.util.color
 import lab.mars.rl.util.reset
+import lab.mars.rl.util.tuples.tuple2
+import lab.mars.rl.util.ui.*
 import org.junit.Test
 
 class `Test Optimal Differential semi-gradient Sarsa` {
@@ -27,7 +29,7 @@ class `Test Optimal Differential semi-gradient Sarsa` {
         π = π,
         α = 0.01,
         β = 0.01,
-        maxStep = 1000_0000)
+        maxStep = 100_0000)
     for (pr in AccessControl.priorities) {
       for (fs in 0..AccessControl.k) {
         val s = prob.states[fs, pr]
@@ -35,5 +37,63 @@ class `Test Optimal Differential semi-gradient Sarsa` {
       }
       println()
     }
+    val chart = chart("Differential",
+                      "Number of free servers",
+                      "Differential value of best action")
+    for (pr in AccessControl.priorities) {
+      val line = line("priority $pr")
+      for (fs in 0..AccessControl.k) {
+        val s = prob.states[fs, pr]
+        val a = π.greedy(s) as IndexedAction
+        line[fs] = func(s, a)
+      }
+      chart += line
+    }
+    D2DChart.charts += chart
+    Application.launch(ChartApp::class.java)
+  }
+  
+  @Test
+  fun `Access-Control Queuing Task Sutton Tile Coding`() {
+    val prob = AccessControl.make()
+    val numTilings = 8
+    val serverScale = numTilings / AccessControl.k.toDouble()
+    val priorityScale = numTilings / 3.0
+    val func = LinearFunc(
+        SuttonTileCoding(255,
+                         numTilings) { (s, a) ->
+          val (fs, pr) = (s as IndexedState)
+          val (_a) = (a as IndexedAction)
+          tuple2(doubleArrayOf(fs * serverScale, pr * priorityScale),
+                 intArrayOf(_a))
+        })
+    val π = `ε-greedy function policy`(func, 0.1)
+    prob.`Differential semi-gradient Sarsa`(
+        q = func,
+        π = π,
+        α = 0.01 / numTilings,
+        β = 0.01,
+        maxStep = 100_0000)
+    for (pr in AccessControl.priorities) {
+      for (fs in 0..AccessControl.k) {
+        val s = prob.states[fs, pr]
+        print("${color(1 - (π.greedy(s) as IndexedAction)[0])} ${reset()}")
+      }
+      println()
+    }
+    val chart = chart("Differential",
+                      "Number of free servers",
+                      "Differential value of best action")
+    for (pr in AccessControl.priorities) {
+      val line = line("priority $pr")
+      for (fs in 0..AccessControl.k) {
+        val s = prob.states[fs, pr]
+        val a = π.greedy(s) as IndexedAction
+        line[fs] = func(s, a)
+      }
+      chart += line
+    }
+    D2DChart.charts += chart
+    Application.launch(ChartApp::class.java)
   }
 }
