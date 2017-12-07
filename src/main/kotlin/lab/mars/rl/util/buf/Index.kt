@@ -56,6 +56,12 @@ abstract class Index: Iterable<Int> {
       result = 31 * result + get(a)
     return result
   }
+  
+  operator fun component1() = this[0]
+  operator fun component2() = this[1]
+  operator fun component3() = this[2]
+  operator fun component4() = this[3]
+  operator fun component5() = this[4]
 }
 
 class MultiIndex(internal val indices: Array<Index>): Index() {

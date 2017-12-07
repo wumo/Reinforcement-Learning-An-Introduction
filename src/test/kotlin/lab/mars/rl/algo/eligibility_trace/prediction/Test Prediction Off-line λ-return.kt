@@ -10,6 +10,7 @@ import lab.mars.rl.problem.`19-state RandomWalk`
 import lab.mars.rl.util.*
 import lab.mars.rl.util.tuples.tuple2
 import lab.mars.rl.util.ui.*
+import lab.mars.rl.util.range.*
 import org.apache.commons.math3.util.FastMath.*
 import org.junit.Test
 
@@ -24,7 +25,7 @@ class `Test Prediction Off-line λ-return` {
     realV[20] = 0.0
     
     val λs = listOf(0.0, 0.4, 0.8, 0.9, 0.95, 0.975, 0.99, 1.0)
-    val αs = listOf(10) { it * 0.1 }
+    val αs = listOf(0.0, 0.01, 0.02, 0.04, 0.08, 0.1, 0.2, 0.3, 0.4, 0.5, 0.6, 0.7, 0.8, 0.9, 1.0)
     
     val episodes = 10
     val runs = 100

@@ -18,7 +18,9 @@ package lab.mars.rl.util.math
 
 import org.apache.commons.math3.special.Gamma
 import org.apache.commons.math3.util.FastMath
+import org.apache.commons.math3.util.FastMath.*
 import org.apache.commons.math3.util.MathUtils
+import org.apache.commons.math3.util.MathUtils.TWO_PI
 
 fun poisson(mean: Double, n: Int): Double {
   //        if (n > 11) return 0;
@@ -29,12 +31,12 @@ fun poisson(mean: Double, n: Int): Double {
   else if (n == 0)
     ret = -mean
   else
-    ret = -getStirlingError(n.toDouble()) - getDeviancePart(n.toDouble(), mean) - 0.5 * FastMath.log(MathUtils.TWO_PI) - 0.5 * FastMath.log(n.toDouble())
+    ret = -getStirlingError(n.toDouble()) - getDeviancePart(n.toDouble(), mean) - 0.5 * log(TWO_PI) - 0.5 * log(n.toDouble())
   return if (ret == Double.NEGATIVE_INFINITY) 0.0 else FastMath.exp(ret)
 }
 
 /** 1/2 * log(2 &#960;).  */
-private val HALF_LOG_2_PI = 0.5 * FastMath.log(MathUtils.TWO_PI)
+private val HALF_LOG_2_PI = 0.5 * log(TWO_PI)
 
 /** exact Stirling expansion error for certain values.  */
 private val EXACT_STIRLING_ERRORS = doubleArrayOf(0.0, /* 0.0 */
@@ -88,7 +90,7 @@ fun getStirlingError(z: Double): Double {
     if (FastMath.floor(z2) == z2) {
       EXACT_STIRLING_ERRORS[z2.toInt()]
     } else {
-      Gamma.logGamma(z + 1.0) - (z + 0.5) * FastMath.log(z) + z - HALF_LOG_2_PI
+      Gamma.logGamma(z + 1.0) - (z + 0.5) * log(z) + z - HALF_LOG_2_PI
     }
   } else {
     val z2 = z * z
@@ -130,7 +132,37 @@ fun getDeviancePart(x: Double, mu: Double): Double {
     }
     ret = s1
   } else {
-    ret = x * FastMath.log(x / mu) + mu - x
+    ret = x * log(x / mu) + mu - x
+  }
+  return ret
+}
+
+/**
+ * Compute the logarithm of the PMF for a binomial distribution
+ * using the saddle point expansion.
+ *
+ * @param x the value at which the probability is evaluated.
+ * @param n the number of trials.
+ * @param p the probability of success.
+ * @param q the probability of failure (1 - p).
+ * @return log(p(x)).
+ */
+fun logBinomialProbability(x: Int, n: Int, p: Double, q: Double): Double {
+  var ret: Double
+  when (x) {
+    0 -> ret =
+        if (p < 0.1) -getDeviancePart(n.toDouble(), n * q) - n * p
+        else n * log(q)
+    n -> ret =
+        if (q < 0.1) -getDeviancePart(n.toDouble(), n * p) - n * q
+        else n * log(p)
+    else -> {
+      ret = getStirlingError(n.toDouble()) - getStirlingError(x.toDouble()) -
+            getStirlingError((n - x).toDouble()) - getDeviancePart(x.toDouble(), n * p) -
+            getDeviancePart((n - x).toDouble(), n * q)
+      val f = TWO_PI * x.toDouble() * (n - x).toDouble() / n
+      ret += -0.5 * log(f)
+    }
   }
   return ret
 }

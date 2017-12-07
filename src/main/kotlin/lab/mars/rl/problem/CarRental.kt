@@ -55,14 +55,13 @@ object CarRental {
   }
   
   fun make(exercise4_4_version: Boolean): IndexedMDP {
-    val mdp = CNSetMDP(gamma = 0.9, state_dim = (max_car + 1) x (max_car + 1)) { idx ->
-      val max_L1_to_L2 = max_move(idx[0], idx[1])
-      val max_L2_to_L1 = max_move(idx[1], idx[0])
+    val mdp = CNSetMDP(gamma = 0.9, state_dim = (max_car + 1) x (max_car + 1)) { (L1, L2) ->
+      val max_L1_to_L2 = max_move(L1, L2)
+      val max_L2_to_L1 = max_move(L2, L1)
       max_L1_to_L2 + max_L2_to_L1 + 1
     }
     for (s in mdp.states) {
-      val s_1 = s[0]
-      val s_2 = s[1]
+      val (s_1, s_2) = s
       val max_L1_to_L2 = max_move(s_1, s_2)
       for (action in s.actions) {
         val idx = action[0]

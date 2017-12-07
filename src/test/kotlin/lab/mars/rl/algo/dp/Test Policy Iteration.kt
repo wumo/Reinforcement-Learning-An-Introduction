@@ -3,7 +3,8 @@ package lab.mars.rl.algo.dp
 import lab.mars.rl.model.isNotTerminal
 import lab.mars.rl.problem.*
 import lab.mars.rl.problem.GridWorld.make
-import lab.mars.rl.util.format
+import lab.mars.rl.util.*
+import lab.mars.rl.util.math.argmax
 import org.junit.Assert
 import org.junit.Test
 
@@ -92,5 +93,18 @@ class `Test Policy Iteration` {
       print("$a$s")
     }
     println("\nsteps=$count")//optimal=39
+  }
+  
+  @Test
+  fun `AccessControl`() {
+    val prob = AccessControl.make()
+    val (π) = prob.`Policy Iteration V`()
+    for (pr in AccessControl.priorities) {
+      for (fs in 0..AccessControl.k) {
+        val s = prob.states[fs, pr]
+        print("${color(1 - argmax(s.actions) { π[s, it] }[0])}  ${reset()}")
+      }
+      println()
+    }
   }
 }

@@ -3,7 +3,15 @@
 package lab.mars.rl.util.math
 
 import lab.mars.rl.util.tuples.tuple2
+import org.apache.commons.math3.util.FastMath.*
 import java.util.concurrent.ThreadLocalRandom
+
+fun pow(base: Double, exponent: Iterable<Number>): List<Double> {
+  val result = ArrayList<Double>()
+  for (e in exponent)
+    result += pow(base, e.toDouble())
+  return result
+}
 
 inline fun Rand() = ThreadLocalRandom.current()!!
 
