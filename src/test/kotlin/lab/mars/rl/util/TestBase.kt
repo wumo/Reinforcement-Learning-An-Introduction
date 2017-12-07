@@ -57,12 +57,12 @@ fun logLevel(level: Level) {
   rootLogger.level = level
 }
 
-fun printBlackjack(prob: IndexedMDP, PI: IndexedPolicy, V: StateValueFunction) {
+fun printBlackjack(prob: IndexedMDP, π: IndexedPolicy, V: StateValueFunction) {
   println("---------------------Usable Ace--------------------------")
   for (a in 9 downTo 0) {
     for (b in 0 until 10) {
       val s = prob.states[1, 1, b, a]
-      print("${color(argmax(s.actions) { PI[s, it] }[0])}  ${reset()}")
+      print("${color(π.greedy(s)[0])}  ${reset()}")
     }
     println()
   }
@@ -70,7 +70,7 @@ fun printBlackjack(prob: IndexedMDP, PI: IndexedPolicy, V: StateValueFunction) {
   for (a in 9 downTo 0) {
     for (b in 0 until 10) {
       val s = prob.states[1, 0, b, a]
-      print("${color(argmax(s.actions) { PI[s, it] }[0])}  ${reset()}")
+      print("${color(π.greedy(s)[0])}  ${reset()}")
     }
     println()
   }

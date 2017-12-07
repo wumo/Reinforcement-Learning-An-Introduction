@@ -102,7 +102,7 @@ class `Test Policy Iteration` {
     for (pr in AccessControl.priorities) {
       for (fs in 0..AccessControl.k) {
         val s = prob.states[fs, pr]
-        print("${color(1 - argmax(s.actions) { π[s, it] }[0])}  ${reset()}")
+        print("${color(1 - π.greedy(s)[0])}  ${reset()}")
       }
       println()
     }
