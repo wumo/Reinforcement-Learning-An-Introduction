@@ -175,4 +175,9 @@ class Matrix(val rows: Int, val cols: Int = rows) {
     for (i in 0..raw.lastIndex)
       raw[i] *= m.raw[i]
   }
+  
+  infix fun `=`(value: Double) {
+    for (i in 0..raw.lastIndex)
+      raw[i] = value
+  }
 }

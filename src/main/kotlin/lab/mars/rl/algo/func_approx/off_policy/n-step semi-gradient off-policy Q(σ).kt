@@ -60,8 +60,8 @@ fun <E> MDP.`N-step off-policy n-step Q(σ) episodic`(
         if (s.isTerminal) {
           δ.append(reward - _Q.last)
           T = t + 1
-          val _t = t - n + 1
-          if (_t < 0) n = T //n is too large
+          val τ = t - n + 1
+          if (τ < 0) n = T //n is too large
         } else {
           a = b(s);_A.append(a)
           val tmp_σ = σ(t + 1)

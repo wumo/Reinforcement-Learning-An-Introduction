@@ -8,7 +8,10 @@ class line(val description: String, val data: MutableMap<Number, Number> = hashM
   operator fun set(x: Number, y: Number) = data.put(x, y)
 }
 
-class chart(val title: String, val xAxisLabel: String, val yAxisLabel: String, val lines: MutableCollection<line> = ConcurrentLinkedQueue()) {
+class chart(val title: String, val xAxisLabel: String, val yAxisLabel: String,
+            val lines: MutableCollection<line> = ConcurrentLinkedQueue(),
+            val xAxisConfig: NumberAxis.() -> Unit = {}, val yAxisConfig: NumberAxis.() -> Unit = {},
+            val linesSortor: Array<line>.() -> Unit = {}) {
   operator fun plusAssign(line: line) {
     lines += line
   }
@@ -21,28 +24,31 @@ class D2DChart: View() {
   
   override val root = stackpane {
     flowpane {
-      for (chart in charts) {
-        linechart(chart.title, NumberAxis(), NumberAxis()) {
-          (xAxis as NumberAxis).apply {
-            isForceZeroInRange = false
-            isAutoRanging = true
-            label = chart.xAxisLabel
-          }
-          (yAxis as NumberAxis).apply {
-            isForceZeroInRange = false
-            isAutoRanging = true
-            label = chart.yAxisLabel
-          }
-          val lines = chart.lines.toTypedArray()
-//          lines.sortBy { it.description }
-          for (line in lines)
-            series(line.description) {
-              for ((k, v) in line.data)
-                data(k, v)
+      for (chart in charts)
+        chart.apply {
+          linechart(title, NumberAxis(), NumberAxis()) {
+            (xAxis as NumberAxis).apply {
+              isForceZeroInRange = false
+              isAutoRanging = true
+              label = xAxisLabel
+              xAxisConfig(this)
             }
-          createSymbols = false
+            (yAxis as NumberAxis).apply {
+              isForceZeroInRange = false
+              isAutoRanging = true
+              label = yAxisLabel
+              yAxisConfig(this)
+            }
+            val lines = chart.lines.toTypedArray()
+            linesSortor(lines)
+            for (line in lines)
+              series(line.description) {
+                for ((k, v) in line.data)
+                  data(k, v)
+              }
+            createSymbols = false
+          }
         }
-      }
     }
   }
 }

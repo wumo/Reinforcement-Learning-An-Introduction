@@ -14,6 +14,7 @@ import lab.mars.rl.problem.MountainCar
 import lab.mars.rl.util.*
 import lab.mars.rl.util.tuples.tuple2
 import lab.mars.rl.util.ui.*
+import lab.mars.rl.util.range.*
 import org.junit.Test
 
 class `Test Optimal n-step semi-gradient Sarsa` {
@@ -27,7 +28,7 @@ class `Test Optimal n-step semi-gradient Sarsa` {
     val velocityScale = numTilings / (MountainCar.VELOCITY_MAX - MountainCar.VELOCITY_MIN)
     val episodes = 500
     val runs = 10
-    val alphas = listOf(0.5, 0.3)
+    val αs = listOf(0.5, 0.3)
     val nSteps = listOf(1, 8)
     
     val chart = chart("One-step vs multi-step performance", "episode", "steps per episode")
@@ -46,7 +47,7 @@ class `Test Optimal n-step semi-gradient Sarsa` {
               q = func,
               π = `ε-greedy function policy`(func, 0.0),
               n = n,
-              α = alphas[i] / numTilings,
+              α = αs[i] / numTilings,
               episodes = episodes,
               episodeListener = { episode, step ->
                 steps[episode - 1] += step
@@ -79,18 +80,20 @@ class `Test Optimal n-step semi-gradient Sarsa` {
     val velocityScale = numTilings / (MountainCar.VELOCITY_MAX - MountainCar.VELOCITY_MIN)
     val episodes = 50
     val runs = 5
-    val αs = listOf(10) { 0.1 + it * 0.14 }
+    val αs = 0.1..1.5 step 0.14
     val nSteps = listOf(1, 2, 4, 8, 16)
     
     val chart = chart("Effect of the α and n on early performance",
-                      "α x number of tilings (8)", "steps per episode")
-    val truncateStep = 300.0
+                      "α x number of tilings (8)", "steps per episode",
+                      yAxisConfig = {
+                        isAutoRanging = false
+                        upperBound = 300.0
+                        lowerBound = 210.0
+                      })
     runBlocking {
       for (n in nSteps) {
         val line = line("n=$n ")
         asyncs(αs) { α ->
-          if ((n == 8 && α > 1) || (n == 16 && α > 0.75))
-            return@asyncs tuple2(α, truncateStep)
           var totalStep = 0.0
           asyncs(runs) { run ->
             val feature = SuttonTileCoding(511, numTilings) { (s, a) ->
@@ -106,6 +109,7 @@ class `Test Optimal n-step semi-gradient Sarsa` {
                 n = n,
                 α = α / numTilings,
                 episodes = episodes,
+                maxStep = 5000,
                 episodeListener = { _, _step ->
                   step += _step
                 })
@@ -118,8 +122,7 @@ class `Test Optimal n-step semi-gradient Sarsa` {
           println("finish n=$n α=${α.format(2)} total=$totalStep")
           tuple2(α, totalStep)
         }.await { (alpha, step) ->
-          if (step < truncateStep)
-            line[alpha] = step
+          line[alpha] = step
         }
         chart += line
         println("finish n=$n")

@@ -55,8 +55,8 @@ fun IndexedMDP.`N-step Treebackup`(
         if (s.isTerminal) {
           δ.append(reward - _Q.last)
           T = t + 1
-          val _t = t - n + 1
-          if (_t < 0) n = T //n is too large
+          val τ = t - n + 1
+          if (τ < 0) n = T //n is too large
         } else {
           δ.append(reward + γ * Σ(s.actions) { π[s, it] * Q[s, it] } - _Q.last)
           a = s.actions.rand()

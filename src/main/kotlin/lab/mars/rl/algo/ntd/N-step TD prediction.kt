@@ -44,8 +44,8 @@ fun IndexedMDP.`N-step TD prediction`(
         s = s_next
         if (s.isTerminal) {
           T = t + 1
-          val _t = t - n + 1
-          if (_t < 0) n = T //n is too large
+          val τ = t - n + 1
+          if (τ < 0) n = T //n is too large
         }
       }
       val τ = t - n + 1

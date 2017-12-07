@@ -1,13 +1,86 @@
 package lab.mars.rl.algo.eligibility_trace.control
 
 import lab.mars.rl.model.*
+import lab.mars.rl.model.impl.func.Feature
 import lab.mars.rl.model.impl.func.LinearFunc
 import lab.mars.rl.util.log.debug
-import lab.mars.rl.util.math.max
 import lab.mars.rl.util.matrix.*
 import lab.mars.rl.util.matrix.Matrix.Companion.column
 import lab.mars.rl.util.matrix.Matrix.Companion.one
-import kotlin.Int.Companion
+
+fun <E> MDP.`Sarsa(λ) linear trace`(
+    traceOp: TraceType,
+    Q: LinearFunc<E>,
+    π: Policy,
+    λ: Double,
+    α: Double,
+    episodes: Int,
+    maxStep: Int = Int.MAX_VALUE,
+    episodeListener: (Int, Int) -> Unit = { _, _ -> }) {
+  val X = Q.x
+  val w = Q.w
+  val d = w.size
+  val z = column(d)
+  val ctx = Context(γ, α, λ, z, X, one(d))
+  for (episode in 1..episodes) {
+    log.debug { "$episode/$episodes" }
+    var step = 0
+    var s = started()
+    var a = π(s)
+    var x = X(s, a)
+    z `=` 0.0
+    while (true) {
+      ctx.x = x; ctx.s = s; ctx.a = a
+      traceOp(ctx)
+      val (s_next, reward) = a.sample()
+      var δ = reward - w.T * x
+      if (s_next.isNotTerminal) {
+        val a_next = π(s_next)
+        val `x'` = X(s_next, a_next)
+        δ += γ * (w.T * `x'`)
+        w += α * δ * z
+        x = `x'`
+        s = s_next
+        a = a_next
+      } else {
+        w += α * δ * z
+        break
+      }
+      step++
+      if (step >= maxStep) break
+    }
+    episodeListener(episode, step)
+  }
+}
+
+val `accumulating trace`: TraceType = {
+  it.apply {
+    z `=` γ * λ * z + x
+  }
+}
+
+val `dutch trace`: TraceType = {
+  it.apply {
+    z `=` (γ * λ * z + (1.0 - α * γ * λ * z.T * x) * x)
+  }
+}
+
+val `replacing trace`: TraceType = {
+  it.apply {
+    z `=` (((one - x) o (γ * λ * z)) + x)
+  }
+}
+
+val `replacing trace with clearing`: TraceType = {
+  it.apply {
+    z *= γ * λ
+    z `o=` (one - x)
+    for (_a in s.actions)
+      if (_a !== a)
+        z `o=` (one - X(s, _a))
+    z += x
+  }
+}
 
 fun <E> MDP.`Sarsa(λ) accumulating trace`(
     Q: ApproximateFunction<E>,
@@ -47,89 +120,15 @@ fun <E> MDP.`Sarsa(λ) accumulating trace`(
   }
 }
 
-inline fun <E> MDP.`Sarsa(λ) dutch trace`(
-    Q: LinearFunc<E>,
-    π: Policy,
-    λ: Double,
-    α: Double,
-    episodes: Int,
-    maxStep: Int = Int.MAX_VALUE,
-    crossinline episodeListener: (Int, Int) -> Unit = { _, _ -> }) {
-  `Sarsa(λ) linear trace`({ z, x, _, _ ->
-                            z `=` (γ * λ * z + (1.0 - α * γ * λ * z.T * x) * x)
-                          }, Q, π, α, episodes, maxStep, { e, s -> episodeListener(e, s) })
-}
+typealias TraceType = (Context) -> Unit
 
-inline fun <E> MDP.`Sarsa(λ) replacing trace`(
-    Q: LinearFunc<E>,
-    π: Policy,
-    λ: Double,
-    α: Double,
-    episodes: Int,
-    maxStep: Int = Int.MAX_VALUE,
-    crossinline episodeListener: (Int, Int) -> Unit = { _, _ -> }) {
-  val one = one(Q.w.size)
-  `Sarsa(λ) linear trace`({ z, x, _, _ ->
-                            z `=` (((one - x) o (γ * λ * z)) + x)
-                          }, Q, π, α, episodes, maxStep, { e, s -> episodeListener(e, s) })
-}
-
-inline fun <E> MDP.`Sarsa(λ) replacing trace with clearing`(
-    Q: LinearFunc<E>,
-    π: Policy,
-    λ: Double,
-    α: Double,
-    episodes: Int,
-    maxStep: Int = Int.MAX_VALUE,
-    crossinline episodeListener: (Int, Int) -> Unit = { _, _ -> }) {
-  val X = Q.x
-  val one = one(Q.w.size)
-  `Sarsa(λ) linear trace`({ z, x, s, a ->
-                            z *= γ * λ
-                            z `o=` (one - x)
-                            for (_a in s.actions)
-                              if (_a !== a)
-                                z `o=` (one - X(s, _a))
-                            z += x
-                          }, Q, π, α, episodes, maxStep, { e, s -> episodeListener(e, s) })
-}
-
-fun <E> MDP.`Sarsa(λ) linear trace`(
-    traceOp: (Matrix, Matrix, State, Action<*>) -> Unit,
-    Q: LinearFunc<E>,
-    π: Policy,
-    α: Double,
-    episodes: Int,
-    maxStep: Int = Int.MAX_VALUE,
-    episodeListener: (Int, Int) -> Unit = { _, _ -> }) {
-  val X = Q.x
-  val w = Q.w
-  val d = w.size
-  for (episode in 1..episodes) {
-    log.debug { "$episode/$episodes" }
-    var step = 0
-    val s = started()
-    var a = π(s)
-    var x = X(s, a)
-    val z = column(d)
-    while (true) {
-      val (s_next, reward) = a.sample()
-      traceOp(z, x, s, a)
-      var δ = reward - w.T * x
-      if (s_next.isNotTerminal) {
-        val a_next = π(s_next)
-        val `x'` = X(s_next, a_next)
-        δ += γ * (w.T * `x'`)
-        w += α * δ * z
-        x = `x'`
-        a = a_next
-      } else {
-        w += α * δ * z
-        break
-      }
-      step++
-      if (step >= maxStep) break
-    }
-    episodeListener(episode, step)
-  }
+class Context(val γ: Double,
+              val α: Double,
+              val λ: Double,
+              val z: Matrix,
+              val X: Feature<*>,
+              val one: Matrix) {
+  lateinit var x: Matrix
+  lateinit var s: State
+  lateinit var a: Action<*>
 }

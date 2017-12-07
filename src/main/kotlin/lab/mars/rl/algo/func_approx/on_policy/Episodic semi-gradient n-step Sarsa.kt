@@ -15,6 +15,7 @@ fun <E> MDP.`Episodic semi-gradient n-step Sarsa control`(
     n: Int,
     α: Double,
     episodes: Int,
+    maxStep: Int = Int.MAX_VALUE,
     episodeListener: (Int, Int) -> Unit = { _, _ -> }) {
   val _R = newBuf<Double>(min(n + 1, MAX_N))
   val _S = newBuf<State>(min(n + 1, MAX_N))
@@ -43,10 +44,10 @@ fun <E> MDP.`Episodic semi-gradient n-step Sarsa control`(
         _R.append(reward)
         _S.append(s_next)
         s = s_next
-        if (s.isTerminal) {
+        if (s.isTerminal || step >= maxStep) {
           T = t + 1
-          val _t = t - n + 1
-          if (_t < 0) n = T //n is too large
+          val τ = t - n + 1
+          if (τ < 0) n = T //n is too large
         } else {
           a = π(s)
           _A.append(a)
