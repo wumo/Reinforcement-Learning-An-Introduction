@@ -115,3 +115,31 @@ Figure 10.4: Effect of the α and n on early performance of n-step semi-gradient
 approximation on the Mountain Car task
 
 ---
+
+![Figure 12.3](src/test/resources/Figure%2012.3.PNG)
+
+Figure 12.3: 19-state Random walk results: Performance of the offline λ-return algorithm . 
+
+---
+
+![Figure 12.6](src/test/resources/Figure%2012.6.PNG)
+
+Figure 12.6: 19-state Random walk results: Performance of TD(λ) .
+
+---
+
+![Figure 12.8](src/test/resources/Figure%2012.8.PNG)
+
+Figure 12.8: 19-state Random walk results: Performance of online λ-return algorithms
+
+---
+
+![Figure 12.10](src/test/resources/Figure%2012.10.PNG)
+
+Figure 12.10: Early performance on the Mountain Car task of Sarsa(λ) with replacing traces
+
+---
+
+![Figure 12.11](src/test/resources/Figure%2012.11.PNG)
+
+Figure 12.11: Summary comparison of Sarsa(λ) algorithms on the Mountain Car task.
