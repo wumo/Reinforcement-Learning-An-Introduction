@@ -37,11 +37,11 @@ class `Test Optimal Differential semi-gradient Sarsa` {
       }
       println()
     }
-    val chart = chart("Differential",
-                      "Number of free servers",
-                      "Differential value of best action")
+    val chart = LineChart("Differential",
+                          "Number of free servers",
+                          "Differential value of best action")
     for (pr in AccessControl.priorities) {
-      val line = line("priority $pr")
+      val line = Line("priority $pr")
       for (fs in 0..AccessControl.k) {
         val s = prob.states[fs, pr]
         val a = π.greedy(s) as IndexedAction
@@ -81,11 +81,11 @@ class `Test Optimal Differential semi-gradient Sarsa` {
       }
       println()
     }
-    val chart = chart("Differential",
-                      "Number of free servers",
-                      "Differential value of best action")
+    val chart = LineChart("Differential",
+                          "Number of free servers",
+                          "Differential value of best action")
     for (pr in AccessControl.priorities) {
-      val line = line("priority $pr")
+      val line = Line("priority $pr")
       for (fs in 0..AccessControl.k) {
         val s = prob.states[fs, pr]
         val a = π.greedy(s) as IndexedAction

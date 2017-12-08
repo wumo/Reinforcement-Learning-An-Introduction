@@ -14,11 +14,11 @@ import org.junit.Test
 class `Test Prediction LSTD` {
   @Test
   fun `1000-state RandomWalk`() {
-    val chart = chart("V", "state", "value")
+    val chart = LineChart("V", "state", "value")
     val (prob, π) = `1000-state RandomWalk`.make()
     val V = prob.`Tabular TD(0)`(π = π, episodes = 100000, α = 0.1)
     prob.apply {
-      val line = line("TD")
+      val line = Line("TD")
       for (s in states) {
         println("${V[s].format(2)} ")
         line[s[0]] = V[s]
@@ -34,7 +34,7 @@ class `Test Prediction LSTD` {
     val func = LinearFunc(feature)
     prob.LSTD(vFunc = func, π = π, ε = 1.0, episodes = 100)
     prob.apply {
-      val line = line("LSTD")
+      val line = Line("LSTD")
       for (s in states) {
         println("${func(s).format(2)} ")
         line[s[0]] = func(s)

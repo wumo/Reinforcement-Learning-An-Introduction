@@ -22,11 +22,11 @@ class `Tile Coding` {
   
   @Test
   fun `Tile Coding`() {
-    val chart = chart("samples", "state", "value")
+    val chart = LineChart("samples", "state", "value")
     val (prob, π) = `1000-state RandomWalk`.make()
     val V = prob.`Tabular TD(0)`(π = π, episodes = 100000, α = 0.1)
     prob.apply {
-      val line = line("TD")
+      val line = Line("TD")
       for (s in states) {
         println("${V[s].format(2)} ")
         line[s[0]] = V[s]
@@ -43,7 +43,7 @@ class `Tile Coding` {
     val func = LinearFunc(feature)
     prob.`Gradient Monte Carlo algorithm`(func, π = π, α = alpha / numOfTilings, episodes = 100000)
     prob.apply {
-      val line = line("Tile Coding")
+      val line = Line("Tile Coding")
       for (s in states) {
         println("${s[0]}=${func(s).format(2)} ")
         line[s[0]] = func(s)
@@ -71,7 +71,7 @@ class `Tile Coding` {
       return FastMath.sqrt(result)
     }
     
-    val chart = chart("RMS", "episode", "RMS")
+    val chart = LineChart("RMS", "episode", "RMS")
     val episodes = 10000
     val runs = 5
     val alpha = 1e-4
@@ -102,7 +102,7 @@ class `Tile Coding` {
           }
           println("finish Tile coding ($numOfTiling tilings) run: 1")
         }
-        val line = line("Tile coding ($numOfTiling tilings) ")
+        val line = Line("Tile coding ($numOfTiling tilings) ")
         for (episode in 1..episodes) {
           line[episode] = errors[episode - 1] / runs
         }
@@ -116,11 +116,11 @@ class `Tile Coding` {
   
   @Test
   fun `Sutton Tile Coding `() {
-    val chart = chart("samples", "state", "value")
+    val chart = LineChart("samples", "state", "value")
     val (prob, π) = `1000-state RandomWalk`.make()
     val V = prob.`Tabular TD(0)`(π = π, episodes = 100000, α = 0.1)
     prob.apply {
-      val line = line("TD")
+      val line = Line("TD")
       for (s in states) {
         println("${V[s].format(2)} ")
         line[s[0]] = V[s]
@@ -137,7 +137,7 @@ class `Tile Coding` {
     val func = LinearFunc(feature)
     prob.`Gradient Monte Carlo algorithm`(v = func, π = π, α = alpha / numOfTilings, episodes = 100000)
     prob.apply {
-      val line = line("Tile Coding")
+      val line = Line("Tile Coding")
       for (s in states) {
         println("${s[0]}=${func(s).format(2)} ")
         line[s[0]] = func(s)
@@ -167,7 +167,7 @@ class `Tile Coding` {
       return sqrt(result)
     }
     
-    val chart = chart("RMS", "episode", "RMS")
+    val chart = LineChart("RMS", "episode", "RMS")
     
     val episodes = 10000
     val runs = 5
@@ -199,7 +199,7 @@ class `Tile Coding` {
         println("finish Tile coding ($numOfTiling tilings) run: 1")
       }
       
-      val line = line("Tile coding ($numOfTiling tilings) ")
+      val line = Line("Tile coding ($numOfTiling tilings) ")
       for (episode in 1..episodes) {
         line[episode] = errors[episode - 1] / runs
       }
@@ -232,7 +232,7 @@ class `Tile Coding` {
           println("finish Tile coding ($numOfTiling tilings) run: 1")
         }
         
-        val line = line("Tile coding ($numOfTiling tilings) ")
+        val line = Line("Tile coding ($numOfTiling tilings) ")
         for (episode in 1..episodes)
           line[episode] = errors[episode - 1] / runs
         chart += line

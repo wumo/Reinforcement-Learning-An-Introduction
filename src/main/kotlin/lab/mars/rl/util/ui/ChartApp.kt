@@ -4,22 +4,22 @@ import javafx.scene.chart.NumberAxis
 import tornadofx.*
 import java.util.concurrent.ConcurrentLinkedQueue
 
-class line(val description: String, val data: MutableMap<Number, Number> = hashMapOf()) {
+class Line(val description: String, val data: MutableMap<Number, Number> = hashMapOf()) {
   operator fun set(x: Number, y: Number) = data.put(x, y)
 }
 
-class chart(val title: String, val xAxisLabel: String, val yAxisLabel: String,
-            val lines: MutableCollection<line> = ConcurrentLinkedQueue(),
-            val xAxisConfig: NumberAxis.() -> Unit = {}, val yAxisConfig: NumberAxis.() -> Unit = {},
-            val linesSortor: Array<line>.() -> Unit = {}) {
-  operator fun plusAssign(line: line) {
+class LineChart(val title: String, val xAxisLabel: String, val yAxisLabel: String,
+                val lines: MutableCollection<Line> = ConcurrentLinkedQueue(),
+                val xAxisConfig: NumberAxis.() -> Unit = {}, val yAxisConfig: NumberAxis.() -> Unit = {},
+                val linesSortor: Array<Line>.() -> Unit = {}) {
+  operator fun plusAssign(line: Line) {
     lines += line
   }
 }
 
 class D2DChart: View() {
   companion object {
-    val charts = mutableListOf<chart>()
+    val charts = mutableListOf<LineChart>()
   }
   
   override val root = stackpane {

@@ -51,10 +51,10 @@ class `Test Prediction n-TD` {
     val runs = 100
     val truncateValue = 0.55
     
-    val chart = chart("RMS", "α", "Average RMS")
+    val chart = LineChart("RMS", "α", "Average RMS")
     runBlocking {
       for (n in ns) {
-        val line = line("n=$n")
+        val line = Line("n=$n")
         chart += line
         asyncs(αs) { α ->
           var rms_sum = 0.0

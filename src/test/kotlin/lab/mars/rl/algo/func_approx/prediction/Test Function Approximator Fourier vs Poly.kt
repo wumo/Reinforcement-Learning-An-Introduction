@@ -35,7 +35,7 @@ class Test {
       return sqrt(result)
     }
     
-    val chart = chart("RMS", "episode", "RMS")
+    val chart = LineChart("RMS", "episode", "RMS")
     val episodes = 5000
     val runs = 5
     val description = listOf("polynomial", "fourier")
@@ -63,7 +63,7 @@ class Test {
             errors[episode] += e
           }
         }
-        val line = line("${description[func_id]} order=$order")
+        val line = Line("${description[func_id]} order=$order")
         for (episode in 1..episodes) {
           line[episode] = errors[episode - 1] / runs
         }

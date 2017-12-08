@@ -17,9 +17,9 @@ class `Coarse Coding` {
     val numOfSamples = listOf(10, 40, 160, 2560, 10240)
     val featureWidths = listOf(0.2, .4, 1.0)
     for (numOfSample in numOfSamples) {
-      val chart = chart("$numOfSample samples", "state", "value")
+      val chart = LineChart("$numOfSample samples", "state", "value")
       for (featureWidth in featureWidths) {
-        val line = line("feature width: ${featureWidth.format(1)}")
+        val line = Line("feature width: ${featureWidth.format(1)}")
         val feature = SimpleCoarseCoding(featureWidth,
                                          SquareWave.domain, 50) { (s) -> (s as WaveState).x }
         val func = LinearFunc(feature)

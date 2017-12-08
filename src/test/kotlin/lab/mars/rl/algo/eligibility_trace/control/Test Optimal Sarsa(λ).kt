@@ -42,16 +42,16 @@ class `Test Optimal Sarsa λ` {
     val αs = 0.25..1.75 step 0.25
     val λs = listOf(0.0, 0.68, 0.84, 0.92, 0.96, 0.98, 0.99)
     
-    val chart = chart("Early performance on the Mountain Car task of Sarsa(λ)",
-                      "α x number of tilings (8)", "steps per episode",
-                      yAxisConfig = {
+    val chart = LineChart("Early performance on the Mountain Car task of Sarsa(λ)",
+                          "α x number of tilings (8)", "steps per episode",
+                          yAxisConfig = {
                         isAutoRanging = false
                         upperBound = 300.0
                         lowerBound = 165.0
                       })
     runBlocking {
       for (λ in λs) {
-        val line = line("λ=$λ ")
+        val line = Line("λ=$λ ")
         asyncs(αs) { α ->
           var totalStep = 0.0
           asyncs(runs) { run ->
@@ -105,10 +105,10 @@ class `Test Optimal Sarsa λ` {
                                    "replacing trace with clearing",
                                    "accumulating trace",
                                    "true online Sarsa(λ)")
-    val chart = chart("Summary comparison of Sarsa(λ)",
-                      "α x number of tilings (8)",
-                      "reward per episode",
-                      yAxisConfig = {
+    val chart = LineChart("Summary comparison of Sarsa(λ)",
+                          "α x number of tilings (8)",
+                          "reward per episode",
+                          yAxisConfig = {
                         isAutoRanging = false
                         tickUnit = 50.0
                         upperBound = -150.0
@@ -116,7 +116,7 @@ class `Test Optimal Sarsa λ` {
                       })
     runBlocking {
       for ((idx, trace_desc) in trace_description.withIndex()) {
-        val line = line(trace_desc)
+        val line = Line(trace_desc)
         asyncs(αs) { α ->
           if (trace_desc == "accumulating trace" && α > 0.6)
             return@asyncs tuple2(α, -560.0)

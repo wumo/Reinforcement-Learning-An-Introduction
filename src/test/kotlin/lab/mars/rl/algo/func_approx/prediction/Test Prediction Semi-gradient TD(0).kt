@@ -12,11 +12,11 @@ import org.junit.Test
 class `Test Prediction Semi-gradient TD(0)` {
   @Test
   fun `1000-state Random walk`() {
-    val chart = chart("V", "state", "value")
+    val chart = LineChart("V", "state", "value")
     val (prob, π) = `1000-state RandomWalk`.make()
     val V = prob.`Tabular TD(0)`(π = π, episodes = 100000, α = 0.1)
     prob.apply {
-      val line = line("TD")
+      val line = Line("TD")
       for (s in states) {
         println("${V[s].format(2)} ")
         line[s[0]] = V[s]
@@ -28,7 +28,7 @@ class `Test Prediction Semi-gradient TD(0)` {
                                 10) { (s) -> (s as IndexedState)[0] }
     prob.`Semi-gradient TD(0)`(v = func, π = π, α = 2e-4, episodes = 100000)
     prob.apply {
-      val line = line("Semi-gradient TD(0)")
+      val line = Line("Semi-gradient TD(0)")
       for (s in states) {
         println("${func(s).format(2)} ")
         line[s[0]] = func(s)

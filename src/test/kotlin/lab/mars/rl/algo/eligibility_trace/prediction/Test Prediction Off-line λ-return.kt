@@ -10,7 +10,6 @@ import lab.mars.rl.problem.`19-state RandomWalk`
 import lab.mars.rl.util.*
 import lab.mars.rl.util.tuples.tuple2
 import lab.mars.rl.util.ui.*
-import lab.mars.rl.util.range.*
 import org.apache.commons.math3.util.FastMath.*
 import org.junit.Test
 
@@ -31,10 +30,10 @@ class `Test Prediction Off-line λ-return` {
     val runs = 100
     val truncateValue = 0.55
     
-    val chart = chart("Off-line λ-return", "α", "Average RMS")
+    val chart = LineChart("Off-line λ-return", "α", "Average RMS")
     runBlocking {
       for (λ in λs) {
-        val line = line("λ=$λ")
+        val line = Line("λ=$λ")
         chart += line
         asyncs(αs) { α ->
           var rms_sum = 0.0

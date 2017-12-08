@@ -77,7 +77,7 @@ class `Test Optimal Episodic Semi-gradient Sarsa control` {
     val runs = 10
     val αs = listOf(0.1, 0.2, 0.5)
     
-    val chart = chart("Learning curves", "episode", "steps per episode")
+    val chart = LineChart("Learning curves", "episode", "steps per episode")
     runBlocking {
       asyncs(αs) { α ->
         val steps = IntArray(episodes)
@@ -104,7 +104,7 @@ class `Test Optimal Episodic Semi-gradient Sarsa control` {
           }
           println("finish alpha ($α ) run: 1")
         }
-        val line = line("MountainCar episodic sarsa ($α) ")
+        val line = Line("MountainCar episodic sarsa ($α) ")
         for (episode in 1..episodes)
           line[episode] = steps[episode - 1] / runs.toDouble()
         chart += line

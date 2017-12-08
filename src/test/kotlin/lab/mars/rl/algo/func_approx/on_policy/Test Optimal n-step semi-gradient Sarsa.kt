@@ -31,7 +31,7 @@ class `Test Optimal n-step semi-gradient Sarsa` {
     val αs = listOf(0.5, 0.3)
     val nSteps = listOf(1, 8)
     
-    val chart = chart("One-step vs multi-step performance", "episode", "steps per episode")
+    val chart = LineChart("One-step vs multi-step performance", "episode", "steps per episode")
     runBlocking {
       asyncs(nSteps.withIndex()) { (i, n) ->
         val steps = IntArray(episodes)
@@ -59,7 +59,7 @@ class `Test Optimal n-step semi-gradient Sarsa` {
           }
           println("finish alpha ($n ) run: 1")
         }
-        val line = line("MountainCar episodic sarsa ($n) ")
+        val line = Line("MountainCar episodic sarsa ($n) ")
         for (episode in 1..episodes)
           line[episode] = steps[episode - 1] / runs.toDouble()
         chart += line
@@ -83,16 +83,16 @@ class `Test Optimal n-step semi-gradient Sarsa` {
     val αs = 0.1..1.5 step 0.14
     val nSteps = listOf(1, 2, 4, 8, 16)
     
-    val chart = chart("Effect of the α and n on early performance",
-                      "α x number of tilings (8)", "steps per episode",
-                      yAxisConfig = {
+    val chart = LineChart("Effect of the α and n on early performance",
+                          "α x number of tilings (8)", "steps per episode",
+                          yAxisConfig = {
                         isAutoRanging = false
                         upperBound = 300.0
                         lowerBound = 210.0
                       })
     runBlocking {
       for (n in nSteps) {
-        val line = line("n=$n ")
+        val line = Line("n=$n ")
         asyncs(αs) { α ->
           var totalStep = 0.0
           asyncs(runs) { run ->

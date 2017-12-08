@@ -30,10 +30,10 @@ class `Test Prediction True Online TDλ` {
     val runs = 100
     val truncateValue = 0.6
     
-    val chart = chart("True Online TD(λ)", "α", "Average RMS")
+    val chart = LineChart("True Online TD(λ)", "α", "Average RMS")
     runBlocking {
       for (λ in λs) {
-        val line = line("λ=$λ")
+        val line = Line("λ=$λ")
         chart += line
         asyncs(αs) { α ->
           var rms_sum = 0.0

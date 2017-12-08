@@ -30,10 +30,10 @@ class `Test Prediction Semi-gradient TDλ` {
     val runs = 100
     val truncateValue = 0.6
     
-    val chart = chart("Semi-gradient TD(λ)", "α", "Average RMS")
+    val chart = LineChart("Semi-gradient TD(λ)", "α", "Average RMS")
     runBlocking {
       for (λ in λs) {
-        val line = line("λ=$λ")
+        val line = Line("λ=$λ")
         chart += line
         asyncs(αs) { α ->
           var rms_sum = 0.0

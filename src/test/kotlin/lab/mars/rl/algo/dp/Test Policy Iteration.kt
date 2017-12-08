@@ -5,6 +5,7 @@ import lab.mars.rl.problem.*
 import lab.mars.rl.problem.GridWorld.make
 import lab.mars.rl.util.*
 import lab.mars.rl.util.math.argmax
+import lab.mars.rl.util.ui.D3DChartUI.D3DChart
 import org.junit.Assert
 import org.junit.Test
 
@@ -48,7 +49,7 @@ class `Test Policy Iteration` {
     var i = 0
     for (a in CarRental.max_car downTo 0)
       for (b in 0..CarRental.max_car)
-        Assert.assertEquals(`Car Rental Result`[i++], V[prob.states[a, b]].format(2))
+        Assert.assertEquals(`Car Rental Result`[i++], V[a, b].format(2))
   }
   
   @Test
