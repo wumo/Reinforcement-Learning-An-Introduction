@@ -2,9 +2,6 @@ package lab.mars.rl.util
 
 import kotlinx.coroutines.experimental.Deferred
 import kotlinx.coroutines.experimental.async
-import kotlin.math.sign
-
-
 
 inline fun <R> listOf(size: Int, init: (Int) -> R): ArrayList<R> {
   val list = ArrayList<R>()

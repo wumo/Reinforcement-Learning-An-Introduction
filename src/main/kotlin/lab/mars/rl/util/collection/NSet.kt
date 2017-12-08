@@ -42,13 +42,13 @@ val emptyNSet = NSet<Any>(IntArray(0), IntArray(0), Array(0) {})
 inline fun <E: Any> emptyNSet(): NSet<E> = emptyNSet as NSet<E>
 
 /**
- * define Multi-dimensional Array and get using `[]`.
+ * define Multi-dimensional Array pair get using `[]`.
  * For example, `val a=Nset(2 x 3)` define a 2x3 matrix, you can use `a[0,0]=0` to set value.
  *
  * you can also define nested [NSet] so as to define irregular tree structure.
  * For example, `val a=Nset(2), a[0]=Nset(1), a[1]=Nset(2)` will define a tree.
  * The first element's length is 1. The second element's length is 2. you can
- * index the element using `a[0,0]=0, a[1, 1]`, but `a[0,1]` and `a[1,2]` will result in [ArrayIndexOutOfBoundsException].
+ * index the element using `a[0,0]=0, a[1, 1]`, but `a[0,1]` pair `a[1,2]` will result in [ArrayIndexOutOfBoundsException].
  *
  * @param dim dimension of the root element
  * @param stride stride of each dimension in a one-dimensional array.

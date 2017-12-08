@@ -1,9 +1,7 @@
 package lab.mars.rl.problem
 
 import lab.mars.rl.model.impl.mdp.*
-import lab.mars.rl.model.isTerminal
-import lab.mars.rl.util.collection.cnsetOf
-import lab.mars.rl.util.collection.emptyNSet
+import lab.mars.rl.util.collection.*
 import lab.mars.rl.util.dimension.x
 
 object WindyGridworld {
@@ -36,15 +34,12 @@ object WindyGridworld {
       val goal = states[7, 3]
       goal.actions = emptyNSet()
       started = { states(0, 3).rand() }
-      for (s in states) {
-        if (s.isTerminal) continue
-        for (a in s.actions) {
-          val m = (if (KingMove) kingMove else move)[a[0]]
-          val x = (s[0] + m[0]).coerceIn(0, world_width - 1)
-          val y = (s[1] + wind[s[0]] + m[1]).coerceIn(0, world_height - 1)
-          val next = states[x, y]
-          a.possibles = cnsetOf(IndexedPossible(next, if (next === goal) 0.0 else -1.0, 1.0))
-        }
+      for ((s, a) in states.fork { it.actions }) {
+        val m = (if (KingMove) kingMove else move)[a[0]]
+        val x = (s[0] + m[0]).coerceIn(0, world_width - 1)
+        val y = (s[1] + wind[s[0]] + m[1]).coerceIn(0, world_height - 1)
+        val next = states[x, y]
+        a.possibles = cnsetOf(IndexedPossible(next, if (next === goal) 0.0 else -1.0, 1.0))
       }
     }
   }

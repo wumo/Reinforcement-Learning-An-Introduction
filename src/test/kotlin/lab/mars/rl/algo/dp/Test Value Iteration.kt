@@ -10,7 +10,7 @@ class `Test Value Iteration` {
   @Test
   fun `GridWorld Problem`() {
     val prob = GridWorld.make()
-    val V = prob.ValueIteration()
+    val (_, V, _) = prob.ValueIteration()
     for (s in prob.states) {
       println(V[s])
     }
@@ -19,7 +19,7 @@ class `Test Value Iteration` {
   @Test
   fun `Car Rental  Value Iteration`() {
     val prob = CarRental.make(false)
-    val V = prob.ValueIteration()
+    val (_, V, _) = prob.ValueIteration()
     var i = 0
     for (a in CarRental.max_car downTo 0)
       for (b in 0..CarRental.max_car)

@@ -7,17 +7,9 @@ import lab.mars.rl.util.buf.*
 import lab.mars.rl.util.math.Rand
 import lab.mars.rl.util.tuples.tuple2
 
-val emptyIter: Iterator<Any> = object: Iterator<Any> {
-  override fun hasNext() = false
-  
-  override fun next(): Any {
-    throw NoSuchElementException()
-  }
-}
-
 interface IndexedCollection<E: Any>: RandomIterable<E>, Gettable<Index, E> {
   /**
-   * make a collection with same shape (both dimension and depth will be the same)
+   * make a collection with same shape (both dimension pair depth will be the same)
    */
   fun <T: Any> copycat(element_maker: (Index) -> T): IndexedCollection<T>
   
@@ -26,34 +18,6 @@ interface IndexedCollection<E: Any>: RandomIterable<E>, Gettable<Index, E> {
   fun indices(): Iterator<Index>
   
   fun withIndices(): Iterator<tuple2<out Index, E>>
-  
-  operator fun <F: Any> invoke(subset: E.() -> IndexedCollection<F>) = object: Iterator<tuple2<E, F>> {
-    var result: tuple2<E, F>? = null
-    var outer: E? = null
-    val iterOuter = this@IndexedCollection.iterator()
-    var iterInner: Iterator<F> = emptyIter as Iterator<F>
-    override fun hasNext(): Boolean {
-      while (true) {
-        if (iterInner.hasNext()) return true
-        if (!iterOuter.hasNext()) return false
-        val tmp = iterOuter.next()
-        iterInner = subset(tmp).iterator()
-        outer = tmp
-      }
-    }
-    
-    override fun next(): tuple2<E, F> {
-      while (true) {
-        if (iterInner.hasNext()) return pack(outer!!, iterInner.next())
-        if (!iterOuter.hasNext()) throw NoSuchElementException()
-        val tmp = iterOuter.next()
-        iterInner = subset(tmp).iterator()
-        outer = tmp
-      }
-    }
-    
-    inline fun pack(e: E, f: F) = result?.invoke(e, f) ?: tuple2(e, f)
-  }
   
   override operator fun get(dim: Index): E
   operator fun get(vararg dim: Int): E = get(DefaultIntBuf.reuse(dim))

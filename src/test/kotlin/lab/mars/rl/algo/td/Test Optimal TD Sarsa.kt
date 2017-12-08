@@ -71,6 +71,6 @@ class `Test Optimal TD Sarsa` {
       sum += possible.reward
       print("${WindyGridworld.desc_move[a[0]]}$s")
     }
-    println("\nreturn=$sum")//optimal=-16
+    println("\nreturn=$sum")//optimal=-12
   }
 }

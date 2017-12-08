@@ -19,7 +19,6 @@ package lab.mars.rl.util.math
 import org.apache.commons.math3.special.Gamma
 import org.apache.commons.math3.util.FastMath
 import org.apache.commons.math3.util.FastMath.*
-import org.apache.commons.math3.util.MathUtils
 import org.apache.commons.math3.util.MathUtils.TWO_PI
 
 fun poisson(mean: Double, n: Int): Double {

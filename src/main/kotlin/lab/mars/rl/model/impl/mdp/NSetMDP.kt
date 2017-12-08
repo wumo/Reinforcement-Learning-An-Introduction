@@ -17,7 +17,7 @@ import lab.mars.rl.util.dimension.*
  * @param gamma `γ` decay
  * @param state_dim state dimension
  * @param action_dim action dimension
- * @return mdp with same state dimension and same action dimension
+ * @return mdp with same state dimension pair same action dimension
  */
 inline fun NSetMDP(gamma: Double, state_dim: Any, action_dim: Any): IndexedMDP {
   val a_dim = action_dim.toDim()
@@ -47,7 +47,7 @@ fun NSetMDP(gamma: Double, state_dim: Any, action_dim: (IntBuf) -> Any): Indexed
  * @param gamma `γ` decay factor
  * @param state_dim state dimension
  * @param action_dim action dimension
- * @return mdp with same state dimension and same action dimension
+ * @return mdp with same state dimension pair same action dimension
  */
 inline fun CNSetMDP(gamma: Double, state_dim: Any, action_dim: Any): IndexedMDP {
   val a_dim = action_dim.toDim() as GeneralDimension

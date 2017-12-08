@@ -6,8 +6,7 @@ import lab.mars.rl.model.impl.mdp.*
 import lab.mars.rl.model.isNotTerminal
 import lab.mars.rl.model.log
 import lab.mars.rl.util.log.debug
-import lab.mars.rl.util.math.Rand
-import lab.mars.rl.util.math.max
+import lab.mars.rl.util.math.*
 import lab.mars.rl.util.tuples.tuple2
 import lab.mars.rl.util.tuples.tuple3
 import java.util.*
@@ -47,7 +46,7 @@ fun IndexedMDP.`Dyna-Q-OnPolicy`(
       Q[s, a] += α(s, a) * (reward + γ * max(s_next.actions, 0.0) { Q[s_next, it] } - Q[s, a])
       
       var _s = startedStates.rand(episode)
-      lab.mars.rl.util.math.repeat(n, { _s.isNotTerminal }) {
+      repeat(n, { _s.isNotTerminal }) {
         `ε-greedy (tie broken randomly)`(_s, Q, π, ε)//using on-policy to distribute computation
         val a = π(_s)
         if (Model[_s, a].isEmpty()) return@repeat

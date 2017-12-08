@@ -4,6 +4,7 @@ import lab.mars.rl.algo.V_from_Q
 import lab.mars.rl.model.*
 import lab.mars.rl.model.impl.mdp.*
 import lab.mars.rl.util.buf.newBuf
+import lab.mars.rl.util.collection.filter
 import lab.mars.rl.util.log.debug
 import lab.mars.rl.util.tuples.tuple3
 
@@ -11,8 +12,7 @@ fun IndexedMDP.`Off-policy MC prediction`(π: IndexedPolicy, episodes: Int): Sta
   val Q = QFunc { 0.0 }
   val C = QFunc { 0.0 }
   val b = IndexedPolicy(QFunc { 1.0 })
-  for (s in states) {
-    if (s.isTerminal) continue
+  for (s in states.filter { it.isNotTerminal }) {
     val prob = 1.0 / s.actions.size
     for (a in s.actions)
       b[s, a] = prob

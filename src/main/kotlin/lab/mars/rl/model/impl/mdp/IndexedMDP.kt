@@ -2,8 +2,7 @@
 
 package lab.mars.rl.model.impl.mdp
 
-import lab.mars.rl.model.MDP
-import lab.mars.rl.model.isTerminal
+import lab.mars.rl.model.*
 import lab.mars.rl.util.buf.Index
 import lab.mars.rl.util.collection.IndexedCollection
 
@@ -29,7 +28,7 @@ class IndexedMDP(
   
   /**
    *
-   * create state action function indexed by [IndexedState] and [IndexedAction]
+   * create state action function indexed by [IndexedState] pair [IndexedAction]
    */
   fun <T: Any> QFunc(element_maker: (Index) -> T) =
       state_action_function(element_maker) as IndexedCollection<T>
@@ -39,8 +38,7 @@ class IndexedMDP(
    */
   fun equiprobablePolicy(): IndexedPolicy {
     val policy = QFunc { 0.0 }
-    for (s in states) {
-      if (s.isTerminal) continue
+    for (s in states.filter { it.isNotTerminal }) {
       val prob = 1.0 / s.actions.size
       for (a in s.actions)
         policy[s, a] = prob

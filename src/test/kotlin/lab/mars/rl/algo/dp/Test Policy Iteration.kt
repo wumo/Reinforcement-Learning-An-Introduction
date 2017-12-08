@@ -4,8 +4,6 @@ import lab.mars.rl.model.isNotTerminal
 import lab.mars.rl.problem.*
 import lab.mars.rl.problem.GridWorld.make
 import lab.mars.rl.util.*
-import lab.mars.rl.util.math.argmax
-import lab.mars.rl.util.ui.D3DChartUI.D3DChart
 import org.junit.Assert
 import org.junit.Test
 

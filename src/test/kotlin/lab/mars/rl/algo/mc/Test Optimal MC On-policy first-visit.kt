@@ -8,7 +8,7 @@ class `Test Optimal MC On-policy first-visit` {
   @Test
   fun `Blackjack`() {
     val (prob) = Blackjack.make()
-    val (π, V) = prob.`On-policy first-visit MC control`(1000000)
+    val (π, V) = prob.`On-policy first-visit MC control`(1000_000)
     printBlackjack(prob, π, V)
   }
 }

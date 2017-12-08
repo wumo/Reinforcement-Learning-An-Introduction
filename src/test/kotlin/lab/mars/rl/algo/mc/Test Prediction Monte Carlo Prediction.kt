@@ -10,7 +10,7 @@ class `Test Prediction Monte Carlo Prediction` {
   @Test
   fun `Blackjack`() {
     val (prob, π) = Blackjack.make()
-    val V = prob.`First Visit Monte Carlo Prediction`(π, 500000)
+    val V = prob.`First Visit Monte Carlo Prediction`(π, 500_000)
     printBlackjack(prob, π, V)
   }
   

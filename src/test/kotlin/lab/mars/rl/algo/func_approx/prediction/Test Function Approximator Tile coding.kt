@@ -6,12 +6,12 @@ import ch.qos.logback.classic.Level
 import javafx.application.Application
 import kotlinx.coroutines.experimental.runBlocking
 import lab.mars.rl.algo.td.`Tabular TD(0)`
-import lab.mars.rl.model.ApproximateFunction
+import lab.mars.rl.model.*
 import lab.mars.rl.model.impl.func.*
 import lab.mars.rl.model.impl.mdp.IndexedState
-import lab.mars.rl.model.isTerminal
 import lab.mars.rl.problem.`1000-state RandomWalk`
 import lab.mars.rl.util.*
+import lab.mars.rl.util.collection.filter
 import lab.mars.rl.util.tuples.tuple2
 import lab.mars.rl.util.ui.*
 import org.apache.commons.math3.util.FastMath
@@ -63,10 +63,8 @@ class `Tile Coding` {
     
     fun RMS(f: ApproximateFunction<Double>): Double {
       var result = 0.0
-      for (s in prob.states) {
-        if (s.isTerminal) continue
+      for (s in prob.states.filter { it.isNotTerminal })
         result += FastMath.pow(V[s] - f(s), 2)
-      }
       result /= prob.states.size
       return FastMath.sqrt(result)
     }
@@ -103,9 +101,8 @@ class `Tile Coding` {
           println("finish Tile coding ($numOfTiling tilings) run: 1")
         }
         val line = Line("Tile coding ($numOfTiling tilings) ")
-        for (episode in 1..episodes) {
+        for (episode in 1..episodes)
           line[episode] = errors[episode - 1] / runs
-        }
         chart += line
         println("finish Tile coding ($numOfTiling tilings)")
       }.await()
@@ -159,10 +156,8 @@ class `Tile Coding` {
     
     fun <E> RMS(f: ApproximateFunction<E>): Double {
       var result = 0.0
-      for (s in prob.states) {
-        if (s.isTerminal) continue
+      for (s in prob.states.filter { it.isNotTerminal })
         result += pow(V[s] - f(s), 2)
-      }
       result /= prob.states.size
       return sqrt(result)
     }
@@ -200,9 +195,8 @@ class `Tile Coding` {
       }
       
       val line = Line("Tile coding ($numOfTiling tilings) ")
-      for (episode in 1..episodes) {
+      for (episode in 1..episodes)
         line[episode] = errors[episode - 1] / runs
-      }
       chart += line
       println("finish Tile coding ($numOfTiling tilings)")
     }
@@ -231,7 +225,6 @@ class `Tile Coding` {
           }
           println("finish Tile coding ($numOfTiling tilings) run: 1")
         }
-        
         val line = Line("Tile coding ($numOfTiling tilings) ")
         for (episode in 1..episodes)
           line[episode] = errors[episode - 1] / runs

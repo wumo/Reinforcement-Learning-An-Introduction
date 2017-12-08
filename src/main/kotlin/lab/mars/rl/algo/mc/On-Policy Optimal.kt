@@ -6,6 +6,7 @@ import lab.mars.rl.algo.V_from_Q
 import lab.mars.rl.model.*
 import lab.mars.rl.model.impl.mdp.*
 import lab.mars.rl.util.buf.newBuf
+import lab.mars.rl.util.collection.fork
 import lab.mars.rl.util.log.debug
 import lab.mars.rl.util.math.argmax
 import lab.mars.rl.util.tuples.tuple3
@@ -31,16 +32,13 @@ fun IndexedMDP.`On-policy first-visit MC control`(episodes: Int): OptimalSolutio
       s = s_next
     }
     tmpS.clear()
-    for (s in states) {
-      if (s.isTerminal) continue
-      for (a in s.actions) {
-        val value = tmpQ[s, a]
-        if (!value.isNaN()) {
-          Q[s, a] += accumulate - value
-          count[s, a] += 1
-          tmpS.append(s)
-          tmpQ[s, a] = Double.NaN
-        }
+    for ((s, a) in states.fork { it.actions }) {
+      val value = tmpQ[s, a]
+      if (!value.isNaN()) {
+        Q[s, a] += accumulate - value
+        count[s, a] += 1
+        tmpS.append(s)
+        tmpQ[s, a] = Double.NaN
       }
     }
     for (s in tmpS) {

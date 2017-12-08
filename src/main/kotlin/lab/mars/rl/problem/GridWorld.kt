@@ -1,8 +1,8 @@
 package lab.mars.rl.problem
 
 import lab.mars.rl.model.impl.mdp.*
-import lab.mars.rl.util.collection.cnsetOf
-import lab.mars.rl.util.collection.emptyNSet
+import lab.mars.rl.model.isNotTerminal
+import lab.mars.rl.util.collection.*
 import lab.mars.rl.util.dimension.x
 
 /**
@@ -27,16 +27,17 @@ object GridWorld {
                        state_dim = n x n,
                        action_dim = m)
     mdp.apply {
-      for (s in states)
-        for (action in s.actions) {
-          var x = s[0] + move[action[0]][0]
-          var y = s[1] + move[action[0]][1]
-          if (x < 0 || x >= n || y < 0 || y >= n) {
-            x = s[0]
-            y = s[1]
-          }
-          action.possibles = cnsetOf(IndexedPossible(states[x, y], -1.0, 1.0))
+      for ((s, action) in states.filter { it.isNotTerminal }.fork { it.actions }) {
+        val (s0, s1) = s
+        val (a) = action
+        var x = s0 + move[a][0]
+        var y = s1 + move[a][1]
+        if (x < 0 || x >= n || y < 0 || y >= n) {
+          x = s0
+          y = s1
         }
+        action.possibles = cnsetOf(IndexedPossible(states[x, y], -1.0, 1.0))
+      }
       states[0, 0].actions = emptyNSet()
       states[n - 1, n - 1].actions = emptyNSet()
     }

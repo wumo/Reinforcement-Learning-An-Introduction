@@ -8,7 +8,7 @@ class `Test Optimal MC Exploring Starts` {
   @Test
   fun `Blackjack`() {
     val (prob, π) = Blackjack.make()
-    val (PI, V) = prob.`Monte Carlo Exploring Starts`(π, 1000000)
+    val (PI, V) = prob.`Monte Carlo Exploring Starts`(π, 1000_000)
     printBlackjack(prob, PI, V)
   }
 }

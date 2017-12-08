@@ -2,7 +2,7 @@ package lab.mars.rl.algo
 
 import lab.mars.rl.model.*
 import lab.mars.rl.model.impl.mdp.*
-import lab.mars.rl.util.collection.Gettable
+import lab.mars.rl.util.collection.*
 import lab.mars.rl.util.math.*
 
 /**
@@ -15,17 +15,16 @@ import lab.mars.rl.util.math.*
 
 fun V_from_Q(states: StateSet, pvq: OptimalSolution) {
   val (π, V, Q) = pvq
-  for (s in states)
-    s.actions.ifAny {
-      V[s] = Σ(this) {
-        π[s, it] * Q[s, it]
-      }
+  for (s in states.filter { it.isNotTerminal }) {
+    V[s] = Σ(s.actions) {
+      π[s, it] * Q[s, it]
     }
+  }
 }
 
 fun Q_from_V(gamma: Double, states: StateSet, pvq: OptimalSolution) {
   val (_, V, Q) = pvq
-  for ((s, a) in states { actions })
+  for ((s, a) in states.fork { it.actions })
     Q[s, a] = Σ(a.possibles) { probability * (reward + gamma * V[next]) }
 }
 

@@ -7,6 +7,7 @@ import lab.mars.rl.model.impl.mdp.*
 import lab.mars.rl.util.collection.cnsetOf
 import lab.mars.rl.util.log.debug
 import lab.mars.rl.util.math.max
+import lab.mars.rl.util.math.repeat
 import lab.mars.rl.util.tuples.tuple2
 import lab.mars.rl.util.tuples.tuple3
 import org.apache.commons.math3.util.FastMath.*
@@ -45,7 +46,7 @@ fun IndexedMDP.PrioritizedSweeping(
       predecessor[s_next] += tuple2(s, a)
       val P = abs(reward + γ * max(s_next.actions, 0.0) { Q[s_next, it] } - Q[s, a])
       if (P > θ) PQueue.add(tuple3(P, s, a))
-      lab.mars.rl.util.math.repeat(n, { PQueue.isNotEmpty() }) {
+      repeat(n, { PQueue.isNotEmpty() }) {
         val (_, s, a) = PQueue.poll()
         val (s_next, reward) = Model[s, a].rand()
         Q[s, a] += α(s, a) * (reward + γ * max(s_next.actions, 0.0) { Q[s_next, it] } - Q[s, a])

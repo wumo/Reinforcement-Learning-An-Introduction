@@ -12,9 +12,10 @@ import lab.mars.rl.model.impl.mdp.`ε-greedy function policy`
 import lab.mars.rl.problem.CarState
 import lab.mars.rl.problem.MountainCar
 import lab.mars.rl.util.*
+import lab.mars.rl.util.range.rangeTo
+import lab.mars.rl.util.range.step
 import lab.mars.rl.util.tuples.tuple2
 import lab.mars.rl.util.ui.*
-import lab.mars.rl.util.range.*
 import org.junit.Test
 
 class `Test Optimal n-step semi-gradient Sarsa` {
@@ -86,10 +87,10 @@ class `Test Optimal n-step semi-gradient Sarsa` {
     val chart = LineChart("Effect of the α and n on early performance",
                           "α x number of tilings (8)", "steps per episode",
                           yAxisConfig = {
-                        isAutoRanging = false
-                        upperBound = 300.0
-                        lowerBound = 210.0
-                      })
+                            isAutoRanging = false
+                            upperBound = 300.0
+                            lowerBound = 210.0
+                          })
     runBlocking {
       for (n in nSteps) {
         val line = Line("n=$n ")

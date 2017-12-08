@@ -3,7 +3,6 @@ package lab.mars.rl.util
 import ch.qos.logback.classic.Level
 import ch.qos.logback.classic.LoggerContext
 import lab.mars.rl.model.impl.mdp.*
-import lab.mars.rl.util.math.argmax
 import org.slf4j.Logger
 import org.slf4j.LoggerFactory
 

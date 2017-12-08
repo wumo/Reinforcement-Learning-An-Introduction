@@ -12,10 +12,11 @@ import lab.mars.rl.model.impl.mdp.`ε-greedy function policy`
 import lab.mars.rl.problem.CarState
 import lab.mars.rl.problem.MountainCar
 import lab.mars.rl.util.*
+import lab.mars.rl.util.range.rangeTo
+import lab.mars.rl.util.range.step
 import lab.mars.rl.util.tuples.tuple2
 import lab.mars.rl.util.ui.*
 import org.junit.Test
-import lab.mars.rl.util.range.*
 
 class `Test Optimal Sarsa λ` {
   val numTilings = 8
@@ -45,10 +46,10 @@ class `Test Optimal Sarsa λ` {
     val chart = LineChart("Early performance on the Mountain Car task of Sarsa(λ)",
                           "α x number of tilings (8)", "steps per episode",
                           yAxisConfig = {
-                        isAutoRanging = false
-                        upperBound = 300.0
-                        lowerBound = 165.0
-                      })
+                            isAutoRanging = false
+                            upperBound = 300.0
+                            lowerBound = 165.0
+                          })
     runBlocking {
       for (λ in λs) {
         val line = Line("λ=$λ ")
@@ -109,11 +110,11 @@ class `Test Optimal Sarsa λ` {
                           "α x number of tilings (8)",
                           "reward per episode",
                           yAxisConfig = {
-                        isAutoRanging = false
-                        tickUnit = 50.0
-                        upperBound = -150.0
-                        lowerBound = -550.0
-                      })
+                            isAutoRanging = false
+                            tickUnit = 50.0
+                            upperBound = -150.0
+                            lowerBound = -550.0
+                          })
     runBlocking {
       for ((idx, trace_desc) in trace_description.withIndex()) {
         val line = Line(trace_desc)

@@ -17,9 +17,9 @@ class SuttonTileCoding(numTilesOfEachTiling: Int, _numTilings: Int, conv: (Array
       x[activeTile] = 1.0
     return x
   }
-
+  
   val data = HashMap<ArrayList<Double>, Int>(ceil(numOfComponents / 0.75).toInt())
-
+  
   private fun tiles(floats: DoubleArray, ints: IntArray): IntArray {
     val qfloats = DoubleArray(floats.size) { floor(floats[it] * numTilings) }
     val result = IntArray(numTilings)
@@ -38,7 +38,7 @@ class SuttonTileCoding(numTilesOfEachTiling: Int, _numTilings: Int, conv: (Array
     }
     return result
   }
-
+  
   /** Returns a power of two size for the given target capacity.*/
   fun tableSizeFor(cap: Int): Int {
     var n = cap - 1

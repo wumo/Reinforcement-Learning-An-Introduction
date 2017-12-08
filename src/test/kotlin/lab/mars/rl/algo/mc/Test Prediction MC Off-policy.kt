@@ -8,7 +8,7 @@ class `Test Monte Carlo Off-policy prediction` {
   @Test
   fun `Blackjack`() {
     val (prob, π) = Blackjack.make()
-    val V = prob.`Off-policy MC prediction`(π, 500000)
+    val V = prob.`Off-policy MC prediction`(π, 500_000)
     printBlackjack(prob, π, V)
   }
 }
