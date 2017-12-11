@@ -8,7 +8,7 @@ import kotlinx.coroutines.experimental.runBlocking
 import lab.mars.rl.model.impl.func.LinearFunc
 import lab.mars.rl.model.impl.func.SuttonTileCoding
 import lab.mars.rl.model.impl.mdp.DefaultAction
-import lab.mars.rl.model.impl.mdp.`ε-greedy function policy`
+import lab.mars.rl.model.impl.mdp.EpsilonGreedyFunctionPolicy
 import lab.mars.rl.problem.CarState
 import lab.mars.rl.problem.MountainCar
 import lab.mars.rl.util.*
@@ -61,7 +61,7 @@ class `Test Optimal Sarsa λ` {
             prob.`Sarsa(λ) linear trace`(
                 traceOp = `replacing trace`,
                 Q = Qfunc,
-                π = `ε-greedy function policy`(Qfunc, 0.0),
+                π = EpsilonGreedyFunctionPolicy(Qfunc, 0.0),
                 λ = λ,
                 α = α / numTilings,
                 episodes = episodes,
@@ -129,7 +129,7 @@ class `Test Optimal Sarsa λ` {
               prob.`Sarsa(λ) linear trace`(
                   traceOp = traces[idx],
                   Q = Qfunc,
-                  π = `ε-greedy function policy`(Qfunc, 0.0),
+                  π = EpsilonGreedyFunctionPolicy(Qfunc, 0.0),
                   λ = λ,
                   α = α / numTilings,
                   episodes = episodes,
@@ -140,7 +140,7 @@ class `Test Optimal Sarsa λ` {
             else
               prob.`True Online Sarsa(λ)`(
                   Qfunc = Qfunc,
-                  π = `ε-greedy function policy`(Qfunc, 0.0),
+                  π = EpsilonGreedyFunctionPolicy(Qfunc, 0.0),
                   λ = λ,
                   α = α / numTilings,
                   episodes = episodes,

@@ -3,7 +3,7 @@ package lab.mars.rl.model.impl.mdp
 import lab.mars.rl.model.*
 import lab.mars.rl.util.math.*
 
-class `ε-greedy function policy`<E>(val q: ApproximateFunction<E>, val ε: Double = 0.1): Policy {
+class EpsilonGreedyFunctionPolicy<E>(val q: ApproximateFunction<E>, val ε: Double = 0.1): Policy {
   override fun invoke(s: State): Action<State> {
     return if (Rand().nextDouble() < ε)
       s.actions.rand()

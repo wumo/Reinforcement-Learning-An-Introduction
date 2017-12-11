@@ -8,7 +8,7 @@ import kotlinx.coroutines.experimental.runBlocking
 import lab.mars.rl.model.impl.func.LinearFunc
 import lab.mars.rl.model.impl.func.SuttonTileCoding
 import lab.mars.rl.model.impl.mdp.DefaultAction
-import lab.mars.rl.model.impl.mdp.`ε-greedy function policy`
+import lab.mars.rl.model.impl.mdp.EpsilonGreedyFunctionPolicy
 import lab.mars.rl.problem.CarState
 import lab.mars.rl.problem.MountainCar
 import lab.mars.rl.util.*
@@ -34,7 +34,7 @@ class `Test Optimal Episodic Semi-gradient Sarsa control` {
     val episodes = intArrayOf(1, 12, 104, 1000, 9000)
     prob.`Episodic semi-gradient Sarsa control`(
         q = func,
-        π = `ε-greedy function policy`(func, 0.0),
+        π = EpsilonGreedyFunctionPolicy(func, 0.0),
         α = 0.3 / 8,
         episodes = 9000,
         episodeListener = { episode, _ ->
@@ -91,7 +91,7 @@ class `Test Optimal Episodic Semi-gradient Sarsa control` {
           val steps = IntArray(episodes)
           prob.`Episodic semi-gradient Sarsa control`(
               q = func,
-              π = `ε-greedy function policy`(func, 0.0),
+              π = EpsilonGreedyFunctionPolicy(func, 0.0),
               α = α / numTilings,
               episodes = episodes,
               episodeListener = { episode, step ->

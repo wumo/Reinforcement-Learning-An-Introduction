@@ -23,7 +23,7 @@ class `Test Optimal Differential semi-gradient Sarsa` {
           val (_a) = (a as IndexedAction)
           (fs * 4 * 2 + pr * 2 + _a).toDouble()
         })
-    val π = `ε-greedy function policy`(func, 0.1)
+    val π = EpsilonGreedyFunctionPolicy(func, 0.1)
     prob.`Differential semi-gradient Sarsa`(
         q = func,
         π = π,
@@ -67,7 +67,7 @@ class `Test Optimal Differential semi-gradient Sarsa` {
           tuple2(doubleArrayOf(fs * serverScale, pr * priorityScale),
                  intArrayOf(_a))
         })
-    val π = `ε-greedy function policy`(func, 0.1)
+    val π = EpsilonGreedyFunctionPolicy(func, 0.1)
     prob.`Differential semi-gradient Sarsa`(
         q = func,
         π = π,
