@@ -17,13 +17,14 @@ fun <E> MDP.`N-step off-policy n-step Q(σ) episodic`(
     α: Double,
     episodes: Int,
     episodeListener: (Int, Int) -> Unit = { _, _ -> }) {
-  val _Q = newBuf<Double>(min(n, MAX_N))
-  val _π = newBuf<Double>(min(n, MAX_N))
-  val ρ = newBuf<Double>(min(n, MAX_N))
-  val _σ = newBuf<Int>(min(n, MAX_N))
-  val δ = newBuf<Double>(min(n, MAX_N))
-  val _S = newBuf<State>(min(n, MAX_N))
-  val _A = newBuf<Action<State>>(min(n, MAX_N))
+  val len = min(n, MAX_N)
+  val _Q = newBuf<Double>(len)
+  val _π = newBuf<Double>(len)
+  val ρ = newBuf<Double>(len)
+  val _σ = newBuf<Int>(len)
+  val δ = newBuf<Double>(len)
+  val _S = newBuf<State>(len)
+  val _A = newBuf<Action<State>>(len)
   
   for (episode in 1..episodes) {
     log.debug { "$episode/$episodes" }
@@ -97,13 +98,14 @@ fun <E> MDP.`N-step off-policy n-step Q(σ) continuing`(q: ApproximateFunction<E
                                                        σ: (Int) -> Int = { 0 },
                                                        α: Double = 1.0, β: Double) {
   var average_reward = 0.0
-  val _Q = newBuf<Double>(min(n, MAX_N))
-  val _π = newBuf<Double>(min(n, MAX_N))
-  val ρ = newBuf<Double>(min(n, MAX_N))
-  val _σ = newBuf<Int>(min(n, MAX_N))
-  val δ = newBuf<Double>(min(n, MAX_N))
-  val _S = newBuf<State>(min(n, MAX_N))
-  val _A = newBuf<Action<State>>(min(n, MAX_N))
+  val len = min(n, MAX_N)
+  val _Q = newBuf<Double>(len)
+  val _π = newBuf<Double>(len)
+  val ρ = newBuf<Double>(len)
+  val _σ = newBuf<Int>(len)
+  val δ = newBuf<Double>(len)
+  val _S = newBuf<State>(len)
+  val _A = newBuf<Action<State>>(len)
   
   var t = 0
   var s = started()
@@ -118,7 +120,7 @@ fun <E> MDP.`N-step off-policy n-step Q(σ) continuing`(q: ApproximateFunction<E
   _A.clear();_A.append(a)
   
   while (true) {
-    if (t >= n) {//最多存储n个
+    if (t >= n) {//
       _Q.removeFirst()
       _π.removeFirst()
       ρ.removeFirst()

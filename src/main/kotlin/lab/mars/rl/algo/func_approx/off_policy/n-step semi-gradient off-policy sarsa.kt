@@ -82,7 +82,7 @@ fun <E> MDP.`n-step semi-gradient off-policy sarsa continuing`(q: ApproximateFun
   _S.clear();_S.append(s)
   _A.clear();_A.append(a)
   while (true) {
-    if (t >= n) {//最多存储n个
+    if (t >= n) {//
       _R.removeFirst()
       _S.removeFirst()
       _A.removeFirst()
