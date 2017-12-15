@@ -5,7 +5,7 @@ import lab.mars.rl.util.matrix.Matrix
 import org.apache.commons.math3.util.FastMath.*
 
 class StateAggregation(numStates: Int, val numOfGroups: Int, conv: (Array<out Any>) -> Int): ApproximateFunction<Int>(conv) {
-  override fun `_▽`(input: Int): Matrix {
+  override fun `_∇`(input: Int): Matrix {
     val groupIdx = input / groupSize
     return Matrix.column(numOfGroups) { if (it == groupIdx) 1.0 else 0.0 }
   }

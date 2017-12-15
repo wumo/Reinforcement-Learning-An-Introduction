@@ -35,7 +35,7 @@ fun <E> MDP.`Gradient Monte Carlo algorithm`(
     for (t in 0 until T) {
       pre += _R[t]
       val Gt = accum - pre
-      v.w += α * (Gt - v(_S[t])) * v.`▽`(_S[t])
+      v.w += α * (Gt - v(_S[t])) * v.`∇`(_S[t])
     }
     episodeListener(episode, step)
   }

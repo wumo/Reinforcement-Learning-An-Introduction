@@ -22,11 +22,11 @@ fun <E> MDP.`Actor-Critic with Eligibility Traces (episodic)`(
       val a = rand(s.actions) { π(s, it) }
       val (s_next, reward) = a.sample()
       val δ = reward + γ * if (s_next.isTerminal) 0.0 else v(s_next) - v(s)
-      z_w = γ * λ_w * z_w + γ_t * v.`▽`(s)
+      z_w = γ * λ_w * z_w + γ_t * v.`∇`(s)
       val `▽` = if (π is LinearFunc)
         π.x(s, a) - Σ(s.actions) { π(s, it) * π.x(s, it) }
       else
-        π.`▽`(s, a) / π(s, a)
+        π.`∇`(s, a) / π(s, a)
       z_θ = γ * λ_θ * z_θ + γ_t * `▽`
       v.w += α_w * γ_t * δ * z_w
       π.w += α_θ * γ_t * δ * z_θ

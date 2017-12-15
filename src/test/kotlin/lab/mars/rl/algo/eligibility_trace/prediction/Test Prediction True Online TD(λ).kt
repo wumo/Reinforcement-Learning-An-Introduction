@@ -56,7 +56,7 @@ class `Test Prediction True Online TDλ` {
                   error /= prob.states.size
                   rms += sqrt(error)
                 })
-            println("finish λ=$λ α=$α run=$run")
+            println("finish λ=$λ α=${α.format(2)} run=$run")
             rms
           }.await { rms_sum += it }
           println("finish λ=$λ α=$α")

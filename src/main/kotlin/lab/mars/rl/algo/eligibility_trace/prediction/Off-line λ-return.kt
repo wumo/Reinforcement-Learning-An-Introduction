@@ -38,7 +38,7 @@ fun <E> MDP.`Off-line λ-return`(
     for (t in 0 until T) {
       val Gtλ = (1 - λ) * Σ(1..T - t - 1) { pow(λ, it - 1) * Gt(t, it) } +
                 pow(λ, T - t - 1) * Gt(t, T - t)
-      V.w += α * (Gtλ - V(S[t])) * V.`▽`(S[t])
+      V.w += α * (Gtλ - V(S[t])) * V.`∇`(S[t])
     }
     episodeListener(episode, T)
   }

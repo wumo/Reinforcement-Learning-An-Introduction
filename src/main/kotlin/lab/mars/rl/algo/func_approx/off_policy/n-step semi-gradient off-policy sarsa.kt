@@ -58,7 +58,7 @@ fun <E> MDP.`n-step semi-gradient off-policy sarsa episodic`(
         val ρ = Π(1..min(n - 1, T - 1 - τ)) { π[_S[it], _A[it]] / b[_S[it], _A[it]] }
         var G = Σ(1..min(n, T - τ)) { pow(γ, it - 1) * _R[it] }
         if (τ + n < T) G += pow(γ, n) * q(_S[n], _A[n])
-        q.w += α * ρ * (G - q(_S[0], _A[0])) * q.`▽`(_S[0], _A[0])
+        q.w += α * ρ * (G - q(_S[0], _A[0])) * q.`∇`(_S[0], _A[0])
       }
       t++
     } while (τ < T - 1)
@@ -98,7 +98,7 @@ fun <E> MDP.`n-step semi-gradient off-policy sarsa continuing`(q: ApproximateFun
       val ρ = Π(1..n) { π[_S[it], _A[it]] / b[_S[it], _A[it]] }
       val δ = Σ(1..n) { _R[it] - average_reward } + q(_S[n], _A[n]) - q(_S[0], _A[0])
       average_reward += β * δ
-      q.w += α * ρ * δ * q.`▽`(_S[0], _A[0])
+      q.w += α * ρ * δ * q.`∇`(_S[0], _A[0])
     }
     t++
   }

@@ -19,7 +19,7 @@ fun <E> MDP.`Semi-gradient Expected Sarsa`(
       val a = π(s)
       val (s_next, reward) = a.sample()
       val δ = reward + γ * Σ(s_next.actions) { π[s_next, it] * q(s_next, it) } - q(s, a)
-      q.w += α * δ * q.`▽`(s, a)
+      q.w += α * δ * q.`∇`(s, a)
       s = s_next
     }
     episodeListener(episode, step)
@@ -34,7 +34,7 @@ fun <E> MDP.`Semi-gradient Expected Sarsa`(q: ApproximateFunction<E>, π: Policy
     val a = π(s)
     val (s_next, reward) = a.sample()
     val δ = reward - average_reward + Σ(s_next.actions) { π[s_next, it] * q(s_next, it) } - q(s, a)
-    q.w += α * δ * q.`▽`(s, a)
+    q.w += α * δ * q.`∇`(s, a)
     average_reward += β * δ
     s = s_next
   }

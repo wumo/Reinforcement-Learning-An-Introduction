@@ -22,7 +22,7 @@ fun <E> MDP.`Semi-gradient TD(λ) prediction`(
     while (s.isNotTerminal) {
       val a = π(s)
       val (s_next, reward) = a.sample()
-      z = γ * λ * z + V.`▽`(s)
+      z = γ * λ * z + V.`∇`(s)
       val δ = reward + γ * (if (s_next.isTerminal) 0.0 else V(s_next)) - V(s)
       V.w += α * δ * z
       s = s_next

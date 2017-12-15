@@ -100,7 +100,7 @@ fun <E> MDP.`Sarsa(λ) accumulating trace`(
     var z = column(d)
     while (true) {
       val (s_next, reward) = a.sample()
-      z = γ * λ * z + Q.`▽`(s, a)
+      z = γ * λ * z + Q.`∇`(s, a)
       var δ = reward - Q(s, a)
       if (s_next.isNotTerminal) {
         val a_next = π(s_next)

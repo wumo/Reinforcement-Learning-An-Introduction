@@ -41,7 +41,7 @@ fun <E> MDP.REINFORCE(π: ApproximateFunction<E>, α: Double, episodes: Int) {
       val `▽` = if (π is LinearFunc)
         π.x(S[t], A[t]) - Σ(S[t].actions) { π(S[t], it) * π.x(S[t], it) }
       else
-        π.`▽`(S[t], A[t]) / π(S[t], A[t])
+        π.`∇`(S[t], A[t]) / π(S[t], A[t])
       π.w += α * γ_t * G * `▽`
       γ_t *= γ
     }

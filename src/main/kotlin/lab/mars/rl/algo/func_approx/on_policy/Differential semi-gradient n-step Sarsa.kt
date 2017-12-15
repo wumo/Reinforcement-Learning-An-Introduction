@@ -39,7 +39,7 @@ fun <E> MDP.`Differential semi-gradient n-step Sarsa`(
     if (τ >= 0) {
       val δ = Σ(1..n) { _R[it] - average_reward } + q(_S[n], _A[n]) - q(_S[0], _A[0])
       average_reward += β * δ
-      q.w += α * δ * q.`▽`(_S[0], _A[0])
+      q.w += α * δ * q.`∇`(_S[0], _A[0])
     }
     t++
   }

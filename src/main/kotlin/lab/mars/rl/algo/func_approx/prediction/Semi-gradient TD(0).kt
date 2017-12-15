@@ -17,7 +17,7 @@ fun <E> MDP.`Semi-gradient TD(0)`(
       step++
       val a = π(s)
       val (s_next, reward) = a.sample()
-      v.w += α * (reward + γ * (if (s_next.isTerminal) 0.0 else v(s_next)) - v(s)) * v.`▽`(s)
+      v.w += α * (reward + γ * (if (s_next.isTerminal) 0.0 else v(s_next)) - v(s)) * v.`∇`(s)
       s = s_next
     }
     episodeListener(episode, step)

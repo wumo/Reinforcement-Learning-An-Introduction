@@ -57,7 +57,7 @@ fun <E> MDP.`Episodic semi-gradient n-step Sarsa control`(
       if (τ >= 0) {
         var G = Σ(1..min(n, T - τ)) { pow(γ, it - 1) * _R[it] }
         if (τ + n < T) G += pow(γ, n) * q(_S[n], _A[n])
-        q.w += α * (G - q(_S[0], _A[0])) * q.`▽`(_S[0], _A[0])
+        q.w += α * (G - q(_S[0], _A[0])) * q.`∇`(_S[0], _A[0])
       }
       t++
     } while (τ < T - 1)

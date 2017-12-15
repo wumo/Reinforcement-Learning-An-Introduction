@@ -32,7 +32,7 @@ class SimpleFourier(override val numOfComponents: Int, conv: (Array<out Any>) ->
 }
 
 class LinearFunc<E>(val x: Feature<E>): ApproximateFunction<E>(x.conv) {
-  override fun `_▽`(input: E) = x._invoke(input)
+  override fun `_∇`(input: E) = x._invoke(input)
   
   override val w = Matrix.column(x.numOfComponents)
   

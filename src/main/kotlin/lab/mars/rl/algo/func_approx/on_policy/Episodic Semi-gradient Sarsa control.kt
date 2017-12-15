@@ -19,11 +19,11 @@ fun <E> MDP.`Episodic semi-gradient Sarsa control`(
       val (s_next, reward) = a.sample()
       if (s_next.isNotTerminal) {
         val a_next = π(s_next)
-        q.w += α * (reward + γ * q(s_next, a_next) - q(s, a)) * q.`▽`(s, a)
+        q.w += α * (reward + γ * q(s_next, a_next) - q(s, a)) * q.`∇`(s, a)
         s = s_next
         a = a_next
       } else {
-        q.w += α * (reward - q(s, a)) * q.`▽`(s, a)
+        q.w += α * (reward - q(s, a)) * q.`∇`(s, a)
         break
       }
     }

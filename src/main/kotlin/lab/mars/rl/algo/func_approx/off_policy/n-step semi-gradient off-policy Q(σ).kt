@@ -84,7 +84,7 @@ fun <E> MDP.`N-step off-policy n-step Q(σ) episodic`(
           if (k < end) Z *= γ * ((1 - _σ[k + 1]) * _π[k + 1] + _σ[k + 1])
           _ρ *= 1 - _σ[k] + _σ[k] * ρ[k]
         }
-        q.w += α * _ρ * (G - q(_S[0], _A[0])) * q.`▽`(_S[0], _A[0])
+        q.w += α * _ρ * (G - q(_S[0], _A[0])) * q.`∇`(_S[0], _A[0])
       }
       t++
     } while (τ < T - 1)
@@ -152,7 +152,7 @@ fun <E> MDP.`N-step off-policy n-step Q(σ) continuing`(q: ApproximateFunction<E
         if (k < end) Z *= (1 - _σ[k + 1]) * _π[k + 1] + _σ[k + 1]
         _ρ *= 1 - _σ[k] + _σ[k] * ρ[k]
       }
-      q.w += α * _ρ * (G - q(_S[0], _A[0])) * q.`▽`(_S[0], _A[0])
+      q.w += α * _ρ * (G - q(_S[0], _A[0])) * q.`∇`(_S[0], _A[0])
     }
     t++
   }

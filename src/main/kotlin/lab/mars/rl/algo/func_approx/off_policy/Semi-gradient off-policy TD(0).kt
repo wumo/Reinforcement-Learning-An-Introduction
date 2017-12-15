@@ -19,7 +19,7 @@ fun <E> MDP.`Semi-gradient off-policy TD(0) episodic`(
       val (s_next, reward) = a.sample()
       val ρ = π[s, a] / b[s, a]
       val δ = reward + γ * v(s_next) - v(s)
-      v.w += α * ρ * δ * v.`▽`(s)
+      v.w += α * ρ * δ * v.`∇`(s)
       s = s_next
     }
     episodeListener(episode, step)
@@ -35,7 +35,7 @@ fun <E> MDP.`Semi-gradient off-policy TD(0) continuing`(v: ApproximateFunction<E
     val (s_next, reward) = a.sample()
     val ρ = π[s, a] / b[s, a]
     val δ = reward - average_reward + v(s_next) - v(s)
-    v.w += α * ρ * δ * v.`▽`(s)
+    v.w += α * ρ * δ * v.`∇`(s)
     average_reward += β * δ
     s = s_next
   }

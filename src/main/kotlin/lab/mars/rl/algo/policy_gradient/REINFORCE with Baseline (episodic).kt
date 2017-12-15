@@ -42,11 +42,11 @@ fun <E> MDP.`REINFORCE with Baseline (episodic)`(
     for (t in 0 until T) {
       val G = accu - R[t]
       val δ = G - v(S[t])
-      v.w += α_w * γ_t * δ * v.`▽`(S[t])
+      v.w += α_w * γ_t * δ * v.`∇`(S[t])
       val `▽` = if (π is LinearFunc)
         π.x(S[t], A[t]) - Σ(S[t].actions) { π(S[t], it) * π.x(S[t], it) }
       else
-        π.`▽`(S[t], A[t]) / π(S[t], A[t])
+        π.`∇`(S[t], A[t]) / π(S[t], A[t])
       π.w += α_θ * γ_t * δ * `▽`
       γ_t *= γ
     }

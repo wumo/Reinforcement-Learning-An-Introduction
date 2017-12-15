@@ -25,7 +25,7 @@ class `Coarse Coding` {
         val func = LinearFunc(feature)
         repeat(numOfSample) {
           val (s, y) = SquareWave.sample()
-          func.w += alpha / feature.features.sumBy { if (it.contains(feature.conv(arrayOf(s)))) 1 else 0 } * (y - func(s)) * func.`▽`(s)
+          func.w += alpha / feature.features.sumBy { if (it.contains(feature.conv(arrayOf(s)))) 1 else 0 } * (y - func(s)) * func.`∇`(s)
         }
         for (i in 0 until SquareWave.maxResolution) {
           val s = WaveState(i * 2.0 / SquareWave.maxResolution)

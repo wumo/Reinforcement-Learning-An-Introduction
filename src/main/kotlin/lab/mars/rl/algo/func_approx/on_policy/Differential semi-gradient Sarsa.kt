@@ -15,7 +15,7 @@ fun <E> MDP.`Differential semi-gradient Sarsa`(
     val a_next = π(s_next)
     val δ = reward - average_reward + q(s_next, a_next) - q(s, a)
     average_reward += β * δ
-    q.w += α * δ * q.`▽`(s, a)
+    q.w += α * δ * q.`∇`(s, a)
     s = s_next
     a = a_next
     step++
