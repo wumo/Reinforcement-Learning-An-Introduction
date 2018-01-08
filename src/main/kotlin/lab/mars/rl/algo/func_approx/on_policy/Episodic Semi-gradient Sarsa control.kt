@@ -8,7 +8,8 @@ fun <E> MDP.`Episodic semi-gradient Sarsa control`(
     q: ApproximateFunction<E>, π: Policy,
     α: Double,
     episodes: Int,
-    episodeListener: (Int, Int) -> Unit = { _, _ -> }) {
+    episodeListener: (Int, Int) -> Unit = { _, _ -> },
+    stepListener: (Int, Int, State, Action<State>) -> Unit = { _, _, _, _ -> }) {
   for (episode in 1..episodes) {
     log.debug { "$episode/$episodes" }
     var step = 0
@@ -16,6 +17,7 @@ fun <E> MDP.`Episodic semi-gradient Sarsa control`(
     var a = π(s)
     while (true) {
       step++
+      stepListener(episode, step, s, a)
       val (s_next, reward) = a.sample()
       if (s_next.isNotTerminal) {
         val a_next = π(s_next)
