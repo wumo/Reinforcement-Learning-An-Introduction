@@ -29,8 +29,8 @@
         <maven.assembly.plugin.version>3.0.0</maven.assembly.plugin.version>
         <maven.compiler.plugin.version>3.7.0</maven.compiler.plugin.version>
         <maven.source.plugin.version>3.0.1</maven.source.plugin.version>
-        <kotlin.version>1.2.10</kotlin.version>
-        <kotlin.coroutines>0.21</kotlin.coroutines>
+        <kotlin.version>1.2.30</kotlin.version>
+        <kotlin.coroutines>0.22.5</kotlin.coroutines>
     </properties>
 
     <dependencies>
