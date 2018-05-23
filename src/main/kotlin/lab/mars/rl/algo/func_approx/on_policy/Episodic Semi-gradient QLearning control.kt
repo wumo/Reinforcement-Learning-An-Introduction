@@ -2,9 +2,10 @@ package lab.mars.rl.algo.func_approx.on_policy
 
 import lab.mars.rl.model.*
 import lab.mars.rl.util.log.debug
+import lab.mars.rl.util.math.max
 import lab.mars.rl.util.matrix.times
 
-fun <E> MDP.`Episodic semi-gradient Sarsa control`(
+fun <E> MDP.`Episodic semi-gradient QLearning control`(
     Q: ApproximateFunction<E>,
     π: Policy,
     α: Double,
@@ -22,7 +23,7 @@ fun <E> MDP.`Episodic semi-gradient Sarsa control`(
       val (s_next, reward) = a.sample()
       if (s_next.isNotTerminal) {
         val a_next = π(s_next)
-        Q.w += α * (reward + γ * Q(s_next, a_next) - Q(s, a)) * Q.`∇`(s, a)
+        Q.w += α * (reward + γ * max(s_next.actions) { Q(s_next, it) } - Q(s, a)) * Q.`∇`(s, a)
         s = s_next
         a = a_next
       } else {

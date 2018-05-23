@@ -12,7 +12,8 @@ fun <E> MDP.`True Online Sarsa(λ)`(
     α: Double,
     episodes: Int,
     maxStep: Int = Int.MAX_VALUE,
-    episodeListener: (Int, Int) -> Unit = { _, _ -> }) {
+    episodeListener: (Int, Int) -> Unit = { _, _ -> },
+    stepListener: (Int, Int, State, Action<State>) -> Unit = { _, _, _, _ -> }) {
   val X = Qfunc.x
   val w = Qfunc.w
   val d = w.size
@@ -26,6 +27,7 @@ fun <E> MDP.`True Online Sarsa(λ)`(
     z `=` 0.0
     var Q_old = 0.0
     while (true) {
+
       z `=` (γ * λ * z + (1.0 - α * γ * λ * z.T * x) * x)
       val (s_next, reward) = a.sample()
       val Q = (w.T * x).toScalar
@@ -44,6 +46,7 @@ fun <E> MDP.`True Online Sarsa(λ)`(
         break
       }
       step++
+      stepListener(episode, step, s_next, a)
       if (step >= maxStep) break
     }
     episodeListener(episode, step)
