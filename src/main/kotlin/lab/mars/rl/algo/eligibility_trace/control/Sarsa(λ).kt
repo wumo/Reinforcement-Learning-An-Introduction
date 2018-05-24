@@ -16,7 +16,8 @@ fun <E> MDP.`Sarsa(λ) linear trace`(
     α: Double,
     episodes: Int,
     maxStep: Int = Int.MAX_VALUE,
-    episodeListener: (Int, Int) -> Unit = { _, _ -> }) {
+    episodeListener: (Int, Int) -> Unit = { _, _ -> },
+    stepListener: (Int, Int, State, Action<State>) -> Unit = { _, _, _, _ -> }) {
   val X = Q.x
   val w = Q.w
   val d = w.size
@@ -30,6 +31,10 @@ fun <E> MDP.`Sarsa(λ) linear trace`(
     var x = X(s, a)
     z `=` 0.0
     while (true) {
+      step++
+      stepListener(episode, step, s, a)
+      if (step >= maxStep) break
+
       ctx.x = x; ctx.s = s; ctx.a = a
       traceOp(ctx)
       val (s_next, reward) = a.sample()
@@ -46,8 +51,7 @@ fun <E> MDP.`Sarsa(λ) linear trace`(
         w += α * δ * z
         break
       }
-      step++
-      if (step >= maxStep) break
+
     }
     episodeListener(episode, step)
   }

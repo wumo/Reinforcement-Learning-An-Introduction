@@ -5,6 +5,7 @@ package lab.mars.rl.algo.eligibility_trace.control
 import ch.qos.logback.classic.Level
 import javafx.application.Application
 import kotlinx.coroutines.experimental.runBlocking
+import lab.mars.rl.algo.func_approx.on_policy.`Episodic semi-gradient Sarsa control`
 import lab.mars.rl.model.impl.func.LinearFunc
 import lab.mars.rl.model.impl.func.SuttonTileCoding
 import lab.mars.rl.model.impl.mdp.DefaultAction
@@ -17,6 +18,8 @@ import lab.mars.rl.util.range.step
 import lab.mars.rl.util.tuples.tuple2
 import lab.mars.rl.util.ui.*
 import org.junit.Test
+import java.util.concurrent.CountDownLatch
+import kotlin.concurrent.thread
 
 class `Test Optimal Sarsa λ` {
   val numTilings = 8
@@ -31,6 +34,30 @@ class `Test Optimal Sarsa λ` {
              intArrayOf(a.value))
     }
     return LinearFunc(feature)
+  }
+  
+  @Test
+  fun `Mountain Car UI`() {
+    val prob = MountainCar.make()
+    
+    val episodes = intArrayOf(1, 12, 104, 1000, 9000)
+    val latch = CountDownLatch(1)
+    thread {
+      latch.await()
+      val Qfunc = func()
+      prob.`True Online Sarsa(λ)`(
+          Qfunc = Qfunc,
+          π = EpsilonGreedyFunctionPolicy(Qfunc, 0.0),
+          λ = 0.96,
+          α = 0.3 / numTilings,
+          episodes = 9000,
+          stepListener = step@{ episode, step, s, a ->
+            if (episode !in episodes) return@step
+            MountainCarUI.render(episode, step, s as CarState, a as DefaultAction<Int, CarState>)
+          })
+    }
+    MountainCarUI.after = { latch.countDown() }
+    Application.launch(MountainCarUI::class.java)
   }
   
   @Test

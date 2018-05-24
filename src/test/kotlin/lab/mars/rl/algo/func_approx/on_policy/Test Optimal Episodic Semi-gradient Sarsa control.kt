@@ -35,7 +35,7 @@ class `Test Optimal Episodic Semi-gradient Sarsa control` {
     
     val episodes = intArrayOf(1, 12, 104, 1000, 9000)
     prob.`Episodic semi-gradient Sarsa control`(
-        q = func,
+        Q = func,
         π = EpsilonGreedyFunctionPolicy(func, 0.0),
         α = 0.3 / 8,
         episodes = 9000,
@@ -83,7 +83,7 @@ class `Test Optimal Episodic Semi-gradient Sarsa control` {
     thread {
       latch.await()
       prob.`Episodic semi-gradient Sarsa control`(
-          q = func,
+          Q = func,
           π = EpsilonGreedyFunctionPolicy(func, 0.0),
           α = 0.3 / 8,
           episodes = 9000,
@@ -121,7 +121,7 @@ class `Test Optimal Episodic Semi-gradient Sarsa control` {
           val func = LinearFunc(feature)
           val steps = IntArray(episodes)
           prob.`Episodic semi-gradient Sarsa control`(
-              q = func,
+              Q = func,
               π = EpsilonGreedyFunctionPolicy(func, 0.0),
               α = α / numTilings,
               episodes = episodes,
