@@ -32,7 +32,7 @@ class RodManeuveringUI: Application() {
   
   override fun start(ps: Stage?) {
     val primaryStage = ps!!
-    primaryStage.title = "Drawing Operations Test"
+//    primaryStage.title = "Drawing Operations Test"
     val root = Group()
     canvas = Canvas(width, height)
     drawMap()

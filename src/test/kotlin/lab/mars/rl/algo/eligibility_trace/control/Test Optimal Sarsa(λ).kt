@@ -10,7 +10,7 @@ import lab.mars.rl.model.impl.func.LinearFunc
 import lab.mars.rl.model.impl.func.SuttonTileCoding
 import lab.mars.rl.model.impl.mdp.DefaultAction
 import lab.mars.rl.model.impl.mdp.EpsilonGreedyFunctionPolicy
-import lab.mars.rl.problem.CarState
+import lab.mars.rl.problem.MountainCar.CarState
 import lab.mars.rl.problem.MountainCar
 import lab.mars.rl.util.*
 import lab.mars.rl.util.range.rangeTo
@@ -172,7 +172,7 @@ class `Test Optimal Sarsa λ` {
                   α = α / numTilings,
                   episodes = episodes,
                   maxStep = 5000,
-                  episodeListener = { _, _step ->
+                  episodeListener = { _, _step, _,_ ->
                     reward += -_step//reward is negative step
                   })
             println("finish \t$trace_desc" +

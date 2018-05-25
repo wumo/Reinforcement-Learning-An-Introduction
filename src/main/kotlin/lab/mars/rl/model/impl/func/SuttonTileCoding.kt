@@ -6,7 +6,11 @@ import org.apache.commons.math3.util.FastMath.*
 
 val MAXIMUM_CAPACITY = 1 shl 30
 
-class SuttonTileCoding(numTilesOfEachTiling: Int, _numTilings: Int, conv: (Array<out Any>) -> tuple2<DoubleArray, IntArray>): Feature<tuple2<DoubleArray, IntArray>>(conv) {
+/**
+ * @param unit_scales scale input unit to tile coding unit so as to ensure expected resolution. Usually defined as #(grid tilings)/(range of data).
+ */
+class SuttonTileCoding(numTilesOfEachTiling: Int, _numTilings: Int, val unit_scales: DoubleArray = DoubleArray(0),
+                       conv: (Array<out Any>) -> tuple2<DoubleArray, IntArray>) : Feature<tuple2<DoubleArray, IntArray>>(conv) {
   val numTilings = tableSizeFor(_numTilings)
   override val numOfComponents = numTilings * (numTilesOfEachTiling + 1)
   override fun _invoke(s: tuple2<DoubleArray, IntArray>): Matrix {
@@ -21,7 +25,9 @@ class SuttonTileCoding(numTilesOfEachTiling: Int, _numTilings: Int, conv: (Array
   val data = HashMap<ArrayList<Double>, Int>(ceil(numOfComponents / 0.75).toInt())
   
   private fun tiles(floats: DoubleArray, ints: IntArray): IntArray {
-    val qfloats = DoubleArray(floats.size) { floor(floats[it] * numTilings) }
+    val qfloats = DoubleArray(floats.size) {
+      floor(floats[it] * (if (it <= unit_scales.lastIndex) unit_scales[it] else 1.0) * numTilings)
+    }
     val result = IntArray(numTilings)
     for (tiling in 0 until numTilings) {
       val tilingX2 = tiling * 2
@@ -34,7 +40,10 @@ class SuttonTileCoding(numTilesOfEachTiling: Int, _numTilings: Int, conv: (Array
       }
       for (int in ints)
         coords.add(int.toDouble())
-      result[tiling] = data.getOrPut(coords, { data.size })
+      result[tiling] = if (data.size < numOfComponents) data.getOrPut(coords, { data.size })
+      else abs(coords.hashCode()) % numOfComponents
+      if(result[tiling]<0)
+        println()
     }
     return result
   }

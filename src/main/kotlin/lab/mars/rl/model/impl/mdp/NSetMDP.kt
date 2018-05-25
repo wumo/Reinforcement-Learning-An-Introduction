@@ -43,7 +43,7 @@ fun NSetMDP(gamma: Double, state_dim: Any, action_dim: (IntBuf) -> Any): Indexed
 }
 
 /**
- *  Note that: dimension shouldn't be 0. It it needs to be 0, then you can set `emptyNSet()` after the construction.
+ *  Note that: dimension shouldn't be 0. It it needs to be 0, then you can set `emptyNSet()` afterStartup the construction.
  * @param gamma `γ` decay factor
  * @param state_dim state dimension
  * @param action_dim action dimension
@@ -55,7 +55,7 @@ inline fun CNSetMDP(gamma: Double, state_dim: Any, action_dim: Any): IndexedMDP 
 }
 
 /**
- * Note that: dimension shouldn't be 0. It it needs to be 0, then you can set `emptyNSet()` after the construction.
+ * Note that: dimension shouldn't be 0. It it needs to be 0, then you can set `emptyNSet()` afterStartup the construction.
  * @param gamma  `γ`  decay factor
  * @param state_dim state dimension
  * @param action_dim different action dimension according to specific state

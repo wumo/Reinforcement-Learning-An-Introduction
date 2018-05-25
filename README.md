@@ -98,7 +98,7 @@ Try [Testcases](src/test/kotlin/lab/mars/rl/algo)
 
 ![Figure 7.2](src/test/resources/Figure%207.2.PNG)
 
-Figure 7.2: Performance of n-step TD methods as a function of α, for various values of n, on a 19-state random
+Figure 7.2: Performance of n-step TD methods as acc function of α, for various values of n, on acc 19-state random
 walk task
 
 ---

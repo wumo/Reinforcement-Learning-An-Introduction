@@ -26,7 +26,7 @@ interface IndexedCollection<E: Any>: RandomIterable<E>, Gettable<Index, E> {
   /**
    * If the element at the [subset_dim] is a [IndexedCollection], then the result
    * will a subset at the position. And because it is a subset, the index prefix will be trimmed.
-   * for example, [0,0,0] will be `[0,0]` after `invoke(0)`
+   * for example, [0,0,0] will be `[0,0]` afterStartup `invoke(0)`
    */
   operator fun invoke(subset_dim: Index): IndexedCollection<E>
   
