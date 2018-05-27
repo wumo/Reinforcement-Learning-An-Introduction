@@ -10,12 +10,11 @@ import lab.mars.rl.util.math.Vector2.Companion.ZERO
 
 object FlyPlane {
   val width = 600.0
-  val height = 600.0
   private val numSimulation = 1
   private val Δt = 1.0
   private val max_acc = 1.0
-  private val oLoc = Vector2(300.0, 300.0)
-  private val oRadius = 50.0
+  val oLoc = Vector2(300.0, 300.0)
+  val oRadius = 100.0
   private val targetLoc = Vector2(500.0, 100.0)
   private val targetRadius = 50.0
   private val initloc = Vector2(100.0, 500.0)
@@ -58,7 +57,7 @@ object FlyPlane {
             var terminal = false
             var reward = -1.0
             when {
-              loc.outOf(0.0, 0.0, width, height) ||//out of field
+              loc.outOf(0.0, 0.0, width, width) ||//out of field
               loc.dist(oLoc) <= oRadius ||//hit obstacle
               fuel < 0 -> {//out of fuel
                 terminal = true
@@ -66,7 +65,7 @@ object FlyPlane {
               }
               loc.dist(targetLoc) <= targetRadius -> {//hit destination
                 terminal = true
-                reward = 1000.0
+                reward = 0.0
               }
             }
             Possible(PlaneState(loc, vel, oLoc, oRadius, targetLoc, targetRadius, fuel, terminal), reward)
@@ -80,6 +79,17 @@ object FlyPlane {
     PlaneState(loc = initloc,
                vel = initVel,
                oLoc = oLoc,
+               oRadius = oRadius,
+               targetLoc = targetLoc,
+               targetRadius = targetRadius,
+               fuel = 10000.0,
+               terminal = false)
+  }
+  
+  fun make(obstacleLoc: Vector2 = FlyPlane.oLoc, oRadius: Double = FlyPlane.oRadius) = DefaultMDP(1.0) {
+    PlaneState(loc = initloc,
+               vel = initVel,
+               oLoc = obstacleLoc,
                oRadius = oRadius,
                targetLoc = targetLoc,
                targetRadius = targetRadius,

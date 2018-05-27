@@ -13,6 +13,7 @@ import lab.mars.rl.model.impl.mdp.EpsilonGreedyFunctionPolicy
 import lab.mars.rl.problem.MountainCar.CarState
 import lab.mars.rl.problem.MountainCar
 import lab.mars.rl.util.*
+import lab.mars.rl.util.matrix.SparseMatrix
 import lab.mars.rl.util.range.rangeTo
 import lab.mars.rl.util.range.step
 import lab.mars.rl.util.tuples.tuple2
@@ -51,6 +52,7 @@ class `Test Optimal Sarsa λ` {
           λ = 0.96,
           α = 0.3 / numTilings,
           episodes = 9000,
+          z_maker = { m, n -> SparseMatrix(m, n) },
           stepListener = step@{ episode, step, s, a ->
             if (episode !in episodes) return@step
             MountainCarUI.render(episode, step, s as CarState, a as DefaultAction<Int, CarState>)
@@ -93,6 +95,7 @@ class `Test Optimal Sarsa λ` {
                 α = α / numTilings,
                 episodes = episodes,
                 maxStep = 5000,
+                z_maker = { m, n -> SparseMatrix(m, n) },
                 episodeListener = { _, _step ->
                   step += _step
                 })
@@ -172,7 +175,7 @@ class `Test Optimal Sarsa λ` {
                   α = α / numTilings,
                   episodes = episodes,
                   maxStep = 5000,
-                  episodeListener = { _, _step, _,_ ->
+                  episodeListener = { _, _step, _, _ ->
                     reward += -_step//reward is negative step
                   })
             println("finish \t$trace_desc" +

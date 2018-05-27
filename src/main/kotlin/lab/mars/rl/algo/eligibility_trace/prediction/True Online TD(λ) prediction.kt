@@ -11,6 +11,7 @@ fun <E> MDP.`True Online TD(λ) prediction`(
     λ: Double,
     α: Double,
     episodes: Int,
+    z_maker: (Int, Int) -> MatrixSpec = { m, n -> Matrix(m, n) },
     episodeListener: (Int, Int) -> Unit = { _, _ -> }) {
   val X = Vfunc.x
   val w = Vfunc.w
@@ -20,16 +21,16 @@ fun <E> MDP.`True Online TD(λ) prediction`(
     var step = 0
     var s = started()
     var x = X(s)
-    var z = Matrix.column(d)
+    val z = z_maker(d, 1)
     var V_old = 0.0
     while (s.isNotTerminal) {
       val a = π(s)
       val (s_next, reward) = a.sample()
       val `x'` = X(s_next)
-      val V = (w.T * x).toScalar
-      val `V'` = if (s_next.isTerminal) 0.0 else (w.T * `x'`).toScalar
+      val V = (w `T*` x).toScalar
+      val `V'` = if (s_next.isTerminal) 0.0 else (w `T*` `x'`).toScalar
       val δ = reward + γ * `V'` - V
-      z = γ * λ * z + (1.0 - α * γ * λ * z.T * x) * x
+      z `=` γ * λ * z + (1.0 - α * γ * λ * (z `T*` x)) * x
       w += α * (δ + V - V_old) * z - α * (V - V_old) * x
       V_old = `V'`
       x = `x'`

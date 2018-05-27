@@ -13,6 +13,10 @@ import lab.mars.rl.util.math.*
  * @author wumo
  */
 
+typealias EpisodeListener = (Int, Int, State, Double) -> Unit
+
+typealias StepListener = (Int, Int, State, Action<State>) -> Unit
+
 fun V_from_Q(states: StateSet, pvq: OptimalSolution) {
   val (π, V, Q) = pvq
   for (s in states.filter { it.isNotTerminal }) {

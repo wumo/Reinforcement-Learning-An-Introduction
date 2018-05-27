@@ -57,7 +57,7 @@ class D2DGameUI : Application() {
         title = c.title
         createSymbols = false
         isLegendVisible = false
-//      animated=false
+        animated = false
         stylesheets.add(ResourceLoader.getResource("StockLineChart.css").toExternalForm())
       }
       root.children.add(chart)

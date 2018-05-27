@@ -42,7 +42,7 @@ fun <T> Π(set: Iterable<T>, evaluate: T.(T) -> Double): Double {
   return multi
 }
 
-fun <T> Σ(set: Iterable<T>, evaluate: T.(T) -> Double): Double {
+inline fun <T> Σ(set: Iterable<T>, evaluate: T.(T) -> Double): Double {
   var sum = 0.0
   set.forEach {
     sum += it.evaluate(it)

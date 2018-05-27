@@ -1,6 +1,8 @@
 package lab.mars.rl.model.impl.func
 
 import lab.mars.rl.util.matrix.Matrix
+import lab.mars.rl.util.matrix.MatrixSpec
+import lab.mars.rl.util.matrix.SparseMatrix
 import lab.mars.rl.util.tuples.tuple2
 import org.apache.commons.math3.util.FastMath.*
 
@@ -13,10 +15,10 @@ class SuttonTileCoding(numTilesOfEachTiling: Int, _numTilings: Int, val unit_sca
                        conv: (Array<out Any>) -> tuple2<DoubleArray, IntArray>) : Feature<tuple2<DoubleArray, IntArray>>(conv) {
   val numTilings = tableSizeFor(_numTilings)
   override val numOfComponents = numTilings * (numTilesOfEachTiling + 1)
-  override fun _invoke(s: tuple2<DoubleArray, IntArray>): Matrix {
+  override fun _invoke(s: tuple2<DoubleArray, IntArray>): MatrixSpec {
     val (floats, ints) = s
     val activeTiles = tiles(floats, ints)
-    val x = Matrix.column(numOfComponents)
+    val x = SparseMatrix(numOfComponents, 1)
     for (activeTile in activeTiles)
       x[activeTile] = 1.0
     return x
@@ -40,10 +42,9 @@ class SuttonTileCoding(numTilesOfEachTiling: Int, _numTilings: Int, val unit_sca
       }
       for (int in ints)
         coords.add(int.toDouble())
-      result[tiling] = if (data.size < numOfComponents) data.getOrPut(coords, { data.size })
-      else abs(coords.hashCode()) % numOfComponents
-      if(result[tiling]<0)
-        println()
+      result[tiling] = data.getOrPut(coords, { data.size })
+//      result[tiling] = if (data.size < numOfComponents) data.getOrPut(coords, { data.size })
+//      else abs(coords.hashCode()) % numOfComponents
     }
     return result
   }
