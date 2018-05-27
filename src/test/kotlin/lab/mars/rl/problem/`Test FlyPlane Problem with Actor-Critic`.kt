@@ -40,7 +40,7 @@ class `Test FlyPlane Problem with Actor-Critic` {
     val h = LinearFunc(policyFeature)
     val resolution = 100
     val unit = FlyPlane.width / resolution
-    val qvalue = Array(resolution) { Array(resolution) { Double.NEGATIVE_INFINITY } }
+    val qvalue = Array(resolution) { Array(resolution + 1) { Double.NEGATIVE_INFINITY } }
     var accuG = 0.0
     var wins = 0.0
     var win_step = 0.0
@@ -110,8 +110,13 @@ class `Test FlyPlane Problem with Actor-Critic` {
             gc.stroke = Color.GREEN
             gc.lineWidth = 3.0
             gc.strokeOval(targetLoc.x - targetRadius, targetLoc.y - targetRadius, 2 * targetRadius, 2 * targetRadius)
-            gc.stroke = Color.RED
-            gc.strokeOval(oLoc.x - oRadius, oLoc.y - oRadius, 2 * oRadius, 2 * oRadius)
+            val size = oLoc.size
+            for (i in 0 until size) {
+              val oLoc = oLoc[i]
+              val oRadius = oRadius[i]
+              gc.stroke = Color.RED
+              gc.strokeOval(oLoc.x - oRadius, oLoc.y - oRadius, 2 * oRadius, 2 * oRadius)
+            }
             gc.fill = Color.BLACK
             val dir = s.vel.copy().norm() * lab.mars.rl.problem.FlyPlane.planeRadius
             val top = s.loc + dir
@@ -124,11 +129,11 @@ class `Test FlyPlane Problem with Actor-Critic` {
         }
       }
       while (true) {
-        val prob = FlyPlane.make(obstacleLoc = FlyPlane.oLoc + Vector2(100.0, 0.0).rotate(Rand().nextDouble() * 360) * Rand().nextDouble())
+        val prob = FlyPlane.makeRand(5)
         animate = false
         prob.`Actor-Critic with Eligibility Traces (episodic)`(
-            h = h, α_θ = 1e-12 / numTilings, λ_θ = 0.5,
-            v = v, α_w = 0.6 / numTilings, λ_w = 0.5,
+            h = h, α_θ = 1e-12, λ_θ = 0.5,
+            v = v, α_w = 0.006, λ_w = 0.5,
             episodes = max_episode,
             episodeListener = episodeListener,
             stepListener = stepListener
