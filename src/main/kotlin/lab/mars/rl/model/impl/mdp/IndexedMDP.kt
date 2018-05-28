@@ -2,7 +2,8 @@
 
 package lab.mars.rl.model.impl.mdp
 
-import lab.mars.rl.model.*
+import lab.mars.rl.model.MDP
+import lab.mars.rl.model.isNotTerminal
 import lab.mars.rl.util.buf.Index
 import lab.mars.rl.util.collection.IndexedCollection
 

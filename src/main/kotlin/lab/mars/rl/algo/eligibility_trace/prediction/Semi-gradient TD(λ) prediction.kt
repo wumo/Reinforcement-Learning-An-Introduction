@@ -4,7 +4,6 @@ import lab.mars.rl.model.*
 import lab.mars.rl.util.log.debug
 import lab.mars.rl.util.matrix.Matrix
 import lab.mars.rl.util.matrix.MatrixSpec
-import lab.mars.rl.util.matrix.SparseMatrix
 import lab.mars.rl.util.matrix.times
 
 fun <E> MDP.`Semi-gradient TD(λ) prediction`(

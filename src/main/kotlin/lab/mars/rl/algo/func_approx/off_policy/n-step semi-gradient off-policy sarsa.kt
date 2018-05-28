@@ -9,7 +9,8 @@ import lab.mars.rl.util.log.debug
 import lab.mars.rl.util.math.Π
 import lab.mars.rl.util.math.Σ
 import lab.mars.rl.util.matrix.times
-import org.apache.commons.math3.util.FastMath.*
+import org.apache.commons.math3.util.FastMath.min
+import org.apache.commons.math3.util.FastMath.pow
 
 fun <E> MDP.`n-step semi-gradient off-policy sarsa episodic`(
     q: ApproximateFunction<E>, π: Policy, b: Policy,

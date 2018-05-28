@@ -2,7 +2,7 @@ package lab.mars.rl.model.impl.func
 
 import lab.mars.rl.model.ApproximateFunction
 import lab.mars.rl.util.matrix.Matrix
-import org.apache.commons.math3.util.FastMath.*
+import org.apache.commons.math3.util.FastMath.ceil
 
 class StateAggregation(numStates: Int, val numOfGroups: Int, conv: (Array<out Any>) -> Int): ApproximateFunction<Int>(conv) {
   override fun `_∇`(input: Int): Matrix {

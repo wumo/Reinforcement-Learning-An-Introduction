@@ -9,13 +9,19 @@ import lab.mars.rl.model.impl.func.LinearFunc
 import lab.mars.rl.model.impl.func.SuttonTileCoding
 import lab.mars.rl.model.impl.mdp.DefaultAction
 import lab.mars.rl.model.impl.mdp.EpsilonGreedyFunctionPolicy
-import lab.mars.rl.problem.MountainCar.CarState
 import lab.mars.rl.problem.MountainCar
-import lab.mars.rl.util.*
+import lab.mars.rl.problem.MountainCar.CarState
+import lab.mars.rl.util.asyncs
+import lab.mars.rl.util.await
+import lab.mars.rl.util.format
+import lab.mars.rl.util.logLevel
 import lab.mars.rl.util.range.rangeTo
 import lab.mars.rl.util.range.step
 import lab.mars.rl.util.tuples.tuple2
-import lab.mars.rl.util.ui.*
+import lab.mars.rl.util.ui.ChartApp
+import lab.mars.rl.util.ui.D2DChart
+import lab.mars.rl.util.ui.Line
+import lab.mars.rl.util.ui.LineChart
 import org.junit.Test
 
 class `Test Optimal n-step semi-gradient Sarsa` {

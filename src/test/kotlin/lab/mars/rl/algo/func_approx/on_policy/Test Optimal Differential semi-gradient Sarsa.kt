@@ -1,13 +1,20 @@
 package lab.mars.rl.algo.func_approx.on_policy
 
 import javafx.application.Application
-import lab.mars.rl.model.impl.func.*
-import lab.mars.rl.model.impl.mdp.*
+import lab.mars.rl.model.impl.func.LinearFunc
+import lab.mars.rl.model.impl.func.SimpleTileCoding
+import lab.mars.rl.model.impl.func.SuttonTileCoding
+import lab.mars.rl.model.impl.mdp.EpsilonGreedyFunctionPolicy
+import lab.mars.rl.model.impl.mdp.IndexedAction
+import lab.mars.rl.model.impl.mdp.IndexedState
 import lab.mars.rl.problem.AccessControl
 import lab.mars.rl.util.color
 import lab.mars.rl.util.reset
 import lab.mars.rl.util.tuples.tuple2
-import lab.mars.rl.util.ui.*
+import lab.mars.rl.util.ui.ChartApp
+import lab.mars.rl.util.ui.D2DChart
+import lab.mars.rl.util.ui.Line
+import lab.mars.rl.util.ui.LineChart
 import org.junit.Test
 
 class `Test Optimal Differential semi-gradient Sarsa` {

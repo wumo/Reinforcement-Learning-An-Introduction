@@ -2,10 +2,16 @@ package lab.mars.rl.algo.eligibility_trace.control
 
 import lab.mars.rl.algo.EpisodeListener
 import lab.mars.rl.algo.StepListener
-import lab.mars.rl.model.*
+import lab.mars.rl.model.MDP
+import lab.mars.rl.model.Policy
 import lab.mars.rl.model.impl.func.LinearFunc
+import lab.mars.rl.model.isNotTerminal
+import lab.mars.rl.model.log
 import lab.mars.rl.util.log.debug
-import lab.mars.rl.util.matrix.*
+import lab.mars.rl.util.matrix.Matrix
+import lab.mars.rl.util.matrix.MatrixSpec
+import lab.mars.rl.util.matrix.minus
+import lab.mars.rl.util.matrix.times
 
 fun <E> MDP.`True Online Sarsa(λ)`(
     Qfunc: LinearFunc<E>,

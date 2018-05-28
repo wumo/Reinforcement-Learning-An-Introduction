@@ -1,7 +1,10 @@
 package lab.mars.rl.model.impl.mdp
 
-import lab.mars.rl.model.*
-import lab.mars.rl.util.math.*
+import lab.mars.rl.model.Action
+import lab.mars.rl.model.ApproximateFunction
+import lab.mars.rl.model.Policy
+import lab.mars.rl.model.State
+import lab.mars.rl.util.math.rand
 import kotlin.math.exp
 
 class SoftmaxpPolicy<E>(val π: ApproximateFunction<E>) : Policy {

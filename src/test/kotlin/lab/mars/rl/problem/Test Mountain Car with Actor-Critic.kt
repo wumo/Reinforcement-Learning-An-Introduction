@@ -3,12 +3,10 @@
 package lab.mars.rl.problem
 
 import javafx.application.Application
-import lab.mars.rl.algo.eligibility_trace.control.`True Online Sarsa(λ)`
 import lab.mars.rl.algo.policy_gradient.`Actor-Critic with Eligibility Traces (episodic)`
 import lab.mars.rl.model.impl.func.LinearFunc
 import lab.mars.rl.model.impl.func.SuttonTileCoding
 import lab.mars.rl.model.impl.mdp.DefaultAction
-import lab.mars.rl.model.impl.mdp.EpsilonGreedyFunctionPolicy
 import lab.mars.rl.util.matrix.SparseMatrix
 import lab.mars.rl.util.tuples.tuple2
 import lab.mars.rl.util.ui.MountainCarUI

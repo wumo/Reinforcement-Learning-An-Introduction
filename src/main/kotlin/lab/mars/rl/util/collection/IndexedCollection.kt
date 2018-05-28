@@ -3,7 +3,9 @@
 package lab.mars.rl.util.collection
 
 import lab.mars.rl.model.RandomIterable
-import lab.mars.rl.util.buf.*
+import lab.mars.rl.util.buf.DefaultIntBuf
+import lab.mars.rl.util.buf.Index
+import lab.mars.rl.util.buf.MultiIndex
 import lab.mars.rl.util.math.Rand
 import lab.mars.rl.util.tuples.tuple2
 

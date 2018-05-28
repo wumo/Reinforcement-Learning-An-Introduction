@@ -3,7 +3,9 @@ package lab.mars.rl.algo.func_approx.prediction
 import lab.mars.rl.model.*
 import lab.mars.rl.model.impl.func.LinearFunc
 import lab.mars.rl.util.log.debug
-import lab.mars.rl.util.matrix.*
+import lab.mars.rl.util.matrix.Matrix
+import lab.mars.rl.util.matrix.plus
+import lab.mars.rl.util.matrix.times
 
 fun <E> MDP.LSTD(vFunc: LinearFunc<E>, π: Policy, ε: Double,
                  episodes: Int,

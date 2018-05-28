@@ -7,7 +7,10 @@ import lab.mars.rl.problem.SquareWave
 import lab.mars.rl.problem.WaveState
 import lab.mars.rl.util.format
 import lab.mars.rl.util.matrix.times
-import lab.mars.rl.util.ui.*
+import lab.mars.rl.util.ui.ChartApp
+import lab.mars.rl.util.ui.D2DChart
+import lab.mars.rl.util.ui.Line
+import lab.mars.rl.util.ui.LineChart
 import org.junit.Test
 
 class `Coarse Coding` {

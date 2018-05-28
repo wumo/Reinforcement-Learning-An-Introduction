@@ -3,7 +3,7 @@
 package lab.mars.rl.util.math
 
 import lab.mars.rl.util.tuples.tuple2
-import org.apache.commons.math3.util.FastMath.*
+import org.apache.commons.math3.util.FastMath.pow
 import java.util.concurrent.ThreadLocalRandom
 
 fun pow(base: Double, exponent: Iterable<Number>): List<Double> {

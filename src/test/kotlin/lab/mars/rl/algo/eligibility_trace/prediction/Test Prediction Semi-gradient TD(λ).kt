@@ -9,7 +9,10 @@ import lab.mars.rl.model.impl.mdp.IndexedState
 import lab.mars.rl.problem.`19-state RandomWalk`
 import lab.mars.rl.util.*
 import lab.mars.rl.util.tuples.tuple2
-import lab.mars.rl.util.ui.*
+import lab.mars.rl.util.ui.ChartApp
+import lab.mars.rl.util.ui.D2DChart
+import lab.mars.rl.util.ui.Line
+import lab.mars.rl.util.ui.LineChart
 import org.apache.commons.math3.util.FastMath
 import org.junit.Test
 

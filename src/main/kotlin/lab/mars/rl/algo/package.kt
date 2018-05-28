@@ -1,9 +1,16 @@
 package lab.mars.rl.algo
 
-import lab.mars.rl.model.*
+import lab.mars.rl.model.Action
+import lab.mars.rl.model.ApproximateFunction
+import lab.mars.rl.model.State
 import lab.mars.rl.model.impl.mdp.*
-import lab.mars.rl.util.collection.*
-import lab.mars.rl.util.math.*
+import lab.mars.rl.model.isNotTerminal
+import lab.mars.rl.util.collection.Gettable
+import lab.mars.rl.util.collection.filter
+import lab.mars.rl.util.collection.fork
+import lab.mars.rl.util.math.argmax
+import lab.mars.rl.util.math.argmax_tie_random
+import lab.mars.rl.util.math.Σ
 
 /**
  * <p>

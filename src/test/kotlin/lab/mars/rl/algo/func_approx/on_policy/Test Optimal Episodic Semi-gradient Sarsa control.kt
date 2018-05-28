@@ -9,9 +9,11 @@ import lab.mars.rl.model.impl.func.LinearFunc
 import lab.mars.rl.model.impl.func.SuttonTileCoding
 import lab.mars.rl.model.impl.mdp.DefaultAction
 import lab.mars.rl.model.impl.mdp.EpsilonGreedyFunctionPolicy
-import lab.mars.rl.problem.MountainCar.CarState
 import lab.mars.rl.problem.MountainCar
-import lab.mars.rl.util.*
+import lab.mars.rl.problem.MountainCar.CarState
+import lab.mars.rl.util.asyncs
+import lab.mars.rl.util.await
+import lab.mars.rl.util.logLevel
 import lab.mars.rl.util.math.max
 import lab.mars.rl.util.tuples.tuple2
 import lab.mars.rl.util.ui.*

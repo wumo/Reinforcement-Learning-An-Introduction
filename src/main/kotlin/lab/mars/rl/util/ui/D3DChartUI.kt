@@ -12,7 +12,9 @@ import com.orsoncharts.renderer.RainbowScale
 import com.orsoncharts.renderer.xyz.SurfaceRenderer
 import com.orsoncharts.util.Orientation
 import javafx.application.Application
-import javafx.scene.*
+import javafx.scene.Scene
+import javafx.scene.SceneAntialiasing
+import javafx.scene.SubScene
 import javafx.scene.layout.FlowPane
 import javafx.scene.layout.StackPane
 import javafx.stage.Stage

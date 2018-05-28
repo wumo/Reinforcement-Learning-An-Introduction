@@ -7,7 +7,9 @@ import javafx.scene.Scene
 import javafx.scene.canvas.Canvas
 import javafx.scene.paint.Color
 import javafx.stage.Stage
-import lab.mars.rl.model.impl.mdp.*
+import lab.mars.rl.model.impl.mdp.ActionValueFunction
+import lab.mars.rl.model.impl.mdp.IndexedState
+import lab.mars.rl.model.impl.mdp.StateValueFunction
 import java.util.concurrent.CyclicBarrier
 
 class GridWorldUI: Application() {

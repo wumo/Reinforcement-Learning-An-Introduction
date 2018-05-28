@@ -6,7 +6,10 @@ import lab.mars.rl.model.impl.func.StateAggregation
 import lab.mars.rl.model.impl.mdp.IndexedState
 import lab.mars.rl.problem.`1000-state RandomWalk`
 import lab.mars.rl.util.format
-import lab.mars.rl.util.ui.*
+import lab.mars.rl.util.ui.ChartApp
+import lab.mars.rl.util.ui.D2DChart
+import lab.mars.rl.util.ui.Line
+import lab.mars.rl.util.ui.LineChart
 import org.junit.Test
 
 class `Test Prediction n-step Semi-gradient TD` {

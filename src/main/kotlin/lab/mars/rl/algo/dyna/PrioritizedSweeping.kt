@@ -2,15 +2,17 @@ package lab.mars.rl.algo.dyna
 
 import lab.mars.rl.algo.V_from_Q
 import lab.mars.rl.algo.`ε-greedy (tie broken randomly)`
-import lab.mars.rl.model.*
+import lab.mars.rl.model.emptyPossibleSet
 import lab.mars.rl.model.impl.mdp.*
+import lab.mars.rl.model.isNotTerminal
+import lab.mars.rl.model.log
 import lab.mars.rl.util.collection.cnsetOf
 import lab.mars.rl.util.log.debug
 import lab.mars.rl.util.math.max
 import lab.mars.rl.util.math.repeat
 import lab.mars.rl.util.tuples.tuple2
 import lab.mars.rl.util.tuples.tuple3
-import org.apache.commons.math3.util.FastMath.*
+import org.apache.commons.math3.util.FastMath.abs
 import java.util.*
 
 @Suppress("NAME_SHADOWING")

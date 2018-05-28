@@ -7,7 +7,7 @@ import lab.mars.rl.model.*
 import lab.mars.rl.util.buf.newBuf
 import lab.mars.rl.util.math.Σ
 import lab.mars.rl.util.matrix.times
-import org.apache.commons.math3.util.FastMath.*
+import org.apache.commons.math3.util.FastMath.min
 
 fun <E> MDP.`Differential semi-gradient n-step Sarsa`(
     q: ApproximateFunction<E>, π: Policy,

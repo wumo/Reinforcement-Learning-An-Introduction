@@ -1,6 +1,8 @@
 package lab.mars.rl.algo.func_approx.on_policy
 
-import lab.mars.rl.model.*
+import lab.mars.rl.model.ApproximateFunction
+import lab.mars.rl.model.MDP
+import lab.mars.rl.model.Policy
 import lab.mars.rl.util.matrix.times
 
 fun <E> MDP.`Differential semi-gradient Sarsa`(

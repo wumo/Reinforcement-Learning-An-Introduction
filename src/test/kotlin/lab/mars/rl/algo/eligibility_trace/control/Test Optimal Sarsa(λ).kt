@@ -5,14 +5,16 @@ package lab.mars.rl.algo.eligibility_trace.control
 import ch.qos.logback.classic.Level
 import javafx.application.Application
 import kotlinx.coroutines.experimental.runBlocking
-import lab.mars.rl.algo.func_approx.on_policy.`Episodic semi-gradient Sarsa control`
 import lab.mars.rl.model.impl.func.LinearFunc
 import lab.mars.rl.model.impl.func.SuttonTileCoding
 import lab.mars.rl.model.impl.mdp.DefaultAction
 import lab.mars.rl.model.impl.mdp.EpsilonGreedyFunctionPolicy
-import lab.mars.rl.problem.MountainCar.CarState
 import lab.mars.rl.problem.MountainCar
-import lab.mars.rl.util.*
+import lab.mars.rl.problem.MountainCar.CarState
+import lab.mars.rl.util.asyncs
+import lab.mars.rl.util.await
+import lab.mars.rl.util.format
+import lab.mars.rl.util.logLevel
 import lab.mars.rl.util.matrix.SparseMatrix
 import lab.mars.rl.util.range.rangeTo
 import lab.mars.rl.util.range.step

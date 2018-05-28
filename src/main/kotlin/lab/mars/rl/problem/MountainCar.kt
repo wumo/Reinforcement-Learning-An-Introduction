@@ -1,12 +1,15 @@
 package lab.mars.rl.problem
 
-import lab.mars.rl.model.*
+import lab.mars.rl.model.Action
+import lab.mars.rl.model.Possible
+import lab.mars.rl.model.RandomIterable
+import lab.mars.rl.model.State
 import lab.mars.rl.model.impl.mdp.DefaultAction
 import lab.mars.rl.model.impl.mdp.DefaultMDP
 import lab.mars.rl.util.collection.emptyNSet
 import lab.mars.rl.util.dimension.cnsetFrom
 import lab.mars.rl.util.math.Rand
-import org.apache.commons.math3.util.FastMath.*
+import org.apache.commons.math3.util.FastMath.cos
 
 object MountainCar {
   class CarState(val position: Double, val velocity: Double) : State {

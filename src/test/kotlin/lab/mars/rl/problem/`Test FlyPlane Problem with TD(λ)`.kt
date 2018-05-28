@@ -14,14 +14,12 @@ import lab.mars.rl.model.impl.func.LinearFunc
 import lab.mars.rl.model.impl.func.SuttonTileCoding
 import lab.mars.rl.model.impl.mdp.DefaultAction
 import lab.mars.rl.model.impl.mdp.EpsilonGreedyFunctionPolicy
-import lab.mars.rl.problem.RodManeuvering.resolution
 import lab.mars.rl.util.tuples.tuple2
 import lab.mars.rl.util.ui.D2DGameUI
 import org.junit.Test
 import java.util.concurrent.CountDownLatch
 import kotlin.concurrent.thread
 import kotlin.math.ceil
-import kotlin.math.log
 import kotlin.math.sqrt
 
 class `Test FlyPlane Problem with TD λ` {
@@ -42,7 +40,7 @@ class `Test FlyPlane Problem with TD λ` {
     }
     val func = LinearFunc(feature)
     
-    FlyPlane.maxStage = 16
+    FlyPlane.maxStage = 4
     FlyPlane.numObstaclesPerStage = 5
     val resolution = 100
     val unit = FlyPlane.fieldWidth / resolution

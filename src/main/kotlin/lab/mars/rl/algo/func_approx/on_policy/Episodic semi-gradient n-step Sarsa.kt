@@ -8,7 +8,8 @@ import lab.mars.rl.util.buf.newBuf
 import lab.mars.rl.util.log.debug
 import lab.mars.rl.util.math.Σ
 import lab.mars.rl.util.matrix.times
-import org.apache.commons.math3.util.FastMath.*
+import org.apache.commons.math3.util.FastMath.min
+import org.apache.commons.math3.util.FastMath.pow
 
 fun <E> MDP.`Episodic semi-gradient n-step Sarsa control`(
     q: ApproximateFunction<E>, π: Policy,

@@ -1,7 +1,12 @@
 package lab.mars.rl.model.impl.mdp
 
-import lab.mars.rl.model.*
-import lab.mars.rl.util.math.*
+import lab.mars.rl.model.Action
+import lab.mars.rl.model.ApproximateFunction
+import lab.mars.rl.model.Policy
+import lab.mars.rl.model.State
+import lab.mars.rl.util.math.Rand
+import lab.mars.rl.util.math.argmax_tie_random
+import lab.mars.rl.util.math.max_count
 
 class EpsilonGreedyFunctionPolicy<E>(val q: ApproximateFunction<E>, val ε: Double = 0.1): Policy {
   override fun invoke(s: State): Action<State> {

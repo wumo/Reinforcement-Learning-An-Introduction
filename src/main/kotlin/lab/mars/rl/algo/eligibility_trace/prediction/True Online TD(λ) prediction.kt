@@ -3,7 +3,10 @@ package lab.mars.rl.algo.eligibility_trace.prediction
 import lab.mars.rl.model.*
 import lab.mars.rl.model.impl.func.LinearFunc
 import lab.mars.rl.util.log.debug
-import lab.mars.rl.util.matrix.*
+import lab.mars.rl.util.matrix.Matrix
+import lab.mars.rl.util.matrix.MatrixSpec
+import lab.mars.rl.util.matrix.minus
+import lab.mars.rl.util.matrix.times
 
 fun <E> MDP.`True Online TD(λ) prediction`(
     Vfunc: LinearFunc<E>,

@@ -7,8 +7,11 @@ import lab.mars.rl.model.impl.func.SimpleTileCoding
 import lab.mars.rl.model.impl.mdp.IndexedState
 import lab.mars.rl.problem.`1000-state RandomWalk`
 import lab.mars.rl.util.format
-import lab.mars.rl.util.ui.*
-import org.apache.commons.math3.util.FastMath.*
+import lab.mars.rl.util.ui.ChartApp
+import lab.mars.rl.util.ui.D2DChart
+import lab.mars.rl.util.ui.Line
+import lab.mars.rl.util.ui.LineChart
+import org.apache.commons.math3.util.FastMath.ceil
 import org.junit.Test
 
 class `Test Prediction LSTD` {

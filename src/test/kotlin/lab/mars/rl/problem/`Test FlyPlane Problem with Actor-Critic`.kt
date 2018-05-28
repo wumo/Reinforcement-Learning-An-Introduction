@@ -3,11 +3,6 @@
 package lab.mars.rl.problem
 
 import javafx.application.Application
-import javafx.application.Platform
-import javafx.scene.chart.XYChart
-import javafx.scene.paint.Color
-import lab.mars.rl.algo.EpisodeListener
-import lab.mars.rl.algo.StepListener
 import lab.mars.rl.algo.func_approx.play
 import lab.mars.rl.algo.policy_gradient.`Actor-Critic with Eligibility Traces (episodic)`
 import lab.mars.rl.model.impl.func.LinearFunc

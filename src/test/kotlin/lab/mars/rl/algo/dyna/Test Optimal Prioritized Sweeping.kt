@@ -2,7 +2,10 @@ package lab.mars.rl.algo.dyna
 
 import javafx.application.Application
 import lab.mars.rl.model.isNotTerminal
-import lab.mars.rl.problem.*
+import lab.mars.rl.problem.CliffWalking
+import lab.mars.rl.problem.DynaMaze
+import lab.mars.rl.problem.RodManeuvering
+import lab.mars.rl.problem.WindyGridworld
 import lab.mars.rl.util.math.argmax
 import lab.mars.rl.util.ui.GridWorldUI
 import lab.mars.rl.util.ui.RodManeuveringUI

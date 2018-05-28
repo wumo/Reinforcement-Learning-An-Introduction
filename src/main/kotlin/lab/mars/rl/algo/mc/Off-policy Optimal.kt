@@ -1,8 +1,10 @@
 package lab.mars.rl.algo.mc
 
 import lab.mars.rl.algo.V_from_Q
-import lab.mars.rl.model.*
 import lab.mars.rl.model.impl.mdp.*
+import lab.mars.rl.model.isNotTerminal
+import lab.mars.rl.model.isTerminal
+import lab.mars.rl.model.log
 import lab.mars.rl.util.buf.newBuf
 import lab.mars.rl.util.log.debug
 import lab.mars.rl.util.math.argmax

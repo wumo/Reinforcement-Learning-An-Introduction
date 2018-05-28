@@ -1,7 +1,7 @@
 package lab.mars.rl.util.math
 
-import kotlin.math.sqrt
 import kotlin.math.PI
+import kotlin.math.sqrt
 
 
 data class Vector2(var x: Double = 0.0, var y: Double = 0.0) {

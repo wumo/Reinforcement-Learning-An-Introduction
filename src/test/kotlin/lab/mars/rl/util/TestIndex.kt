@@ -2,7 +2,9 @@
 
 package lab.mars.rl.util
 
-import lab.mars.rl.util.buf.*
+import lab.mars.rl.util.buf.DefaultIntBuf
+import lab.mars.rl.util.buf.Index
+import lab.mars.rl.util.buf.MultiIndex
 import org.junit.Assert.assertEquals
 import org.junit.Test
 

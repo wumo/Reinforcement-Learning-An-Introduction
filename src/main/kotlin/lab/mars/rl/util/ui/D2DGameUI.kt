@@ -12,13 +12,7 @@ import javafx.scene.chart.NumberAxis
 import javafx.scene.chart.XYChart
 import javafx.scene.layout.FlowPane
 import javafx.stage.Stage
-import lab.mars.rl.problem.FlyPlane
 import lab.mars.rl.util.resource.ResourceLoader
-import tornadofx.FX
-import tornadofx.FX.Companion.primaryStage
-import tornadofx.FX.Companion.stylesheets
-import tornadofx.Stylesheet.Companion.chart
-import tornadofx.Stylesheet.Companion.datagrid
 import java.util.concurrent.CyclicBarrier
 
 class D2DGameUI : Application() {

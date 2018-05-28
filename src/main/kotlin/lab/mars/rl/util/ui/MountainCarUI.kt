@@ -7,11 +7,9 @@ import javafx.scene.Scene
 import javafx.scene.canvas.Canvas
 import javafx.scene.paint.Color
 import javafx.stage.Stage
-import lab.mars.rl.model.impl.mdp.*
-import lab.mars.rl.problem.MountainCar.CarState
+import lab.mars.rl.model.impl.mdp.DefaultAction
 import lab.mars.rl.problem.MountainCar
-import lab.mars.rl.util.ui.GridWorldUI.Companion.grid_x
-import lab.mars.rl.util.ui.GridWorldUI.Companion.grid_y
+import lab.mars.rl.problem.MountainCar.CarState
 import java.util.concurrent.CyclicBarrier
 import kotlin.math.PI
 import kotlin.math.sin

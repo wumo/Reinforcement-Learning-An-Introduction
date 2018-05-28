@@ -2,14 +2,18 @@
 
 package lab.mars.rl.algo.ntd
 
-import lab.mars.rl.model.impl.mdp.*
+import lab.mars.rl.model.impl.mdp.IndexedMDP
+import lab.mars.rl.model.impl.mdp.IndexedPolicy
+import lab.mars.rl.model.impl.mdp.IndexedState
+import lab.mars.rl.model.impl.mdp.StateValueFunction
 import lab.mars.rl.model.isTerminal
 import lab.mars.rl.model.log
 import lab.mars.rl.util.buf.newBuf
 import lab.mars.rl.util.collection.IndexedCollection
 import lab.mars.rl.util.log.debug
 import lab.mars.rl.util.math.Σ
-import org.apache.commons.math3.util.FastMath.*
+import org.apache.commons.math3.util.FastMath.min
+import org.apache.commons.math3.util.FastMath.pow
 
 val MAX_N = 1024
 

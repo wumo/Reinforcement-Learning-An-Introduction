@@ -1,9 +1,14 @@
 package lab.mars.rl.algo.dp
 
 import lab.mars.rl.model.isNotTerminal
-import lab.mars.rl.problem.*
+import lab.mars.rl.problem.AccessControl
+import lab.mars.rl.problem.CarRental
+import lab.mars.rl.problem.DynaMaze
 import lab.mars.rl.problem.GridWorld.make
-import lab.mars.rl.util.*
+import lab.mars.rl.problem.RodManeuvering
+import lab.mars.rl.util.color
+import lab.mars.rl.util.format
+import lab.mars.rl.util.reset
 import org.junit.Assert
 import org.junit.Test
 

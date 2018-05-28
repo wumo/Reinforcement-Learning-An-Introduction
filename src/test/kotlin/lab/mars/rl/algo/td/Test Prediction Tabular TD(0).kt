@@ -1,6 +1,8 @@
 package lab.mars.rl.algo.td
 
-import lab.mars.rl.problem.*
+import lab.mars.rl.problem.Blackjack
+import lab.mars.rl.problem.RandomWalk
+import lab.mars.rl.problem.`1000-state RandomWalk`
 import lab.mars.rl.util.format
 import lab.mars.rl.util.printBlackjack
 import org.junit.Test

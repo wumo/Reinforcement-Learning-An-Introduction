@@ -2,8 +2,6 @@
 
 package lab.mars.rl.util.collection
 
-import kotlin.sequences.flatMap
-
 inline fun <E, F> Iterable<E>.fork(crossinline subset: (E) -> Iterable<F>)
     = asSequence().flatMap { s -> subset(s).asSequence().map { s to it } }
 

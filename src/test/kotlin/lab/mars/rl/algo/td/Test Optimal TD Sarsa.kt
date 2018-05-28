@@ -2,7 +2,9 @@ package lab.mars.rl.algo.td
 
 import lab.mars.rl.algo.average_α
 import lab.mars.rl.model.isNotTerminal
-import lab.mars.rl.problem.*
+import lab.mars.rl.problem.Blackjack
+import lab.mars.rl.problem.CliffWalking
+import lab.mars.rl.problem.WindyGridworld
 import lab.mars.rl.util.math.argmax
 import lab.mars.rl.util.printBlackjack
 import org.junit.Test

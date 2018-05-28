@@ -1,7 +1,11 @@
 package lab.mars.rl.problem
 
-import lab.mars.rl.model.impl.mdp.*
-import lab.mars.rl.util.collection.*
+import lab.mars.rl.model.impl.mdp.CNSetMDP
+import lab.mars.rl.model.impl.mdp.IndexedMDP
+import lab.mars.rl.model.impl.mdp.IndexedPossible
+import lab.mars.rl.util.collection.cnsetOf
+import lab.mars.rl.util.collection.emptyNSet
+import lab.mars.rl.util.collection.fork
 import lab.mars.rl.util.dimension.x
 
 object WindyGridworld {
