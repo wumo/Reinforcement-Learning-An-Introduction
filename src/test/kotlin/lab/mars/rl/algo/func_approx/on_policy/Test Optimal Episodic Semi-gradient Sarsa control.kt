@@ -4,33 +4,19 @@ package lab.mars.rl.algo.func_approx.on_policy
 
 import ch.qos.logback.classic.Level
 import javafx.application.Application
-import javafx.application.Platform
-import javafx.scene.chart.XYChart
-import javafx.scene.paint.Color
 import kotlinx.coroutines.experimental.runBlocking
-import lab.mars.rl.algo.EpisodeListener
-import lab.mars.rl.algo.StepListener
-import lab.mars.rl.algo.eligibility_trace.control.`True Online Sarsa(λ)`
-import lab.mars.rl.algo.func_approx.play
 import lab.mars.rl.model.impl.func.LinearFunc
 import lab.mars.rl.model.impl.func.SuttonTileCoding
 import lab.mars.rl.model.impl.mdp.DefaultAction
 import lab.mars.rl.model.impl.mdp.EpsilonGreedyFunctionPolicy
-import lab.mars.rl.problem.FlyPlane
-import lab.mars.rl.problem.FlyPlane.PlaneState
-import lab.mars.rl.problem.FlyPlane.width
 import lab.mars.rl.problem.MountainCar.CarState
 import lab.mars.rl.problem.MountainCar
 import lab.mars.rl.util.*
-import lab.mars.rl.util.math.Rand
-import lab.mars.rl.util.math.Vector2
 import lab.mars.rl.util.math.max
 import lab.mars.rl.util.tuples.tuple2
 import lab.mars.rl.util.ui.*
-import lab.mars.rl.util.ui.D2DGameUI.Companion.title
 import lab.mars.rl.util.ui.D3DChartUI.D3DChart
 import org.junit.Test
-import java.lang.Math.floor
 import java.util.concurrent.CountDownLatch
 import kotlin.concurrent.thread
 

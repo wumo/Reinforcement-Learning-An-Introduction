@@ -1,16 +1,23 @@
 package lab.mars.rl.util.math
 
-import lab.mars.rl.model.impl.func.times
-import lab.mars.rl.util.tuples.tuple2
 import kotlin.math.sqrt
-import org.apache.commons.math3.util.MathUtils
 import kotlin.math.PI
 
 
-data class Vector2(var x: Double, var y: Double) {
+data class Vector2(var x: Double = 0.0, var y: Double = 0.0) {
   companion object {
     fun zero() = Vector2(0.0, 0.0)
     val ZERO = zero()
+  }
+  
+  fun set(v: Vector2) {
+    x = v.x
+    y = v.y
+  }
+  
+  fun set(x: Double, y: Double) {
+    this.x = x
+    this.y = y
   }
   
   operator fun plus(v: Vector2) = Vector2(x + v.x, y + v.y)

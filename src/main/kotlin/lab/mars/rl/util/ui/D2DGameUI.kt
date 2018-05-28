@@ -18,14 +18,16 @@ import tornadofx.FX
 import tornadofx.FX.Companion.primaryStage
 import tornadofx.FX.Companion.stylesheets
 import tornadofx.Stylesheet.Companion.chart
+import tornadofx.Stylesheet.Companion.datagrid
 import java.util.concurrent.CyclicBarrier
 
 class D2DGameUI : Application() {
   class ChartDescription(val title: String,
                          val xAxisLabel: String, val yAxisLabel: String,
+                         val numSeries: Int = 1,
                          val xForceZeroInRange: Boolean = true,
                          val yForceZeroInRange: Boolean = true) {
-    val data = FXCollections.observableArrayList<XYChart.Data<Number, Number>>()!!
+    val data = Array(numSeries) { FXCollections.observableArrayList<XYChart.Data<Number, Number>>()!! }
   }
   
   lateinit var canvas: Canvas
@@ -53,10 +55,14 @@ class D2DGameUI : Application() {
     for (c in charts) {
       val chart = LineChart(NumberAxis().apply { label = c.xAxisLabel;isForceZeroInRange = c.xForceZeroInRange },
                             NumberAxis().apply { label = c.yAxisLabel;isForceZeroInRange = c.yForceZeroInRange },
-                            FXCollections.observableArrayList(XYChart.Series("s", c.data))).apply {
+                            FXCollections.observableArrayList<XYChart.Series<Number, Number>>().apply {
+                              var i = 0
+                              for (d in c.data)
+                                add(XYChart.Series("${i++}", d))
+                            }).apply {
         title = c.title
         createSymbols = false
-        isLegendVisible = false
+//        isLegendVisible = false
         animated = false
         stylesheets.add(ResourceLoader.getResource("StockLineChart.css").toExternalForm())
       }

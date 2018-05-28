@@ -1,6 +1,5 @@
 package lab.mars.rl.model.impl.func
 
-import lab.mars.rl.util.matrix.Matrix
 import lab.mars.rl.util.matrix.MatrixSpec
 import lab.mars.rl.util.matrix.SparseMatrix
 import lab.mars.rl.util.tuples.tuple2
@@ -13,10 +12,10 @@ val MAXIMUM_CAPACITY = 1 shl 30
  */
 private val emptyDoubleArray = DoubleArray(0)
 
-class SuttonTileCoding(numTilesOfEachTiling: Int, _numTilings: Int, val unit_scales: DoubleArray = emptyDoubleArray,
+class SuttonTileCoding(numTilesPerTiling: Int, _numTilings: Int, val unit_scales: DoubleArray = emptyDoubleArray, val allowCollisions: Boolean = false,
                        conv: (Array<out Any>) -> tuple2<DoubleArray, IntArray>) : Feature<tuple2<DoubleArray, IntArray>>(conv) {
   val numTilings = tableSizeFor(_numTilings)
-  override val numOfComponents = numTilings * (numTilesOfEachTiling + 1)
+  override val numOfComponents = numTilings * (numTilesPerTiling + 1)
   override fun _invoke(s: tuple2<DoubleArray, IntArray>): MatrixSpec {
     val (floats, ints) = s
     val activeTiles = tiles(floats, ints)
@@ -44,9 +43,10 @@ class SuttonTileCoding(numTilesOfEachTiling: Int, _numTilings: Int, val unit_sca
       }
       for (int in ints)
         coords.add(int.toDouble())
-      result[tiling] = data.getOrPut(coords, { data.size })
-//      result[tiling] = if (data.size < numOfComponents) data.getOrPut(coords, { data.size })
-//      else abs(coords.hashCode()) % numOfComponents
+      if (data.size < numOfComponents)
+        result[tiling] = data.getOrPut(coords, { data.size })
+      else if (allowCollisions)
+        abs(coords.hashCode()) % numOfComponents
     }
     return result
   }

@@ -1,3 +1,5 @@
+@file:Suppress("NOTHING_TO_INLINE")
+
 package lab.mars.rl.problem
 
 import lab.mars.rl.model.*
@@ -5,32 +7,33 @@ import lab.mars.rl.model.impl.mdp.DefaultAction
 import lab.mars.rl.model.impl.mdp.DefaultMDP
 import lab.mars.rl.util.collection.emptyNSet
 import lab.mars.rl.util.dimension.cnsetFrom
-import lab.mars.rl.util.math.*
+import lab.mars.rl.util.math.Rand
+import lab.mars.rl.util.math.Vector2
 import lab.mars.rl.util.math.Vector2.Companion.ZERO
+import java.util.*
 
 object FlyPlane {
-  val width = 600.0
-  private val numSimulation = 10
-  private val Δt = 0.1
+  data class RigidBody(val loc: Vector2, val radius: Double)
+  
+  val fieldWidth = 600.0
+  private val numSimulation = 1
+  private val Δt = 1.0
   private val max_acc = 1.0
-  val oLoc = Vector2(300.0, 300.0)
-  val oRadius = 100.0
-  private val targetLoc = Vector2(550.0, 50.0)
-  private val targetRadius = 50.0
-  private val initloc = Vector2(0.0, 600.0)
-  val planeRadius = 10.0
+  val target = RigidBody(Vector2(550.0, 50.0), 50.0)
+  val plane = RigidBody(Vector2(0.0, 600.0), 10.0)
   private val initVel = Vector2(7.0, -7.0)
   private val maxFuel = 10000.0
+  var maxStage: Int = 5
+  var numObstaclesPerStage = 1
+  lateinit var stageObstacles: Array<Array<RigidBody>>
   
   class PlaneState(
       val loc: Vector2,
       val vel: Vector2,
-      val oLoc: Array<Vector2>,
-      val oRadius: Array<Double>,
-      val targetLoc: Vector2,
-      val targetRadius: Double,
       val fuel: Double,
-      val terminal: Boolean
+      val terminal: Boolean,
+      val stage: Int,
+      val remainStages: LinkedList<Int>
   ) : State {
     override val actions: RandomIterable<Action<PlaneState>> =
         if (terminal) emptyNSet()
@@ -39,6 +42,7 @@ object FlyPlane {
           DefaultAction(a) {
             val newLoc = loc.copy()
             val newVel = vel.copy()
+            var newStage = stage
             repeat(numSimulation) {
               val dir = newVel.copy().norm()
               val acc = when (a) {
@@ -52,114 +56,80 @@ object FlyPlane {
               newLoc += newVel * Δt + acc * (Δt * Δt * 0.5)
               newVel += acc * Δt
             }
-            val newFuel = fuel - 1.0
+            var newFuel = fuel - 1.0
             var terminal = false
-            var reward = loc.dist(targetLoc) - newLoc.dist(targetLoc)
+            val obstacles = stageObstacles[stage]
+            var reward = loc.dist(target.loc) - newLoc.dist(target.loc)
             when {
-              newLoc.outOf(0.0, 0.0, width, width) ||//out of field
+              newLoc.outOf(0.0, 0.0, fieldWidth, fieldWidth) ||//out of field
               newFuel < 0 -> {//out of fuel
                 terminal = true
                 reward = -1000.0
               }
-              hitObstacles(newLoc, oLoc, oRadius) -> {//hit obstacle
+              collide(newLoc, obstacles) -> {//hit obstacle
                 terminal = true
                 reward = -2000.0
               }
-              newLoc.dist(targetLoc) <= targetRadius -> {//hit destination
-                terminal = true
+              collide(newLoc, target) -> {//hit destination
                 reward = 1000.0 - (maxFuel - newFuel)
+                newLoc.set(plane.loc)
+                newFuel = maxFuel
+                newVel.set(initVel)
+                if (remainStages.isEmpty())
+                  terminal = true
+                else
+                  newStage = remainStages.pop()
               }
             }
-            Possible(PlaneState(newLoc, newVel, oLoc, oRadius, targetLoc, targetRadius, newFuel, terminal), reward)
+            Possible(PlaneState(newLoc, newVel, newFuel, terminal, newStage, remainStages), reward)
           }
         }
     val isAtTarget: Boolean
-      get() = loc.dist(targetLoc) <= targetRadius
+      get() = collide(loc, target)
+    val isAtIntial: Boolean
+      get() = collide(loc, plane)
   }
   
-  fun hitObstacles(loc: Vector2, oLoc: Array<Vector2>, oRadius: Array<Double>): Boolean {
-    val size = oLoc.size
-    for (i in 0 until size) {
-      if (loc.dist(oLoc[i]) <= oRadius[i])
-        return true
-    }
+  inline fun collide(loc: Vector2, obstacle: RigidBody): Boolean {
+    if (loc.dist(obstacle.loc) <= obstacle.radius)
+      return true
     return false
   }
   
-  fun make() = DefaultMDP(1.0) {
-    PlaneState(loc = initloc,
-               vel = initVel,
-               oLoc = arrayOf(oLoc),
-               oRadius = arrayOf(oRadius),
-               targetLoc = targetLoc,
-               targetRadius = targetRadius,
-               fuel = maxFuel,
-               terminal = false)
+  fun collide(loc: Vector2, obstacles: Array<RigidBody>): Boolean {
+    val size = obstacles.size
+    for (i in 0 until size)
+      if (collide(loc, obstacles[i]))
+        return true
+    return false
   }
   
-  fun make(numObstacles: Int = 1, maxObstacleRadius: Double = oRadius): MDP {
-    val oLoc = Array(numObstacles) {
-      Vector2(Rand().nextDouble(maxObstacleRadius, width - targetRadius * 2 - maxObstacleRadius),
-              Rand().nextDouble(maxObstacleRadius, width - targetRadius * 2 - maxObstacleRadius))
-    }
-    val oRadius = Array(numObstacles) {
-      maxObstacleRadius * Rand().nextDouble()
-    }
-    return DefaultMDP(1.0) {
-      PlaneState(loc = initloc,
-                 vel = initVel,
-                 oLoc = oLoc,
-                 oRadius = oRadius,
-                 targetLoc = targetLoc,
-                 targetRadius = targetRadius,
-                 fuel = maxFuel,
-                 terminal = false)
-    }
-  }
-  
-  fun makeRand(numObstacles: Int = 1, minObstacleRadius: Double = oRadius - 1.0, maxObstacleRadius: Double = oRadius): MDP {
-    val numObstacles = minOf(numObstacles, 16)
-    val iter = IntArray(16) {
-      it
-    }.toMutableList().shuffled().iterator()
-    val oLoc = Array(numObstacles) {
-      val idx = iter.next()
-      val x = idx / 4
-      val y = idx % 4
-      Vector2(150.0 + 100.0 * x, 150.0 + 100.0 * y)
-    }
-    val oRadius = Array(numObstacles) {
-      Rand().nextDouble(minObstacleRadius, maxObstacleRadius)
-    }
-    return DefaultMDP(0.9) {
-      PlaneState(loc = initloc,
-                 vel = initVel,
-                 oLoc = oLoc,
-                 oRadius = oRadius,
-                 targetLoc = targetLoc,
-                 targetRadius = targetRadius,
-                 fuel = maxFuel,
-                 terminal = false)
-    }
-  }
-  
-  fun makeRand2(numObstacles: Int = 1, maxObstacleRadius: Double = oRadius): MDP {
-    return DefaultMDP(1.0) {
-      val oLoc = Array(numObstacles) {
-        Vector2(Rand().nextDouble(maxObstacleRadius, width - targetRadius * 2 - maxObstacleRadius),
-                Rand().nextDouble(maxObstacleRadius, width - targetRadius * 2 - maxObstacleRadius))
+  fun makeRand(minObstacleRadius: Double = 50.0,
+               maxObstacleRadius: Double = 100.0,
+               γ: Double = 1.0): MDP {
+    FlyPlane.numObstaclesPerStage = minOf(numObstaclesPerStage, 16)
+    stageObstacles = Array(maxStage) {
+      val iter = (0 until 16).shuffled().iterator()
+      Array(numObstaclesPerStage) {
+        val idx = iter.next()
+        val x = idx / 4
+        val y = idx % 4
+        RigidBody(Vector2(150.0 + 100.0 * x, 150.0 + 100.0 * y), Rand().nextDouble(minObstacleRadius, maxObstacleRadius))
       }
-      val oRadius = Array(numObstacles) {
-        maxObstacleRadius * Rand().nextDouble()
-      }
-      PlaneState(loc = initloc,
+    }
+    val tmp = MutableList(maxStage) { it }
+    val remainStages = LinkedList<Int>()
+    return DefaultMDP(γ) {
+      tmp.shuffle()
+      remainStages.clear()
+      remainStages.addAll(tmp)
+      
+      PlaneState(loc = plane.loc,
                  vel = initVel,
-                 oLoc = oLoc,
-                 oRadius = oRadius,
-                 targetLoc = targetLoc,
-                 targetRadius = targetRadius,
                  fuel = maxFuel,
-                 terminal = false)
+                 terminal = false,
+                 stage = remainStages.removeFirst(),
+                 remainStages = remainStages)
     }
   }
 }

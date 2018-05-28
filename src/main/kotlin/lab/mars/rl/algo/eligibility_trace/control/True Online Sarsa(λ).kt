@@ -1,5 +1,7 @@
 package lab.mars.rl.algo.eligibility_trace.control
 
+import lab.mars.rl.algo.EpisodeListener
+import lab.mars.rl.algo.StepListener
 import lab.mars.rl.model.*
 import lab.mars.rl.model.impl.func.LinearFunc
 import lab.mars.rl.util.log.debug
@@ -13,8 +15,8 @@ fun <E> MDP.`True Online Sarsa(λ)`(
     episodes: Int,
     z_maker: (Int, Int) -> MatrixSpec = { m, n -> Matrix(m, n) },
     maxStep: Int = Int.MAX_VALUE,
-    episodeListener: (Int, Int, State, Double) -> Unit = { _, _, _, _ -> },
-    stepListener: (Int, Int, State, Action<State>) -> Unit = { _, _, _, _ -> }) {
+    episodeListener: EpisodeListener = { _, _, _, _ -> },
+    stepListener: StepListener = { _, _, _, _, _ -> }) {
   val X = Qfunc.x
   val w = Qfunc.w
   val d = w.size
@@ -51,7 +53,7 @@ fun <E> MDP.`True Online Sarsa(λ)`(
         break
       }
       step++
-      stepListener(episode, step, s_next, a)
+      stepListener(episode, step, s_next, a, G)
       if (step >= maxStep) break
     }
     episodeListener(episode, step, s, G)

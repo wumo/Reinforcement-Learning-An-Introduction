@@ -15,7 +15,7 @@ import lab.mars.rl.util.math.*
 
 typealias EpisodeListener = (Int, Int, State, Double) -> Unit
 
-typealias StepListener = (Int, Int, State, Action<State>) -> Unit
+typealias StepListener = (Int, Int, State, Action<State>, Double) -> Unit
 
 fun V_from_Q(states: StateSet, pvq: OptimalSolution) {
   val (π, V, Q) = pvq
