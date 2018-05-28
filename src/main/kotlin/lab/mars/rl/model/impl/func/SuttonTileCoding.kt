@@ -11,7 +11,9 @@ val MAXIMUM_CAPACITY = 1 shl 30
 /**
  * @param unit_scales scale input unit to tile coding unit so as to ensure expected resolution. Usually defined as #(grid tilings)/(range of data).
  */
-class SuttonTileCoding(numTilesOfEachTiling: Int, _numTilings: Int, val unit_scales: DoubleArray = DoubleArray(0),
+private val emptyDoubleArray = DoubleArray(0)
+
+class SuttonTileCoding(numTilesOfEachTiling: Int, _numTilings: Int, val unit_scales: DoubleArray = emptyDoubleArray,
                        conv: (Array<out Any>) -> tuple2<DoubleArray, IntArray>) : Feature<tuple2<DoubleArray, IntArray>>(conv) {
   val numTilings = tableSizeFor(_numTilings)
   override val numOfComponents = numTilings * (numTilesOfEachTiling + 1)

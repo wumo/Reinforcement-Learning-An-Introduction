@@ -22,20 +22,26 @@ import org.junit.Test
 import java.util.concurrent.CountDownLatch
 import kotlin.concurrent.thread
 
-class `Test FlyPlane Problem with True Online Sarsa λ` {
+class `Test FlyPlane Problem with TD λ` {
   @Test
   fun `Fly Plane UI`() {
     val numTilings = 10
-    val feature = SuttonTileCoding(1000, numTilings, doubleArrayOf(1 / 100.0, 1 / 100.0, 1 / 10.0, 1 / 10.0)) { (s, a) ->
+    val feature = SuttonTileCoding(1000, numTilings) { (s, a) ->
       s as FlyPlane.PlaneState
       a as DefaultAction<Int, FlyPlane.PlaneState>
-      tuple2(doubleArrayOf(s.loc.x, s.loc.y, s.vel.x, s.vel.y), intArrayOf(a.value))
+      val floats = ArrayList<Double>(s.oLoc.size + 4).apply {
+        add(s.loc.x / 100.0);add(s.loc.y / 100.0);add(s.vel.x / 10.0);add(s.vel.y / 10.0)
+        for (i in 0 until s.oLoc.size) {
+          add(s.oLoc[i].x / 100.0);add(s.oLoc[i].y / 100.0);add(s.oRadius[i] / 10.0)
+        }
+      }.toDoubleArray()
+      tuple2(floats, intArrayOf(a.value))
     }
     val func = LinearFunc(feature)
     
     val resolution = 100
     val unit = FlyPlane.width / resolution
-    val qvalue = Array(resolution) { Array(resolution+1) { Double.NEGATIVE_INFINITY } }
+    val qvalue = Array(resolution) { Array(resolution + 1) { Double.NEGATIVE_INFINITY } }
     var accuG = 0.0
     var wins = 0.0
     var win_step = 0.0
@@ -113,12 +119,12 @@ class `Test FlyPlane Problem with True Online Sarsa λ` {
               gc.strokeOval(oLoc.x - oRadius, oLoc.y - oRadius, 2 * oRadius, 2 * oRadius)
             }
             gc.fill = Color.BLACK
-            val dir = s.vel.copy().norm() * lab.mars.rl.problem.FlyPlane.planeRadius
+            val dir = s.vel.copy().norm() * FlyPlane.planeRadius
             val top = s.loc + dir
             val left = s.loc + (dir / 2.0).rot90L()
             val right = s.loc + (dir / 2.0).rot90R()
-            gc.fillPolygon(kotlin.doubleArrayOf(top.x, left.x, right.x),
-                           kotlin.doubleArrayOf(top.y, left.y, right.y),
+            gc.fillPolygon(doubleArrayOf(top.x, left.x, right.x),
+                           doubleArrayOf(top.y, left.y, right.y),
                            3)
           }
         }
@@ -145,6 +151,9 @@ class `Test FlyPlane Problem with True Online Sarsa λ` {
               Thread.sleep(Math.floor(1000 / 60.0).toLong())
             }
         )
+        for (i in 0..qvalue.lastIndex)
+          for (j in 0..qvalue[i].lastIndex)
+            qvalue[i][j] = Double.NEGATIVE_INFINITY
         episode_base += max_episode
       }
     }
@@ -152,7 +161,7 @@ class `Test FlyPlane Problem with True Online Sarsa λ` {
       canvas_width = FlyPlane.width
       canvas_height = FlyPlane.width
       width = 1200.0
-      height = 800.0
+      height = 1000.0
       charts.addAll(D2DGameUI.ChartDescription("average return per $episode_round episodes", "episode", "average return"),
                     D2DGameUI.ChartDescription("win rate per $episode_round episodes", "episode", "win rate"),
                     D2DGameUI.ChartDescription("average win step per $episode_round episodes", "episode", "average win step",

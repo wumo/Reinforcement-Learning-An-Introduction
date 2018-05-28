@@ -10,8 +10,8 @@ import lab.mars.rl.util.math.Vector2.Companion.ZERO
 
 object FlyPlane {
   val width = 600.0
-  private val numSimulation = 1
-  private val Δt = 1.0
+  private val numSimulation = 10
+  private val Δt = 0.1
   private val max_acc = 1.0
   val oLoc = Vector2(300.0, 300.0)
   val oRadius = 100.0
@@ -131,7 +131,7 @@ object FlyPlane {
     val oRadius = Array(numObstacles) {
       Rand().nextDouble(minObstacleRadius, maxObstacleRadius)
     }
-    return DefaultMDP(1.0) {
+    return DefaultMDP(0.9) {
       PlaneState(loc = initloc,
                  vel = initVel,
                  oLoc = oLoc,
