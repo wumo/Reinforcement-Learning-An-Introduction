@@ -22,7 +22,7 @@ fun <E> MDP.`True Online Sarsa(λ)`(
     z_maker: (Int, Int) -> MatrixSpec = { m, n -> Matrix(m, n) },
     maxStep: Int = Int.MAX_VALUE,
     episodeListener: EpisodeListener = { _, _, _, _ -> },
-    stepListener: StepListener = { _, _, _, _, _ -> }) {
+    stepListener: StepListener = { _, _, _, _ -> }) {
   val X = Qfunc.x
   val w = Qfunc.w
   val d = w.size
@@ -59,7 +59,7 @@ fun <E> MDP.`True Online Sarsa(λ)`(
         break
       }
       step++
-      stepListener(episode, step, s_next, a, G)
+      stepListener(episode, step, s_next, a)
       if (step >= maxStep) break
     }
     episodeListener(episode, step, s, G)

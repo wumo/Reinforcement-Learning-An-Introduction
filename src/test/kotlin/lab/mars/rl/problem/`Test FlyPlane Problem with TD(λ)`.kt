@@ -70,7 +70,7 @@ class `Test FlyPlane Problem with TD λ` {
         accuG += G
         maxG[FlyPlane.maxStage] = maxOf(maxG[FlyPlane.maxStage], G)
         st as FlyPlane.PlaneState
-        if (st.isAtIntial) {
+        if (st.isAtTarget) {
           wins++
           win_step += step
         }
@@ -95,15 +95,15 @@ class `Test FlyPlane Problem with TD λ` {
           }
         }
       }
-      val stepListener: StepListener = step@{ episode, step, s, a, Gt ->
+      val stepListener: StepListener = step@{ episode, step, s, a ->
         s as FlyPlane.PlaneState
         a as DefaultAction<Int, FlyPlane.PlaneState>
         
         val nx = Math.floor(s.loc.x / unit).toInt()
         val ny = Math.floor(s.loc.y / unit).toInt()
         qvalue[s.stage][nx][ny] = maxOf(qvalue[s.stage][nx][ny], func(s, a))
-        if (s.isAtIntial)
-          maxG[s.stage] = maxOf(maxG[s.stage], Gt)
+        if (s.stageEnd)
+          maxG[s.stage] = maxOf(maxG[s.stage], s.G)
         if (episode % step_round != 0) return@step
         if (!animate && step > 1) return@step
         D2DGameUI.render { gc ->
@@ -134,18 +134,18 @@ class `Test FlyPlane Problem with TD λ` {
           D2DGameUI.title = "max=$max,min=$min"
           with(s) {
             for (stage in 0 until FlyPlane.maxStage) {
-              gc.stroke = Color.GREEN
-              gc.strokeOval((FlyPlane.target.loc.x - FlyPlane.target.radius).transX(stage),
-                            (FlyPlane.target.loc.y - FlyPlane.target.radius).transY(stage),
-                            2 * FlyPlane.target.radius.tranUnit(),
-                            2 * FlyPlane.target.radius.tranUnit())
-              gc.stroke = Color.RED
+              gc.fill = Color.GREEN
+              gc.fillOval((FlyPlane.target.loc.x - FlyPlane.target.radius).transX(stage),
+                          (FlyPlane.target.loc.y - FlyPlane.target.radius).transY(stage),
+                          2 * FlyPlane.target.radius.tranUnit(),
+                          2 * FlyPlane.target.radius.tranUnit())
+              gc.fill = Color.GREY
               for (i in 0 until FlyPlane.numObstaclesPerStage) {
                 val obstacle = FlyPlane.stageObstacles[stage][i]
                 val oLoc = obstacle.loc
                 val oRadius = obstacle.radius
-                gc.strokeOval((oLoc.x - oRadius).transX(stage), (oLoc.y - oRadius).transY(stage),
-                              2 * oRadius.tranUnit(), 2 * oRadius.tranUnit())
+                gc.fillOval((oLoc.x - oRadius).transX(stage), (oLoc.y - oRadius).transY(stage),
+                            2 * oRadius.tranUnit(), 2 * oRadius.tranUnit())
               }
             }
             gc.fill = Color.BLACK
@@ -159,7 +159,7 @@ class `Test FlyPlane Problem with TD λ` {
           }
         }
       }
-      val prob = FlyPlane.makeRand(minObstacleRadius = 50.0, maxObstacleRadius = 100.0, γ = 0.9)
+      val prob = FlyPlane.makeRand(minObstacleRadius = 50.0, maxObstacleRadius = 100.0)
       animate = false
       prob.`True Online Sarsa(λ)`(
           Qfunc = func,
@@ -176,7 +176,7 @@ class `Test FlyPlane Problem with TD λ` {
           π = EpsilonGreedyFunctionPolicy(func, 0.0),
           episodes = 10,
           stepListener = { _, _, s, a ->
-            stepListener(0, 0, s, a, 0.0)
+            stepListener(0, 0, s, a)
             Thread.sleep(Math.floor(1000 / 60.0).toLong())
           }
       )

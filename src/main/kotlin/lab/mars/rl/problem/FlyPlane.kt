@@ -26,68 +26,82 @@ object FlyPlane {
   var maxStage: Int = 5
   var numObstaclesPerStage = 1
   lateinit var stageObstacles: Array<Array<RigidBody>>
+  private var γ: Double = 1.0
   
   class PlaneState(
       val loc: Vector2,
       val vel: Vector2,
       val fuel: Double,
-      val terminal: Boolean,
       val stage: Int,
-      val remainStages: LinkedList<Int>
+      val remainStages: LinkedList<Int>,
+      val stageEnd: Boolean,
+      val G: Double
   ) : State {
     override val actions: RandomIterable<Action<PlaneState>> =
-        if (terminal) emptyNSet()
+        if (stage == -1) emptyNSet()
         else cnsetFrom(3) {
           val a = it[0]
           DefaultAction(a) {
-            val newLoc = loc.copy()
-            val newVel = vel.copy()
-            var newStage = stage
-            repeat(numSimulation) {
-              val dir = newVel.copy().norm()
-              val acc = when (a) {
-                1 -> //left
-                  dir.rot90L() * max_acc
-                2 -> //right
-                  dir.rot90R() * max_acc
-                else ->//no op
-                  ZERO
+            val nextLoc = loc.copy()
+            val nextVel = vel.copy()
+            var nextFuel: Double
+            var nextStage = stage
+            var nextStageEnd = false
+            var G = G
+            var reward: Double
+            if (collide(loc, target)) {
+              nextLoc.set(plane.loc)
+              nextVel.set(initVel)
+              nextFuel = maxFuel
+              nextStage = if (remainStages.isEmpty()) -1 else remainStages.pop()
+              nextStageEnd = false
+              G = 0.0
+              reward = 0.0
+            } else {
+              repeat(numSimulation) {
+                val dir = nextVel.copy().norm()
+                val acc = when (a) {
+                  1 -> //left
+                    dir.rot90L() * max_acc
+                  2 -> //right
+                    dir.rot90R() * max_acc
+                  else ->//no op
+                    ZERO
+                }
+                nextLoc += nextVel * Δt + acc * (Δt * Δt * 0.5)
+                nextVel += acc * Δt
               }
-              newLoc += newVel * Δt + acc * (Δt * Δt * 0.5)
-              newVel += acc * Δt
+              nextFuel = fuel - 1.0
+              val obstacles = stageObstacles[stage]
+              reward = loc.dist(target.loc) - nextLoc.dist(target.loc)
+              when {
+                nextLoc.outOf(0.0, 0.0, fieldWidth, fieldWidth) ||//out of field
+                nextFuel < 0 -> {//out of fuel
+                  reward = -1000.0
+                  nextStage = -1
+                  nextStageEnd = true
+                }
+                collide(nextLoc, obstacles) -> {//hit obstacle
+                  reward = -2000.0
+                  nextStage = -1
+                  nextStageEnd = true
+                }
+                collide(nextLoc, target) -> {//hit destination
+                  reward = 1000.0 - (maxFuel - nextFuel)
+                  nextLoc.set(target.loc)
+                  nextFuel = maxFuel
+                  nextVel.set(initVel)
+                  nextStageEnd = true
+                  nextStage = stage
+                }
+              }
+              G += γ * reward
             }
-            var newFuel = fuel - 1.0
-            var terminal = false
-            val obstacles = stageObstacles[stage]
-            var reward = loc.dist(target.loc) - newLoc.dist(target.loc)
-            when {
-              newLoc.outOf(0.0, 0.0, fieldWidth, fieldWidth) ||//out of field
-              newFuel < 0 -> {//out of fuel
-                terminal = true
-                reward = -1000.0
-              }
-              collide(newLoc, obstacles) -> {//hit obstacle
-                terminal = true
-                reward = -2000.0
-              }
-              collide(newLoc, target) -> {//hit destination
-                reward = 1000.0 - (maxFuel - newFuel)
-                newLoc.set(plane.loc)
-                newFuel = maxFuel
-                newVel.set(initVel)
-                if (remainStages.isEmpty())
-                  terminal = true
-                else
-                  newStage = remainStages.pop()
-              }
-            }
-            Possible(PlaneState(newLoc, newVel, newFuel, terminal, newStage, remainStages), reward)
+            Possible(PlaneState(nextLoc, nextVel, nextFuel, nextStage, remainStages, nextStageEnd, G), reward)
           }
         }
-    val isAtTarget: Boolean
+    val isAtTarget
       get() = collide(loc, target)
-    val isAtIntial: Boolean
-      get() = collide(loc, plane)
   }
   
   inline fun collide(loc: Vector2, obstacle: RigidBody): Boolean {
@@ -108,6 +122,7 @@ object FlyPlane {
                maxObstacleRadius: Double = 100.0,
                γ: Double = 1.0): MDP {
     FlyPlane.numObstaclesPerStage = minOf(numObstaclesPerStage, 16)
+    FlyPlane.γ = γ
     stageObstacles = Array(maxStage) {
       val iter = (0 until 16).shuffled().iterator()
       Array(numObstaclesPerStage) {
@@ -127,9 +142,10 @@ object FlyPlane {
       PlaneState(loc = plane.loc,
                  vel = initVel,
                  fuel = maxFuel,
-                 terminal = false,
                  stage = remainStages.removeFirst(),
-                 remainStages = remainStages)
+                 remainStages = remainStages,
+                 stageEnd = false,
+                 G = 0.0)
     }
   }
 }

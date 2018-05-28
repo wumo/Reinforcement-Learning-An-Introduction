@@ -55,7 +55,7 @@ class `Test Optimal Sarsa λ` {
           α = 0.3 / numTilings,
           episodes = 9000,
           z_maker = { m, n -> SparseMatrix(m, n) },
-          stepListener = step@{ episode, step, s, a,_ ->
+          stepListener = step@{ episode, step, s, a ->
             if (episode !in episodes) return@step
             MountainCarUI.render(episode, step, s as CarState, a as DefaultAction<Int, CarState>)
           })
