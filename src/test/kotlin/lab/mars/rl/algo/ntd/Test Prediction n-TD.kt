@@ -2,7 +2,7 @@ package lab.mars.rl.algo.ntd
 
 import ch.qos.logback.classic.Level
 import javafx.application.Application
-import kotlinx.coroutines.experimental.runBlocking
+import kotlinx.coroutines.runBlocking
 import lab.mars.rl.problem.Blackjack
 import lab.mars.rl.problem.`19-state RandomWalk`
 import lab.mars.rl.util.*

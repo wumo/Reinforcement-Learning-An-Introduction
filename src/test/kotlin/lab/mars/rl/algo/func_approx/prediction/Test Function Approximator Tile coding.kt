@@ -4,7 +4,7 @@ package lab.mars.rl.algo.func_approx.prediction
 
 import ch.qos.logback.classic.Level
 import javafx.application.Application
-import kotlinx.coroutines.experimental.runBlocking
+import kotlinx.coroutines.runBlocking
 import lab.mars.rl.algo.td.`Tabular TD(0)`
 import lab.mars.rl.model.ApproximateFunction
 import lab.mars.rl.model.impl.func.LinearFunc

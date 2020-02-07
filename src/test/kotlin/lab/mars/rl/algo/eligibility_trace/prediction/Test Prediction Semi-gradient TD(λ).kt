@@ -2,7 +2,7 @@ package lab.mars.rl.algo.eligibility_trace.prediction
 
 import ch.qos.logback.classic.Level
 import javafx.application.Application
-import kotlinx.coroutines.experimental.runBlocking
+import kotlinx.coroutines.runBlocking
 import lab.mars.rl.model.impl.func.LinearFunc
 import lab.mars.rl.model.impl.func.SimpleTileCoding
 import lab.mars.rl.model.impl.mdp.IndexedState
