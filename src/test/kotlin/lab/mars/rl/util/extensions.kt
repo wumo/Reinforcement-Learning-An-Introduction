@@ -1,7 +1,8 @@
 package lab.mars.rl.util
 
-import kotlinx.coroutines.experimental.Deferred
-import kotlinx.coroutines.experimental.async
+import kotlinx.coroutines.Deferred
+import kotlinx.coroutines.GlobalScope
+import kotlinx.coroutines.async
 
 inline fun <R> listOf(size: Int, init: (Int) -> R): ArrayList<R> {
   val list = ArrayList<R>()
@@ -28,7 +29,7 @@ inline fun <I1, I2, R> listOf(iter1: Iterable<I1>, iter2: Iterable<I2>, init: (I
 fun <R> asyncs(size: Int, init: suspend (Int) -> R): ArrayList<Deferred<R>> {
   val list = ArrayList<Deferred<R>>()
   for (i in 0 until size)
-    list += async {
+    list += GlobalScope.async {
       init(i)
     }
   
@@ -38,7 +39,7 @@ fun <R> asyncs(size: Int, init: suspend (Int) -> R): ArrayList<Deferred<R>> {
 fun <I, R> asyncs(iter: Iterable<I>, init: suspend (I) -> R): ArrayList<Deferred<R>> {
   val list = ArrayList<Deferred<R>>()
   for (i in iter)
-    list += async {
+    list += GlobalScope.async {
       init(i)
     }
   
@@ -49,7 +50,7 @@ fun <I1, I2, R> asyncs(iter1: Iterable<I1>, iter2: Iterable<I2>, init: suspend (
   val list = ArrayList<Deferred<R>>()
   for (i in iter1)
     for (j in iter2)
-      list += async { init(i, j) }
+      list += GlobalScope.async { init(i, j) }
   return list
 }
 
