@@ -1,21 +1,21 @@
-package lab.mars.rl.util.resource;
+package lab.mars.rl.util.resource
 
-import java.io.InputStream;
-import java.net.URL;
+import java.io.InputStream
+import java.net.URL
 
 /**
  * A resource location that searches the classpath
- * 
+ *
  * @author kevin
  */
-public class ClasspathLocation implements ResourceLocation {
-	public URL getResource(String ref) {
-		String cpRef = ref.replace('\\', '/');
-		return ResourceLoader.class.getClassLoader().getResource(cpRef);
-	}
+class ClasspathLocation : ResourceLocation {
+    override fun getResource(ref: String): URL {
+        val cpRef = ref.replace('\\', '/')
+        return ResourceLoader::class.java.classLoader.getResource(cpRef)
+    }
 
-	public InputStream getResourceAsStream(String ref) {
-		String cpRef = ref.replace('\\', '/');
-		return ResourceLoader.class.getClassLoader().getResourceAsStream(cpRef);	
-	}
+    override fun getResourceAsStream(ref: String): InputStream {
+        val cpRef = ref.replace('\\', '/')
+        return ResourceLoader::class.java.classLoader.getResourceAsStream(cpRef)
+    }
 }
